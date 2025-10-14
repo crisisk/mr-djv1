@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Molecules: Cards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #F5F5F5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #F5F5F5;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 35px;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .card-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .card-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #00AEEF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Base Card Styles */
+        .card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* Pricing Card */
+        .pricing-card {
+            display: flex;
+            flex-direction: column;
+            border-top: 4px solid #D4AF37;
+        }
+        
+        .pricing-header {
+            padding: 25px;
+            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
+            text-align: center;
+        }
+        
+        .pricing-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        
+        .pricing-price {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+        }
+        
+        .pricing-price span {
+            font-size: 16px;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+        
+        .pricing-body {
+            padding: 20px;
+            flex: 1;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .pricing-features li {
+            font-size: 13px;
+            color: #333;
+            padding: 8px 0;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pricing-features li:before {
+            content: '✓';
+            color: #00AEEF;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .pricing-cta {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-cta:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Testimonial Card */
+        .testimonial-card {
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+        }
+        
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        
+        .testimonial-info {
+            flex: 1;
+        }
+        
+        .testimonial-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1A2C4B;
+            margin-bottom: 4px;
+        }
+        
+        .testimonial-role {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .testimonial-rating {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 12px;
+        }
+        
+        .star {
+            color: #D4AF37;
+            font-size: 16px;
+        }
+        
+        .testimonial-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+            font-style: italic;
+        }
+        
+        /* Event Card */
+        .event-card {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .event-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+        
+        .event-body {
+            padding: 20px;
+        }
+        
+        .event-date {
+            font-size: 11px;
+            font-weight: 700;
+            color: #00AEEF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .event-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A2C4B;
+            margin-bottom: 10px;
+        }
+        
+        .event-description {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .event-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Molecules: Cards</h1>
+        <p class="subtitle">Herbruikbare card components voor pricing, testimonials en events</p>
+        
+        <div class="cards-grid">
+            <!-- Pricing Card -->
+            <div class="card-column">
+                <div class="card-label">Pricing Card</div>
+                <div class="card pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-name">Zilver Pakket</div>
+                        <div class="pricing-price">€995 <span>excl. BTW</span></div>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-features">
+                            <li>4 uur DJ service</li>
+                            <li>Premium geluidssysteem</li>
+                            <li>LED verlichting</li>
+                            <li>Muziekwensen onbeperkt</li>
+                            <li>Persoonlijk overleg</li>
+                        </ul>
+                        <button class="pricing-cta">Boek Dit Pakket</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial Card -->
+            <div class="card-column">
+                <div class="card-label">Testimonial Card</div>
+                <div class="card testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">JM</div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Jan & Marie</div>
+                            <div class="testimonial-role">Bruiloft • 15 juni 2024</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <p class="testimonial-text">
+                        "Mister DJ heeft onze bruiloft onvergetelijk gemaakt! De dansvloer was de hele avond vol en de muziekkeuze was perfect afgestemd op onze wensen. Absolute aanrader!"
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Event Card -->
+            <div class="card-column">
+                <div class="card-label">Event Card</div>
+                <div class="card event-card">
+                    <div class="event-image">🎵</div>
+                    <div class="event-body">
+                        <div class="event-date">15 Juni 2024</div>
+                        <h3 class="event-title">Bruiloft Eindhoven</h3>
+                        <p class="event-description">
+                            Een prachtige bruiloft in het centrum van Eindhoven met 150 gasten en een onvergetelijke feestavond.
+                        </p>
+                        <div class="event-meta">
+                            <div class="event-meta-item">
+                                <span>📍</span>
+                                <span>Eindhoven</span>
+                            </div>
+                            <div class="event-meta-item">
+                                <span>👥</span>
+                                <span>150 gasten</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

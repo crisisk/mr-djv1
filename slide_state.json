@@ -1,0 +1,260 @@
+{
+  "project_info": {
+    "title": "Mr. DJ Enterprise Design System",
+    "created": 1760478877.6036365,
+    "last_updated": 1760480414.1431544,
+    "total_slides": 31
+  },
+  "slides": {
+    "cover": "edited",
+    "intro": "edit_pending",
+    "brand_foundation": "edited",
+    "typography_system": "edit_pending",
+    "color_system": "edit_pending",
+    "spacing_grid": "edit_pending",
+    "atoms_buttons": "edited",
+    "atoms_inputs": "edit_pending",
+    "atoms_icons": "edited",
+    "molecules_cards": "edited",
+    "molecules_navigation": "edited",
+    "molecules_forms": "edited",
+    "organisms_hero": "edited",
+    "organisms_pricing": "edited",
+    "organisms_testimonials": "edited",
+    "organisms_gallery": "edit_pending",
+    "organisms_contact": "edit_pending",
+    "templates_homepage": "edited",
+    "templates_service": "edited",
+    "templates_local": "edited",
+    "templates_booking": "edit_pending",
+    "components_animations": "edit_pending",
+    "components_responsive": "edited",
+    "components_accessibility": "edit_pending",
+    "components_performance": "edit_pending",
+    "documentation": "edit_pending",
+    "design_tokens": "edit_pending",
+    "implementation": "edited",
+    "usage_examples": "edit_pending",
+    "roadmap": "edit_pending",
+    "closing": "edited"
+  },
+  "outline": [
+    {
+      "id": "cover",
+      "title": "Mr. DJ Enterprise Design System",
+      "summary": "Cover slide met titel, subtitel en branding. Professionele introductie van het design system.",
+      "image_plan": "Mr. DJ logo centraal geplaatst",
+      "slide_template_key": ""
+    },
+    {
+      "id": "intro",
+      "title": "Design System Overview",
+      "summary": "Introductie van het design system: doel, scope, en voordelen. Uitleg waarom een design system essentieel is voor consistentie en schaalbaarheid.",
+      "image_plan": "Diagram van design system architectuur",
+      "slide_template_key": ""
+    },
+    {
+      "id": "brand_foundation",
+      "title": "Brand Foundation",
+      "summary": "Kleuren, typografie, spacing, en grid systeem. De fundamentele design tokens die de basis vormen.",
+      "image_plan": "Kleurenpalet visualisatie met Mr. DJ kleuren",
+      "slide_template_key": ""
+    },
+    {
+      "id": "typography_system",
+      "title": "Typography System",
+      "summary": "Type scale, font families, weights, line heights. Complete typografische hiërarchie van H1 tot body text.",
+      "image_plan": "Typografie specimens met voorbeelden",
+      "slide_template_key": ""
+    },
+    {
+      "id": "color_system",
+      "title": "Color System",
+      "summary": "Primary, secondary, accent colors. Semantic colors voor success, warning, error. Accessibility compliance.",
+      "image_plan": "Kleur swatches met HEX codes en gebruik voorbeelden",
+      "slide_template_key": ""
+    },
+    {
+      "id": "spacing_grid",
+      "title": "Spacing & Grid System",
+      "summary": "8px base unit, spacing scale (4, 8, 16, 24, 32, 48, 64px). 12-column responsive grid.",
+      "image_plan": "Grid visualisatie met spacing voorbeelden",
+      "slide_template_key": ""
+    },
+    {
+      "id": "atoms_buttons",
+      "title": "Atoms: Buttons",
+      "summary": "Button varianten: primary, secondary, outline, ghost. States: default, hover, active, disabled. Sizes: small, medium, large.",
+      "image_plan": "Button components showcase met alle varianten",
+      "slide_template_key": ""
+    },
+    {
+      "id": "atoms_inputs",
+      "title": "Atoms: Form Inputs",
+      "summary": "Text input, textarea, select, checkbox, radio, toggle switch. States en validatie feedback.",
+      "image_plan": "Form input components met voorbeelden",
+      "slide_template_key": ""
+    },
+    {
+      "id": "atoms_icons",
+      "title": "Atoms: Icons & Badges",
+      "summary": "Icon library (50+ icons), badge components voor status indicators, tags, en labels.",
+      "image_plan": "Icon grid met verschillende iconen",
+      "slide_template_key": ""
+    },
+    {
+      "id": "molecules_cards",
+      "title": "Molecules: Cards",
+      "summary": "Card varianten: basic, image, pricing, testimonial, event. Hover states en interacties.",
+      "image_plan": "Card components showcase met verschillende types",
+      "slide_template_key": ""
+    },
+    {
+      "id": "molecules_navigation",
+      "title": "Molecules: Navigation",
+      "summary": "Header, navbar, breadcrumbs, pagination, tabs. Mobile responsive navigation patterns.",
+      "image_plan": "Navigation components voorbeelden",
+      "slide_template_key": ""
+    },
+    {
+      "id": "molecules_forms",
+      "title": "Molecules: Form Groups",
+      "summary": "Form layouts, field groups, inline validation, error messages, helper text.",
+      "image_plan": "Form group voorbeelden met validatie",
+      "slide_template_key": ""
+    },
+    {
+      "id": "organisms_hero",
+      "title": "Organisms: Hero Sections",
+      "summary": "Hero varianten: full-width, split, video background, carousel. CTAs en overlays.",
+      "image_plan": "Hero section voorbeelden met verschillende layouts",
+      "slide_template_key": ""
+    },
+    {
+      "id": "organisms_pricing",
+      "title": "Organisms: Pricing Tables",
+      "summary": "Pricing card layouts: 2-column, 3-column, comparison table. Popular badges, feature lists.",
+      "image_plan": "Pricing table voorbeelden (Brons, Zilver, Goud)",
+      "slide_template_key": ""
+    },
+    {
+      "id": "organisms_testimonials",
+      "title": "Organisms: Testimonial Sections",
+      "summary": "Review cards, rating displays, client logos, carousel layouts. Social proof componenten.",
+      "image_plan": "Testimonial section met reviews",
+      "slide_template_key": ""
+    },
+    {
+      "id": "organisms_gallery",
+      "title": "Organisms: Media Galleries",
+      "summary": "Image grids, lightbox, video players, before/after sliders. Responsive masonry layouts.",
+      "image_plan": "Gallery layout voorbeelden",
+      "slide_template_key": ""
+    },
+    {
+      "id": "organisms_contact",
+      "title": "Organisms: Contact Sections",
+      "summary": "Contact forms, info cards, maps integration, social links. Multi-step forms.",
+      "image_plan": "Contact section met form en info",
+      "slide_template_key": ""
+    },
+    {
+      "id": "templates_homepage",
+      "title": "Templates: Homepage",
+      "summary": "Complete homepage template met hero, services, pricing, testimonials, CTA sections.",
+      "image_plan": "Homepage wireframe/mockup",
+      "slide_template_key": ""
+    },
+    {
+      "id": "templates_service",
+      "title": "Templates: Service Pages",
+      "summary": "Service page layouts voor bruiloften, bedrijfsfeesten, DJ+Sax. Feature grids, proces flows.",
+      "image_plan": "Service page mockup",
+      "slide_template_key": ""
+    },
+    {
+      "id": "templates_local",
+      "title": "Templates: Local SEO Pages",
+      "summary": "City-specific page templates met lokale content, venues, reviews. Programmatic generation ready.",
+      "image_plan": "Local page template voorbeeld",
+      "slide_template_key": ""
+    },
+    {
+      "id": "templates_booking",
+      "title": "Templates: Booking Flow",
+      "summary": "Multi-step booking process: date selection, package choice, add-ons, contact info, confirmation.",
+      "image_plan": "Booking flow diagram",
+      "slide_template_key": ""
+    },
+    {
+      "id": "components_animations",
+      "title": "Animations & Transitions",
+      "summary": "Micro-interactions, page transitions, scroll animations, loading states. Performance optimized.",
+      "image_plan": "Animation examples met timing curves",
+      "slide_template_key": ""
+    },
+    {
+      "id": "components_responsive",
+      "title": "Responsive Patterns",
+      "summary": "Breakpoints (mobile, tablet, desktop, wide). Responsive component behavior en layout shifts.",
+      "image_plan": "Responsive layout voorbeelden",
+      "slide_template_key": ""
+    },
+    {
+      "id": "components_accessibility",
+      "title": "Accessibility Features",
+      "summary": "WCAG 2.1 AA compliance, keyboard navigation, screen reader support, focus management, ARIA labels.",
+      "image_plan": "Accessibility checklist visualisatie",
+      "slide_template_key": ""
+    },
+    {
+      "id": "components_performance",
+      "title": "Performance Optimization",
+      "summary": "Code splitting, lazy loading, image optimization, Core Web Vitals targets (LCP, FID, CLS).",
+      "image_plan": "Performance metrics dashboard",
+      "slide_template_key": ""
+    },
+    {
+      "id": "documentation",
+      "title": "Component Documentation",
+      "summary": "Storybook integration, prop tables, usage examples, do's and don'ts. Developer guidelines.",
+      "image_plan": "Documentation example screenshot",
+      "slide_template_key": ""
+    },
+    {
+      "id": "design_tokens",
+      "title": "Design Tokens",
+      "summary": "JSON/YAML token files voor kleuren, spacing, typography. Multi-platform export (CSS, SCSS, JS).",
+      "image_plan": "Design tokens code example",
+      "slide_template_key": ""
+    },
+    {
+      "id": "implementation",
+      "title": "Implementation Guide",
+      "summary": "Tech stack: React, Tailwind CSS, Framer Motion. Component library structure, import patterns.",
+      "image_plan": "Tech stack logos en code structure",
+      "slide_template_key": ""
+    },
+    {
+      "id": "usage_examples",
+      "title": "Real-World Usage",
+      "summary": "Live examples van componenten in productie. Voor en na vergelijkingen. Performance metrics.",
+      "image_plan": "Website screenshots met component highlights",
+      "slide_template_key": ""
+    },
+    {
+      "id": "roadmap",
+      "title": "Roadmap & Future",
+      "summary": "Geplande componenten, versioning strategy, maintenance plan. Community contributions.",
+      "image_plan": "Roadmap timeline visualisatie",
+      "slide_template_key": ""
+    },
+    {
+      "id": "closing",
+      "title": "Next Steps",
+      "summary": "Implementation timeline, resources, contact info. Call to action voor developers en designers.",
+      "image_plan": "CTA met Mr. DJ branding",
+      "slide_template_key": ""
+    }
+  ]
+}

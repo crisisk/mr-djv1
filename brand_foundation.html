@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Foundation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #1A2C4B;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 50px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            flex: 1;
+        }
+        
+        .section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00AEEF;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #00AEEF;
+            border-radius: 2px;
+        }
+        
+        /* Colors Section */
+        .color-swatch {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .color-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-info {
+            flex: 1;
+        }
+        
+        .color-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1A2C4B;
+            margin-bottom: 4px;
+        }
+        
+        .color-code {
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            color: #666;
+        }
+        
+        /* Typography Section */
+        .type-specimen {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .type-item {
+            border-bottom: 1px solid #E5E5E5;
+            padding-bottom: 15px;
+        }
+        
+        .type-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #00AEEF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .type-example {
+            color: #1A2C4B;
+        }
+        
+        .type-h1 {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        
+        .type-h2 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .type-body {
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        .type-caption {
+            font-size: 14px;
+            font-weight: 400;
+            color: #666;
+        }
+        
+        /* Spacing Section */
+        .spacing-scale {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .spacing-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .spacing-visual {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .spacing-label {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .spacing-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1A2C4B;
+        }
+        
+        .spacing-value {
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            color: #666;
+        }
+        
+        .base-unit {
+            margin-top: 20px;
+            padding: 15px;
+            background: #F5F5F5;
+            border-radius: 10px;
+            border-left: 4px solid #D4AF37;
+        }
+        
+        .base-unit-text {
+            font-size: 14px;
+            color: #1A2C4B;
+        }
+        
+        .base-unit-text strong {
+            color: #D4AF37;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Brand Foundation</h1>
+        <p class="subtitle">Design Tokens: Colors, Typography & Spacing</p>
+        
+        <div class="content-grid">
+            <!-- Colors Section -->
+            <div class="section">
+                <h2 class="section-title">Colors</h2>
+                <div class="color-swatch">
+                    <div class="color-item">
+                        <div class="color-box" style="background: #1A2C4B;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Deep Navy</div>
+                            <div class="color-code">#1A2C4B</div>
+                        </div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background: #00AEEF;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Bright Blue</div>
+                            <div class="color-code">#00AEEF</div>
+                        </div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background: #D4AF37;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Gold</div>
+                            <div class="color-code">#D4AF37</div>
+                        </div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background: #FFFFFF; border: 2px solid #E5E5E5;"></div>
+                        <div class="color-info">
+                            <div class="color-name">White</div>
+                            <div class="color-code">#FFFFFF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Typography Section -->
+            <div class="section">
+                <h2 class="section-title">Typography</h2>
+                <div class="type-specimen">
+                    <div class="type-item">
+                        <div class="type-label">Heading 1</div>
+                        <div class="type-example type-h1">Montserrat Bold</div>
+                    </div>
+                    <div class="type-item">
+                        <div class="type-label">Heading 2</div>
+                        <div class="type-example type-h2">Montserrat SemiBold</div>
+                    </div>
+                    <div class="type-item">
+                        <div class="type-label">Body Text</div>
+                        <div class="type-example type-body">Montserrat Regular</div>
+                    </div>
+                    <div class="type-item">
+                        <div class="type-label">Caption</div>
+                        <div class="type-example type-caption">Montserrat Regular</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Spacing Section -->
+            <div class="section">
+                <h2 class="section-title">Spacing</h2>
+                <div class="spacing-scale">
+                    <div class="spacing-item">
+                        <div class="spacing-visual" style="width: 64px; height: 8px;"></div>
+                        <div class="spacing-label">
+                            <span class="spacing-name">XXL</span>
+                            <span class="spacing-value">64px</span>
+                        </div>
+                    </div>
+                    <div class="spacing-item">
+                        <div class="spacing-visual" style="width: 48px; height: 8px;"></div>
+                        <div class="spacing-label">
+                            <span class="spacing-name">XL</span>
+                            <span class="spacing-value">48px</span>
+                        </div>
+                    </div>
+                    <div class="spacing-item">
+                        <div class="spacing-visual" style="width: 32px; height: 8px;"></div>
+                        <div class="spacing-label">
+                            <span class="spacing-name">L</span>
+                            <span class="spacing-value">32px</span>
+                        </div>
+                    </div>
+                    <div class="spacing-item">
+                        <div class="spacing-visual" style="width: 24px; height: 8px;"></div>
+                        <div class="spacing-label">
+                            <span class="spacing-name">M</span>
+                            <span class="spacing-value">24px</span>
+                        </div>
+                    </div>
+                    <div class="spacing-item">
+                        <div class="spacing-visual" style="width: 16px; height: 8px;"></div>
+                        <div class="spacing-label">
+                            <span class="spacing-name">S</span>
+                            <span class="spacing-value">16px</span>
+                        </div>
+                    </div>
+                    <div class="spacing-item">
+                        <div class="spacing-visual" style="width: 8px; height: 8px;"></div>
+                        <div class="spacing-label">
+                            <span class="spacing-name">XS</span>
+                            <span class="spacing-value">8px</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="base-unit">
+                    <p class="base-unit-text"><strong>Base Unit:</strong> 8px<br>All spacing follows 8px increments</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

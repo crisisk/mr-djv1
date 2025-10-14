@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templates: Homepage Layout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .layout-wrapper {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        /* Wireframe Column */
+        .wireframe-column {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .wireframe-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #00AEEF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .wireframe-container {
+            flex: 1;
+            background: #F5F5F5;
+            border-radius: 12px;
+            padding: 16px;
+            overflow-y: auto;
+            border: 2px solid #E5E5E5;
+        }
+        
+        .wireframe-section {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 12px;
+            border: 1px solid #DDD;
+            position: relative;
+        }
+        
+        .wireframe-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1A2C4B;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-height {
+            font-size: 9px;
+            color: #999;
+            font-weight: 600;
+        }
+        
+        /* Hero Section */
+        .wf-hero {
+            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            gap: 12px;
+        }
+        
+        .wf-hero-content {
+            flex: 1;
+        }
+        
+        .wf-hero-title {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+            margin-bottom: 6px;
+            width: 80%;
+        }
+        
+        .wf-hero-text {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 3px;
+            margin-bottom: 4px;
+            width: 90%;
+        }
+        
+        .wf-hero-buttons {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .wf-button {
+            height: 16px;
+            width: 60px;
+            background: #00AEEF;
+            border-radius: 4px;
+        }
+        
+        .wf-hero-stats {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .wf-stat {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+        }
+        
+        /* Services Section */
+        .wf-services {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 12px;
+        }
+        
+        .wf-service-card {
+            background: #F8F8F8;
+            border-radius: 6px;
+            padding: 10px;
+            border: 1px solid #E5E5E5;
+        }
+        
+        .wf-card-icon {
+            width: 24px;
+            height: 24px;
+            background: #00AEEF;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+        
+        .wf-card-title {
+            height: 8px;
+            background: #1A2C4B;
+            border-radius: 3px;
+            margin-bottom: 4px;
+            width: 70%;
+        }
+        
+        .wf-card-text {
+            height: 4px;
+            background: #CCC;
+            border-radius: 2px;
+            margin-bottom: 3px;
+        }
+        
+        /* Pricing Section */
+        .wf-pricing {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 12px;
+        }
+        
+        .wf-pricing-card {
+            background: white;
+            border: 2px solid #E5E5E5;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .wf-pricing-card.featured {
+            border-color: #00AEEF;
+            box-shadow: 0 4px 12px rgba(0, 174, 239, 0.15);
+        }
+        
+        .wf-price {
+            height: 16px;
+            background: #1A2C4B;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            width: 50%;
+        }
+        
+        .wf-feature {
+            height: 5px;
+            background: #E5E5E5;
+            border-radius: 2px;
+            margin-bottom: 4px;
+        }
+        
+        /* Testimonials Section */
+        .wf-testimonials {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 12px;
+        }
+        
+        .wf-testimonial-card {
+            background: #F8F8F8;
+            border-radius: 6px;
+            padding: 10px;
+        }
+        
+        .wf-stars {
+            height: 8px;
+            background: #D4AF37;
+            border-radius: 3px;
+            width: 40%;
+            margin-bottom: 6px;
+        }
+        
+        .wf-quote {
+            height: 5px;
+            background: #CCC;
+            border-radius: 2px;
+            margin-bottom: 3px;
+        }
+        
+        /* CTA Section */
+        .wf-cta {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            padding: 16px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        
+        .wf-cta-title {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+            margin: 0 auto 8px;
+            width: 60%;
+        }
+        
+        .wf-cta-button {
+            height: 20px;
+            background: white;
+            border-radius: 6px;
+            margin: 0 auto;
+            width: 120px;
+        }
+        
+        /* Footer */
+        .wf-footer {
+            background: #1A2C4B;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .wf-footer-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .wf-footer-item {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+        
+        /* Components List Column */
+        .components-column {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .components-list {
+            flex: 1;
+            background: #F8FCFF;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #00AEEF;
+        }
+        
+        .components-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .component-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #E5E5E5;
+        }
+        
+        .component-number {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        
+        .component-info {
+            flex: 1;
+        }
+        
+        .component-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1A2C4B;
+            margin-bottom: 2px;
+        }
+        
+        .component-desc {
+            font-size: 10px;
+            color: #666;
+            line-height: 1.3;
+        }
+        
+        .conversion-note {
+            margin-top: 16px;
+            padding: 12px;
+            background: #FFF9E6;
+            border-left: 3px solid #D4AF37;
+            border-radius: 6px;
+        }
+        
+        .conversion-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 6px;
+        }
+        
+        .conversion-text {
+            font-size: 10px;
+            color: #666;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Templates: Homepage Layout</h1>
+        <p class="subtitle">Complete homepage template met conversie-geoptimaliseerde sectie volgorde</p>
+        
+        <div class="layout-wrapper">
+            <!-- Wireframe Column -->
+            <div class="wireframe-column">
+                <div class="wireframe-label">Homepage Wireframe</div>
+                <div class="wireframe-container">
+                    <!-- Navigation -->
+                    <div class="wireframe-section">
+                        <div class="section-label">
+                            <span>NAVIGATION</span>
+                            <span class="section-height">80px</span>
+                        </div>
+                        <div style="height: 12px; background: #1A2C4B; border-radius: 4px;"></div>
+                    </div>
+                    
+                    <!-- Hero -->
+                    <div class="wireframe-section">
+                        <div class="section-label">
+                            <span>HERO SECTION</span>
+                            <span class="section-height">600px</span>
+                        </div>
+                        <div class="wf-hero">
+                            <div class="wf-hero-content">
+                                <div class="wf-hero-title"></div>
+                                <div class="wf-hero-text"></div>
+                                <div class="wf-hero-text" style="width: 70%;"></div>
+                                <div class="wf-hero-buttons">
+                                    <div class="wf-button"></div>
+                                    <div class="wf-button" style="background: rgba(255,255,255,0.2);"></div>
+                                </div>
+                            </div>
+                            <div class="wf-hero-stats">
+                                <div class="wf-stat"></div>
+                                <div class="wf-stat"></div>
+                                <div class="wf-stat"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Services -->
+                    <div class="wireframe-section">
+                        <div class="section-label">
+                            <span>SERVICES GRID</span>
+                            <span class="section-height">400px</span>
+                        </div>
+                        <div class="wf-services">
+                            <div class="wf-service-card">
+                                <div class="wf-card-icon"></div>
+                                <div class="wf-card-title"></div>
+                                <div class="wf-card-text"></div>
+                                <div class="wf-card-text"></div>
+                            </div>
+                            <div class="wf-service-card">
+                                <div class="wf-card-icon"></div>
+                                <div class="wf-card-title"></div>
+                                <div class="wf-card-text"></div>
+                                <div class="wf-card-text"></div>
+                            </div>
+                            <div class="wf-service-card">
+                                <div class="wf-card-icon"></div>
+                                <div class="wf-card-title"></div>
+                                <div class="wf-card-text"></div>
+                                <div class="wf-card-text"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pricing -->
+                    <div class="wireframe-section">
+                        <div class="section-label">
+                            <span>PRICING TABLES</span>
+                            <span class="section-height">500px</span>
+                        </div>
+                        <div class="wf-pricing">
+                            <div class="wf-pricing-card">
+                                <div class="wf-price"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-button" style="margin-top: 8px;"></div>
+                            </div>
+                            <div class="wf-pricing-card featured">
+                                <div class="wf-price"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-button" style="margin-top: 8px;"></div>
+                            </div>
+                            <div class="wf-pricing-card">
+                                <div class="wf-price"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-feature"></div>
+                                <div class="wf-button" style="margin-top: 8px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonials -->
+                    <div class="wireframe-section">
+                        <div class="section-label">
+                            <span>TESTIMONIALS</span>
+                            <span class="section-height">350px</span>
+                        </div>
+                        <div class="wf-testimonials">
+                            <div class="wf-testimonial-card">
+                                <div class="wf-stars"></div>
+                                <div class="wf-quote"></div>
+                                <div class="wf-quote"></div>
+                                <div class="wf-quote" style="width: 60%;"></div>
+                            </div>
+                            <div class="wf-testimonial-card">
+                                <div class="wf-stars"></div>
+                                <div class="wf-quote"></div>
+                                <div class="wf-quote"></div>
+                                <div class="wf-quote" style="width: 60%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CTA -->
+                    <div class="wireframe-section">
+                        <div class="section-label">
+                            <span>FINAL CTA</span>
+                            <span class="section-height">250px</span>
+                        </div>
+                        <div class="wf-cta">
+                            <div class="wf-cta-title"></div>
+                            <div class="wf-cta-button"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="wireframe-section">
+                        <div class="section-label">
+                            <span>FOOTER</span>
+                            <span class="section-height">200px</span>
+                        </div>
+                        <div class="wf-footer">
+                            <div class="wf-footer-col">
+                                <div class="wf-footer-item"></div>
+                                <div class="wf-footer-item"></div>
+                                <div class="wf-footer-item"></div>
+                            </div>
+                            <div class="wf-footer-col">
+                                <div class="wf-footer-item"></div>
+                                <div class="wf-footer-item"></div>
+                                <div class="wf-footer-item"></div>
+                            </div>
+                            <div class="wf-footer-col">
+                                <div class="wf-footer-item"></div>
+                                <div class="wf-footer-item"></div>
+                                <div class="wf-footer-item"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Components List Column -->
+            <div class="components-column">
+                <div class="wireframe-label">Gebruikte Componenten</div>
+                <div class="components-list">
+                    <div class="components-title">
+                        <span>🧩</span>
+                        <span>8 Key Components</span>
+                    </div>
+                    
+                    <div class="component-item">
+                        <div class="component-number">1</div>
+                        <div class="component-info">
+                            <div class="component-name">Navigation Bar</div>
+                            <div class="component-desc">Sticky header met logo, menu en CTA</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-item">
+                        <div class="component-number">2</div>
+                        <div class="component-info">
+                            <div class="component-name">Hero Section</div>
+                            <div class="component-desc">Homepage hero met stats en CTAs</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-item">
+                        <div class="component-number">3</div>
+                        <div class="component-info">
+                            <div class="component-name">Service Cards</div>
+                            <div class="component-desc">3-column grid met service highlights</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-item">
+                        <div class="component-number">4</div>
+                        <div class="component-info">
+                            <div class="component-name">Pricing Tables</div>
+                            <div class="component-desc">3-tier pricing met featured badge</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-item">
+                        <div class="component-number">5</div>
+                        <div class="component-info">
+                            <div class="component-name">Testimonial Cards</div>
+                            <div class="component-desc">Social proof met ratings en reviews</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-item">
+                        <div class="component-number">6</div>
+                        <div class="component-info">
+                            <div class="component-name">CTA Section</div>
+                            <div class="component-desc">Final conversion push met button</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-item">
+                        <div class="component-number">7</div>
+                        <div class="component-info">
+                            <div class="component-name">Footer</div>
+                            <div class="component-desc">3-column footer met links en info</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-item">
+                        <div class="component-number">8</div>
+                        <div class="component-info">
+                            <div class="component-name">Contact Widget</div>
+                            <div class="component-desc">Floating WhatsApp/Phone button</div>
+                        </div>
+                    </div>
+                    
+                    <div class="conversion-note">
+                        <div class="conversion-title">⚡ Conversie Optimalisatie</div>
+                        <div class="conversion-text">
+                            Sectie volgorde geoptimaliseerd voor maximale conversie: Hero → Services → Pricing → Social Proof → CTA. Gemiddeld 3.2 CTAs per page voor verschillende intenties.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

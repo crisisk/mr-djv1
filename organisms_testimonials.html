@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organisms: Testimonials</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        /* Featured Testimonial */
+        .testimonial-featured {
+            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
+            border-radius: 16px;
+            padding: 28px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            grid-column: 1 / -1;
+        }
+        
+        .testimonial-featured::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 174, 239, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .featured-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 24px;
+        }
+        
+        .featured-left {
+            flex: 1;
+        }
+        
+        .featured-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .featured-quote {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 18px;
+            font-style: italic;
+        }
+        
+        .featured-author {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+        }
+        
+        .author-info {
+            flex: 1;
+        }
+        
+        .author-name {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+        
+        .author-event {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 600;
+        }
+        
+        .featured-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 180px;
+        }
+        
+        .rating-display {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .rating-stars {
+            font-size: 32px;
+            margin-bottom: 8px;
+            letter-spacing: 4px;
+        }
+        
+        .rating-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+        
+        .platform-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Standard Testimonial Cards */
+        .testimonial-card {
+            background: white;
+            border: 2px solid #E5E5E5;
+            border-radius: 14px;
+            padding: 22px;
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            border-color: #00AEEF;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+        
+        .card-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #D4AF37 0%, #C19A2E 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+        }
+        
+        .card-author-info {
+            flex: 1;
+        }
+        
+        .card-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 2px;
+        }
+        
+        .card-event {
+            font-size: 11px;
+            color: #999;
+            font-weight: 600;
+        }
+        
+        .card-stars {
+            font-size: 16px;
+            color: #D4AF37;
+        }
+        
+        .card-quote {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 14px;
+            font-style: italic;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid #F0F0F0;
+        }
+        
+        .card-date {
+            font-size: 11px;
+            color: #999;
+            font-weight: 600;
+        }
+        
+        .card-platform {
+            font-size: 11px;
+            font-weight: 700;
+            color: #00AEEF;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: #F8FCFF;
+            border: 2px solid #00AEEF;
+            border-radius: 14px;
+            padding: 22px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            grid-column: 1 / -1;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 900;
+            color: #1A2C4B;
+            display: block;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-stars {
+            font-size: 24px;
+            color: #D4AF37;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Organisms: Testimonials</h1>
+        <p class="subtitle">Social proof componenten met reviews, ratings en client testimonials voor vertrouwen en conversie</p>
+        
+        <div class="testimonials-grid">
+            <!-- Featured Testimonial -->
+            <div class="testimonial-featured">
+                <div class="featured-content">
+                    <div class="featured-left">
+                        <div class="featured-badge">⭐ FEATURED REVIEW</div>
+                        <div class="featured-quote">
+                            "Onze bruiloft was absoluut perfect dankzij Mr. DJ! De hele avond stond de dansvloer vol en hij wist precies welke muziek wanneer te draaien. Professioneel, flexibel en super enthousiast. Onze gasten praten er nog steeds over!"
+                        </div>
+                        <div class="featured-author">
+                            <div class="author-avatar">SM</div>
+                            <div class="author-info">
+                                <div class="author-name">Sarah & Mark</div>
+                                <div class="author-event">Bruiloft • Evoluon Eindhoven • 28 juli 2024</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="featured-right">
+                        <div class="rating-display">
+                            <div class="rating-stars">⭐⭐⭐⭐⭐</div>
+                            <div class="rating-text">10/10 Perfect</div>
+                        </div>
+                        <div class="platform-badge">
+                            <span>📘</span>
+                            <span>Facebook Reviews</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial Card 1 -->
+            <div class="testimonial-card">
+                <div class="card-header">
+                    <div class="card-author">
+                        <div class="card-avatar">LB</div>
+                        <div class="card-author-info">
+                            <div class="card-name">Linda Bakker</div>
+                            <div class="card-event">Bedrijfsfeest</div>
+                        </div>
+                    </div>
+                    <div class="card-stars">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="card-quote">
+                    "Voor ons bedrijfsfeest hebben we Mr. DJ ingehuurd en wat een succes! Hij las de sfeer perfect aan en zorgde ervoor dat iedereen zich vermaakt heeft. De lichtshow was spectaculair!"
+                </div>
+                <div class="card-footer">
+                    <div class="card-date">12 september 2024</div>
+                    <div class="card-platform">
+                        <span>📷</span>
+                        <span>Instagram</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial Card 2 -->
+            <div class="testimonial-card">
+                <div class="card-header">
+                    <div class="card-author">
+                        <div class="card-avatar">JD</div>
+                        <div class="card-author-info">
+                            <div class="card-name">Jan de Vries</div>
+                            <div class="card-event">Bruiloft</div>
+                        </div>
+                    </div>
+                    <div class="card-stars">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="card-quote">
+                    "Onze bruiloft was een droom die uitkwam, mede dankzij de geweldige DJ service van Mr. DJ. Hij nam alle tijd voor een intakegesprek en speelde precies de muziek die wij wilden."
+                </div>
+                <div class="card-footer">
+                    <div class="card-date">5 augustus 2024</div>
+                    <div class="card-platform">
+                        <span>⭐</span>
+                        <span>Google Reviews</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial Card 3 -->
+            <div class="testimonial-card">
+                <div class="card-header">
+                    <div class="card-author">
+                        <div class="card-avatar">MJ</div>
+                        <div class="card-author-info">
+                            <div class="card-name">Maria Jansen</div>
+                            <div class="card-event">Verjaardag</div>
+                        </div>
+                    </div>
+                    <div class="card-stars">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="card-quote">
+                    "Voor mijn 50e verjaardag wilde ik een onvergetelijk feest en Mr. DJ heeft dat mogelijk gemaakt! Professionele apparatuur, geweldige muziek en een DJ die echt met je meedenkt."
+                </div>
+                <div class="card-footer">
+                    <div class="card-date">20 juni 2024</div>
+                    <div class="card-platform">
+                        <span>📘</span>
+                        <span>Facebook</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonial Card 4 -->
+            <div class="testimonial-card">
+                <div class="card-header">
+                    <div class="card-author">
+                        <div class="card-avatar">PH</div>
+                        <div class="card-author-info">
+                            <div class="card-name">Peter Hendriks</div>
+                            <div class="card-event">Bedrijfsfeest</div>
+                        </div>
+                    </div>
+                    <div class="card-stars">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="card-quote">
+                    "Als eventmanager heb ik met veel DJ's gewerkt, maar Mr. DJ springt er echt uit. Betrouwbaar, professioneel en altijd goed voorbereid. De communicatie vooraf was uitstekend."
+                </div>
+                <div class="card-footer">
+                    <div class="card-date">15 oktober 2024</div>
+                    <div class="card-platform">
+                        <span>💼</span>
+                        <span>LinkedIn</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="stat-item">
+                    <div class="stat-stars">⭐⭐⭐⭐⭐</div>
+                    <span class="stat-number">10/10</span>
+                    <span class="stat-label">Gemiddelde Score</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">250+</span>
+                    <span class="stat-label">Verified Reviews</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <span class="stat-label">Zou Aanbevelen</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">2500+</span>
+                    <span class="stat-label">Geslaagde Events</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

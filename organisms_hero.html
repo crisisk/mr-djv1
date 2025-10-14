@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organisms: Hero Sections</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .hero-examples {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            flex: 1;
+        }
+        
+        .hero-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .hero-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #00AEEF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Homepage Hero */
+        .hero-homepage {
+            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
+            border-radius: 16px;
+            padding: 30px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 35px;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-homepage::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 174, 239, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .hero-content {
+            flex: 1;
+            z-index: 2;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .hero-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        
+        .hero-title .highlight {
+            color: #00AEEF;
+        }
+        
+        .hero-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        
+        .hero-ctas {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .hero-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .hero-btn-primary {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+        }
+        
+        .hero-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 174, 239, 0.4);
+        }
+        
+        .hero-btn-secondary {
+            background: transparent;
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-btn-secondary:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 25px;
+            z-index: 2;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #00AEEF;
+            display: block;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+        
+        /* Local SEO Hero */
+        .hero-local {
+            background: white;
+            border: 2px solid #E5E5E5;
+            border-radius: 16px;
+            padding: 25px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            min-height: 180px;
+        }
+        
+        .local-content {
+            flex: 1;
+        }
+        
+        .local-location {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #00AEEF;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .local-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1A2C4B;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+        
+        .local-description {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        
+        .local-features {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 14px;
+        }
+        
+        .local-feature {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .local-feature::before {
+            content: '✓';
+            color: #00AEEF;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .local-cta {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .local-booking {
+            background: linear-gradient(135deg, #D4AF37 0%, #C19A2E 100%);
+            border-radius: 50%;
+            width: 160px;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .local-booking:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.4);
+        }
+        
+        .booking-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+        
+        .booking-text {
+            color: white;
+            font-weight: 800;
+            font-size: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Organisms: Hero Sections</h1>
+        <p class="subtitle">Conversie-geoptimaliseerde hero components voor verschillende pagina types</p>
+        
+        <div class="hero-examples">
+            <!-- Homepage Hero -->
+            <div class="hero-wrapper">
+                <div class="hero-label">Homepage Hero</div>
+                <div class="hero-homepage">
+                    <div class="hero-content">
+                        <div class="hero-badge">✨ 100% Dansgarantie</div>
+                        <h2 class="hero-title">
+                            Jouw Feest,<br>
+                            <span class="highlight">Onvergetelijk</span> Gemaakt
+                        </h2>
+                        <p class="hero-description">
+                            Professionele DJ service voor bruiloften en bedrijfsfeesten in heel Brabant. 15+ jaar ervaring, 2500+ geslaagde events.
+                        </p>
+                        <div class="hero-ctas">
+                            <button class="hero-btn hero-btn-primary">Direct Beschikbaarheid</button>
+                            <button class="hero-btn hero-btn-secondary">Bekijk Pakketten</button>
+                        </div>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">2500+</span>
+                            <span class="stat-label">Events</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">10/10</span>
+                            <span class="stat-label">Reviews</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">15+</span>
+                            <span class="stat-label">Jaar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Local SEO Hero -->
+            <div class="hero-wrapper">
+                <div class="hero-label">Local SEO Hero (City Pages)</div>
+                <div class="hero-local">
+                    <div class="local-content">
+                        <div class="local-location">
+                            <span>📍</span>
+                            <span>EINDHOVEN</span>
+                        </div>
+                        <h2 class="local-title">
+                            Bruiloft DJ Eindhoven
+                        </h2>
+                        <p class="local-description">
+                            Op zoek naar een professionele bruiloft DJ in Eindhoven? Mister DJ zorgt voor een onvergetelijke feestavond met 100% dansgarantie.
+                        </p>
+                        <div class="local-features">
+                            <div class="local-feature">15+ jaar ervaring</div>
+                            <div class="local-feature">100% dansgarantie</div>
+                            <div class="local-feature">Lokale kennis</div>
+                        </div>
+                        <div class="local-cta">
+                            <button class="hero-btn hero-btn-primary">Vraag Offerte Aan</button>
+                            <button class="hero-btn hero-btn-secondary">Bekijk Reviews</button>
+                        </div>
+                    </div>
+                    <div class="local-booking">
+                        <div class="booking-icon">📅</div>
+                        <div class="booking-text">Check<br>Beschikbaarheid</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
