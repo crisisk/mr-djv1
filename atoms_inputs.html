@@ -4,61 +4,314 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atoms: Form Inputs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Montserrat', sans-serif;
-            background: #1A2C4B;
+            background: #FFFFFF;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
         }
+        
         .slide-container {
             width: 1280px;
             min-height: 720px;
-            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
-            padding: 80px;
+            background: #FFFFFF;
+            padding: 30px 40px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
+        
         h1 {
-            font-size: 48px;
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .input-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1A2C4B;
+            margin-bottom: 5px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E5E5;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            height: 44px;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #00AEEF;
+            box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.2);
+        }
+        
+        .input-field.disabled {
+            background: #F8F8F8;
+            color: #AAAAAA;
+            cursor: not-allowed;
+        }
+        
+        .input-field.error {
+            border-color: #FF4D4D;
+        }
+        
+        .input-field.success {
+            border-color: #4CAF50;
+        }
+        
+        .helper-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: -10px;
+        }
+        
+        .error-text {
+            font-size: 12px;
+            color: #FF4D4D;
+            margin-top: -10px;
+            font-weight: 600;
+        }
+        
+        .input-title {
+            font-size: 20px;
             font-weight: 800;
             color: #00AEEF;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #E5E5E5;
+            padding-bottom: 5px;
         }
-        .description {
-            font-size: 24px;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            max-width: 900px;
+        
+        .textarea-field {
+            min-height: 100px;
+            height: auto;
         }
-        .placeholder {
-            margin-top: 60px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(0, 174, 239, 0.3);
-            border-radius: 20px;
-            text-align: center;
+        
+        /* Checkbox/Radio/Toggle Styling */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .placeholder-text {
-            font-size: 20px;
-            color: #D4AF37;
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #1A2C4B;
             font-weight: 600;
+        }
+        
+        .option-item input[type="checkbox"],
+        .option-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #00AEEF;
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #00AEEF;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(16px);
         }
     </style>
 </head>
 <body>
     <div class="slide-container">
         <h1>Atoms: Form Inputs</h1>
-        <p class="description">Text inputs, textareas, selects, checkboxes, radio buttons, en toggle switches met alle states.</p>
-        <div class="placeholder">
-            <p class="placeholder-text">📝 Template Slide - Te vullen met content</p>
+        <p class="subtitle">Definitie van alle input types en hun verschillende statussen (Default, Focus, Error, Disabled)</p>
+        
+        <div class="inputs-grid">
+            
+            <!-- Kolom 1: Text & States -->
+            <div class="input-group">
+                <div class="input-title">Text Inputs & States</div>
+                
+                <div>
+                    <label class="input-label">Default State</label>
+                    <input type="text" class="input-field" placeholder="Voer uw naam in">
+                </div>
+                
+                <div>
+                    <label class="input-label">Focus State</label>
+                    <input type="text" class="input-field" value="In Focus" style="border-color: #00AEEF; box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.2);">
+                </div>
+                
+                <div>
+                    <label class="input-label">Error State</label>
+                    <input type="email" class="input-field error" value="ongeldig@email" placeholder="Voer uw e-mailadres in">
+                    <p class="error-text">Dit e-mailadres is ongeldig.</p>
+                </div>
+                
+                <div>
+                    <label class="input-label">Disabled State</label>
+                    <input type="text" class="input-field disabled" value="Niet bewerkbaar" disabled>
+                </div>
+                
+                <div>
+                    <label class="input-label">Textarea</label>
+                    <textarea class="input-field textarea-field" placeholder="Uw bericht..."></textarea>
+                </div>
+            </div>
+            
+            <!-- Kolom 2: Input Types -->
+            <div class="input-group">
+                <div class="input-title">Diverse Input Types</div>
+                
+                <div>
+                    <label class="input-label">Number Input</label>
+                    <input type="number" class="input-field" value="10" min="1" max="100">
+                </div>
+                
+                <div>
+                    <label class="input-label">Date Input</label>
+                    <input type="date" class="input-field">
+                </div>
+                
+                <div>
+                    <label class="input-label">Time Input</label>
+                    <input type="time" class="input-field">
+                </div>
+                
+                <div>
+                    <label class="input-label">Select Dropdown</label>
+                    <select class="input-field">
+                        <option>Bruiloft DJ</option>
+                        <option>Bedrijfsfeest DJ</option>
+                        <option>Private Feesten</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="input-label">File Upload</label>
+                    <input type="file" class="input-field p-2">
+                </div>
+            </div>
+            
+            <!-- Kolom 3: Options & Toggles -->
+            <div class="input-group">
+                <div class="input-title">Checkboxes, Radio & Toggles</div>
+                
+                <div class="option-group">
+                    <label class="input-label">Checkboxes</label>
+                    <div class="option-item">
+                        <input type="checkbox" id="check1" checked>
+                        <label for="check1">Optie 1 (Geselecteerd)</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check2">
+                        <label for="check2">Optie 2</label>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <label class="input-label">Radio Buttons</label>
+                    <div class="option-item">
+                        <input type="radio" id="radio1" name="radio-group" checked>
+                        <label for="radio1">Keuze A (Geselecteerd)</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" id="radio2" name="radio-group">
+                        <label for="radio2">Keuze B</label>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <label class="input-label">Toggle Switch</label>
+                    <div class="option-item">
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <label>Toggle Aan</label>
+                    </div>
+                    <div class="option-item">
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <label>Toggle Uit</label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
 </html>
+

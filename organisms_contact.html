@@ -4,61 +4,195 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organisms: Contact Sections</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Montserrat', sans-serif;
-            background: #1A2C4B;
+            background: #FFFFFF;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
         }
+        
         .slide-container {
             width: 1280px;
             min-height: 720px;
-            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
-            padding: 80px;
+            background: #FFFFFF;
+            padding: 30px 40px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
+        
         h1 {
-            font-size: 48px;
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .section-title {
+            font-size: 24px;
             font-weight: 800;
             color: #00AEEF;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #E5E5E5;
+            padding-bottom: 5px;
         }
-        .description {
-            font-size: 24px;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            max-width: 900px;
+        
+        .contact-form-placeholder {
+            background: #F8FCFF;
+            border: 2px solid #E5E5E5;
+            border-radius: 12px;
+            padding: 20px;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A2C4B;
         }
-        .placeholder {
-            margin-top: 60px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(0, 174, 239, 0.3);
-            border-radius: 20px;
-            text-align: center;
+        
+        .info-card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
         }
-        .placeholder-text {
-            font-size: 20px;
+        
+        .info-card {
+            background: #1A2C4B;
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-card-title {
+            font-size: 16px;
+            font-weight: 800;
             color: #D4AF37;
+            margin-bottom: 5px;
+        }
+        
+        .info-card-detail {
+            font-size: 14px;
             font-weight: 600;
+        }
+        
+        .map-placeholder {
+            background: #E5E5E5;
+            border-radius: 12px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #666;
+            margin-top: 20px;
+        }
+        
+        .cta-box {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .cta-title {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+        
+        .cta-button {
+            background: #D4AF37;
+            color: #1A2C4B;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 800;
+            display: inline-block;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="slide-container">
         <h1>Organisms: Contact Sections</h1>
-        <p class="description">Contact forms, info cards, maps integration, social links en multi-step forms.</p>
-        <div class="placeholder">
-            <p class="placeholder-text">📝 Template Slide - Te vullen met content</p>
+        <p class="subtitle">Verschillende lay-outs voor contactpagina's en contactsecties in landingspagina's.</p>
+        
+        <div class="contact-grid">
+            
+            <!-- Kolom 1: Contact Form & Info -->
+            <div>
+                <div class="section-title">Lay-out 1: Formulier met Info Cards</div>
+                
+                <div class="contact-form-placeholder">
+                    Contact Formulier (zie Molecules: Forms)
+                </div>
+                
+                <div class="info-card-grid">
+                    <div class="info-card">
+                        <div class="info-card-title">Telefoon</div>
+                        <div class="info-card-detail">+31 6 1234 5678</div>
+                        <div class="info-card-detail">Ma-Vr: 09:00 - 17:00</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-title">E-mail</div>
+                        <div class="info-card-detail">info@mrdj.nl</div>
+                        <div class="info-card-detail">Antwoord binnen 24 uur</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kolom 2: Map & CTA -->
+            <div>
+                <div class="section-title">Lay-out 2: Map met CTA</div>
+                
+                <div class="map-placeholder">
+                    Google Maps Integratie (Locatie kantoor/opslag)
+                </div>
+                
+                <div class="cta-box">
+                    <div class="cta-title">Vraag Direct Beschikbaarheid Aan</div>
+                    <p>Controleer of uw datum nog vrij is in onze agenda.</p>
+                    <div class="cta-button">Check Beschikbaarheid</div>
+                </div>
+                
+                <div class="map-placeholder" style="height: 150px; margin-top: 30px; background: #F8FCFF; border: 2px dashed #D4AF37;">
+                    Social Media Links (zie Atoms: Icons)
+                </div>
+            </div>
+            
         </div>
     </div>
 </body>
 </html>
+
