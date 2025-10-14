@@ -6,10 +6,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy website files
 COPY public/ /usr/share/nginx/html/
 
-# Create non-root user
-RUN addgroup -g 101 -S nginx && \
-    adduser -S nginx -u 101 -G nginx && \
-    chown -R nginx:nginx /usr/share/nginx/html && \
+# Fix permissions (nginx user already exists in base image)
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chown -R nginx:nginx /var/cache/nginx && \
     chown -R nginx:nginx /var/log/nginx && \
     touch /var/run/nginx.pid && \
