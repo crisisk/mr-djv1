@@ -3,62 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Component Documentation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Documentation & Component Usage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Montserrat', sans-serif;
-            background: #1A2C4B;
+            background: #FFFFFF;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
         }
+        
         .slide-container {
             width: 1280px;
             min-height: 720px;
-            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
-            padding: 80px;
+            background: #FFFFFF;
+            padding: 30px 40px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
+        
         h1 {
-            font-size: 48px;
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .section-title {
+            font-size: 24px;
             font-weight: 800;
             color: #00AEEF;
-            margin-bottom: 30px;
+            border-bottom: 2px solid #E5E5E5;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
         }
-        .description {
-            font-size: 24px;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            max-width: 900px;
+        
+        .doc-point {
+            margin-bottom: 20px;
         }
-        .placeholder {
-            margin-top: 60px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(0, 174, 239, 0.3);
-            border-radius: 20px;
-            text-align: center;
+        
+        .doc-point-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 5px;
         }
-        .placeholder-text {
-            font-size: 20px;
-            color: #D4AF37;
-            font-weight: 600;
+        
+        .doc-point-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .code-example {
+            background: #1A2C4B;
+            color: #4CAF50;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        .code-example .keyword { color: #00AEEF; font-weight: 700; }
+        .code-example .string { color: #D4AF37; }
+        .code-example .comment { color: #666; }
+        
+        .platform-box {
+            background: #F8FCFF;
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .platform-box ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            font-size: 14px;
+            color: #1A2C4B;
         }
     </style>
 </head>
 <body>
     <div class="slide-container">
-        <h1>Component Documentation</h1>
-        <p class="description">Storybook integration, prop tables, usage examples, do's and don'ts.</p>
-        <div class="placeholder">
-            <p class="placeholder-text">📝 Template Slide - Te vullen met content</p>
+        <h1>Documentation & Component Usage</h1>
+        <p class="subtitle">Richtlijnen voor het gebruik van componenten, Storybook integratie en codevoorbeelden.</p>
+        
+        <div class="content-grid">
+            
+            <div>
+                <div class="section-title">Component Documentatie</div>
+                
+                <div class="doc-point">
+                    <div class="doc-point-title">Storybook Integratie</div>
+                    <div class="doc-point-text">Alle componenten zijn gedocumenteerd in Storybook. Dit is de primaire bron voor het bekijken van varianten, props en live voorbeelden.</div>
+                </div>
+                
+                <div class="doc-point">
+                    <div class="doc-point-title">Prop Tabellen</div>
+                    <div class="doc-point-text">Elke component heeft een duidelijke tabel met alle beschikbare properties (props), hun types en standaardwaarden.</div>
+                </div>
+                
+                <div class="doc-point">
+                    <div class="doc-point-title">Do's & Don'ts</div>
+                    <div class="doc-point-text">Specifieke richtlijnen over wanneer en hoe een component te gebruiken, en wat absoluut vermeden moet worden.</div>
+                </div>
+                
+                <div class="platform-box">
+                    <div class="section-title" style="border-bottom: none; margin-bottom: 10px; color: #1A2C4B;">Developer Workflow</div>
+                    <ul>
+                        <li>Importeer componenten via de centrale library.</li>
+                        <li>Gebruik Design Tokens in plaats van hardcoded waarden.</li>
+                        <li>Voer altijd een visuele regressietest uit na updates.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div>
+                <div class="section-title">Code Voorbeeld: Button</div>
+                <div class="code-example">
+<span class="comment">// React Component Usage</span>
+<span class="keyword">import</span> { Button } <span class="keyword">from</span> <span class="string">'@mrdj/eds-library'</span>;
+
+<span class="keyword">const</span> App = () => (
+  <span class="keyword">&lt;Button</span>
+    variant=<span class="string">"primary"</span>
+    size=<span class="string">"large"</span>
+    onClick={() => console.log(<span class="string">'Geboekt!'</span>)}
+  <span class="keyword">&gt;</span>
+    Boek Nu
+  <span class="keyword">&lt;/Button&gt;</span>
+);
+                </div>
+                
+                <div class="doc-point" style="margin-top: 20px;">
+                    <div class="doc-point-title">Design Tokens</div>
+                    <div class="doc-point-text">Alle kleuren, spacing en typografie zijn gedefinieerd als tokens, waardoor ze eenvoudig in elk platform (Web, iOS, Android) kunnen worden gebruikt.</div>
+                </div>
+                
+                <div class="code-example">
+<span class="comment">// Design Token Example (JSON)</span>
+<span class="keyword">"color-primary-blue"</span>: {
+  <span class="keyword">"value"</span>: <span class="string">"#00AEEF"</span>,
+  <span class="keyword">"type"</span>: <span class="string">"color"</span>
+},
+<span class="keyword">"spacing-md"</span>: {
+  <span class="keyword">"value"</span>: <span class="string">"16px"</span>,
+  <span class="keyword">"type"</span>: <span class="string">"spacing"</span>
+}
+                </div>
+            </div>
+            
         </div>
     </div>
 </body>
 </html>
+

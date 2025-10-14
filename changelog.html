@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog & Version History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .changelog-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .version-box {
+            border: 2px solid #E5E5E5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .version-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00AEEF;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .version-number {
+            font-size: 24px;
+            font-weight: 900;
+            color: #1A2C4B;
+        }
+        
+        .version-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .update-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .update-list li {
+            font-size: 14px;
+            color: #1A2C4B;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .update-type {
+            font-weight: 800;
+            width: 60px;
+            margin-right: 10px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-align: center;
+            color: white;
+        }
+        
+        .type-feat { background: #00AEEF; }
+        .type-fix { background: #FF4D4D; }
+        .type-docs { background: #D4AF37; color: #1A2C4B; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Changelog & Version History</h1>
+        <p class="subtitle">Overzicht van alle wijzigingen, updates en nieuwe componenten in het Enterprise Design System.</p>
+        
+        <div class="changelog-grid">
+            
+            <!-- Kolom 1: Versie 1.0.0 -->
+            <div class="version-box">
+                <div class="version-header">
+                    <div class="version-number">v1.0.0 (Huidig)</div>
+                    <div class="version-date">15 Oktober 2025</div>
+                </div>
+                <ul class="update-list">
+                    <li><span class="update-type type-feat">FEAT</span> Eerste release van het complete Enterprise Design System.</li>
+                    <li><span class="update-type type-feat">FEAT</span> Alle 31 kernslides en componenten gedefinieerd.</li>
+                    <li><span class="update-type type-feat">FEAT</span> Introductie van professionele SVG-iconen voor diensten.</li>
+                    <li><span class="update-type type-feat">FEAT</span> Implementatie van 8-punts spacing en 12-koloms grid.</li>
+                    <li><span class="update-type type-docs">DOCS</span> Volledige documentatie voor Color, Typography en Buttons.</li>
+                    <li><span class="update-type type-fix">FIX</span> Contrastproblemen in Primary Blue opgelost (alleen als achtergrond).</li>
+                </ul>
+            </div>
+            
+            <!-- Kolom 2: Toekomstige Versies -->
+            <div class="version-box" style="opacity: 0.7;">
+                <div class="version-header">
+                    <div class="version-number">v1.1.0 (Toekomst)</div>
+                    <div class="version-date">Q4 2025</div>
+                </div>
+                <ul class="update-list">
+                    <li><span class="update-type type-feat">FEAT</span> Nieuwe component: Accordion/FAQ.</li>
+                    <li><span class="update-type type-feat">FEAT</span> Integratie met Figma Design Tokens.</li>
+                    <li><span class="update-type type-docs">DOCS</span> Storybook integratie voor alle Organisms.</li>
+                    <li><span class="update-type type-fix">FIX</span> Bugfix in mobiele navigatie.</li>
+                </ul>
+            </div>
+            
+            <div class="version-box" style="opacity: 0.5;">
+                <div class="version-header">
+                    <div class="version-number">v2.0.0 (Major)</div>
+                    <div class="version-date">Q1 2026</div>
+                </div>
+                <ul class="update-list">
+                    <li><span class="update-type type-feat">FEAT</span> Dark Mode Support.</li>
+                    <li><span class="update-type type-feat">FEAT</span> Nieuwe Template: Checkout Flow.</li>
+                    <li><span class="update-type type-docs">DOCS</span> Volledige migratie naar TypeScript.</li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
+

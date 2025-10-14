@@ -3,62 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accessibility Features</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Components: Accessibility Features</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Montserrat', sans-serif;
-            background: #1A2C4B;
+            background: #FFFFFF;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
         }
+        
         .slide-container {
             width: 1280px;
             min-height: 720px;
-            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
-            padding: 80px;
+            background: #FFFFFF;
+            padding: 30px 40px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
+        
         h1 {
-            font-size: 48px;
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .section-title {
+            font-size: 24px;
             font-weight: 800;
             color: #00AEEF;
-            margin-bottom: 30px;
+            border-bottom: 2px solid #E5E5E5;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
         }
-        .description {
-            font-size: 24px;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            max-width: 900px;
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #1A2C4B;
+            font-weight: 600;
         }
-        .placeholder {
-            margin-top: 60px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(0, 174, 239, 0.3);
-            border-radius: 20px;
+        
+        .checklist-icon {
+            width: 24px;
+            height: 24px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 900;
+        }
+        
+        .guidelines-box {
+            background: #F8FCFF;
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .guidelines-box ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            font-size: 14px;
+            color: #1A2C4B;
+        }
+        
+        .guidelines-box li {
+            margin-bottom: 8px;
+        }
+        
+        .contrast-example {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
             text-align: center;
         }
-        .placeholder-text {
-            font-size: 20px;
-            color: #D4AF37;
-            font-weight: 600;
+        
+        .contrast-swatch {
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
     <div class="slide-container">
-        <h1>Accessibility Features</h1>
-        <p class="description">WCAG 2.1 AA compliance, keyboard navigation, screen reader support, ARIA labels.</p>
-        <div class="placeholder">
-            <p class="placeholder-text">📝 Template Slide - Te vullen met content</p>
+        <h1>Components: Accessibility Features (A11y)</h1>
+        <p class="subtitle">Zorgen voor WCAG 2.1 AA-conformiteit: focus op contrast, toetsenbordnavigatie en screenreader-ondersteuning.</p>
+        
+        <div class="content-grid">
+            
+            <div>
+                <div class="section-title">Kernpunten Checklist (WCAG 2.1 AA)</div>
+                
+                <div class="checklist-item">
+                    <div class="checklist-icon">✓</div>
+                    Toetsenbordnavigatie (Tab-volgorde, Focus States)
+                </div>
+                
+                <div class="checklist-item">
+                    <div class="checklist-icon">✓</div>
+                    Voldoende Kleurcontrast (Minimaal 4.5:1)
+                </div>
+                
+                <div class="checklist-item">
+                    <div class="checklist-icon">✓</div>
+                    Semantische HTML & ARIA-labels
+                </div>
+                
+                <div class="checklist-item">
+                    <div class="checklist-icon">✓</div>
+                    Alternatieve Tekst voor Afbeeldingen (`alt` tags)
+                </div>
+                
+                <div class="checklist-item">
+                    <div class="checklist-icon">✓</div>
+                    Duidelijke Focus States voor Interactieve Elementen
+                </div>
+                
+                <div class="checklist-item">
+                    <div class="checklist-icon">✓</div>
+                    Responsief Ontwerp (Geen horizontale scroll op mobiel)
+                </div>
+            </div>
+            
+            <div>
+                <div class="section-title">Contrast & Kleurgebruik</div>
+                
+                <div class="contrast-example">
+                    <div class="contrast-swatch" style="background: #1A2C4B; color: white;">Dark Blue op Wit (15.5:1) - PASS</div>
+                    <div class="contrast-swatch" style="background: #00AEEF; color: white;">Primary Blue op Wit (3.5:1) - FAIL</div>
+                </div>
+                
+                <div class="contrast-example">
+                    <div class="contrast-swatch" style="background: #D4AF37; color: #1A2C4B;">Secondary Gold op Dark Blue (8.2:1) - PASS</div>
+                    <div class="contrast-swatch" style="background: #D4AF37; color: white;">Secondary Gold op Wit (1.8:1) - FAIL</div>
+                </div>
+                
+                <div class="guidelines-box" style="margin-top: 20px;">
+                    <div class="section-title" style="border-bottom: none; margin-bottom: 10px; color: #1A2C4B;">Actiepunten</div>
+                    <ul>
+                        <li>**Primary Blue** mag niet als tekstkleur op een witte achtergrond worden gebruikt.</li>
+                        <li>Gebruik **Dark Blue** als primaire tekstkleur.</li>
+                        <li>Zorg ervoor dat alle componenten (Buttons, Forms) de juiste contrastverhoudingen behouden in alle statussen.</li>
+                    </ul>
+                </div>
+            </div>
+            
         </div>
     </div>
 </body>
 </html>
+
