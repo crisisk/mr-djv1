@@ -1,0 +1,8 @@
+# API redirects
+/api/*  https://staging.sevensa.nl/api/:splat  200
+
+# Admin access
+/admin/*  /admin/index.html  200
+
+# SPA fallback
+/*  /index.html  200
