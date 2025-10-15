@@ -42,6 +42,33 @@
 }
 
 :root {
+  --color-primary-blue: #00AEEF;
+  --color-secondary-gold: #D4AF37;
+  --color-neutral-dark: #1A2C4B;
+  --color-neutral-light: #FFFFFF;
+  --color-neutral-gray-100: #F3F4F6;
+  --color-neutral-gray-500: #6B7280;
+  --color-semantic-success: #4CAF50;
+  --color-semantic-error: #FF4D4D;
+  --color-semantic-warning: #FFC107;
+
+  --font-family-primary: "Montserrat, sans-serif";
+
+  --font-size-h1: 48px;
+  --font-size-h2: 36px;
+  --font-size-h3: 24px;
+  --font-size-body: 16px;
+  --font-size-small: 14px;
+
+  --spacing-unit: 8px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -49,10 +76,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --primary: var(--color-primary-blue);
+  --primary-foreground: var(--color-neutral-light);
+  --secondary: var(--color-secondary-gold);
+  --secondary-foreground: var(--color-neutral-dark);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
