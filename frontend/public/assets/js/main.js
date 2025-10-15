@@ -52,9 +52,11 @@ window.addEventListener('scroll', () => {
 // Load Packages from API
 async function loadPackages() {
     const container = document.getElementById('packages-container');
-    
+    if (!container) return;
+
     try {
         const response = await fetch('/api/packages');
+        if (!response.ok) throw new Error('Failed to load packages');
         const data = await response.json();
         
         if (data.packages && data.packages.length > 0) {
@@ -132,6 +134,45 @@ async function loadPackages() {
     }
 }
 
+// Load Reviews from API
+async function loadReviews() {
+    const container = document.getElementById('reviews-container');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/api/reviews');
+        if (!response.ok) throw new Error('Failed to load reviews');
+        const data = await response.json();
+
+        if (Array.isArray(data.reviews) && data.reviews.length > 0) {
+            container.innerHTML = data.reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-stars">${'⭐'.repeat(Math.round(review.rating || 5))}</div>
+                    <p class="review-text">"${review.reviewText || review.text}"</p>
+                    <div class="review-author">
+                        <strong>${review.name}</strong>
+                        <span>${review.eventType || ''}</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<p class="loading">Geen reviews beschikbaar</p>';
+        }
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        container.innerHTML = `
+            <div class="review-card">
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Mister DJ maakte onze bruiloft onvergetelijk! De dansvloer was de hele avond vol en de muziekkeuze was perfect."</p>
+                <div class="review-author">
+                    <strong>Sarah & Tom</strong>
+                    <span>Bruiloft</span>
+                </div>
+            </div>
+        `;
+    }
+}
+
 // Contact Form Submission
 const contactForm = document.getElementById('contact-form');
 const formMessage = document.getElementById('form-message');
@@ -157,19 +198,22 @@ if (contactForm) {
                 },
                 body: JSON.stringify(formData)
             });
-            
+
             const data = await response.json();
-            
-            if (data.success) {
-                formMessage.className = 'form-message success';
-                formMessage.textContent = data.message;
-                contactForm.reset();
-            } else {
-                throw new Error(data.message || 'Er is iets misgegaan');
+
+            if (!response.ok || !data.success) {
+                const validationMessage = Array.isArray(data.details)
+                    ? data.details.map(detail => `${detail.field}: ${detail.message}`).join(' ')
+                    : (data.message || data.error);
+                throw new Error(validationMessage || 'Er is iets misgegaan');
             }
+
+            formMessage.className = 'form-message success';
+            formMessage.textContent = data.message;
+            contactForm.reset();
         } catch (error) {
             formMessage.className = 'form-message error';
-            formMessage.textContent = 'Er is een fout opgetreden. Probeer het later opnieuw of bel ons direct.';
+            formMessage.textContent = error.message || 'Er is een fout opgetreden. Probeer het later opnieuw of bel ons direct.';
             console.error('Form submission error:', error);
         }
         
@@ -181,6 +225,7 @@ if (contactForm) {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     loadPackages();
+    loadReviews();
     
     // Animate elements on scroll
     const observerOptions = {

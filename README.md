@@ -14,6 +14,8 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
+👉 Gebruik de [Go-Live checklist](docs/go-live-checklist.md) om stap-voor-stap te bevestigen dat backend, database en Netlify klaarstaan voor productie.
+
 **Website**: https://staging.sevensa.nl
 
 ## 📚 Volledige documentatie
