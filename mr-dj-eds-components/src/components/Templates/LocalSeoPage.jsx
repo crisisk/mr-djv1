@@ -1,25 +1,26 @@
 import React from 'react';
 import HeroSection from '../Organisms/HeroSection.jsx';
-import PricingTables from '../Organisms/PricingTables.jsx';
-import Testimonials from '../Organisms/Testimonials.jsx';
+
 import Button from '../Atoms/Buttons.jsx';
+import { Helmet } from 'react-helmet';
 
-// Placeholder for dynamic content
-const localData = {
-    city: "Eindhoven",
-    localUSP: "Dé beste DJ voor uw feest in Eindhoven en omgeving. Bekend met alle top-locaties zoals het Evoluon en de Effenaar.",
-    localReviews: "Fantastische service in Eindhoven! De gasten waren laaiend enthousiast.",
-    localVenues: ["Evoluon", "Effenaar", "Strijp-S"],
-};
 
-const LocalSeoPage = ({ data = localData }) => {
-    const { city, localUSP, localReviews, localVenues } = data;
+
+const LocalSeoPage = ({ data, pricingSection, testimonialsSection }) => {
+        if (!data) {
+        return <div>Geen lokale SEO data gevonden.</div>;
+    }
+    const { city, province, localUSP, localReviews, localVenues, seoTitle, seoDescription } = data;
 
     return (
-        <div className="LocalSeoPage">
+                <div className="LocalSeoPage">
+            <Helmet>
+                <title>{seoTitle}</title>
+                <meta name="description" content={seoDescription} />
+            </Helmet>
             {/* 1. Hero Section - Dynamic Title */}
             <HeroSection
-                title={`Uw DJ voor Feesten in ${city}`}
+                title={`Uw DJ voor Feesten in ${city}, ${province}`}
                 subtitle={localUSP}
                 ctaPrimaryText="Check Beschikbaarheid"
                 ctaSecondaryText="Vraag Offerte Aan"
@@ -32,7 +33,7 @@ const LocalSeoPage = ({ data = localData }) => {
             <section className="py-spacing-2xl bg-neutral-light">
                 <div className="container mx-auto px-spacing-md text-center">
                     <h2 className="text-font-size-h2 font-bold text-neutral-dark mb-spacing-lg">
-                        Bekend met de beste locaties in {city}
+                        Bekend met de beste locaties in {city} en {province}
                     </h2>
                     <div className="flex justify-center space-x-spacing-lg">
                         {localVenues.map((venue, index) => (
@@ -48,20 +49,20 @@ const LocalSeoPage = ({ data = localData }) => {
             <section className="py-spacing-3xl bg-neutral-gray-100">
                 <div className="container mx-auto px-spacing-md">
                     <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-lg font-extrabold">
-                        Wat klanten in {city} zeggen
+                        Wat klanten in {city} en {province} zeggen
                     </h2>
                     {/* Testimonials component is reused, but content should be filtered/localized in a real app */}
-                    <Testimonials />
+                    {testimonialsSection}
                 </div>
             </section>
 
             {/* 4. Pricing Section */}
-            <PricingTables />
+            {pricingSection}
 
             {/* 5. Footer CTA - Localized */}
             <div className="bg-neutral-dark text-neutral-light py-spacing-2xl text-center">
                 <h3 className="text-font-size-h2 font-bold mb-spacing-md">
-                    Klaar voor een onvergetelijk feest in {city}?
+                    Klaar voor een onvergetelijk feest in {city} of {province}?
                 </h3>
                 <Button variant="primary" size="lg">
                     Vraag Nu een Offerte Aan
