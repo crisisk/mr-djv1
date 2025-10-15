@@ -132,9 +132,13 @@ describe('Mister DJ API', () => {
     expect(response.body).toMatchObject({
       success: true,
       persisted: false,
-      status: 'pending'
+      status: 'pending',
+      eventType: 'Bruiloft',
+      requestedPackage: 'gold'
     });
     expect(response.body.contactId).toBeDefined();
+    expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
+    expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
   });
 
   it('provides a curated set of fallback packages when no database is available', async () => {

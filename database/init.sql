@@ -21,9 +21,17 @@ CREATE TABLE IF NOT EXISTS contacts (
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(50),
     message TEXT,
+    event_type VARCHAR(100),
+    event_date DATE,
+    package_id VARCHAR(50),
     status VARCHAR(50) DEFAULT 'new',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE contacts
+    ADD COLUMN IF NOT EXISTS event_type VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS event_date DATE,
+    ADD COLUMN IF NOT EXISTS package_id VARCHAR(50);
 
 CREATE TABLE IF NOT EXISTS packages (
     id VARCHAR(50) PRIMARY KEY,

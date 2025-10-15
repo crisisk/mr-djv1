@@ -7,9 +7,13 @@ const router = express.Router();
 const validations = [
   body('name').trim().notEmpty().withMessage('Naam is vereist'),
   body('email').trim().isEmail().withMessage('Ongeldig e-mailadres'),
-  body('phone').optional().trim().isLength({ min: 6 }).withMessage('Telefoonnummer is te kort'),
+  body('phone').trim().isLength({ min: 6 }).withMessage('Telefoonnummer is te kort'),
   body('message').optional().trim().isLength({ max: 2000 }).withMessage('Bericht is te lang'),
-  body('eventType').optional().trim().isLength({ max: 255 }),
+  body('eventType')
+    .trim()
+    .notEmpty()
+    .withMessage('Type evenement is vereist')
+    .isLength({ max: 255 }),
   body('eventDate').optional().trim().isISO8601().withMessage('Ongeldige datum'),
   body('packageId').optional().trim()
 ];
@@ -43,7 +47,11 @@ router.post('/', validations, async (req, res, next) => {
       message: 'Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.',
       contactId: contactRecord.id,
       status: contactRecord.status,
-      persisted: contactRecord.persisted
+      persisted: contactRecord.persisted,
+      eventType: contactRecord.eventType || req.body.eventType,
+      eventDate: contactRecord.eventDate || req.body.eventDate || null,
+      requestedPackage: contactRecord.packageId || req.body.packageId || null,
+      submittedAt: contactRecord.createdAt
     });
   } catch (error) {
     next(error);
