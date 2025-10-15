@@ -285,7 +285,7 @@ export const localSeoData = [
         slug: "made",
         localUSP: "Uw lokale DJ in Made, gespecialiseerd in feesten bij De Korenbeurs en andere Brabantse top-locaties.",
         localReviews: "De DJ wist precies de sfeer te pakken op ons feest in Made. De dansvloer was de hele avond vol!",
-        localVenues: ["Best Western Hotel De Korenbeurs", "Molen "Hoop Doet Leven"", "Alpaca Break", "The Pub Made"],
+        localVenues: ["Best Western Hotel De Korenbeurs", "Molen Hoop Doet Leven", "Alpaca Break", "The Pub Made"],
         seoTitle: "DJ Huren in Made | De Beste Feest DJ voor uw Event",
         seoDescription: "Huur de beste DJ in Made voor uw bruiloft, bedrijfsfeest of verjaardag. Wij kennen de lokale sfeer en locaties zoals De Korenbeurs.",
     },

@@ -17,6 +17,61 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection }) => {
             <Helmet>
                 <title>{seoTitle}</title>
                 <meta name="description" content={seoDescription} />
+                <script type="application/ld+json">
+                    {`
+                        {
+                            "@context": "https://schema.org",
+                            "@type": "LocalBusiness",
+                            "name": "Mr. DJ - Uw DJ in ${city}",
+                            "image": "https://www.mrdj.nl/logo.png",
+                            "url": "https://www.mrdj.nl/dj-in-${data.slug}",
+                            "telephone": "+31850601234",
+                            "address": {
+                                "@type": "PostalAddress",
+                                "addressLocality": "${city}",
+                                "addressRegion": "${province}",
+                                "addressCountry": "NL"
+                            },
+                            "priceRange": "€€€",
+                            "aggregateRating": {
+                                "@type": "AggregateRating",
+                                "ratingValue": "4.9",
+                                "reviewCount": "250"
+                            },
+                            "servesCuisine": "Muziek",
+                            "hasMap": "https://www.google.com/maps/search/${city}+DJ"
+                        }
+                    `}
+                </script>
+                <script type="application/ld+json">
+                    {`
+                        {
+                            "@context": "https://schema.org",
+                            "@type": "Event",
+                            "name": "Feest met DJ in ${city}",
+                            "startDate": "2025-12-31T20:00",
+                            "endDate": "2026-01-01T04:00",
+                            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                            "eventStatus": "https://schema.org/EventScheduled",
+                            "location": {
+                                "@type": "Place",
+                                "name": "Diverse Locaties in ${city}",
+                                "address": {
+                                    "@type": "PostalAddress",
+                                    "addressLocality": "${city}",
+                                    "addressRegion": "${province}",
+                                    "addressCountry": "NL"
+                                }
+                            },
+                            "description": "${localUSP}",
+                            "organizer": {
+                                "@type": "Organization",
+                                "name": "Mr. DJ",
+                                "url": "https://www.mrdj.nl"
+                            }
+                        }
+                    `}
+                </script>
             </Helmet>
             {/* 1. Hero Section - Dynamic Title */}
             <HeroSection

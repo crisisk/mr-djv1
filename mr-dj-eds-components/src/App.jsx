@@ -1,10 +1,12 @@
 
 import { Routes, Route, useParams } from 'react-router-dom';
+import React, { Suspense } from 'react';
 import Button from './components/Atoms/Buttons.jsx';
-import DjSaxLanding from './components/Templates/DjSaxLanding.jsx';
-import LocalSeoPage from './components/Templates/LocalSeoPage.jsx';
-import PricingTables from './components/Organisms/PricingTables.jsx';
-import Testimonials from './components/Organisms/Testimonials.jsx';
+// Use React.lazy for code splitting to improve initial load time (T6: Performance)
+const DjSaxLanding = React.lazy(() => import('./components/Templates/DjSaxLanding.jsx'));
+const LocalSeoPage = React.lazy(() => import('./components/Templates/LocalSeoPage.jsx'));
+const PricingTables = React.lazy(() => import('./components/Organisms/PricingTables.jsx'));
+const Testimonials = React.lazy(() => import('./components/Organisms/Testimonials.jsx'));
 import { localSeoData, getLocalSeoDataBySlug } from './data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from './data/local_seo_bruiloft_data.js';
 import './App.css'
@@ -42,20 +44,22 @@ const LocalSeoPageWrapper = () => {
 function App() {
   return (
     <div className="min-h-screen bg-neutral-light">
-      <Routes>
-        {/* Route for the main DJ + Sax landing page */}
-        <Route path="/" element={<DjSaxLanding />} />
+      <Suspense fallback={<div className="p-10 text-center text-xl">Laden...</div>}>
+        <Routes>
+          {/* Route for the main DJ + Sax landing page */}
+          <Route path="/" element={<DjSaxLanding />} />
 
-        {/* Dynamic route for general local SEO pages */}
-        <Route path="/dj-in-:citySlug" element={<LocalSeoPageWrapper />} />
+          {/* Dynamic route for general local SEO pages */}
+          <Route path="/dj-in-:citySlug" element={<LocalSeoPageWrapper />} />
 
-        {/* Dynamic route for Bruiloft DJ local SEO pages */}
-        {/* The slug is the full path segment (e.g., bruiloft-dj-eindhoven) */}
-        <Route path="/bruiloft-dj-:citySlug" element={<LocalSeoPageWrapper />} />
+          {/* Dynamic route for Bruiloft DJ local SEO pages */}
+          {/* The slug is the full path segment (e.g., bruiloft-dj-eindhoven) */}
+          <Route path="/bruiloft-dj-:citySlug" element={<LocalSeoPageWrapper />} />
 
-        {/* Fallback route for demonstration - can be removed later */}
-        <Route path="*" element={<div className="p-10 text-center">Welkom bij Mr. DJ! Gebruik de URL /dj-in-eindhoven of /bruiloft-dj-eindhoven om de SEO pagina's te zien.</div>} />
-      </Routes>
+          {/* Fallback route for demonstration - can be removed later */}
+          <Route path="*" element={<div className="p-10 text-center">Welkom bij Mr. DJ! Gebruik de URL /dj-in-eindhoven of /bruiloft-dj-eindhoven om de SEO pagina's te zien.</div>} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }

@@ -535,7 +535,7 @@ export const localSeoBruiloftData = [
         slug: "bruiloft-dj-nederweert",
         localUSP: "De beste Bruiloft DJ's in Nederweert, met lokale kennis van locaties als Eynderhoof en INNESTO.",
         localReviews: "Onze Bruiloft DJ van [Bedrijfsnaam] kende de sfeer in Nederweert perfect! Het dak ging eraf in de Daatjeshoeve.",
-        localVenues: ["["INNESTO | WEDDINGS & EVENTS"", ""Openluchtmuseum Eynderhoof"", ""Huyskamer Daatjeshoeve"", ""Kasteelhoeve de Grote Hegge"]"],
+        localVenues: ["INNESTO | WEDDINGS & EVENTS", "Openluchtmuseum Eynderhoof", "Huyskamer Daatjeshoeve", "Kasteelhoeve de Grote Hegge"],
         seoTitle: "Bruiloft DJ Huren in Nederweert | De Beste Trouw DJ voor uw Huwelijk",
         seoDescription: "Huur de beste Bruiloft DJ in Nederweert voor een onvergetelijk huwelijksfeest. Wij kennen de mooiste trouwlocaties en zorgen voor de perfecte sfeer.",
     },
