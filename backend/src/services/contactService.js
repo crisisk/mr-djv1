@@ -1,40 +1,14 @@
-const { Pool } = require('pg');
 const { randomUUID } = require('crypto');
-const config = require('../config');
-
-let pool;
-let databaseConnected = false;
-let connectionErrorLogged = false;
-
-if (config.databaseUrl) {
-  pool = new Pool({
-    connectionString: config.databaseUrl,
-    ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : undefined
-  });
-
-  pool
-    .connect()
-    .then((client) => {
-      databaseConnected = true;
-      client.release();
-    })
-    .catch((error) => {
-      databaseConnected = false;
-      if (!connectionErrorLogged) {
-        console.warn('[contactService] Failed to establish initial database connection:', error.message);
-        connectionErrorLogged = true;
-      }
-    });
-}
+const db = require('../lib/db');
 
 const inMemoryContacts = new Map();
 
 async function saveContact(payload) {
   const timestamp = new Date();
 
-  if (pool) {
+  if (db.isConfigured()) {
     try {
-      const result = await pool.query(
+      const result = await db.runQuery(
         `INSERT INTO contacts (name, email, phone, message, status, created_at)
          VALUES ($1, $2, $3, $4, 'new', $5)
          RETURNING id, status, created_at`,
@@ -42,8 +16,6 @@ async function saveContact(payload) {
       );
 
       const row = result.rows[0];
-      databaseConnected = true;
-      connectionErrorLogged = false;
       return {
         id: row.id,
         status: row.status,
@@ -52,8 +24,6 @@ async function saveContact(payload) {
       };
     } catch (error) {
       console.error('[contactService] Database insert failed:', error.message);
-      databaseConnected = false;
-      connectionErrorLogged = true;
     }
   }
 
@@ -74,9 +44,12 @@ async function saveContact(payload) {
 }
 
 function getContactServiceStatus() {
+  const status = db.getStatus();
   return {
-    databaseConnected,
-    storageStrategy: databaseConnected ? 'postgres' : 'in-memory'
+    databaseConnected: status.connected,
+    storageStrategy: status.connected ? 'postgres' : 'in-memory',
+    fallbackQueueSize: inMemoryContacts.size,
+    lastError: status.lastError
   };
 }
 
