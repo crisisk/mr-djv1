@@ -12,12 +12,31 @@ import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from './data/loca
 import './App.css'
 
 // Component to handle dynamic data fetching and rendering for local SEO pages
+// T12: A/B Testing Framework - Simple URL parameter switch
+const getVariant = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  // Default to 'A' if no variant is specified
+  return urlParams.get('variant') === 'B' ? 'B' : 'A';
+};
+
 const LocalSeoPageWrapper = () => {
   const { citySlug } = useParams();
   const { pathname } = window.location;
 
   let data = null;
   let isBruiloftPage = pathname.startsWith('/bruiloft-dj-');
+
+  // T11: SEA Setup - Placeholder for tracking parameter logic
+  // In a real application, you would parse the URL for tracking parameters (e.g., utm_source, gclid)
+  // and potentially store them in a state management system or dataLayer.
+  const urlParams = new URLSearchParams(window.location.search);
+  const trackingData = {
+    utm_source: urlParams.get('utm_source'),
+    gclid: urlParams.get('gclid'),
+    // Add more tracking parameters as needed
+  };
+  console.log('SEA Tracking Data:', trackingData); // For demonstration
+
 
   if (isBruiloftPage) {
     // For Bruiloft DJ pages, the slug is the full path segment (e.g., bruiloft-dj-eindhoven)
@@ -37,11 +56,16 @@ const LocalSeoPageWrapper = () => {
       data={data}
       pricingSection={<PricingTables />}
       testimonialsSection={<Testimonials />}
+      // T12: A/B Testing - Pass the variant to the component for conditional rendering
+      variant={getVariant()}
     />
   );
 };
 
 function App() {
+  // T12: A/B Testing - Log the variant for GTM/GA4 tracking
+  const variant = getVariant();
+  console.log(`A/B Test Variant: ${variant}`);
   return (
     <div className="min-h-screen bg-neutral-light">
       <Suspense fallback={<div className="p-10 text-center text-xl">Laden...</div>}>

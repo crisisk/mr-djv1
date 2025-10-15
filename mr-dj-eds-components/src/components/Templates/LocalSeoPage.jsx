@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 
 
 
-const LocalSeoPage = ({ data, pricingSection, testimonialsSection }) => {
+const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) => {
         if (!data) {
         return <div>Geen lokale SEO data gevonden.</div>;
     }
@@ -111,18 +111,44 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection }) => {
                 </div>
             </section>
 
-            {/* 4. Pricing Section */}
-            {pricingSection}
-
-            {/* 5. Footer CTA - Localized */}
-            <div className="bg-neutral-dark text-neutral-light py-spacing-2xl text-center">
-                <h3 className="text-font-size-h2 font-bold mb-spacing-md">
-                    Klaar voor een onvergetelijk feest in {city} of {province}?
-                </h3>
-                <Button variant="primary" size="lg">
-                    Vraag Nu een Offerte Aan
-                </Button>
-            </div>
+	            {/* 4. Pricing Section */}
+	            {pricingSection}
+	
+	            {/* 5. Internal Linking Section (T10: SEO Fine-tune) */}
+	            <section className="py-spacing-2xl bg-neutral-light">
+	                <div className="container mx-auto px-spacing-md text-center">
+	                    <h2 className="text-font-size-h3 font-bold text-neutral-dark mb-spacing-lg">
+	                        Ontdek Onze DJ Services in de Regio
+	                    </h2>
+	                    <div className="flex flex-wrap justify-center gap-spacing-md">
+	                        {/* Placeholder for dynamic internal links to other cities/pages */}
+	                        <a href="/dj-in-tilburg" className="text-primary-500 hover:text-primary-700 underline">DJ in Tilburg</a>
+	                        <a href="/dj-in-breda" className="text-primary-500 hover:text-primary-700 underline">DJ in Breda</a>
+	                        <a href="/bruiloft-dj-eindhoven" className="text-primary-500 hover:text-primary-700 underline">Bruiloft DJ in Eindhoven</a>
+	                        <a href="/bruiloft-dj-maastricht" className="text-primary-500 hover:text-primary-700 underline">Bruiloft DJ in Maastricht</a>
+	                        {/* Add a link to the opposite service type for the current city */}
+	                        {data.slug.startsWith('bruiloft-dj-') ? (
+	                            <a href={`/dj-in-${data.slug.replace('bruiloft-dj-', '')}`} className="text-primary-500 hover:text-primary-700 underline">Algemene DJ Service in {city}</a>
+	                        ) : (
+	                            <a href={`/bruiloft-dj-${data.slug}`} className="text-primary-500 hover:text-primary-700 underline">Bruiloft DJ Service in {city}</a>
+	                        )}
+	                    </div>
+	                </div>
+	            </section>
+	
+	            {/* 6. Footer CTA - Localized */}
+	            <div className="bg-neutral-dark text-neutral-light py-spacing-2xl text-center">
+	                <h3 className="text-font-size-h2 font-bold mb-spacing-md">
+	                    {/* T12: A/B Test - Variant B uses a different CTA text */}
+	                    {variant === 'B' ? 
+	                        `Vraag vandaag nog een gratis offerte aan in ${city}!` :
+	                        `Klaar voor een onvergetelijk feest in ${city} of ${province}?`
+	                    }
+	                </h3>
+	                <Button variant="primary" size="lg">
+	                    Vraag Nu een Offerte Aan
+	                </Button>
+	            </div>
         </div>
     );
 };
