@@ -1,40 +1,64 @@
 version: '3.8'
 
 services:
-  # Traefik Reverse Proxy
-  traefik:
-    image: traefik:v2.10
-    container_name: mr-dj-traefik
+  # Frontend (Nginx serving static files) - Renamed to eds-frontend as per user context
+  eds-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mr-dj-eds-frontend
     restart: unless-stopped
-    command:
-      - "--api.dashboard=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencrypt.acme.email=info@mr-dj.nl"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--log.level=DEBUG"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"  # Traefik dashboard
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./letsencrypt:/letsencrypt"
+    depends_on:
+      - mr-dj-backend
     networks:
-      - mr-dj-network
+      - web # Use the existing 'web' network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.staging.sevensa.nl`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$8EVjn/nj$$GiLUZqcbueTFeD23SuB6x0"  # admin:admin
+      # Host rule for staging.sevensa.nl
+      - "traefik.http.routers.mrdj-eds-frontend.rule=Host(`staging.sevensa.nl`)"
+      - "traefik.http.routers.mrdj-eds-frontend.entrypoints=websecure"
+      - "traefik.http.routers.mrdj-eds-frontend.tls=true"
+      - "traefik.http.routers.mrdj-eds-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mrdj-eds-frontend.loadbalancer.server.port=80"
+      # Add a path prefix for the /eds route as per user requirement (Verify deployment at staging.sevensa.nl/eds)
+      - "traefik.http.routers.mrdj-eds-frontend-eds.rule=Host(`staging.sevensa.nl`) && PathPrefix(`/eds`)"
+      - "traefik.http.routers.mrdj-eds-frontend-eds.entrypoints=websecure"
+      - "traefik.http.routers.mrdj-eds-frontend-eds.tls=true"
+      - "traefik.http.routers.mrdj-eds-frontend-eds.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mrdj-eds-frontend-eds.loadbalancer.server.port=80"
+      - "traefik.http.routers.mrdj-eds-frontend-eds.middlewares=mrdj-eds-stripprefix"
+      - "traefik.http.middlewares.mrdj-eds-stripprefix.stripprefix.prefixes=/eds"
 
-  # PostgreSQL Database
-  postgres:
+  # Backend API (Node.js/Express) - Renamed to mr-dj-backend
+  mr-dj-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mr-dj-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://mrdj_user:mrdj_secure_password_2025@mr-dj-postgres:5432/mrdj_db
+      JWT_SECRET: mrdj_jwt_secret_key_2025_very_secure
+      CORS_ORIGIN: https://staging.sevensa.nl
+    depends_on:
+      mr-dj-postgres:
+        condition: service_healthy
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mrdj-backend.rule=Host(`staging.sevensa.nl`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.mrdj-backend.entrypoints=websecure"
+      - "traefik.http.routers.mrdj-backend.tls=true"
+      - "traefik.http.routers.mrdj-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mrdj-backend.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.mrdj-backend-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.mrdj-backend.middlewares=mrdj-backend-stripprefix"
+
+  # PostgreSQL Database - Renamed to mr-dj-postgres
+  mr-dj-postgres:
     image: postgres:15-alpine
     container_name: mr-dj-postgres
     restart: unless-stopped
@@ -47,71 +71,21 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - mr-dj-network
+      - web
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mrdj_user -d mrdj_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Backend API (Node.js/Express)
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: mr-dj-backend
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      DATABASE_URL: postgresql://mrdj_user:mrdj_secure_password_2025@postgres:5432/mrdj_db
-      JWT_SECRET: mrdj_jwt_secret_key_2025_very_secure
-      CORS_ORIGIN: https://staging.sevensa.nl
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - mr-dj-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`staging.sevensa.nl`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.backend.entrypoints=web,websecure"
-      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.backend.loadbalancer.server.port=3000"
-      - "traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.routers.backend.middlewares=backend-stripprefix"
-
-  # Frontend (Nginx serving static files)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: mr-dj-frontend
-    restart: unless-stopped
-    depends_on:
-      - backend
-    networks:
-      - mr-dj-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`staging.sevensa.nl`)"
-      - "traefik.http.routers.frontend.entrypoints=web,websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
-      # Redirect HTTP to HTTPS
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.frontend-http.rule=Host(`staging.sevensa.nl`)"
-      - "traefik.http.routers.frontend-http.entrypoints=web"
-      - "traefik.http.routers.frontend-http.middlewares=redirect-to-https"
-
-  # Redis Cache (optional, voor sessions/caching)
-  redis:
+  # Redis Cache (optional, voor sessions/caching) - Renamed to mr-dj-redis
+  mr-dj-redis:
     image: redis:7-alpine
     container_name: mr-dj-redis
     restart: unless-stopped
     command: redis-server --requirepass mrdj_redis_password_2025
     networks:
-      - mr-dj-network
+      - web
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -119,8 +93,8 @@ services:
       retries: 5
 
 networks:
-  mr-dj-network:
-    driver: bridge
+  web: # External network for Traefik integration
+    external: true
 
 volumes:
   postgres_data:
