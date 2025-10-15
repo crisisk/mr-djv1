@@ -7,12 +7,34 @@ function notFoundHandler(req, res) {
   });
 }
 
+function logError(err, req) {
+  const context = `${req.method} ${req.originalUrl}`;
+
+  if (config.env === 'test') {
+    return;
+  }
+
+  if ((err.status || err.statusCode || 500) >= 500) {
+    console.error(`[errorHandler] ${context} ->`, err);
+    return;
+  }
+
+  console.warn(`[errorHandler] ${context} -> ${err.message}`);
+}
+
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, _next) {
-  const statusCode = err.status || err.statusCode || 500;
+  logError(err, req);
+
+  const isJsonParseError = err.type === 'entity.parse.failed';
+  const statusCode = isJsonParseError ? 400 : err.status || err.statusCode || 500;
   const response = {
-    error: err.publicMessage || 'Internal server error'
+    error: isJsonParseError ? 'Ongeldige JSON payload' : err.publicMessage || 'Internal server error'
   };
+
+  if (isJsonParseError) {
+    response.details = 'Controleer of de JSON body correct is geformatteerd.';
+  }
 
   if (config.env !== 'production') {
     response.message = err.message;

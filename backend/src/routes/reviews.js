@@ -1,13 +1,13 @@
 const express = require('express');
-const { getPackages } = require('../services/packageService');
+const { getApprovedReviews } = require('../services/reviewService');
 
 const router = express.Router();
 
 router.get('/', async (_req, res, next) => {
   try {
-    const result = await getPackages();
+    const result = await getApprovedReviews();
     res.json({
-      packages: result.packages,
+      reviews: result.reviews,
       source: result.source
     });
   } catch (error) {

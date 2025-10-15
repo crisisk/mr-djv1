@@ -1,11 +1,15 @@
 const express = require('express');
 const config = require('../config');
+const db = require('../lib/db');
 const { getContactServiceStatus } = require('../services/contactService');
+const { getBookingServiceStatus } = require('../services/bookingService');
 
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-  const { databaseConnected, storageStrategy } = getContactServiceStatus();
+  const dbStatus = db.getStatus();
+  const contactStatus = getContactServiceStatus();
+  const bookingStatus = getBookingServiceStatus();
 
   res.json({
     status: 'ok',
@@ -15,8 +19,23 @@ router.get('/', (_req, res) => {
     environment: config.env,
     uptime: process.uptime(),
     dependencies: {
-      database: databaseConnected,
-      storageStrategy
+      database: {
+        configured: dbStatus.configured,
+        connected: dbStatus.connected,
+        lastError: dbStatus.lastError,
+        lastSuccessfulAt: dbStatus.lastSuccessfulAt,
+        lastFailureAt: dbStatus.lastFailureAt
+      },
+      storage: {
+        contact: {
+          strategy: contactStatus.storageStrategy,
+          fallbackQueueSize: contactStatus.fallbackQueueSize
+        },
+        bookings: {
+          strategy: bookingStatus.storageStrategy,
+          fallbackQueueSize: bookingStatus.fallbackQueueSize
+        }
+      }
     }
   });
 });

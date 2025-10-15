@@ -1,28 +1,45 @@
 const app = require('../app');
-const { resetInMemoryStore } = require('../services/contactService');
+const { resetInMemoryStore: resetContactStore } = require('../services/contactService');
+const { resetInMemoryStore: resetBookingStore } = require('../services/bookingService');
 const http = require('http');
 
 let server;
 let baseUrl;
 
-function request(method, path, body) {
+function request(method, path, body, headers = {}) {
   const url = new URL(path, baseUrl);
   const options = {
     method,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...headers
     }
   };
 
   if (body) {
-    options.body = JSON.stringify(body);
+    options.body = typeof body === 'string' ? body : JSON.stringify(body);
   }
 
-  return fetch(url, options).then(async (response) => ({
-    status: response.status,
-    body: await response.json(),
-    headers: response.headers
-  }));
+  return fetch(url, options).then(async (response) => {
+    const rawBody = await response.text();
+    let parsedBody;
+
+    if (!rawBody) {
+      parsedBody = undefined;
+    } else {
+      try {
+        parsedBody = JSON.parse(rawBody);
+      } catch (_error) {
+        parsedBody = rawBody;
+      }
+    }
+
+    return {
+      status: response.status,
+      body: parsedBody,
+      headers: response.headers
+    };
+  });
 }
 
 describe('Mister DJ API', () => {
@@ -40,7 +57,8 @@ describe('Mister DJ API', () => {
   });
 
   afterEach(() => {
-    resetInMemoryStore();
+    resetContactStore();
+    resetBookingStore();
   });
 
   it('returns service metadata on the root route', async () => {
@@ -51,7 +69,10 @@ describe('Mister DJ API', () => {
       message: 'Mister DJ API',
       endpoints: expect.objectContaining({
         health: '/health',
-        contact: '/contact'
+        contact: '/contact',
+        packages: '/packages',
+        bookings: '/bookings',
+        reviews: '/reviews'
       })
     });
   });
@@ -64,7 +85,14 @@ describe('Mister DJ API', () => {
       status: 'ok',
       service: expect.any(String),
       dependencies: expect.objectContaining({
-        storageStrategy: expect.any(String)
+        database: expect.objectContaining({
+          configured: expect.any(Boolean),
+          connected: expect.any(Boolean)
+        }),
+        storage: expect.objectContaining({
+          contact: expect.objectContaining({ strategy: expect.any(String) }),
+          bookings: expect.objectContaining({ strategy: expect.any(String) })
+        })
       })
     });
   });
@@ -75,6 +103,17 @@ describe('Mister DJ API', () => {
     expect(response.status).toBe(422);
     expect(response.body).toMatchObject({
       error: 'Validatie mislukt'
+    });
+  });
+
+  it('returns a helpful error when the JSON payload cannot be parsed', async () => {
+    const response = await request('POST', '/contact', '{"name": "Test"', {
+      'Content-Type': 'application/json'
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toMatchObject({
+      error: 'Ongeldige JSON payload'
     });
   });
 
@@ -93,8 +132,67 @@ describe('Mister DJ API', () => {
     expect(response.body).toMatchObject({
       success: true,
       persisted: false,
-      status: 'pending'
+      status: 'pending',
+      eventType: 'Bruiloft',
+      requestedPackage: 'gold'
     });
     expect(response.body.contactId).toBeDefined();
+    expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
+    expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
+  });
+
+  it('provides a curated set of fallback packages when no database is available', async () => {
+    const response = await request('GET', '/packages');
+
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body.packages)).toBe(true);
+    expect(response.body.packages.length).toBeGreaterThan(0);
+    expect(response.body).toMatchObject({ source: 'static' });
+  });
+
+  it('rejects invalid booking submissions', async () => {
+    const response = await request('POST', '/bookings', {});
+
+    expect(response.status).toBe(422);
+    expect(response.body).toMatchObject({ error: 'Validatie mislukt' });
+  });
+
+  it('creates bookings and tracks them in memory when the database is unavailable', async () => {
+    const response = await request('POST', '/bookings', {
+      name: 'Test Booker',
+      email: 'booker@example.com',
+      phone: '0612345678',
+      eventType: 'Jubileum',
+      eventDate: '2025-06-15',
+      message: 'Wij willen graag het zilveren pakket.',
+      packageId: 'silver'
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      success: true,
+      persisted: false,
+      status: 'pending'
+    });
+    expect(response.body.bookingId).toBeDefined();
+
+    const listResponse = await request('GET', '/bookings');
+    expect(listResponse.status).toBe(200);
+    expect(listResponse.body).toMatchObject({ persisted: false });
+    expect(Array.isArray(listResponse.body.bookings)).toBe(true);
+    expect(listResponse.body.bookings[0]).toMatchObject({
+      name: 'Test Booker',
+      eventType: 'Jubileum',
+      packageId: 'silver'
+    });
+  });
+
+  it('exposes approved reviews with a sensible fallback', async () => {
+    const response = await request('GET', '/reviews');
+
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body.reviews)).toBe(true);
+    expect(response.body.reviews.length).toBeGreaterThan(0);
+    expect(response.body).toMatchObject({ source: 'static' });
   });
 });

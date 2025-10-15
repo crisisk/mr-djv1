@@ -1,59 +1,51 @@
-const { Pool } = require('pg');
 const { randomUUID } = require('crypto');
-const config = require('../config');
-
-let pool;
-let databaseConnected = false;
-let connectionErrorLogged = false;
-
-if (config.databaseUrl) {
-  pool = new Pool({
-    connectionString: config.databaseUrl,
-    ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : undefined
-  });
-
-  pool
-    .connect()
-    .then((client) => {
-      databaseConnected = true;
-      client.release();
-    })
-    .catch((error) => {
-      databaseConnected = false;
-      if (!connectionErrorLogged) {
-        console.warn('[contactService] Failed to establish initial database connection:', error.message);
-        connectionErrorLogged = true;
-      }
-    });
-}
+const db = require('../lib/db');
 
 const inMemoryContacts = new Map();
 
+function normalizeEventDate(value) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
 async function saveContact(payload) {
   const timestamp = new Date();
+  const eventDate = normalizeEventDate(payload.eventDate);
 
-  if (pool) {
+  if (db.isConfigured()) {
     try {
-      const result = await pool.query(
-        `INSERT INTO contacts (name, email, phone, message, status, created_at)
-         VALUES ($1, $2, $3, $4, 'new', $5)
-         RETURNING id, status, created_at`,
-        [payload.name, payload.email, payload.phone, payload.message, timestamp]
+      const result = await db.runQuery(
+        `INSERT INTO contacts (name, email, phone, message, event_type, event_date, package_id, status, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, 'new', $8)
+         RETURNING id, status, created_at AS "createdAt", event_type AS "eventType", event_date AS "eventDate", package_id AS "packageId"`,
+        [
+          payload.name,
+          payload.email,
+          payload.phone,
+          payload.message,
+          payload.eventType || null,
+          eventDate,
+          payload.packageId || null,
+          timestamp
+        ]
       );
 
       const row = result.rows[0];
-      databaseConnected = true;
-      connectionErrorLogged = false;
       return {
         id: row.id,
         status: row.status,
-        createdAt: row.created_at,
+        createdAt: row.createdAt,
+        eventType: row.eventType || payload.eventType || null,
+        eventDate: row.eventDate || eventDate,
+        packageId: row.packageId || payload.packageId || null,
         persisted: true
       };
     } catch (error) {
       console.error('[contactService] Database insert failed:', error.message);
-      databaseConnected = false;
-      connectionErrorLogged = true;
     }
   }
 
@@ -62,7 +54,10 @@ async function saveContact(payload) {
     id,
     status: 'pending',
     createdAt: timestamp,
-    persisted: false
+    persisted: false,
+    eventType: payload.eventType || null,
+    eventDate,
+    packageId: payload.packageId || null
   };
 
   inMemoryContacts.set(id, {
@@ -74,9 +69,12 @@ async function saveContact(payload) {
 }
 
 function getContactServiceStatus() {
+  const status = db.getStatus();
   return {
-    databaseConnected,
-    storageStrategy: databaseConnected ? 'postgres' : 'in-memory'
+    databaseConnected: status.connected,
+    storageStrategy: status.connected ? 'postgres' : 'in-memory',
+    fallbackQueueSize: inMemoryContacts.size,
+    lastError: status.lastError
   };
 }
 
