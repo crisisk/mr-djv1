@@ -2,6 +2,7 @@ const { Pool } = require('pg');
 const config = require('../config');
 
 let pool;
+let currentConnectionString;
 
 const state = {
   configured: Boolean(config.databaseUrl),
@@ -11,8 +12,36 @@ const state = {
   lastFailureAt: null
 };
 
-function createPool() {
+function refreshConfiguration() {
+  const nextConnectionString = config.databaseUrl;
+  state.configured = Boolean(nextConnectionString);
+
   if (!state.configured) {
+    if (pool) {
+      pool.end().catch((error) => {
+        console.warn('[db] Failed to close pool during configuration refresh:', error.message);
+      });
+      pool = null;
+    }
+    currentConnectionString = undefined;
+    state.connected = false;
+    return false;
+  }
+
+  if (currentConnectionString && currentConnectionString !== nextConnectionString && pool) {
+    pool.end().catch((error) => {
+      console.warn('[db] Failed to close pool after configuration update:', error.message);
+    });
+    pool = null;
+    state.connected = false;
+  }
+
+  currentConnectionString = nextConnectionString;
+  return true;
+}
+
+function createPool() {
+  if (!refreshConfiguration()) {
     return null;
   }
 
@@ -21,7 +50,7 @@ function createPool() {
   }
 
   pool = new Pool({
-    connectionString: config.databaseUrl,
+    connectionString: currentConnectionString,
     ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : undefined
   });
 
@@ -32,7 +61,6 @@ function createPool() {
     console.error('[db] Unexpected database error:', error);
   });
 
-  // Perform a lazy verification so we know if the pool is reachable.
   pool
     .connect()
     .then((client) => {
@@ -85,10 +113,12 @@ async function runQuery(text, params = []) {
 }
 
 function isConfigured() {
+  refreshConfiguration();
   return state.configured;
 }
 
 function getStatus() {
+  refreshConfiguration();
   return { ...state };
 }
 

@@ -18,6 +18,14 @@ chmod +x deploy.sh
 
 **Website**: https://staging.sevensa.nl
 
+
+## 🔐 Configuratie dashboard
+
+- **URL**: https://staging.sevensa.nl/dashboard
+- **Authenticatie**: Basic Auth met `CONFIG_DASHBOARD_USER` en `CONFIG_DASHBOARD_PASS`
+- **Functionaliteit**: beheer alle vereiste `.env` variabelen, schrijf veilig naar `managed.env` en push direct naar de draaiende applicatie
+- Volg de [go-live checklist](docs/go-live-checklist.md) voor een stap-voor-stap instructie
+
 ## 📚 Volledige documentatie
 
 Zie de uitgebreide README voor:
@@ -26,6 +34,7 @@ Zie de uitgebreide README voor:
 - API endpoints
 - Database schema
 - Maintenance commands
+- UAT rapport en go-live checklist
 
 ## 📞 Contact
 

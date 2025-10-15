@@ -1,0 +1,116 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const http = require('http');
+
+const ORIGINAL_ENV = { ...process.env };
+
+function createAuthHeader(username, password) {
+  return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+}
+
+describe('configuration dashboard', () => {
+  let server;
+  let baseUrl;
+  let tempDir;
+  let storePath;
+  let authHeader;
+
+  beforeEach(async () => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
+    storePath = path.join(tempDir, 'managed.env');
+    process.env = {
+      ...ORIGINAL_ENV,
+      CONFIG_DASHBOARD_ENABLED: 'true',
+      CONFIG_DASHBOARD_USER: 'admin',
+      CONFIG_DASHBOARD_PASS: 'secret',
+      CONFIG_DASHBOARD_ALLOWED_IPS: '',
+      CONFIG_DASHBOARD_KEYS: 'PORT,DATABASE_URL',
+      CONFIG_DASHBOARD_STORE_PATH: storePath
+    };
+
+    jest.resetModules();
+    const app = require('../app');
+    server = http.createServer(app);
+
+    await new Promise((resolve) => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+
+    const address = server.address();
+    baseUrl = `http://127.0.0.1:${address.port}`;
+    authHeader = createAuthHeader('admin', 'secret');
+  });
+
+  afterEach(async () => {
+    await new Promise((resolve) => {
+      server.close(resolve);
+    });
+
+    fs.rmSync(tempDir, { recursive: true, force: true });
+    process.env = { ...ORIGINAL_ENV };
+    jest.resetModules();
+  });
+
+  it('requires authentication to access the dashboard', async () => {
+    const response = await fetch(`${baseUrl}/dashboard`);
+
+    expect(response.status).toBe(401);
+    expect(response.headers.get('www-authenticate')).toMatch(/Basic/i);
+  });
+
+  it('renders the dashboard HTML when authenticated', async () => {
+    const response = await fetch(`${baseUrl}/dashboard`, {
+      headers: {
+        Authorization: authHeader
+      }
+    });
+
+    expect(response.status).toBe(200);
+    const body = await response.text();
+    expect(body).toContain('Configuration Dashboard');
+    expect(body).toContain('Applicatie variabelen');
+  });
+
+  it('returns the managed configuration state', async () => {
+    const response = await fetch(`${baseUrl}/dashboard/api/variables`, {
+      headers: {
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.managedKeys).toEqual(['PORT', 'DATABASE_URL']);
+    expect(Array.isArray(payload.entries)).toBe(true);
+  });
+
+  it('persists updates and refreshes runtime configuration', async () => {
+    const updateResponse = await fetch(`${baseUrl}/dashboard/api/variables`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        entries: {
+          PORT: '4500',
+          DATABASE_URL: 'postgres://dashboard-db'
+        }
+      })
+    });
+
+    expect(updateResponse.status).toBe(200);
+    const payload = await updateResponse.json();
+    expect(payload.entries.find((entry) => entry.name === 'PORT').hasValue).toBe(true);
+
+    const config = require('../config');
+    expect(config.port).toBe(4500);
+    expect(config.databaseUrl).toBe('postgres://dashboard-db');
+
+    const fileContents = fs.readFileSync(storePath, 'utf8');
+    expect(fileContents).toContain('PORT=4500');
+    expect(fileContents).toContain('DATABASE_URL=postgres://dashboard-db');
+  });
+});
