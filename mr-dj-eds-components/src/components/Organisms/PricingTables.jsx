@@ -1,142 +1,112 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import Button from '../Atoms/Buttons.jsx';
+
+// Data structure for the three packages
+const packages = [
+  {
+    name: "Brons",
+    subtitle: "Entry-level pakket",
+    price: "€495",
+    features: [
+      "4 uur DJ-set",
+      "Basis licht- en geluidsset",
+      "Persoonlijk intakegesprek",
+      "Muziekvoorkeuren formulier",
+    ],
+    isFeatured: false,
+    buttonText: "Meer Info",
+  },
+  {
+    name: "Zilver",
+    subtitle: "Meest gekozen",
+    price: "€795",
+    features: [
+      "6 uur DJ-set",
+      "Uitgebreide lichtshow",
+      "DJ + Saxofonist optie",
+      "100% dansgarantie",
+      "Onbeperkt aantal gasten",
+    ],
+    isFeatured: true,
+    buttonText: "Boek Nu",
+  },
+  {
+    name: "Goud",
+    subtitle: "Premium All-Inclusive",
+    price: "€1.295",
+    features: [
+      "8 uur DJ-set",
+      "Luxe licht- en geluidsset",
+      "DJ + Saxofonist (inbegrepen)",
+      "Ceremonie & receptie muziek",
+      "Professionele apparatuur",
+    ],
+    isFeatured: false,
+    buttonText: "Vraag Offerte Aan",
+  },
+];
+
+const PricingCard = ({ pkg }) => {
+  const { name, subtitle, price, features, isFeatured, buttonText } = pkg;
+
+  // Use token-based classes
+  const cardClasses = isFeatured
+    ? "bg-neutral-dark text-neutral-light shadow-2xl transform scale-105"
+    : "bg-neutral-light text-neutral-dark shadow-lg";
+
+  const headerClasses = isFeatured
+    ? "text-secondary border-b border-secondary/50"
+    : "text-primary border-b border-neutral-gray-100";
+
+  const buttonVariant = isFeatured ? "secondary" : "primary";
+
+  return (
+    <div className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}>
+      {isFeatured && (
+        <div className="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
+          Populair
+        </div>
+      )}
+      <div className={`pb-spacing-md mb-spacing-md ${headerClasses}`}>
+        <h3 className="text-font-size-h3 font-bold">{name}</h3>
+        <p className="text-font-size-small opacity-80">{subtitle}</p>
+      </div>
+      <div className="flex items-baseline mb-spacing-lg">
+        <span className="text-font-size-h1 font-extrabold">{price}</span>
+        <span className="text-font-size-body ml-spacing-xs">/ event</span>
+      </div>
+      <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
+        {features.map((feature, index) => (
+          <li key={index} className="flex items-start text-font-size-body">
+            <svg className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            {feature}
+          </li>
+        ))}
+      </ul>
+      <Button variant={buttonVariant} size="lg" className="w-full">
+        {buttonText}
+      </Button>
+    </div>
+  );
+};
 
 const PricingTables = () => {
-    return (
-        <div className="slide-container">
-<h1>Organisms: Pricing Tables</h1>
-<p className="subtitle">Conversie-geoptimaliseerde pricing components met duidelijke waardepropositie</p>
-<div className="pricing-grid">
-<!-- Bronze Package -->
-<div className="pricing-card bronze">
-<div className="tier-badge">🥉</div>
-<h3 className="tier-name">Brons Pakket</h3>
-<p className="tier-description">Perfect voor kleinere feesten en intieme bijeenkomsten</p>
-<div className="price-wrapper">
-<div className="price">€495</div>
-<div className="price-period">per evenement</div>
-</div>
-<div className="features-list">
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">4 uur DJ service</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Professionele geluidsapparatuur</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Basis lichtshow</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Muziekwensen vooraf</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Tot 100 gasten</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Standaard setup</span>
-</div>
-</div>
-<button className="cta-button cta-secondary">Vraag Offerte Aan</button>
-</div>
-<!-- Silver Package - Featured -->
-<div className="pricing-card silver">
-<div className="tier-badge">🥈</div>
-<h3 className="tier-name">Zilver Pakket</h3>
-<p className="tier-description">De complete ervaring voor onvergetelijke feesten</p>
-<div className="price-wrapper">
-<div className="price">€795</div>
-<div className="price-period">per evenement</div>
-</div>
-<div className="features-list">
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text"><strong>6 uur DJ service</strong></span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Premium geluidsapparatuur</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text"><strong>Uitgebreide lichtshow</strong></span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Persoonlijk intakegesprek</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Tot 200 gasten</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Draadloze microfoon</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text"><strong>100% Dansgarantie</strong></span>
-</div>
-</div>
-<button className="cta-button cta-primary">Direct Boeken</button>
-</div>
-<!-- Gold Package -->
-<div className="pricing-card gold">
-<div className="tier-badge">🥇</div>
-<h3 className="tier-name">Goud Pakket</h3>
-<p className="tier-description">De ultieme all-inclusive entertainment ervaring</p>
-<div className="price-wrapper">
-<div className="price">€1.295</div>
-<div className="price-period">per evenement</div>
-</div>
-<div className="features-list">
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text"><strong>8 uur DJ service</strong></span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Premium+ geluidsapparatuur</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text"><strong>Spectaculaire lichtshow</strong></span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">DJ + Live Saxofonist</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Onbeperkt gasten</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Meerdere microfoons</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text">Persoonlijke playlist curation</span>
-</div>
-<div className="feature-item">
-<span className="feature-icon">✓</span>
-<span className="feature-text"><strong>VIP behandeling</strong></span>
-</div>
-</div>
-<button className="cta-button cta-secondary">Vraag Offerte Aan</button>
-</div>
-</div>
-<p className="pricing-note">
-            * Alle pakketten inclusief opbouw, afbraak en reiskosten binnen 50km. Prijzen zijn exclusief BTW.
-        </p>
-</div>
-    );
+  return (
+    <section className="py-spacing-3xl bg-neutral-gray-100">
+      <div className="container mx-auto px-spacing-md">
+        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">
+          Onze Pakketten
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-center">
+          {packages.map((pkg, index) => (
+            <PricingCard key={index} pkg={pkg} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default PricingTables;
