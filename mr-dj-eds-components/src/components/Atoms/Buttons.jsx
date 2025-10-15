@@ -1,7 +1,6 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
 
+<<<<<<< HEAD
 const Buttons = () => {
     return (
         <div className="slide-container">
@@ -72,46 +71,33 @@ const Buttons = () => {
 <div className="code-block">
 <span className="code-comment">// Button.tsx</span>
 <span className="code-keyword">import</span> React <span className="code-keyword">from</span> <span className="code-string">'react'</span>;
+=======
+const Button = ({ children, variant = 'primary', size = 'medium', onClick, className = '' }) => {
+  const baseStyle = 'font-semibold rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-4';
+  
+  const variantStyles = {
+    primary: 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-300',
+    secondary: 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 focus:ring-neutral-400',
+    outline: 'bg-transparent border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white focus:ring-primary-300',
+    ghost: 'bg-transparent text-neutral-800 hover:bg-neutral-100 focus:ring-neutral-200',
+  };
+>>>>>>> a17057fd1b60325dffe5679689a8e8abbbe39b4d
 
-<span className="code-keyword">interface</span> ButtonProps {
-  variant?: <span className="code-string">'primary'</span> | <span className="code-string">'secondary'</span> | <span className="code-string">'outline'</span> | <span className="code-string">'ghost'</span>;
-  size?: <span className="code-string">'sm'</span> | <span className="code-string">'md'</span> | <span className="code-string">'lg'</span>;
-  children: React.ReactNode;
-  onClick?: () =&gt; <span className="code-keyword">void</span>;
-  disabled?: <span className="code-keyword">boolean</span>;
-}
+  const sizeStyles = {
+    small: 'px-3 py-1 text-sm',
+    medium: 'px-4 py-2 text-base',
+    large: 'px-6 py-3 text-lg',
+  };
 
-<span className="code-keyword">export const</span> Button: React.FC&lt;ButtonProps&gt; = ({
-  variant = <span className="code-string">'primary'</span>,
-  size = <span className="code-string">'md'</span>,
-  children,
-  onClick,
-  disabled = <span className="code-keyword">false</span>
-}) =&gt; {
-  <span className="code-keyword">return</span> (
-    &lt;<span className="code-tag">button</span>
-<span className="code-attr">className</span>=<span className="code-string">{`btn btn-${variant} btn-${size}`}</span>
-<span className="code-attr">onClick</span>={onClick}
-      <span className="code-attr">disabled</span>={disabled}
-    &gt;
+  return (
+    <button
+      onClick={onClick}
+      className={`${baseStyle} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+    >
       {children}
-    &lt;/<span className="code-tag">button</span>&gt;
+    </button>
   );
 };
 
-<span className="code-comment">// Usage</span>
-&lt;<span className="code-tag">Button</span> <span className="code-attr">variant</span>=<span className="code-string">"primary"</span> <span className="code-attr">size</span>=<span className="code-string">"lg"</span>&gt;
-  Boek Nu
-&lt;/<span className="code-tag">Button</span>&gt;
-            </div>
-<div className="props-list">
-<div className="prop-item"><span className="prop-name">variant:</span> primary | secondary | outline | ghost</div>
-<div className="prop-item"><span className="prop-name">size:</span> sm | md | lg</div>
-<div className="prop-item"><span className="prop-name">disabled:</span> boolean</div>
-</div>
-</div>
-</div>
-    );
-};
+export default Button;
 
-export default Buttons;

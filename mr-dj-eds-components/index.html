@@ -1,12 +1,39 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Google Consent Mode v2 Default State -->
+    <!-- Google Tag Manager (T8: Analytics & Events) -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PLACEHOLDER');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Google Consent Mode v2 Default State -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'analytics_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'wait_for_update': 500 // Wait for Complianz to update consent
+      });
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mr-dj-eds-components</title>
+    <!-- Complianz Script (Placeholder URL) -->
+    <script src="https://cdn.complianz.io/consent-manager/complianz.js" data-site-id="YOUR_SITE_ID" async></script>
   </head>
   <body>
+    <!-- Google Tag Manager (noscript) (T8: Analytics & Events) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PLACEHOLDER"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

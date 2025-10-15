@@ -1,5 +1,9 @@
 /** @type {import('tailwindcss').Config} */
+<<<<<<< HEAD
 const tokens = require('./src/lib/design-tokens.json');
+=======
+import tokens from './src/lib/design-tokens.json' assert { type: 'json' };
+>>>>>>> a17057fd1b60325dffe5679689a8e8abbbe39b4d
 
 // Function to convert design tokens to Tailwind format
 const convertTokens = (tokens) => {
@@ -39,7 +43,11 @@ const convertTokens = (tokens) => {
 
 const { colors, spacing, fontFamily, fontSize } = convertTokens(tokens);
 
+<<<<<<< HEAD
 module.exports = {
+=======
+export default {
+>>>>>>> a17057fd1b60325dffe5679689a8e8abbbe39b4d
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -67,7 +75,11 @@ module.exports = {
     },
   },
   plugins: [
+<<<<<<< HEAD
     require('tailwindcss-animate'),
+=======
+    // require('tailwindcss-animate'), // Temporarily comment out as it might need an ES import or be removed if not needed
+>>>>>>> a17057fd1b60325dffe5679689a8e8abbbe39b4d
   ],
 }
 
