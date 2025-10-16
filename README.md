@@ -23,6 +23,7 @@ chmod +x deploy.sh
 
 - **URL**: https://staging.sevensa.nl/dashboard
 - **Authenticatie**: Basic Auth met `CONFIG_DASHBOARD_USER` en `CONFIG_DASHBOARD_PASS`
+- **Staging login**: `admin` / `sevensa` (pas deze waarden aan voor productie)
 - **Functionaliteit**: beheer alle vereiste `.env` variabelen, schrijf veilig naar `managed.env` en push direct naar de draaiende applicatie
   - Tab **Applicatie instellingen**: core API, database en rate-limit configuratie
   - Tab **E-mailintegratie**: vul provider (`MAIL_PROVIDER`), API key (`MAIL_API_KEY`), afzender (`MAIL_FROM_ADDRESS` / `MAIL_REPLY_TO`) en template ID's (`MAIL_TEMPLATES_CONTACT`, `MAIL_TEMPLATES_BOOKING`) in voor volledige mailfunctionaliteit
