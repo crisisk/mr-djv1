@@ -48,6 +48,13 @@ const DEFAULT_SECTION_CONFIG = [
     description:
       'API-parameters voor de synchronisatie van leads en boekingen richting de RentGuy applicatie.',
     keys: ['RENTGUY_API_BASE_URL', 'RENTGUY_API_KEY', 'RENTGUY_WORKSPACE_ID', 'RENTGUY_TIMEOUT_MS']
+  },
+  {
+    id: 'personalization',
+    label: 'Personalization & CRO',
+    description:
+      'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
+    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
   }
 ];
 
@@ -150,6 +157,9 @@ function buildConfig() {
         workspaceId: process.env.RENTGUY_WORKSPACE_ID || null,
         timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS)
       }
+    },
+    personalization: {
+      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null
     },
     dashboard: {
       enabled: dashboardEnabled,

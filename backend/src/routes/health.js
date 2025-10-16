@@ -39,7 +39,10 @@ router.get('/', (_req, res) => {
         }
       },
       integrations: {
-        rentGuy: rentGuyStatus
+        rentGuy: rentGuyStatus,
+        personalization: {
+          automationWebhookConfigured: Boolean(config.personalization?.automationWebhook)
+        }
       }
     }
   });

@@ -52,6 +52,7 @@ Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository
 | 2025-10-15 | Test- & kwaliteitsborging (UAT) | `docs/uat-report.md` | Dekking 95%+ voor backend tests, validatie van API-functionaliteit en documentatie van resterende aandachtspunten. | 26 | €2.100 |
 | 2025-10-15 | Performance, SEO & personalisatie-audits | `docs/performance-seo-research.md`, `docs/mail-integration-report.md` | Verbeterplan voor laadtijden, structured data, persona-fit en mailintegraties inclusief technische roadmap. | 30 | €2.400 |
 | 2025-10-16 | KPI roadmap, RentGuy integratie & QA-update | `docs/future-development-plan.md`, `docs/uat-report.md`, `docs/final-validation-status.md`, `backend/src/services/rentGuyService.js` | KPI-framework opgezet (bezoekers, leads, omzet, winst), persona journeys gemapt, realtime RentGuy-sync gebouwd en UAT-passrate >99% geborgd. | 30 | €2.450 |
+| 2025-10-17 | CRO-personalisatie & n8n automatisering | `content/personalization/keyword-variants.json`, `backend/src/services/personalizationService.js`, `mr-dj-eds-components/src/components/Templates/DjSaxLanding.jsx` | Keyword-intent engine met city-varianten, dynamische hero/features/pricing en event logging naar n8n voor CRO-dashboarding. | 34 | €2.750 |
 
 *Indicatie op basis van marktconforme tarieven (€70–€90/uur) en de meerwaarde van de functionaliteit richting conversie, SEO en compliance.
 
@@ -90,6 +91,7 @@ Gegeven de mate van maatwerk (design system, consent manager, local SEO scriptin
 - **Realtime consent & analytics**: de `ConsentManager` en design-system componenten sturen granular Consent Mode v2 en DataLayer-events uit voor CRO-metingen.
 - **Roadmap & KPI framework**: zie [`docs/future-development-plan.md`](docs/future-development-plan.md) voor doorontwikkeling, meetplan en persona journeys.
 - **RentGuy integratie**: backend synchroniseert contact- en bookingdata via [`rentGuyService`](backend/src/services/rentGuyService.js) met fallback queue + `/integrations/rentguy/status` monitor endpoint én dashboard-acties voor status refresh & queue flush.
+- **Keyword-personalisatie & CRO**: `/personalization/keyword` matcht intent (wedding/corporate/city) op basis van [`content/personalization/keyword-variants.json`](content/personalization/keyword-variants.json) en voedt de frontend-personalisatie + n8n webhook (`N8N_PERSONALIZATION_WEBHOOK_URL`).
 - [Mailintegratie onderzoek](docs/mail-integration-report.md)
 - [Performance, SEO & klantfit onderzoek](docs/performance-seo-research.md)
 

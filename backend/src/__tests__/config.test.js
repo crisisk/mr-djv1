@@ -36,6 +36,7 @@ describe('config', () => {
       workspaceId: null,
       timeoutMs: 5000
     });
+    expect(config.personalization).toEqual({ automationWebhook: null });
     expect(config.dashboard.enabled).toBe(false);
     expect(config.dashboard.username).toBeNull();
     expect(config.dashboard.password).toBeNull();
@@ -61,7 +62,8 @@ describe('config', () => {
       'RENTGUY_API_BASE_URL',
       'RENTGUY_API_KEY',
       'RENTGUY_WORKSPACE_ID',
-      'RENTGUY_TIMEOUT_MS'
+      'RENTGUY_TIMEOUT_MS',
+      'N8N_PERSONALIZATION_WEBHOOK_URL'
     ]);
     expect(config.dashboard.sections).toEqual([
       expect.objectContaining({
@@ -102,6 +104,11 @@ describe('config', () => {
           'RENTGUY_WORKSPACE_ID',
           'RENTGUY_TIMEOUT_MS'
         ]
+      }),
+      expect.objectContaining({
+        id: 'personalization',
+        label: 'Personalization & CRO',
+        keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
       })
     ]);
     expect(config.dashboard.storePath).toBe(DEFAULT_STORE_PATH);
@@ -159,6 +166,23 @@ describe('config', () => {
       })
     ]);
     expect(config.dashboard.storePath).toBe(path.resolve(process.cwd(), tmpPath));
+  });
+
+  it('exposes personalization automation webhook when configured', () => {
+    process.env = {
+      N8N_PERSONALIZATION_WEBHOOK_URL: 'https://n8n.test/webhook/personalization'
+    };
+
+    const config = loadConfig();
+
+    expect(config.personalization).toEqual({
+      automationWebhook: 'https://n8n.test/webhook/personalization'
+    });
+    const personalizationSection = config.dashboard.sections.find(
+      (section) => section.id === 'personalization'
+    );
+    expect(personalizationSection).toBeDefined();
+    expect(personalizationSection.keys).toContain('N8N_PERSONALIZATION_WEBHOOK_URL');
   });
 
   it('supports wildcard CORS configuration', () => {
