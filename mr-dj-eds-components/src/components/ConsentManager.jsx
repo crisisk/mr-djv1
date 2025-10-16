@@ -5,7 +5,7 @@ const ConsentContext = createContext(null);
 
 // Helper function to get the current consent status from Complianz
 const getConsentStatus = () => {
-  if (typeof window.complianz === 'undefined') {
+  if (typeof window === 'undefined' || typeof window.complianz === 'undefined') {
     return {
       functional: false,
       statistics: false,
@@ -24,6 +24,10 @@ export const ConsentManager = ({ children }) => {
   const [consent, setConsent] = useState(getConsentStatus());
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
     // Function to update the state when Complianz fires an event
     const handleConsentChange = () => {
       setConsent(getConsentStatus());
@@ -31,7 +35,7 @@ export const ConsentManager = ({ children }) => {
 
     // Complianz fires a custom event when consent is set or changed
     window.addEventListener('cmplz_fire_categories', handleConsentChange);
-    
+
     // Initial check in case the banner is already dismissed
     handleConsentChange();
 
@@ -39,6 +43,19 @@ export const ConsentManager = ({ children }) => {
       window.removeEventListener('cmplz_fire_categories', handleConsentChange);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.dataLayer === 'undefined') {
+      return;
+    }
+
+    window.dataLayer.push('consent', 'update', {
+      ad_storage: consent.marketing ? 'granted' : 'denied',
+      analytics_storage: consent.statistics ? 'granted' : 'denied',
+      ad_user_data: consent.marketing ? 'granted' : 'denied',
+      ad_personalization: consent.marketing ? 'granted' : 'denied',
+    });
+  }, [consent]);
 
   // The value provided to consumers
   const value = {
@@ -62,16 +79,3 @@ export const useConsent = () => {
   }
   return context;
 };
-
-// 4. Update the GCM v2 status when consent changes
-// This is crucial for Google Tag Manager to work correctly
-useEffect(() => {
-    if (typeof window.dataLayer !== 'undefined') {
-        window.dataLayer.push('consent', 'update', {
-            'ad_storage': consent.marketing ? 'granted' : 'denied',
-            'analytics_storage': consent.statistics ? 'granted' : 'denied',
-            'ad_user_data': consent.marketing ? 'granted' : 'denied',
-            'ad_personalization': consent.marketing ? 'granted' : 'denied',
-        });
-    }
-}, [consent]);

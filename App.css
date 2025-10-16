@@ -1,2 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Error><Code>AccessDenied</Code><Message>Access Denied</Message></Error>
+@import "tailwindcss";
+
+:root {
+  --color-primary-blue: #00AEEF;
+  --color-secondary-gold: #D4AF37;
+  --color-neutral-dark: #1A2C4B;
+  --color-neutral-light: #FFFFFF;
+  --color-neutral-gray-100: #F3F4F6;
+  --color-neutral-gray-500: #6B7280;
+  --color-semantic-success: #4CAF50;
+  --color-semantic-error: #FF4D4D;
+  --color-semantic-warning: #FFC107;
+
+  --font-family-primary: 'Montserrat', sans-serif;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  background-color: var(--color-neutral-gray-100);
+  color: var(--color-neutral-dark);
+}
+
+pre {
+  font-family: 'Fira Code', 'Courier New', monospace;
+}
