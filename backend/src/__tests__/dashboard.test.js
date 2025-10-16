@@ -15,6 +15,7 @@ describe('configuration dashboard', () => {
   let tempDir;
   let storePath;
   let authHeader;
+  let rentGuyService;
 
   beforeEach(async () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
@@ -32,6 +33,8 @@ describe('configuration dashboard', () => {
     jest.resetModules();
     const app = require('../app');
     server = http.createServer(app);
+    rentGuyService = require('../services/rentGuyService');
+    rentGuyService.reset();
 
     await new Promise((resolve) => {
       server.listen(0, '127.0.0.1', resolve);
@@ -48,6 +51,9 @@ describe('configuration dashboard', () => {
     });
 
     fs.rmSync(tempDir, { recursive: true, force: true });
+    if (rentGuyService?.reset) {
+      rentGuyService.reset();
+    }
     process.env = { ...ORIGINAL_ENV };
     jest.resetModules();
   });
@@ -123,5 +129,117 @@ describe('configuration dashboard', () => {
     const fileContents = fs.readFileSync(storePath, 'utf8');
     expect(fileContents).toContain('PORT=4500');
     expect(fileContents).toContain('DATABASE_URL=postgres://dashboard-db');
+  });
+
+  it('rejects invalid payloads with a 400 status code', async () => {
+    const response = await fetch(`${baseUrl}/dashboard/api/variables`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ entries: ['not', 'an', 'object'] })
+    });
+
+    expect(response.status).toBe(400);
+    const payload = await response.json();
+    expect(payload).toEqual({ error: 'Invalid payload' });
+  });
+
+  it('clears values when empty strings are provided and ignores null', async () => {
+    await fetch(`${baseUrl}/dashboard/api/variables`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        entries: {
+          PORT: '4500',
+          DATABASE_URL: 'postgres://dashboard-db'
+        }
+      })
+    });
+
+    const response = await fetch(`${baseUrl}/dashboard/api/variables`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        entries: {
+          PORT: '',
+          DATABASE_URL: null
+        }
+      })
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    const portEntry = payload.entries.find((entry) => entry.name === 'PORT');
+    expect(portEntry.hasValue).toBe(false);
+    expect(portEntry.preview).toBeNull();
+
+    const config = require('../config');
+    expect(config.port).toBe(3000);
+    expect(config.databaseUrl).toBe('postgres://dashboard-db');
+  });
+
+  it('exposes rentguy status through the dashboard API', async () => {
+    const response = await fetch(`${baseUrl}/dashboard/api/integrations/rentguy/status`, {
+      headers: {
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload).toEqual(
+      expect.objectContaining({
+        configured: false,
+        queueSize: 0
+      })
+    );
+  });
+
+  it('flushes the rentguy queue via the dashboard API', async () => {
+    await rentGuyService.syncLead(
+      {
+        id: 'lead-1',
+        status: 'pending',
+        eventType: 'wedding',
+        eventDate: new Date().toISOString(),
+        packageId: null,
+        name: 'Test Lead',
+        email: 'lead@example.com',
+        phone: '+31101234567',
+        message: 'Test',
+        persisted: false
+      },
+      { source: 'test-suite' }
+    );
+
+    const response = await fetch(`${baseUrl}/dashboard/api/integrations/rentguy/flush`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload).toEqual(
+      expect.objectContaining({
+        configured: false,
+        attempted: 0,
+        delivered: 0,
+        remaining: 1
+      })
+    );
+    expect(rentGuyService.getStatus().queueSize).toBe(1);
   });
 });

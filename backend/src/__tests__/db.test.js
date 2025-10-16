@@ -89,4 +89,72 @@ describe('database helper', () => {
 
     expect(warnSpy).toHaveBeenCalledWith('[db] Initial database connection failed:', 'initial failure');
   });
+
+  it('disposes the pool when configuration is removed', async () => {
+    jest.resetModules();
+    process.env.DATABASE_URL = 'postgres://initial';
+
+    const poolInstances = [];
+    jest.doMock('pg', () => ({
+      Pool: jest.fn(() => {
+        const instance = {
+          query: jest.fn().mockResolvedValue({ rows: [] }),
+          connect: jest.fn().mockResolvedValue({ release: jest.fn() }),
+          on: jest.fn(),
+          end: jest.fn().mockResolvedValue()
+        };
+        poolInstances.push(instance);
+        return instance;
+      })
+    }));
+
+    const db = require('../lib/db');
+    db.getPool();
+    await flushPromises();
+
+    delete process.env.DATABASE_URL;
+    const config = require('../config');
+    config.reload();
+
+    db.isConfigured();
+    await flushPromises();
+
+    expect(poolInstances[0].end).toHaveBeenCalledTimes(1);
+    expect(db.isConfigured()).toBe(false);
+    expect(db.getPool()).toBeNull();
+  });
+
+  it('recreates the pool when the connection string changes', async () => {
+    jest.resetModules();
+    process.env.DATABASE_URL = 'postgres://initial';
+
+    const poolInstances = [];
+    jest.doMock('pg', () => ({
+      Pool: jest.fn(() => {
+        const instance = {
+          query: jest.fn().mockResolvedValue({ rows: [] }),
+          connect: jest.fn().mockResolvedValue({ release: jest.fn() }),
+          on: jest.fn(),
+          end: jest.fn().mockResolvedValue()
+        };
+        poolInstances.push(instance);
+        return instance;
+      })
+    }));
+
+    const db = require('../lib/db');
+    db.getPool();
+    await flushPromises();
+
+    process.env.DATABASE_URL = 'postgres://next';
+    const config = require('../config');
+    config.reload();
+
+    const pool = db.getPool();
+    await flushPromises();
+
+    expect(poolInstances[0].end).toHaveBeenCalledTimes(1);
+    expect(poolInstances).toHaveLength(2);
+    expect(pool).toBe(poolInstances[1]);
+  });
 });
