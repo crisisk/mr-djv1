@@ -149,4 +149,33 @@ describe('config', () => {
     expect(config.rateLimit.windowMs).toBe(15 * 60 * 1000);
     expect(config.rateLimit.max).toBe(100);
   });
+
+  it('reloads configuration, copies arrays/objects and removes stale keys', () => {
+    process.env = {
+      CONFIG_DASHBOARD_ENABLED: 'true',
+      CONFIG_DASHBOARD_USER: 'admin',
+      CONFIG_DASHBOARD_PASS: 'secret',
+      CONFIG_DASHBOARD_KEYS: 'PORT,CUSTOM_KEY',
+      CUSTOM_KEY: 'value',
+      CORS_ORIGIN: ' , , '
+    };
+
+    const config = loadConfig();
+    expect(config.cors.origin).toBe('*');
+    const customSection = config.dashboard.sections.find((section) => section.id === 'custom');
+    expect(customSection).toBeDefined();
+    expect(customSection.keys).toEqual(['CUSTOM_KEY']);
+
+    config.temporary = 'remove-me';
+
+    process.env.CONFIG_DASHBOARD_KEYS = 'PORT';
+    delete process.env.CUSTOM_KEY;
+
+    const reloaded = config.reload();
+
+    expect(reloaded.dashboard.managedKeys).toEqual(['PORT']);
+    expect(reloaded.dashboard.sections.find((section) => section.id === 'custom')).toBeUndefined();
+    expect(reloaded.cors.origin).toBe('*');
+    expect(reloaded.temporary).toBeUndefined();
+  });
 });
