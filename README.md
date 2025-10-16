@@ -53,6 +53,7 @@ Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository
 | 2025-10-15 | Performance, SEO & personalisatie-audits | `docs/performance-seo-research.md`, `docs/mail-integration-report.md` | Verbeterplan voor laadtijden, structured data, persona-fit en mailintegraties inclusief technische roadmap. | 30 | €2.400 |
 | 2025-10-16 | KPI roadmap, RentGuy integratie & QA-update | `docs/future-development-plan.md`, `docs/uat-report.md`, `docs/final-validation-status.md`, `backend/src/services/rentGuyService.js` | KPI-framework opgezet (bezoekers, leads, omzet, winst), persona journeys gemapt, realtime RentGuy-sync gebouwd en UAT-passrate >99% geborgd. | 30 | €2.450 |
 | 2025-10-17 | CRO-personalisatie & n8n automatisering | `content/personalization/keyword-variants.json`, `backend/src/services/personalizationService.js`, `mr-dj-eds-components/src/components/Templates/DjSaxLanding.jsx` | Keyword-intent engine met city-varianten, dynamische hero/features/pricing en event logging naar n8n voor CRO-dashboarding. | 34 | €2.750 |
+| 2025-10-18 | Interne city content automatisering & waardegroei-plan | `backend/src/services/cityContentAutomationService.js`, `scripts/automation/run-city-content-workflow.js`, `docs/value-acceleration-plan.md` | Maandelijkse keyword ingest + LLM-template generatie zonder n8n, automatische JSON/HTML build en roadmap naar €25k–€30k waardering. | 36 | €3.150 |
 
 *Indicatie op basis van marktconforme tarieven (€70–€90/uur) en de meerwaarde van de functionaliteit richting conversie, SEO en compliance.
 
@@ -78,20 +79,23 @@ Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository
 
 **Totale projectwaarde (indicatie)**
 
-- **Basis scenario (gem. €70/uur, 185 uur)**: ± €12.950
-- **Midden scenario (gem. €80/uur, 205 uur)**: ± €16.400
-- **Premium scenario (gem. €90/uur, 225 uur)**: ± €20.250
+- **Basis scenario (gem. €75/uur, 230 uur)**: ± €17.250
+- **Midden scenario (gem. €85/uur, 260 uur)**: ± €22.100
+- **Premium scenario (gem. €95/uur, 285 uur)**: ± €27.075
 
-Gegeven de mate van maatwerk (design system, consent manager, local SEO scripting, dashboard voor configuratie) ligt de marktwaarde van de huidige website naar verwachting rond **€15.000 – €20.000**. Verdere doorontwikkeling (bijv. extra city pages, automatisering, CRO-experimenten) kan per iteratie 10–15% waardevermeerdering opleveren wanneer de activiteiten focussen op meetbare KPI’s.
+Met de uitgebreide automatisering, configuratie-dashboard, RentGuy-koppeling en CRO-personalisatie beweegt de website nu richting een marktwaarde van **€23.000 – €28.000**, waarbij het waarde-accelleratieplan duidelijke stappen naar de **€25.000 – €30.000** bandbreedte definieert. Elke nieuwe automatiseringsrun voegt bovendien schaalbare content toe waardoor SEO-traffic en conversies stijgen.
 
 ## 🛠️ Nieuwe optimalisaties
 
 - **Pricing money page**: `/pricing/` toont alle pakketten als indexeerbare HTML met Offer/Service schema en koppelt direct naar het contactproces.
 - **Local SEO generator**: `node scripts/generate-city-pages.mjs` rendert 12 city-pages op basis van `content/local-seo/cities.json` inclusief cases, venues en FAQ. Draai het script na updates van de JSON.
 - **Realtime consent & analytics**: de `ConsentManager` en design-system componenten sturen granular Consent Mode v2 en DataLayer-events uit voor CRO-metingen.
+- **Availability checker → API**: de Availability Checker stuurt nu volledige boekingsaanvragen (naam, datum, eventtype, pakket) naar `/api/bookings` zodat RentGuy direct gevoed wordt en succesfouten worden teruggekoppeld in de UI.
 - **Roadmap & KPI framework**: zie [`docs/future-development-plan.md`](docs/future-development-plan.md) voor doorontwikkeling, meetplan en persona journeys.
 - **RentGuy integratie**: backend synchroniseert contact- en bookingdata via [`rentGuyService`](backend/src/services/rentGuyService.js) met fallback queue + `/integrations/rentguy/status` monitor endpoint én dashboard-acties voor status refresh & queue flush.
 - **Keyword-personalisatie & CRO**: `/personalization/keyword` matcht intent (wedding/corporate/city) op basis van [`content/personalization/keyword-variants.json`](content/personalization/keyword-variants.json) en voedt de frontend-personalisatie + n8n webhook (`N8N_PERSONALIZATION_WEBHOOK_URL`).
+- **City content workflow (zonder n8n)**: draai `node scripts/automation/run-city-content-workflow.js --limit=5` om maandelijks keywords binnen te halen, content te genereren en statische city pages up-to-date te houden. Status wordt gelogd naar [`docs/city-content-automation-report.md`](docs/city-content-automation-report.md).
+- **Interne automatisering documentatie**: [`docs/internal-city-automation.md`](docs/internal-city-automation.md) beschrijft architectuur, configuratie en monitoring van de workflow zonder n8n.
 - [Mailintegratie onderzoek](docs/mail-integration-report.md)
 - [Performance, SEO & klantfit onderzoek](docs/performance-seo-research.md)
 
