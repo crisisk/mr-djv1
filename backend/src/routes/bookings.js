@@ -55,7 +55,8 @@ router.post('/', bookingValidations, async (req, res, next) => {
       message: 'Bedankt voor je boeking! We nemen binnen 24 uur contact op.',
       bookingId: booking.id,
       status: booking.status,
-      persisted: booking.persisted
+      persisted: booking.persisted,
+      rentGuySync: booking.rentGuySync
     });
   } catch (error) {
     next(error);
