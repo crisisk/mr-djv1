@@ -1,3 +1,5 @@
+const fs = require('fs/promises');
+const path = require('path');
 const db = require('../lib/db');
 const cache = require('../lib/cache');
 
@@ -55,6 +57,7 @@ const fallbackPackages = [
 
 const CACHE_KEY = 'packages-service';
 const CACHE_TTL = 5 * 60 * 1000;
+const CONTENT_PACKAGES_DIR = path.join(__dirname, '../../..', 'content', 'pakketten');
 
 function mapDatabasePackages(result) {
   if (!result) return null;
@@ -85,6 +88,42 @@ async function getPackages({ forceRefresh = false } = {}) {
     packages: fallbackPackages,
     source: 'static'
   };
+
+  try {
+    const files = await fs.readdir(CONTENT_PACKAGES_DIR);
+    const packages = [];
+
+    for (const file of files) {
+      if (!file.endsWith('.json')) {
+        continue;
+      }
+
+      const content = await fs.readFile(path.join(CONTENT_PACKAGES_DIR, file), 'utf8');
+      const parsed = JSON.parse(content);
+      packages.push({
+        id: parsed.id || parsed.title?.toLowerCase() || file.replace(/\.json$/, ''),
+        name: parsed.title || parsed.name,
+        price: Number(parsed.price) || 0,
+        duration: parsed.duration || null,
+        description: parsed.description || '',
+        features: Array.isArray(parsed.features) ? parsed.features : [],
+        popular: Boolean(parsed.popular),
+        order: Number.isFinite(parsed.order) ? parsed.order : Number.MAX_SAFE_INTEGER
+      });
+    }
+
+    if (packages.length) {
+      const sortedPackages = packages
+        .sort((a, b) => a.order - b.order)
+        .map(({ order, ...pkg }) => pkg);
+      response = {
+        packages: sortedPackages,
+        source: 'content'
+      };
+    }
+  } catch (error) {
+    console.error('[packageService] Failed to load packages from content directory:', error.message);
+  }
 
   if (db.isConfigured()) {
     try {

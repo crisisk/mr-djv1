@@ -1,6 +1,7 @@
 const { randomUUID } = require('crypto');
 const db = require('../lib/db');
 const rentGuyService = require('./rentGuyService');
+const hubspotService = require('./hubspotService');
 
 const inMemoryContacts = new Map();
 
@@ -97,9 +98,41 @@ async function saveContact(payload) {
     }
   );
 
+  const [firstName, ...lastNameParts] = (payload.name || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  const lastName = lastNameParts.length ? lastNameParts.join(' ') : undefined;
+  const eventDateIso = (() => {
+    if (!result.eventDate) {
+      return null;
+    }
+
+    const date = result.eventDate instanceof Date ? result.eventDate : new Date(result.eventDate);
+    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  })();
+
+  const hubSpotSync = await hubspotService.submitLead(
+    {
+      id: result.id,
+      firstName: firstName || undefined,
+      lastName,
+      email: result.email,
+      phone: result.phone,
+      eventType: result.eventType,
+      eventDate: eventDateIso,
+      packageId: result.packageId,
+      message: result.message,
+      source: 'contact-form',
+      persisted: result.persisted
+    },
+    { source: 'contact-form' }
+  );
+
   return {
     ...result,
-    rentGuySync
+    rentGuySync,
+    hubSpotSync
   };
 }
 

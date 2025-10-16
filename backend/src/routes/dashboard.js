@@ -2,6 +2,7 @@ const express = require('express');
 const dashboardAuth = require('../middleware/dashboardAuth');
 const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
+const hubspotService = require('../services/hubspotService');
 
 const router = express.Router();
 
@@ -380,6 +381,7 @@ function renderPage() {
       let managedKeys = [];
       let currentGroupId = null;
       let rentGuyStatusControls = null;
+      let hubSpotStatusControls = null;
 
       const FIELD_METADATA = {
         RENTGUY_API_BASE_URL: {
@@ -403,6 +405,25 @@ function renderPage() {
           min: '1000',
           step: '500',
           hint: 'Timeout in milliseconden voor API-calls. Laat leeg voor de standaardwaarde van 5000ms.'
+        },
+        HUBSPOT_SUBMIT_URL: {
+          placeholder: 'https://api.hsforms.com/submissions/v3/...',
+          hint: 'Volledige HubSpot submit URL vanuit het rentguy Config Dashboard (portal & form ID inbegrepen).',
+          autocomplete: 'off'
+        },
+        HUBSPOT_QUEUE_RETRY_DELAY_MS: {
+          type: 'number',
+          inputMode: 'numeric',
+          min: '1000',
+          step: '1000',
+          hint: 'Basis retry-interval in milliseconden voor HubSpot queue verwerking (standaard 15000ms).'
+        },
+        HUBSPOT_QUEUE_MAX_ATTEMPTS: {
+          type: 'number',
+          inputMode: 'numeric',
+          min: '1',
+          step: '1',
+          hint: 'Maximale aantal verstuurpogingen voordat een lead in de dead letter queue terechtkomt (standaard 5).'
         }
       };
 
@@ -632,6 +653,93 @@ function renderPage() {
         return card;
       }
 
+      function createHubSpotStatusCard() {
+        const card = document.createElement('section');
+        card.className = 'field integration-card';
+
+        const heading = document.createElement('h2');
+        heading.textContent = 'HubSpot submit & queue status';
+        card.appendChild(heading);
+
+        const description = document.createElement('p');
+        description.className = 'hint';
+        description.textContent =
+          'Monitor de HubSpot submit URL, retry-queue en dead letters. Gebruik flush voor handmatige retries of verifieer de submit URL via rentguy instructies.';
+        card.appendChild(description);
+
+        const indicator = document.createElement('div');
+        indicator.className = 'status-pill';
+        indicator.dataset.state = 'missing';
+        indicator.textContent = 'Submit URL ontbreekt';
+        card.appendChild(indicator);
+
+        const statusGrid = document.createElement('dl');
+        statusGrid.className = 'status-grid';
+
+        function createRow(label) {
+          const dt = document.createElement('dt');
+          dt.textContent = label;
+          const dd = document.createElement('dd');
+          dd.textContent = '—';
+          statusGrid.appendChild(dt);
+          statusGrid.appendChild(dd);
+          return dd;
+        }
+
+        const queueValue = createRow('Queue grootte');
+        const deadLetterValue = createRow('Dead letters');
+        const nextAttemptValue = createRow('Volgende retry');
+        const lastErrorValue = createRow('Laatste fout');
+
+        card.appendChild(statusGrid);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const refreshButton = document.createElement('button');
+        refreshButton.type = 'button';
+        refreshButton.className = 'secondary';
+        refreshButton.textContent = 'Status verversen';
+        refreshButton.addEventListener('click', () => {
+          refreshHubSpotStatus(true).catch((error) => {
+            console.error(error);
+          });
+        });
+        actions.appendChild(refreshButton);
+
+        const flushButton = document.createElement('button');
+        flushButton.type = 'button';
+        flushButton.className = 'secondary danger';
+        flushButton.textContent = 'Queue flushen';
+        flushButton.disabled = true;
+        flushButton.addEventListener('click', () => {
+          flushHubSpotQueue().catch((error) => {
+            console.error(error);
+          });
+        });
+        actions.appendChild(flushButton);
+
+        card.appendChild(actions);
+
+        const resultMessage = document.createElement('p');
+        resultMessage.className = 'hint result';
+        card.appendChild(resultMessage);
+
+        hubSpotStatusControls = {
+          card,
+          indicator,
+          queueValue,
+          deadLetterValue,
+          nextAttemptValue,
+          lastErrorValue,
+          refreshButton,
+          flushButton,
+          resultMessage
+        };
+
+        return card;
+      }
+
       function renderRentGuyStatus(status) {
         if (!rentGuyStatusControls) {
           return;
@@ -650,7 +758,7 @@ function renderPage() {
           const resource = success.resource || 'onbekend';
           const attempts = Number.isFinite(success.attempts) ? success.attempts : 0;
           rentGuyStatusControls.lastSuccessValue.textContent =
-            formatDateTime(success.at) + ' • ' + resource + ' (' + attempts + ' poging(en))';
+            formatDateTime(success.at) + ' - ' + resource + ' (' + attempts + ' poging(en))';
         } else {
           rentGuyStatusControls.lastSuccessValue.textContent = 'Nog geen succesvolle sync';
         }
@@ -659,7 +767,7 @@ function renderPage() {
           const errorInfo = status.lastSyncError;
           const message = errorInfo.message || 'Onbekende fout';
           rentGuyStatusControls.lastErrorValue.textContent =
-            formatDateTime(errorInfo.at) + ' • ' + message;
+            formatDateTime(errorInfo.at) + ' - ' + message;
         } else {
           rentGuyStatusControls.lastErrorValue.textContent = 'Geen fouten geregistreerd';
         }
@@ -669,12 +777,53 @@ function renderPage() {
           const resource = next.resource || 'onbekend';
           const attempts = Number.isFinite(next.attempts) ? next.attempts : 0;
           rentGuyStatusControls.nextRetryValue.textContent =
-            formatDateTime(next.enqueuedAt) + ' • ' + resource + ' (' + attempts + ' poging(en))';
+            formatDateTime(next.enqueuedAt) + ' - ' + resource + ' (' + attempts + ' poging(en))';
         } else {
           rentGuyStatusControls.nextRetryValue.textContent = 'Geen wachtrij';
         }
 
         rentGuyStatusControls.flushButton.disabled = !configured || queueSize === 0;
+      }
+
+      function renderHubSpotStatus(status) {
+        if (!hubSpotStatusControls) {
+          return;
+        }
+
+        const configured = Boolean(status && status.configured);
+        hubSpotStatusControls.indicator.dataset.state = configured ? 'configured' : 'missing';
+        hubSpotStatusControls.indicator.textContent = configured
+          ? 'Submit URL actief'
+          : 'Submit URL ontbreekt';
+
+        const queueSize = status && Number.isFinite(status.queueSize) ? status.queueSize : 0;
+        hubSpotStatusControls.queueValue.textContent = String(queueSize);
+
+        const deadLetters = status && Number.isFinite(status.deadLetterCount) ? status.deadLetterCount : 0;
+        hubSpotStatusControls.deadLetterValue.textContent = String(deadLetters);
+
+        if (status && status.nextInQueue) {
+          const next = status.nextInQueue;
+          const attempts = Number.isFinite(next.attempts) ? next.attempts : 0;
+          const detail = next.lastError ? ' - ' + next.lastError : '';
+          hubSpotStatusControls.nextAttemptValue.textContent =
+            formatDateTime(next.nextAttemptAt) + ' - poging ' + attempts + detail;
+        } else {
+          hubSpotStatusControls.nextAttemptValue.textContent = 'Geen wachtrij actief';
+        }
+
+        if (status && status.lastDeadLetter) {
+          const dead = status.lastDeadLetter;
+          const message = dead.lastError || 'Onbekende fout';
+          hubSpotStatusControls.lastErrorValue.textContent =
+            formatDateTime(dead.droppedAt) + ' - ' + message;
+        } else if (status && status.nextInQueue && status.nextInQueue.lastError) {
+          hubSpotStatusControls.lastErrorValue.textContent = status.nextInQueue.lastError;
+        } else {
+          hubSpotStatusControls.lastErrorValue.textContent = 'Geen fouten geregistreerd';
+        }
+
+        hubSpotStatusControls.flushButton.disabled = !configured || queueSize === 0;
       }
 
       async function refreshRentGuyStatus(showToastOnSuccess = false) {
@@ -705,6 +854,92 @@ function renderPage() {
           showToast(error.message || 'RentGuy status niet beschikbaar');
         } finally {
           delete rentGuyStatusControls.card.dataset.loading;
+        }
+      }
+
+      async function refreshHubSpotStatus(showToastOnSuccess = false) {
+        if (!hubSpotStatusControls) {
+          return;
+        }
+
+        hubSpotStatusControls.card.dataset.loading = 'true';
+        hubSpotStatusControls.resultMessage.textContent = '';
+
+        try {
+          const response = await fetch('./api/integrations/hubspot/status', {
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon HubSpot status niet ophalen');
+          }
+
+          const payload = await response.json();
+          renderHubSpotStatus(payload);
+          if (showToastOnSuccess) {
+            showToast('HubSpot status bijgewerkt');
+          }
+        } catch (error) {
+          console.error(error);
+          hubSpotStatusControls.resultMessage.textContent = error.message || 'HubSpot status niet beschikbaar';
+          showToast(error.message || 'HubSpot status niet beschikbaar');
+        } finally {
+          delete hubSpotStatusControls.card.dataset.loading;
+        }
+      }
+
+      async function flushHubSpotQueue() {
+        if (!hubSpotStatusControls) {
+          return;
+        }
+
+        hubSpotStatusControls.card.dataset.loading = 'true';
+        hubSpotStatusControls.resultMessage.textContent = '';
+
+        try {
+          const response = await fetch('./api/integrations/hubspot/flush', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            },
+            body: JSON.stringify({})
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon HubSpot queue niet flushen');
+          }
+
+          const payload = await response.json();
+          if (!payload.configured) {
+            hubSpotStatusControls.resultMessage.textContent =
+              'Submit URL ontbreekt – configureer eerst de HubSpot submit URL.';
+            showToast('HubSpot flush overgeslagen: configureer de submit URL');
+            await refreshHubSpotStatus();
+            return;
+          }
+
+          hubSpotStatusControls.resultMessage.textContent =
+            'Flush uitgevoerd: ' +
+            payload.delivered +
+            '/' +
+            payload.attempted +
+            ' verstuurd, ' +
+            payload.remaining +
+            ' resterend.';
+          showToast('HubSpot queue flush uitgevoerd');
+          await refreshHubSpotStatus();
+        } catch (error) {
+          console.error(error);
+          hubSpotStatusControls.resultMessage.textContent = error.message || 'Flush mislukt';
+          showToast(error.message || 'HubSpot flush mislukt');
+          try {
+            await refreshHubSpotStatus();
+          } catch (refreshError) {
+            console.error(refreshError);
+          }
+        } finally {
+          delete hubSpotStatusControls.card.dataset.loading;
         }
       }
 
@@ -783,6 +1018,8 @@ function renderPage() {
 
         if (group.id === 'rentguy') {
           section.appendChild(createRentGuyStatusCard());
+        } else if (group.id === 'automation') {
+          section.appendChild(createHubSpotStatusCard());
         }
 
         const entries = Array.isArray(group.entries) ? group.entries : [];
@@ -797,6 +1034,7 @@ function renderPage() {
         tabsContainer.innerHTML = '';
         groupsContainer.innerHTML = '';
         rentGuyStatusControls = null;
+        hubSpotStatusControls = null;
 
         if (!groups.length) {
           tabsContainer.dataset.hidden = 'true';
@@ -842,6 +1080,12 @@ function renderPage() {
             console.error(error);
           });
         }
+
+        if (hubSpotStatusControls) {
+          refreshHubSpotStatus().catch((error) => {
+            console.error(error);
+          });
+        }
       }
 
       async function loadState() {
@@ -866,7 +1110,7 @@ function renderPage() {
         if (payload.metadata?.storePath) {
           metadataItems.push('Opslagbestand: ' + payload.metadata.storePath);
         }
-        metadataEl.textContent = metadataItems.join(' • ');
+        metadataEl.textContent = metadataItems.join(' - ');
       }
 
       form.addEventListener('submit', async (event) => {
@@ -957,6 +1201,22 @@ router.post('/api/integrations/rentguy/flush', async (req, res, next) => {
     const parsedLimit = Number(rawLimit);
     const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
     const result = await rentGuyService.flushQueue(limit);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/api/integrations/hubspot/status', (_req, res) => {
+  res.json(hubspotService.getStatus());
+});
+
+router.post('/api/integrations/hubspot/flush', async (req, res, next) => {
+  try {
+    const rawLimit = req.body?.limit;
+    const parsedLimit = Number(rawLimit);
+    const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
+    const result = await hubspotService.flushQueue(limit);
     res.json(result);
   } catch (error) {
     next(error);

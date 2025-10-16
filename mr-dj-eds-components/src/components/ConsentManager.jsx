@@ -1,76 +1,24 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import {
+  getInitialConsent,
+  pushConsentToDataLayer,
+  createConsentStateUpdater,
+  subscribeToComplianz
+} from '../lib/consentUtils.js';
 
 const ConsentContext = createContext(null);
 
-const getInitialConsent = () => {
-  if (typeof window === 'undefined') {
-    return {
-      ad_storage: false,
-      analytics_storage: false,
-      ad_user_data: false,
-      ad_personalization: false,
-    };
-  }
-
-  if (window.complianz?.user_preferences) {
-    const prefs = window.complianz.user_preferences;
-    return {
-      ad_storage: prefs.marketing === 'allow',
-      analytics_storage: prefs.statistics === 'allow',
-      ad_user_data: prefs.marketing === 'allow',
-      ad_personalization: prefs.marketing === 'allow',
-    };
-  }
-
-  return {
-    ad_storage: false,
-    analytics_storage: false,
-    ad_user_data: false,
-    ad_personalization: false,
-  };
-};
-
-const pushConsentToDataLayer = (consent) => {
-  if (typeof window === 'undefined') return;
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: 'consent_update',
-    event_timestamp: new Date().toISOString(),
-    ...consent,
-  });
-
-  if (window.gtag) {
-    window.gtag('consent', 'update', consent);
-  }
-};
-
 export const ConsentManager = ({ children, showControls = false }) => {
-  const [consent, setConsent] = useState(getInitialConsent);
-
-  const updateConsent = (partial) => {
-    setConsent((prev) => {
-      const next = { ...prev, ...partial };
-      pushConsentToDataLayer(next);
-      return next;
-    });
-  };
+  const [consent, setConsent] = useState(() => getInitialConsent());
+  const updateConsent = createConsentStateUpdater(setConsent);
 
   useEffect(() => {
-    const handleConsentChange = () => {
-      const next = getInitialConsent();
-      setConsent(next);
-      pushConsentToDataLayer(next);
-    };
-
-    window.addEventListener('cmplz_fire_categories', handleConsentChange);
-    handleConsentChange();
-
-    return () => window.removeEventListener('cmplz_fire_categories', handleConsentChange);
+    return subscribeToComplianz(setConsent);
   }, []);
 
   useEffect(() => {
     pushConsentToDataLayer(consent);
-  }, []);
+  }, [consent]);
 
   const value = useMemo(
     () => ({
@@ -78,7 +26,7 @@ export const ConsentManager = ({ children, showControls = false }) => {
       setConsent: updateConsent,
       isAllowed: (category) => Boolean(consent[category]),
     }),
-    [consent]
+    [consent, updateConsent]
   );
 
   return (

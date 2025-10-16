@@ -137,6 +137,45 @@
     ]
   },
   {
+    "slug": "dj-maastricht",
+    "city": "Maastricht",
+    "intro": "Van het Vrijthof tot Château Neercanne: Maastricht vraagt om meertalige hosts en elegante audio styling.",
+    "cases": [
+      { "title": "Château Neercanne gala", "result": "String intro + club finale", "venue": "Château Neercanne" },
+      { "title": "TEFAF afterparty", "result": "Internationaal guest mix", "venue": "MECC" }
+    ],
+    "venues": ["Château Neercanne", "MECC", "Sint Janskerk"],
+    "faqs": [
+      { "question": "Ondersteunen jullie meertalige ceremonies?", "answer": "Ja, ons MC-team spreekt Nederlands, Engels en Duits." },
+      { "question": "Hoe gaan jullie om met monumentale locaties?", "answer": "We gebruiken discrete line arrays en gedempte flightcases om schade te voorkomen." }
+    ]
+  },
+  {
+    "slug": "dj-venlo",
+    "city": "Venlo",
+    "intro": "Logistieke hotspot met veel internationale bedrijven: we combineren corporate formats met Limburgse sfeer.",
+    "cases": [
+      { "title": "Floriade closing party", "result": "Duitse en Nederlandse sets", "venue": "Floriade terrein" },
+      { "title": "Cimpress corporate", "result": "Realtime requests app", "venue": "Brightlands Campus" }
+    ],
+    "venues": ["Brightlands Campus", "Domani Venlo", "Parkhotel Horst"],
+    "faqs": [
+      { "question": "Kunnen jullie vroeg opbouwen?", "answer": "Ja, onze crew plant nachtelijke opbouw zodat logistiek niet hindert." }
+    ]
+  },
+  {
+    "slug": "dj-roermond",
+    "city": "Roermond",
+    "intro": "Designer Outlet, Kasteelhoeve en waterlocaties vragen om flexibele timecodes en outdoor audio.",
+    "cases": [
+      { "title": "Designer Outlet summer nights", "result": "+22% verblijftijd", "venue": "Designer Outlet Roermond" }
+    ],
+    "venues": ["Designer Outlet Roermond", "Kasteelhoeve de Grote Hegge", "ECI Cultuurfabriek"],
+    "faqs": [
+      { "question": "Leveren jullie branding?", "answer": "Ja, wij verzorgen branded DJ-booths en LED visuals voor outlet events." }
+    ]
+  },
+  {
     "slug": "dj-hilversum",
     "city": "Hilversum",
     "intro": "Mediastad events vragen om snelle cues en broadcast-kwaliteit audio. Mister DJ werkt vaak samen met TV-crews.",
@@ -146,6 +185,31 @@
     "venues": ["Mediapark", "Gooiland", "Spant!"],
     "faqs": [
       { "question": "Kunnen jullie timecode leveren?", "answer": "Ja, wij leveren LTC/MTC voor broadcast syncing." }
+    ]
+  },
+  {
+    "slug": "dj-zwolle",
+    "city": "Zwolle",
+    "intro": "Hanzestad events combineren historische zalen met moderne bedrijven. We stemmen licht en geluid af op de Sassenpoort en IJsselhallen.",
+    "cases": [
+      { "title": "Hedon bedrijfsfeest", "result": "Live band + DJ mash-up", "venue": "Hedon" },
+      { "title": "Windesheim introductie", "result": "6 area silent disco", "venue": "IJsselhallen" }
+    ],
+    "venues": ["Hedon", "IJsselhallen", "Sassenpoort"],
+    "faqs": [
+      { "question": "Kunnen jullie samenwerken met lokale bands?", "answer": "Ja, wij leveren hybride sets en stemmen cues af met bandleaders." }
+    ]
+  },
+  {
+    "slug": "dj-deventer",
+    "city": "Deventer",
+    "intro": "Evenementen op de IJsselkade en in de Lebuïnuskerk vragen om uitgekiende akoestiek en crowd management.",
+    "cases": [
+      { "title": "Deventer Business Fair", "result": "Live lead scoring via app", "venue": "Boreel Kazerne" }
+    ],
+    "venues": ["Boreel Kazerne", "Lebuïnuskerk", "IJsselhotel"],
+    "faqs": [
+      { "question": "Hoe houden jullie rekening met geluidsnormen aan de IJssel?", "answer": "We meten realtime dB en schakelen naar cardioïde subs bij strenge norm." }
     ]
   }
 ]

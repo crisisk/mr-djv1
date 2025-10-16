@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { trackEvent } from '../lib/analytics.js';
+import { resolveApiBase } from '../lib/apiBase.js';
 
 const FALLBACK_PERSONALIZATION = {
   id: 'default_master',
@@ -16,7 +17,44 @@ const FALLBACK_PERSONALIZATION = {
       { label: 'Events per jaar', value: '450+' },
       { label: 'Gem. rating', value: '9,6' },
       { label: 'Gem. responstijd', value: '<12 uur' }
-    ]
+    ],
+    abTest: {
+      id: 'video-hero-q4-2025',
+      defaultVariant: 'video',
+      variants: {
+        video: 0.6,
+        classic: 0.4
+      }
+    },
+    videoHero: {
+      poster: 'https://images.rentguy.nl/mrdj/video-hero-poster.jpg',
+      overlay: 'radial',
+      sources: [
+        { src: 'https://videos.rentguy.nl/mrdj/showreel-2025.mp4', type: 'video/mp4' },
+        { src: 'https://videos.rentguy.nl/mrdj/showreel-2025.webm', type: 'video/webm' }
+      ]
+    },
+    personaMicrocopy: {
+      corporate: {
+        primary: 'Plan demo binnen 24 uur',
+        secondary: 'Inclusief ROI-sheet en automation advies.'
+      },
+      wedding: {
+        primary: 'Reserveer jullie datum direct',
+        secondary: 'Gratis draaiboek template t.w.v. €195.'
+      },
+      nightlife: {
+        primary: 'Drop je rider & wishlist',
+        secondary: 'We leveren AV-crew en content team.'
+      },
+      local: {
+        primary: 'Lokale crew beschikbaar',
+        secondary: 'Inclusief kennismaking op locatie.'
+      },
+      default: {
+        primary: 'Check beschikbaarheid en ontvang voorstel.'
+      }
+    }
   },
   features: {
     title: 'Waarom Mister DJ werkt',
@@ -80,16 +118,6 @@ const FALLBACK_PERSONALIZATION = {
     successMessage: 'Bedankt! Het team neemt binnen 12 uur contact op.'
   }
 };
-
-function resolveApiBase() {
-  const envBase = typeof import.meta !== 'undefined' ? import.meta?.env?.VITE_BACKEND_URL || import.meta?.env?.VITE_API_BASE_URL : null;
-
-  if (envBase && typeof envBase === 'string') {
-    return envBase.replace(/\/$/, '');
-  }
-
-  return '/api';
-}
 
 function mergePersonalization(base, variant) {
   if (!variant) {

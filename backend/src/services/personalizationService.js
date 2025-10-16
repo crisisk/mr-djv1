@@ -2,6 +2,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const cache = require('../lib/cache');
 const config = require('../config');
+const rentGuyService = require('./rentGuyService');
 
 const VARIANT_CACHE_KEY = 'personalization:variants';
 const VARIANT_CACHE_TTL = 5 * 60 * 1000;
@@ -431,31 +432,45 @@ async function matchCityVariant(keywordData, baseVariant) {
 }
 
 async function notifyAutomation(payload) {
+  const deliveries = [];
   const webhookUrl = config.personalization?.automationWebhook;
 
-  if (!webhookUrl) {
-    return false;
+  if (webhookUrl) {
+    deliveries.push(
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then((response) => {
+          if (!response.ok) {
+            console.error('[personalizationService] n8n webhook returned', response.status);
+            return false;
+          }
+
+          return true;
+        })
+        .catch((error) => {
+          console.error('[personalizationService] Failed to trigger n8n webhook:', error.message);
+          return false;
+        })
+    );
   }
 
-  try {
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
+  deliveries.push(
+    rentGuyService
+      .syncPersonalizationEvent(payload, { source: 'personalization-pipeline' })
+      .then((result) => Boolean(result?.delivered || result?.queued))
+      .catch((error) => {
+        console.error('[personalizationService] Failed to queue event for RentGuy:', error.message);
+        return false;
+      })
+  );
 
-    if (!response.ok) {
-      console.error('[personalizationService] n8n webhook returned', response.status);
-      return false;
-    }
-
-    return true;
-  } catch (error) {
-    console.error('[personalizationService] Failed to trigger n8n webhook:', error.message);
-    return false;
-  }
+  const results = await Promise.all(deliveries);
+  return results.some(Boolean);
 }
 
 async function getVariantForRequest(context = {}) {

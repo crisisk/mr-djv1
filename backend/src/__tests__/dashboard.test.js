@@ -16,6 +16,7 @@ describe('configuration dashboard', () => {
   let storePath;
   let authHeader;
   let rentGuyService;
+  let hubspotService;
 
   beforeEach(async () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
@@ -35,6 +36,8 @@ describe('configuration dashboard', () => {
     server = http.createServer(app);
     rentGuyService = require('../services/rentGuyService');
     rentGuyService.reset();
+    hubspotService = require('../services/hubspotService');
+    hubspotService.reset();
 
     await new Promise((resolve) => {
       server.listen(0, '127.0.0.1', resolve);
@@ -46,13 +49,19 @@ describe('configuration dashboard', () => {
   });
 
   afterEach(async () => {
-    await new Promise((resolve) => {
-      server.close(resolve);
-    });
+    if (server) {
+      await new Promise((resolve) => {
+        server.close(resolve);
+      });
+      server = null;
+    }
 
     fs.rmSync(tempDir, { recursive: true, force: true });
     if (rentGuyService?.reset) {
       rentGuyService.reset();
+    }
+    if (hubspotService?.reset) {
+      hubspotService.reset();
     }
     process.env = { ...ORIGINAL_ENV };
     jest.resetModules();
@@ -241,5 +250,47 @@ describe('configuration dashboard', () => {
       })
     );
     expect(rentGuyService.getStatus().queueSize).toBe(1);
+  });
+
+  it('exposes hubspot status through the dashboard API', async () => {
+    const response = await fetch(`${baseUrl}/dashboard/api/integrations/hubspot/status`, {
+      headers: {
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload).toEqual(expect.objectContaining({ configured: false, queueSize: 0 }));
+  });
+
+  it('flushes the hubspot queue via the dashboard API', async () => {
+    await hubspotService.submitLead({
+      id: 'lead-hubspot-1',
+      email: 'queued@example.com',
+      firstName: 'Queued'
+    });
+
+    const response = await fetch(`${baseUrl}/dashboard/api/integrations/hubspot/flush`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload).toEqual(
+      expect.objectContaining({
+        configured: false,
+        attempted: 0,
+        delivered: 0,
+        remaining: 1
+      })
+    );
+    expect(hubspotService.getStatus().queueSize).toBe(1);
   });
 });

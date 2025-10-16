@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Button } from '../ui/button.jsx';
 import HeroSection from '../Organisms/HeroSection.jsx';
 import PricingTables from '../Organisms/PricingTables.jsx';
 import AvailabilityChecker from '../Organisms/AvailabilityChecker.jsx';
 import Testimonials from '../Organisms/Testimonials.jsx';
 import PersonaMatchShowcase from '../Organisms/PersonaMatchShowcase.jsx';
+import VideoHeroSection from '../Organisms/VideoHeroSection.jsx';
+import RoiCalculator from '../Organisms/RoiCalculator.jsx';
+import ContentHubShowcase from '../Organisms/ContentHubShowcase.jsx';
 import { useKeywordPersonalization } from '../../hooks/useKeywordPersonalization.js';
 
 const DEFAULT_FEATURES = [
@@ -12,6 +15,91 @@ const DEFAULT_FEATURES = [
   { title: 'Unieke Sound', icon: '🎷', description: 'Een unieke mix van elektronische beats en organische, live-gespeelde melodieën.' },
   { title: 'All-in Prijs', icon: '💰', description: 'Geen verborgen kosten. Alles is inbegrepen in de offerte.' },
 ];
+
+const HERO_VARIANT_STORAGE_PREFIX = 'mr-dj-video-hero';
+
+function pickHeroVariant(abTest = {}, meta, hasVideo) {
+  if (!hasVideo) {
+    return 'classic';
+  }
+
+  const variants = abTest?.variants;
+  const defaultVariant = abTest?.defaultVariant || 'video';
+
+  if (typeof window === 'undefined') {
+    return defaultVariant;
+  }
+
+  const storageKey = `${HERO_VARIANT_STORAGE_PREFIX}:${abTest?.id || 'global'}:${meta?.variantId || 'global'}`;
+
+  try {
+    const stored = window.sessionStorage?.getItem(storageKey);
+    if (stored) {
+      return stored;
+    }
+  } catch (error) {
+    if (import.meta.env && import.meta.env.DEV) {
+      console.warn('[DjSaxLanding] sessionStorage read failed', error);
+    }
+  }
+
+  if (!variants || Object.keys(variants).length === 0) {
+    return defaultVariant;
+  }
+
+  const entries = Object.entries(variants);
+  const totalWeight = entries.reduce((sum, [, weight]) => sum + (Number(weight) || 0), 0);
+  let roll = Math.random() * (totalWeight || entries.length);
+  let chosen = defaultVariant;
+
+  for (const [variant, weight] of entries) {
+    const numericWeight = Number(weight) || (totalWeight === 0 ? 1 : 0);
+    if (roll <= numericWeight) {
+      chosen = variant;
+      break;
+    }
+    roll -= numericWeight;
+  }
+
+  try {
+    window.sessionStorage?.setItem(storageKey, chosen);
+  } catch (error) {
+    if (import.meta.env && import.meta.env.DEV) {
+      console.warn('[DjSaxLanding] sessionStorage write failed', error);
+    }
+  }
+
+  return chosen;
+}
+
+function detectPersonaKey(personalization, meta) {
+  const identifier =
+    personalization?.personas?.activeId ||
+    personalization?.persona ||
+    personalization?.id ||
+    meta?.city ||
+    'default';
+
+  const normalized = identifier.toString().toLowerCase();
+
+  if (normalized.includes('corporate') || normalized.includes('business')) {
+    return 'corporate';
+  }
+
+  if (normalized.includes('bruiloft') || normalized.includes('wedding')) {
+    return 'wedding';
+  }
+
+  if (normalized.includes('festival') || normalized.includes('club') || normalized.includes('nightlife')) {
+    return 'nightlife';
+  }
+
+  if (meta?.city) {
+    return 'local';
+  }
+
+  return normalized || 'default';
+}
 
 const DjSaxFeatures = ({ title, caption, items }) => {
   const featureItems = Array.isArray(items) && items.length ? items : DEFAULT_FEATURES;
@@ -119,25 +207,47 @@ const DjSaxLanding = () => {
     : undefined;
   const personas = personalization.personas || {};
   const leadCapture = personalization.leadCapture || {};
+  const hasVideoHero = Boolean(hero.videoHero?.sources?.length);
+  const heroVariant = useMemo(() => pickHeroVariant(hero.abTest, meta, hasVideoHero), [hero.abTest, meta, hasVideoHero]);
+  const personaKey = useMemo(() => detectPersonaKey(personalization, meta), [personalization, meta]);
+
+  const heroSection = heroVariant === 'video' && hasVideoHero ? (
+    <VideoHeroSection
+      eyebrow={hero.eyebrow}
+      title={hero.title || 'DJ + SAXOFOON: De Ultieme Live Ervaring'}
+      subtitle={hero.subtitle || 'Verhoog de energie van uw feest met de perfecte combinatie van een top-DJ en een live saxofonist.'}
+      video={hero.videoHero}
+      badges={hero.badges}
+      metrics={hero.metrics}
+      personaKey={personaKey}
+      personaMicrocopy={hero.personaMicrocopy}
+      ctaPrimaryText={hero.ctaPrimaryText || 'Check beschikbaarheid'}
+      ctaSecondaryText={hero.ctaSecondaryText || 'Vraag prijs aan'}
+      onPrimaryClick={() => logEvent('cta_click', { cta: 'hero_primary', label: hero.ctaPrimaryText })}
+      onSecondaryClick={() => logEvent('cta_click', { cta: 'hero_secondary', label: hero.ctaSecondaryText })}
+    >
+      {loading && <p className="text-sm text-neutral-light/70">Personalisatie wordt geladen...</p>}
+    </VideoHeroSection>
+  ) : (
+    <HeroSection
+      eyebrow={hero.eyebrow}
+      title={hero.title || 'DJ + SAXOFOON: De Ultieme Live Ervaring'}
+      subtitle={hero.subtitle || 'Verhoog de energie van uw feest met de perfecte combinatie van een top-DJ en een live saxofonist.'}
+      ctaPrimaryText={hero.ctaPrimaryText || 'Check beschikbaarheid'}
+      ctaSecondaryText={hero.ctaSecondaryText || 'Vraag prijs aan'}
+      badges={hero.badges}
+      socialProof={hero.socialProof}
+      metrics={hero.metrics}
+      onPrimaryClick={() => logEvent('cta_click', { cta: 'hero_primary', label: hero.ctaPrimaryText })}
+      onSecondaryClick={() => logEvent('cta_click', { cta: 'hero_secondary', label: hero.ctaSecondaryText })}
+    >
+      {loading && <p className="text-sm text-neutral-light/70">Personalisatie wordt geladen...</p>}
+    </HeroSection>
+  );
 
   return (
     <div className="DjSaxLanding">
-      <HeroSection
-        eyebrow={hero.eyebrow}
-        title={hero.title || 'DJ + SAXOFOON: De Ultieme Live Ervaring'}
-        subtitle={hero.subtitle || 'Verhoog de energie van uw feest met de perfecte combinatie van een top-DJ en een live saxofonist.'}
-        ctaPrimaryText={hero.ctaPrimaryText || 'Check beschikbaarheid'}
-        ctaSecondaryText={hero.ctaSecondaryText || 'Vraag prijs aan'}
-        badges={hero.badges}
-        socialProof={hero.socialProof}
-        metrics={hero.metrics}
-        onPrimaryClick={() => logEvent('cta_click', { cta: 'hero_primary', label: hero.ctaPrimaryText })}
-        onSecondaryClick={() => logEvent('cta_click', { cta: 'hero_secondary', label: hero.ctaSecondaryText })}
-      >
-        {loading && (
-          <p className="text-sm text-neutral-light/70">Personalisatie wordt geladen...</p>
-        )}
-      </HeroSection>
+      {heroSection}
 
       <PersonalizationSummary meta={meta} />
 
@@ -158,6 +268,10 @@ const DjSaxLanding = () => {
         segment={pricingSegment}
         onSelect={(pkg) => logEvent('cta_click', { cta: 'pricing_package', package: pkg.name })}
       />
+
+      <RoiCalculator persona={personaKey} />
+
+      <ContentHubShowcase />
 
       <AvailabilityChecker personalization={{ ...leadCapture, id: personalization.id }} onEvent={logEvent} />
 
