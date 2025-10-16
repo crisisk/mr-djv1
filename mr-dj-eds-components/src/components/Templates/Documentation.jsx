@@ -62,6 +62,30 @@ const Documentation = () => {
   <span className="keyword">"type"</span>: <span className="string">"spacing"</span>
 }
                 </div>
+<div className="doc-point" style="margin-top: 20px;">
+<div className="doc-point-title">Nieuwe Enterprise Componenten</div>
+<div className="doc-point-text">Stat Highlights en Persona Match Showcase geven sales- en marketingteams realtime inzicht in klant-fit metrics. De componenten gebruiken dezelfde tokens en responsive schalen als de overige EDS modules.</div>
+</div>
+</div>
+<div className="content-grid" style="margin-top: 40px;">
+<div>
+<div className="section-title">Stat Highlights</div>
+<p className="doc-point-text">Een molecule dat kerncijfers zoals reviewscore, response snelheid en event volume visualiseert. Ondersteunt zowel horizontale (boardroom) als verticale (sidebar) layout.</p>
+<ul className="doc-list">
+<li><strong>Props:</strong> <code>stats</code>, <code>title</code>, <code>subtitle</code>, <code>orientation</code>, <code>emphasizeColor</code></li>
+<li><strong>Gebruik:</strong> dashboards, sales decks, performance blokken onder testimonials.</li>
+<li><strong>Tokens:</strong> gebruikt <code>spacing</code>, <code>font-size-h1/h3</code> en <code>neutral</code> kleuren.</li>
+</ul>
+</div>
+<div>
+<div className="section-title">Persona Match Showcase</div>
+<p className="doc-point-text">Organism dat persona kaarten combineert met Stat Highlights. Ondersteunt direct de Mister DJ customer match aanpak met matchscore badges, top tracks en waarom-ons bullets.</p>
+<ul className="doc-list">
+<li><strong>Props:</strong> <code>title</code>, <code>subtitle</code>, <code>personas</code>, <code>stats</code></li>
+<li><strong>Gebruik:</strong> service landing pages, sales enablement portal, onboarding van nieuwe DJ teams.</li>
+<li><strong>Integratie:</strong> nu opgenomen in de DJ + Sax template als nieuw segment.</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
