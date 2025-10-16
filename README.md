@@ -30,6 +30,30 @@ chmod +x deploy.sh
   - Tab **RentGuy integratie**: vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, optioneel `RENTGUY_WORKSPACE_ID` en een custom timeout (`RENTGUY_TIMEOUT_MS`) om leads/boekingen realtime te synchroniseren. Gebruik de geïntegreerde statuskaart om de queue in te zien en via **Queue flushen** vastgelopen syncs opnieuw te proberen.
   - Volg de [go-live checklist](docs/go-live-checklist.md) voor een stap-voor-stap instructie
 
+## 🤖 Auto-content generatie (city workflow)
+
+- **Startmoment** – het invullen en publiceren van de secrets in het configuratie-dashboard activeert de workflow-variabelen, maar de automatisering draait pas bij de geplande cronjob op de VPS (`0 3 1 * * node scripts/automation/run-city-content-workflow.js`).
+- **Wat gebeurt er tijdens een run** – de service haalt nieuwe keywordsets op (`SEO_AUTOMATION_API_URL`), genereert content via de gekozen LLM of templates en bouwt daarna automatisch de statische city-pagina's (`scripts/generate-city-pages.mjs`). Resultaten worden vastgelegd in [`docs/city-content-automation-report.md`](docs/city-content-automation-report.md) en items die handmatige review nodig hebben verschijnen in [`docs/city-content-review.md`](docs/city-content-review.md).
+- **Handmatig starten** – wil je niet wachten op de geplande run, voer dan `node scripts/automation/run-city-content-workflow.js --limit=5` uit op de server (optioneel `--dry-run=false` wanneer de variabele `CITY_AUTOMATION_DRY_RUN` nog op `true` staat) om direct een batch te draaien.
+
+### Laatste instructie voor livegang
+
+Publiceer alle secrets via het dashboard, controleer dat `CITY_AUTOMATION_DRY_RUN=false` in `managed.env` staat en voer vervolgens één handmatige run uit (`node scripts/automation/run-city-content-workflow.js --limit=5`). Valideer het resultaat in `docs/city-content-automation-report.md` voordat je de cronjob aan laat staan voor productie.
+
+#### Automatische dynamische content-output
+
+- **Productierun via cron** – de VPS cronjob (`0 3 1 * * node scripts/automation/run-city-content-workflow.js`) blijft actief en draait direct op de geconfigureerde secrets. Elke maand wordt een nieuwe keyword batch verwerkt zonder handmatig ingrijpen.
+- **Fallback op templategeneratie** – ontbreekt er een LLM-sleutel, dan schakelt `cityContentAutomationService` automatisch over op de ingebouwde templategenerator zodat city-pagina's toch worden vernieuwd met actuele venues, FAQ en schema markup.
+- **Transparantie via rapporten** – na iedere run wordt `docs/city-content-automation-report.md` overschreven met de nieuwste output en verschijnen eventuele blokkades in `docs/city-content-review.md`. Zo is zichtbaar dat de dynamische content daadwerkelijk is bijgewerkt.
+- **Inline publishing** – goedgekeurde steden worden direct in `content/local-seo/cities.json` geschreven, waarna `scripts/generate-city-pages.mjs` de statische HTML opnieuw bouwt. Hierdoor staat de nieuwe content onmiddellijk klaar voor deploy zonder extra acties.
+
+## ♻️ Lighthouse SEO-optimalisaties (november 2025)
+
+- **Verbeterde LCP & fonts** – het hoofd-HTML-document preconnect nu naar Google Fonts en laadt de Poppins-set via `media="print"` lazy loading, wat netwerkblokkades tijdens first paint elimineert.
+- **Meta & structured data update** – `index.html` bevat nu volledige `meta description`, `robots`, canonical en Open Graph/Twitter-tags plus een `LocalBusiness` schema voor betere SERP previews.
+- **Preload voor hero assets** – kritische hero-imagery wordt vooraf opgehaald zodat de belangrijkste fold direct beschikbaar is bij Lighthouse-metingen.
+- **Viewport-fit & theme color** – het viewport-attribuut en `theme-color` zorgen voor een stabieler mobile rendering pad en hogere progressive-web-app scores binnen Lighthouse.
+
 ## 📚 Volledige documentatie
 
 Zie de uitgebreide README voor:
