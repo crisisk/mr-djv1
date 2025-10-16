@@ -1,6 +1,7 @@
 import React from 'react';
 import HeroSection from '../Organisms/HeroSection.jsx';
 import Header from '../Molecules/Header.jsx';
+import Footer from '../Organisms/Footer.jsx';
 import Button from '../Atoms/Buttons.jsx';
 import { Helmet } from 'react-helmet';
 import ContactForm from '../Organisms/ContactForm.jsx';
@@ -163,6 +164,9 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 	                    Bel ons direct op <a href="tel:+31408422594" className="font-bold underline hover:text-secondary">+31 (0) 40 8422594</a>
 	                </p>
 	            </div>
+
+            {/* 8. Footer */}
+            <Footer />
         </div>
     );
 };

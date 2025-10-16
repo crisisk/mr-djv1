@@ -7,6 +7,8 @@ import PricingTables from '../Organisms/PricingTables.jsx';
 import AvailabilityChecker from '../Organisms/AvailabilityChecker.jsx';
 import Testimonials from '../Organisms/Testimonials.jsx';
 import ContactForm from '../Organisms/ContactForm.jsx';
+import AboutUs from '../Organisms/AboutUs.jsx';
+import Footer from '../Organisms/Footer.jsx';
 
 
 
@@ -59,10 +61,13 @@ const DjSaxLanding = () => {
       {/* 2. Features/USP Section */}
       <DjSaxFeatures />
 
-      {/* 3. Testimonials Section (New) */}
+      {/* 3. About Us Section */}
+      <AboutUs />
+
+      {/* 4. Testimonials Section */}
       <Testimonials />
 
-      {/* 3. Pricing Section (Reusing Organism) */}
+      {/* 5. Pricing Section (Reusing Organism) */}
       <div className="py-spacing-3xl">
         <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">
           Onze Pakketten met Sax
@@ -70,23 +75,26 @@ const DjSaxLanding = () => {
         <PricingTables />
       </div>
 
-      {/* 4. Availability Checker (Reusing Organism) */}
+      {/* 6. Availability Checker (Reusing Organism) */}
       <AvailabilityChecker />
 
-      {/* 5. Contact Form Section */}
+      {/* 7. Contact Form Section */}
       <section className="py-spacing-3xl bg-neutral-gray-100">
         <div className="container mx-auto px-spacing-md max-w-3xl">
           <ContactForm variant="A" />
         </div>
       </section>
 
-      {/* 6. Call to Action (Simple Footer CTA) */}
+      {/* 8. Call to Action (Simple Footer CTA) */}
       <div className="bg-primary text-neutral-light py-spacing-2xl text-center">
         <h3 className="text-font-size-h2 font-bold mb-spacing-md">Klaar voor de show?</h3>
         <p className="text-neutral-light mb-spacing-lg">
           Bel ons direct op <a href="tel:+31408422594" className="font-bold underline hover:text-secondary">+31 (0) 40 8422594</a>
         </p>
       </div>
+
+      {/* 9. Footer */}
+      <Footer />
     </div>
   );
 };
