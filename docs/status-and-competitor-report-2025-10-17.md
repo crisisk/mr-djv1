@@ -50,3 +50,17 @@
 - **RentGuy pipeline**: personalisatie-events worden naar RentGuy API doorgestuurd (queue fallback) naast bestaande n8n webhook.
 - **Content hub**: nieuw front-end blok met nurture assets en video testimonials om content & SEO roadmap te kickstarten.
 - **City dataset**: Limburg en Overijssel aanvulling (Maastricht, Venlo, Roermond, Zwolle, Deventer) voor lokale SEO scripts.
+
+## 7. Debug & Monitoring update (20 oktober 2025)
+- **Lighthouse/Axe automatisering**: Config Dashboard toont nu synthetic runs met queue-status, gemiddelde scores en auditgeschiedenis. Runs kunnen per pagina/device vanuit de UI worden gestart.
+- **Variant analytics**: CRO events (impression/CTA/conversie) worden realtime geaggregeerd en zichtbaar gemaakt inclusief keyword insights.
+- **Testdekking**: Nieuwe Jest-suites voor observability-service + variant pipelines; Vitest gericht op ROI-calculator en video hero logica.
+- **Bugs verholpen**:
+  - Dashboard laadt nu veilig zonder race conditions door queue reset.
+  - Personalization events normaliseren null keywords voordat ze in analytics komen.
+
+### Volgende iteratievoorstellen
+1. **CI-integratie**: Koppel observability-service aan GitHub Actions zodat elke merge een audit queued.
+2. **Alerting**: Slack/webhook notificaties wanneer gemiddelde performance < 90 of wanneer conversieratio variant < baseline.
+3. **Datawarehouse**: Synchroniseer variant analytics naar BigQuery voor langere historische analyses.
+4. **UI**: Voeg grafieken toe (sparkline) voor variant CTR/conversies over tijd in Config Dashboard.

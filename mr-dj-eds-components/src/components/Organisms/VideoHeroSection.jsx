@@ -1,11 +1,27 @@
 import React, { useMemo } from 'react';
 import { Button } from '../ui/button.jsx';
 
-const overlayClasses = {
+export const overlayClasses = {
   soft: 'bg-neutral-dark/65',
   radial: 'bg-gradient-to-br from-neutral-dark/80 via-neutral-dark/60 to-neutral-dark/80',
   solid: 'bg-neutral-dark/75'
 };
+
+export function resolveOverlayClass(overlay) {
+  return overlayClasses[overlay] || overlayClasses.radial;
+}
+
+export function selectPersonaMicrocopy(microcopyMap, personaKey) {
+  if (!microcopyMap) {
+    return null;
+  }
+
+  if (personaKey && microcopyMap[personaKey]) {
+    return microcopyMap[personaKey];
+  }
+
+  return microcopyMap.default || null;
+}
 
 const VideoHeroSection = ({
   eyebrow,
@@ -22,14 +38,11 @@ const VideoHeroSection = ({
   onSecondaryClick,
   children
 }) => {
-  const overlayClass = overlayClasses[video?.overlay] || overlayClasses.radial;
-  const microcopy = useMemo(() => {
-    if (!personaMicrocopy) {
-      return null;
-    }
-
-    return personaMicrocopy[personaKey] || personaMicrocopy.default || null;
-  }, [personaKey, personaMicrocopy]);
+  const overlayClass = resolveOverlayClass(video?.overlay);
+  const microcopy = useMemo(
+    () => selectPersonaMicrocopy(personaMicrocopy, personaKey),
+    [personaKey, personaMicrocopy]
+  );
 
   return (
     <section className="relative isolate flex min-h-[70vh] items-center justify-center overflow-hidden bg-neutral-dark">

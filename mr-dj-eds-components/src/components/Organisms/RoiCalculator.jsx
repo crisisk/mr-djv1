@@ -10,7 +10,7 @@ const DEFAULT_INPUT = {
   persona: 'corporate'
 };
 
-const PERSONA_PRESETS = {
+export const PERSONA_PRESETS = {
   corporate: {
     label: 'Corporate event',
     uplift: 0.18,
@@ -36,7 +36,7 @@ function formatCurrency(value) {
   }).format(value);
 }
 
-function calculateOutcomes(packages, input) {
+export function calculateOutcomes(packages, input) {
   const preset = PERSONA_PRESETS[input.persona] || PERSONA_PRESETS.corporate;
   const baseLift = input.conversionRate + preset.uplift;
   const nurtureBudget = input.nurtureTouchpoints * preset.nurtureCost;

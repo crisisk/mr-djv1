@@ -17,6 +17,8 @@ describe('configuration dashboard', () => {
   let authHeader;
   let rentGuyService;
   let hubspotService;
+  let observabilityService;
+  let personalizationService;
 
   beforeEach(async () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
@@ -38,6 +40,11 @@ describe('configuration dashboard', () => {
     rentGuyService.reset();
     hubspotService = require('../services/hubspotService');
     hubspotService.reset();
+    observabilityService = require('../services/observabilityService');
+    observabilityService.reset();
+    personalizationService = require('../services/personalizationService');
+    personalizationService.resetLogs();
+    personalizationService.resetCache();
 
     await new Promise((resolve) => {
       server.listen(0, '127.0.0.1', resolve);
@@ -62,6 +69,12 @@ describe('configuration dashboard', () => {
     }
     if (hubspotService?.reset) {
       hubspotService.reset();
+    }
+    if (observabilityService?.reset) {
+      observabilityService.reset();
+    }
+    if (personalizationService?.resetLogs) {
+      personalizationService.resetLogs();
     }
     process.env = { ...ORIGINAL_ENV };
     jest.resetModules();
@@ -263,6 +276,92 @@ describe('configuration dashboard', () => {
     expect(response.status).toBe(200);
     const payload = await response.json();
     expect(payload).toEqual(expect.objectContaining({ configured: false, queueSize: 0 }));
+  });
+
+  it('exposes monitoring state through the observability endpoint', async () => {
+    const response = await fetch(`${baseUrl}/dashboard/api/observability/performance`, {
+      headers: {
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(Array.isArray(payload.targets)).toBe(true);
+    expect(payload).toHaveProperty('summary');
+  });
+
+  it('queues a monitoring run and records the result', async () => {
+    const runResponse = await fetch(`${baseUrl}/dashboard/api/observability/performance/run`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({ url: '/pricing', device: 'desktop' })
+    });
+
+    expect(runResponse.status).toBe(202);
+    const runPayload = await runResponse.json();
+    expect(runPayload.scheduled).toBe(true);
+    expect(runPayload.entry).toEqual(expect.objectContaining({ url: '/pricing', device: 'desktop' }));
+
+    await new Promise((resolve) => setTimeout(resolve, 120));
+
+    const statusResponse = await fetch(`${baseUrl}/dashboard/api/observability/performance`, {
+      headers: {
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
+    });
+
+    expect(statusResponse.status).toBe(200);
+    const statusPayload = await statusResponse.json();
+    expect(Array.isArray(statusPayload.runs)).toBe(true);
+    expect(statusPayload.runs[0]).toEqual(
+      expect.objectContaining({ url: '/pricing', device: 'desktop', metrics: expect.any(Object) })
+    );
+  });
+
+  it('aggregates variant analytics from personalization logs', async () => {
+    const match = await personalizationService.getVariantForRequest({
+      keywords: ['bruiloft dj'],
+      keyword: 'bruiloft dj'
+    });
+    const variantId = match.meta?.variantId || 'romantic_wedding';
+
+    await personalizationService.recordEvent({
+      type: 'cta_click',
+      variantId,
+      keyword: 'bruiloft dj',
+      payload: {},
+      context: { source: 'test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'conversion',
+      variantId,
+      keyword: 'bruiloft dj',
+      payload: { amount: 1200 },
+      context: { source: 'test' }
+    });
+
+    const response = await fetch(`${baseUrl}/dashboard/api/observability/variants`, {
+      headers: {
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(Array.isArray(payload.variants)).toBe(true);
+    const wedding = payload.variants.find((variant) => variant.variantId === variantId);
+    expect(wedding).toBeDefined();
+    expect(wedding.exposures).toBeGreaterThan(0);
+    expect(wedding.conversions).toBeGreaterThanOrEqual(1);
   });
 
   it('flushes the hubspot queue via the dashboard API', async () => {
