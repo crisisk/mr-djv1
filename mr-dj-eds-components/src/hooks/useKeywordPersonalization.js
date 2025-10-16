@@ -77,7 +77,12 @@ const FALLBACK_PERSONALIZATION = {
   leadCapture: {
     formHeadline: 'Laat ons checken of jullie datum vrij is',
     formCopy: 'We reageren binnen 12 uur met voorstel en planning.',
-    successMessage: 'Bedankt! Het team neemt binnen 12 uur contact op.'
+    successMessage: 'Bedankt! Het team neemt binnen 12 uur contact op.',
+    defaultMessage: 'Vertel ons over jullie event, locatie en gewenste sfeer.',
+    eventTypeOptions: ['Bruiloft', 'Bedrijfsfeest', 'Festival', 'Private event'],
+    packageOptions: ['Brons', 'Zilver', 'Goud'],
+    defaultEventType: 'Bruiloft',
+    defaultPackageId: 'Zilver'
   }
 };
 
