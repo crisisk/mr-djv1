@@ -1,0 +1,314 @@
+import React, { useState } from 'react';
+import { submitContactForm } from '../../services/api';
+import Button from '../Atoms/Buttons';
+
+/**
+ * ContactForm Component
+ *
+ * Full-featured contact form with validation, loading states, and error handling
+ * Integrates with backend API via submitContactForm service
+ *
+ * Props:
+ * @param {string} variant - Form variant for A/B testing (optional)
+ * @param {string} eventType - Pre-filled event type (optional, e.g., "bruiloft")
+ */
+const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+    eventType: initialEventType,
+    eventDate: '',
+  });
+
+  // UI state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  /**
+   * Validate form fields
+   */
+  const validateForm = () => {
+    const errors = {};
+
+    // Name validation
+    if (!formData.name.trim()) {
+      errors.name = 'Naam is verplicht';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Naam moet minimaal 2 tekens bevatten';
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      errors.email = 'Email is verplicht';
+    } else if (!emailRegex.test(formData.email)) {
+      errors.email = 'Ongeldig emailadres';
+    }
+
+    // Phone validation (optional but format check if provided)
+    if (formData.phone && !/^[\d\s\-\+\(\)]{10,}$/.test(formData.phone)) {
+      errors.phone = 'Ongeldig telefoonnummer';
+    }
+
+    // Message validation
+    if (!formData.message.trim()) {
+      errors.message = 'Bericht is verplicht';
+    } else if (formData.message.trim().length < 10) {
+      errors.message = 'Bericht moet minimaal 10 tekens bevatten';
+    }
+
+    // Event type validation
+    if (!formData.eventType) {
+      errors.eventType = 'Selecteer een type evenement';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  /**
+   * Handle input change
+   */
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear field error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        [name]: null,
+      }));
+    }
+  };
+
+  /**
+   * Handle form submission
+   */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Reset states
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    // Validate
+    if (!validateForm()) {
+      return;
+    }
+
+    // Submit
+    setIsSubmitting(true);
+
+    try {
+      const response = await submitContactForm(formData);
+
+      // Success
+      setSubmitSuccess(true);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+        eventType: initialEventType,
+        eventDate: '',
+      });
+
+      // Track with GTM
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'contact_form_submit',
+          form_variant: variant,
+          event_type: formData.eventType,
+        });
+      }
+
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => setSubmitSuccess(false), 5000);
+    } catch (error) {
+      // Error handling
+      setSubmitError(error.message || 'Er is een fout opgetreden. Probeer het later opnieuw.');
+      console.error('Contact form error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="contact-form bg-white p-8 rounded-lg shadow-lg">
+      <h2 className="text-3xl font-bold text-neutral-dark mb-2">
+        {variant === 'B' ? 'Vraag Direct een Offerte Aan' : 'Neem Contact Op'}
+      </h2>
+      <p className="text-neutral-gray-500 mb-6">
+        Vul het formulier in en we nemen binnen 24 uur contact met je op.
+      </p>
+
+      {/* Success Message */}
+      {submitSuccess && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          <strong>Succesvol verzonden!</strong>
+          <p>Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op.</p>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {submitError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <strong>Fout bij verzenden</strong>
+          <p>{submitError}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-neutral-dark mb-1">
+            Naam <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
+              fieldErrors.name ? 'border-red-500' : 'border-neutral-gray-300'
+            }`}
+            placeholder="Jouw naam"
+          />
+          {fieldErrors.name && <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>}
+        </div>
+
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-neutral-dark mb-1">
+            Email <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
+              fieldErrors.email ? 'border-red-500' : 'border-neutral-gray-300'
+            }`}
+            placeholder="jouw@email.nl"
+          />
+          {fieldErrors.email && <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>}
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-neutral-dark mb-1">
+            Telefoonnummer
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
+              fieldErrors.phone ? 'border-red-500' : 'border-neutral-gray-300'
+            }`}
+            placeholder="+31 6 12345678"
+          />
+          {fieldErrors.phone && <p className="text-red-500 text-sm mt-1">{fieldErrors.phone}</p>}
+        </div>
+
+        {/* Event Type */}
+        <div>
+          <label htmlFor="eventType" className="block text-sm font-medium text-neutral-dark mb-1">
+            Type Evenement <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="eventType"
+            name="eventType"
+            value={formData.eventType}
+            onChange={handleChange}
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
+              fieldErrors.eventType ? 'border-red-500' : 'border-neutral-gray-300'
+            }`}
+          >
+            <option value="">Selecteer type evenement</option>
+            <option value="bruiloft">Bruiloft</option>
+            <option value="bedrijfsfeest">Bedrijfsfeest</option>
+            <option value="verjaardag">Verjaardag</option>
+            <option value="jubileum">Jubileum</option>
+            <option value="feest">Algemeen Feest</option>
+            <option value="anders">Anders</option>
+          </select>
+          {fieldErrors.eventType && <p className="text-red-500 text-sm mt-1">{fieldErrors.eventType}</p>}
+        </div>
+
+        {/* Event Date */}
+        <div>
+          <label htmlFor="eventDate" className="block text-sm font-medium text-neutral-dark mb-1">
+            Gewenste Datum
+          </label>
+          <input
+            type="date"
+            id="eventDate"
+            name="eventDate"
+            value={formData.eventDate}
+            onChange={handleChange}
+            min={new Date().toISOString().split('T')[0]}
+            className="w-full px-4 py-2 border border-neutral-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
+          />
+        </div>
+
+        {/* Message */}
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium text-neutral-dark mb-1">
+            Bericht <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            rows="4"
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none resize-none ${
+              fieldErrors.message ? 'border-red-500' : 'border-neutral-gray-300'
+            }`}
+            placeholder="Vertel ons meer over jouw evenement..."
+          />
+          {fieldErrors.message && <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>}
+        </div>
+
+        {/* Submit Button */}
+        <div className="pt-2">
+          <Button
+            type="submit"
+            variant="primary"
+            size="large"
+            disabled={isSubmitting}
+            className="w-full"
+          >
+            {isSubmitting ? 'Bezig met verzenden...' : variant === 'B' ? 'Vraag Offerte Aan' : 'Verstuur Bericht'}
+          </Button>
+        </div>
+
+        {/* Privacy Notice */}
+        <p className="text-xs text-neutral-gray-500 mt-4">
+          Door dit formulier te versturen ga je akkoord met ons{' '}
+          <a href="/privacy" className="text-primary-500 hover:underline">
+            privacybeleid
+          </a>
+          . We gebruiken je gegevens alleen om contact met je op te nemen over je evenement.
+        </p>
+      </form>
+    </div>
+  );
+};
+
+export default ContactForm;

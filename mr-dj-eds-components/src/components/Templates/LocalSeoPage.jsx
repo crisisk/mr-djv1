@@ -3,6 +3,7 @@ import HeroSection from '../Organisms/HeroSection.jsx';
 
 import Button from '../Atoms/Buttons.jsx';
 import { Helmet } from 'react-helmet';
+import ContactForm from '../Organisms/ContactForm.jsx';
 
 
 
@@ -135,19 +136,29 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 	                    </div>
 	                </div>
 	            </section>
-	
-	            {/* 6. Footer CTA - Localized */}
+
+	            {/* 6. Contact Form Section */}
+	            <section className="py-spacing-3xl bg-neutral-light">
+	                <div className="container mx-auto px-spacing-md max-w-3xl">
+	                    <ContactForm
+	                        variant={variant}
+	                        eventType={data.slug.startsWith('bruiloft-dj-') ? 'bruiloft' : ''}
+	                    />
+	                </div>
+	            </section>
+
+	            {/* 7. Footer CTA - Localized */}
 	            <div className="bg-neutral-dark text-neutral-light py-spacing-2xl text-center">
 	                <h3 className="text-font-size-h2 font-bold mb-spacing-md">
 	                    {/* T12: A/B Test - Variant B uses a different CTA text */}
-	                    {variant === 'B' ? 
+	                    {variant === 'B' ?
 	                        `Vraag vandaag nog een gratis offerte aan in ${city}!` :
 	                        `Klaar voor een onvergetelijk feest in ${city} of ${province}?`
 	                    }
 	                </h3>
-	                <Button variant="primary" size="lg">
-	                    Vraag Nu een Offerte Aan
-	                </Button>
+	                <p className="text-neutral-light mb-spacing-md">
+	                    Bel ons direct op <a href="tel:+31408422594" className="font-bold underline hover:text-secondary">+31 (0) 40 8422594</a>
+	                </p>
 	            </div>
         </div>
     );

@@ -5,6 +5,7 @@ import HeroSection from '../Organisms/HeroSection.jsx';
 import PricingTables from '../Organisms/PricingTables.jsx';
 import AvailabilityChecker from '../Organisms/AvailabilityChecker.jsx';
 import Testimonials from '../Organisms/Testimonials.jsx';
+import ContactForm from '../Organisms/ContactForm.jsx';
 
 
 
@@ -67,12 +68,19 @@ const DjSaxLanding = () => {
       {/* 4. Availability Checker (Reusing Organism) */}
       <AvailabilityChecker />
 
-      {/* 5. Call to Action (Simple Footer CTA) */}
+      {/* 5. Contact Form Section */}
+      <section className="py-spacing-3xl bg-neutral-gray-100">
+        <div className="container mx-auto px-spacing-md max-w-3xl">
+          <ContactForm variant="A" />
+        </div>
+      </section>
+
+      {/* 6. Call to Action (Simple Footer CTA) */}
       <div className="bg-primary text-neutral-light py-spacing-2xl text-center">
         <h3 className="text-font-size-h2 font-bold mb-spacing-md">Klaar voor de show?</h3>
-        <Button variant="secondary" size="lg">
-          Vraag Vrijblijvend een Offerte Aan
-        </Button>
+        <p className="text-neutral-light mb-spacing-lg">
+          Bel ons direct op <a href="tel:+31408422594" className="font-bold underline hover:text-secondary">+31 (0) 40 8422594</a>
+        </p>
       </div>
     </div>
   );
