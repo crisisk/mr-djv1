@@ -41,3 +41,12 @@
 
 ---
 *Opgesteld door het productteam op basis van interne metrics, QA-rapportages en nieuwe marktverkenning.*
+
+## 6. Follow-up (19 oktober 2025)
+- **Video hero experiment live**: nieuwe video hero module met session-based A/B variant (60% video, 40% klassiek) inclusief persona microcopy.
+- **ROI-calculator**: interactieve component gekoppeld aan `content/pakketten` data + API fallback, ondersteunt corporate/wedding/nightlife persona’s.
+- **Automation dashboard**: Config Dashboard bevat nu sectie *Automation & CRM* met HubSpot submit URL + retry settings, inclusief status- en flush-acties.
+- **HubSpot queue service**: backend queue met dead-letter logging, tests en dashboard integratie; Availability flows kunnen veilig naar HubSpot/n8n pipeline.
+- **RentGuy pipeline**: personalisatie-events worden naar RentGuy API doorgestuurd (queue fallback) naast bestaande n8n webhook.
+- **Content hub**: nieuw front-end blok met nurture assets en video testimonials om content & SEO roadmap te kickstarten.
+- **City dataset**: Limburg en Overijssel aanvulling (Maastricht, Venlo, Roermond, Zwolle, Deventer) voor lokale SEO scripts.

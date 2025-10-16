@@ -8,6 +8,8 @@ const DEFAULT_HOST = '0.0.0.0';
 const DEFAULT_RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_RATE_LIMIT_MAX = 100;
 const DEFAULT_RENTGUY_TIMEOUT_MS = 5000;
+const DEFAULT_HUBSPOT_RETRY_DELAY_MS = 15000;
+const DEFAULT_HUBSPOT_MAX_ATTEMPTS = 5;
 const DEFAULT_SECTION_CONFIG = [
   {
     id: 'application',
@@ -48,6 +50,13 @@ const DEFAULT_SECTION_CONFIG = [
     description:
       'API-parameters voor de synchronisatie van leads en boekingen richting de RentGuy applicatie.',
     keys: ['RENTGUY_API_BASE_URL', 'RENTGUY_API_KEY', 'RENTGUY_WORKSPACE_ID', 'RENTGUY_TIMEOUT_MS']
+  },
+  {
+    id: 'automation',
+    label: 'Automation & CRM',
+    description:
+      'Instellingen voor HubSpot submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
+    keys: ['HUBSPOT_SUBMIT_URL', 'HUBSPOT_QUEUE_RETRY_DELAY_MS', 'HUBSPOT_QUEUE_MAX_ATTEMPTS']
   },
   {
     id: 'personalization',
@@ -174,6 +183,18 @@ function buildConfig() {
         baseUrl: process.env.RENTGUY_API_BASE_URL || null,
         workspaceId: process.env.RENTGUY_WORKSPACE_ID || null,
         timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS)
+      },
+      hubSpot: {
+        enabled: Boolean(process.env.HUBSPOT_SUBMIT_URL),
+        submitUrl: process.env.HUBSPOT_SUBMIT_URL || null,
+        retryDelayMs: parseNumber(
+          process.env.HUBSPOT_QUEUE_RETRY_DELAY_MS,
+          DEFAULT_HUBSPOT_RETRY_DELAY_MS
+        ),
+        maxAttempts: parseNumber(
+          process.env.HUBSPOT_QUEUE_MAX_ATTEMPTS,
+          DEFAULT_HUBSPOT_MAX_ATTEMPTS
+        )
       }
     },
     personalization: {

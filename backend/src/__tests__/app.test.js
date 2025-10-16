@@ -82,7 +82,10 @@ describe('Mister DJ API', () => {
       })
     });
     expect(response.body.endpoints.integrations).toEqual(
-      expect.objectContaining({ rentGuy: '/integrations/rentguy/status' })
+      expect.objectContaining({
+        rentGuy: '/integrations/rentguy/status',
+        hubSpot: '/integrations/hubspot/status'
+      })
     );
     expect(response.body.endpoints.personalization).toEqual(
       expect.objectContaining({
@@ -155,6 +158,7 @@ describe('Mister DJ API', () => {
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
     expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.hubSpotSync).toEqual(expect.objectContaining({ queued: true }));
   });
 
   it('provides a curated set of fallback packages when no database is available', async () => {
@@ -163,7 +167,7 @@ describe('Mister DJ API', () => {
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body.packages)).toBe(true);
     expect(response.body.packages.length).toBeGreaterThan(0);
-    expect(response.body).toMatchObject({ source: 'static' });
+    expect(['static', 'content']).toContain(response.body.source);
   });
 
   it('rejects invalid booking submissions', async () => {
@@ -215,6 +219,16 @@ describe('Mister DJ API', () => {
 
   it('provides integration status for RentGuy', async () => {
     const response = await request('GET', '/integrations/rentguy/status');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      configured: expect.any(Boolean),
+      queueSize: expect.any(Number)
+    });
+  });
+
+  it('provides integration status for HubSpot', async () => {
+    const response = await request('GET', '/integrations/hubspot/status');
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({

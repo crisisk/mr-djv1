@@ -56,7 +56,8 @@ router.post('/', validations, async (req, res, next) => {
       eventDate: eventDateIso,
       requestedPackage: contactRecord.packageId || req.body.packageId || null,
       submittedAt: contactRecord.createdAt,
-      rentGuySync: contactRecord.rentGuySync
+      rentGuySync: contactRecord.rentGuySync,
+      hubSpotSync: contactRecord.hubSpotSync
     });
   } catch (error) {
     next(error);
