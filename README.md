@@ -27,7 +27,8 @@ chmod +x deploy.sh
 - **Functionaliteit**: beheer alle vereiste `.env` variabelen, schrijf veilig naar `managed.env` en push direct naar de draaiende applicatie
   - Tab **Applicatie instellingen**: core API, database en rate-limit configuratie
   - Tab **E-mailintegratie**: vul provider (`MAIL_PROVIDER`), API key (`MAIL_API_KEY`), afzender (`MAIL_FROM_ADDRESS` / `MAIL_REPLY_TO`) en template ID's (`MAIL_TEMPLATES_CONTACT`, `MAIL_TEMPLATES_BOOKING`) in voor volledige mailfunctionaliteit
-- Volg de [go-live checklist](docs/go-live-checklist.md) voor een stap-voor-stap instructie
+  - Tab **RentGuy integratie**: vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, optioneel `RENTGUY_WORKSPACE_ID` en een custom timeout (`RENTGUY_TIMEOUT_MS`) om leads/boekingen realtime te synchroniseren.
+  - Volg de [go-live checklist](docs/go-live-checklist.md) voor een stap-voor-stap instructie
 
 ## 📚 Volledige documentatie
 
@@ -50,7 +51,7 @@ Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository
 | 2025-10-14 | Local SEO & content generatie | `scripts/generate-city-pages.mjs`, `content/local-seo/cities.json` | Automatisch genereren van 12 city pages met venues, FAQ's en schema markup voor regionale vindbaarheid. | 32 | €2.500 |
 | 2025-10-15 | Test- & kwaliteitsborging (UAT) | `docs/uat-report.md` | Dekking 95%+ voor backend tests, validatie van API-functionaliteit en documentatie van resterende aandachtspunten. | 26 | €2.100 |
 | 2025-10-15 | Performance, SEO & personalisatie-audits | `docs/performance-seo-research.md`, `docs/mail-integration-report.md` | Verbeterplan voor laadtijden, structured data, persona-fit en mailintegraties inclusief technische roadmap. | 30 | €2.400 |
-| 2025-10-16 | KPI roadmap, customer journeys & QA-update | `docs/future-development-plan.md`, `docs/uat-report.md`, `docs/final-validation-status.md` | KPI-framework opgezet (bezoekers, leads, omzet, winst), persona journeys gemapt en UAT-passrate >99% geborgd. | 24 | €1.950 |
+| 2025-10-16 | KPI roadmap, RentGuy integratie & QA-update | `docs/future-development-plan.md`, `docs/uat-report.md`, `docs/final-validation-status.md`, `backend/src/services/rentGuyService.js` | KPI-framework opgezet (bezoekers, leads, omzet, winst), persona journeys gemapt, realtime RentGuy-sync gebouwd en UAT-passrate >99% geborgd. | 30 | €2.450 |
 
 *Indicatie op basis van marktconforme tarieven (€70–€90/uur) en de meerwaarde van de functionaliteit richting conversie, SEO en compliance.
 
@@ -88,6 +89,7 @@ Gegeven de mate van maatwerk (design system, consent manager, local SEO scriptin
 - **Local SEO generator**: `node scripts/generate-city-pages.mjs` rendert 12 city-pages op basis van `content/local-seo/cities.json` inclusief cases, venues en FAQ. Draai het script na updates van de JSON.
 - **Realtime consent & analytics**: de `ConsentManager` en design-system componenten sturen granular Consent Mode v2 en DataLayer-events uit voor CRO-metingen.
 - **Roadmap & KPI framework**: zie [`docs/future-development-plan.md`](docs/future-development-plan.md) voor doorontwikkeling, meetplan en persona journeys.
+- **RentGuy integratie**: backend synchroniseert contact- en bookingdata via [`rentGuyService`](backend/src/services/rentGuyService.js) met fallback queue + `/integrations/rentguy/status` monitor endpoint.
 - [Mailintegratie onderzoek](docs/mail-integration-report.md)
 - [Performance, SEO & klantfit onderzoek](docs/performance-seo-research.md)
 

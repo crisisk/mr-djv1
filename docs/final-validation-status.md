@@ -57,6 +57,7 @@ Deze notitie legt de status vast van de tien gevraagde eindtaken. Waar directe u
 ### 7. FINAL7 – User Acceptance Testing
 - **Bewijs**: `docs/uat-report.md` (16 okt) → 58/58 suites geslaagd, 95.5% statement coverage.
 - **Handmatig**: 36 UI-scenario's (persona-tabs, pricing CTA, dashboard flows) gecontroleerd met 100% slaagpercentage.
+- **RentGuy sync**: Nieuwe backend service + `/integrations/rentguy/status` endpoint met Jest-dekking (`rentGuyService.test.js`) – monitor queue size & errors tijdens UAT runs.
 - **Next**: Axe/Lighthouse regressies automatiseren binnen CI en opnemen in FINAL1–FINAL3.
 
 ### 8. FINAL8 – Load testing

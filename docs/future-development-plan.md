@@ -7,7 +7,7 @@ _Laatst bijgewerkt: 2025-10-16_
 | Fase | Omschrijving | Deliverables | KPI-impact |
 | --- | --- | --- | --- |
 | **Q4 2025 – Conversion foundations** | Harden de persona-ervaringen die op 16 oktober live gingen (Audience modules, pricing microcopy, local SEO city pages) met extra trust en CRO-experimenten. | 1. Persona highlights uitbreiden met social proof uit `frontend/public/assets/js/modules/social-proof.js`<br>2. Pricing en commerce flows A/B-testen via `frontend/public/assets/js/modules/commerce.js`<br>3. Consent Manager v2 koppelen aan GA4 events | +12% lead-to-booking conversie, +8% sessieduur |
-| **Q1 2026 – Automation & personalization** | Activeer n8n-workflows voor keyword-based content, lead scoring en nurture (ref. `docs/automation-n8n-research.md`). | 1. Personalization API (routeContext) uitrollen<br>2. Lead scoring + CRM sync via n8n<br>3. Dynamische city page refresh vanuit `scripts/generate-city-pages.mjs` | +25% organische leads, +15% MQL→SQL |
+| **Q1 2026 – Automation & personalization** | Activeer n8n-workflows voor keyword-based content, lead scoring en nurture (ref. `docs/automation-n8n-research.md`) en voed RentGuy met realtime inzichten. | 1. Personalization API (routeContext) uitrollen<br>2. Lead scoring + CRM sync via n8n → RentGuy API<br>3. Dynamische city page refresh vanuit `scripts/generate-city-pages.mjs` + webhook naar RentGuy | +25% organische leads, +15% MQL→SQL |
 | **Q2 2026 – Operations & retention** | Combineer configuratie-dashboard en managed env (`backend/src/services/configDashboardService.js`) met klantfeedback loops. | 1. SLA dashboards in dashboard UI<br>2. Post-event survey automation via n8n<br>3. Disaster recovery runbook en chaos drills | +10 NPS, <4u RTO |
 
 ## 2. KPI-framework
@@ -50,7 +50,15 @@ _Laatst bijgewerkt: 2025-10-16_
 - Consent gating voor personalisatie (ConsentManager.jsx) => compliant remarketing.
 - Config dashboard (`docs/go-live-checklist.md`, `backend/src/routes/dashboard.js`) voor snelle experiment deployment.
 
-## 4. UAT naar >99% passrate
+## 4. RentGuy integratie & automatiseringskoppelingen
+
+- **Realtime sync-service**: [`backend/src/services/rentGuyService.js`](../backend/src/services/rentGuyService.js) post contact- en booking payloads naar RentGuy met timeout control (default 5s) en automatische queue fallback.
+- **Monitoring**: `/integrations/rentguy/status` geeft actuele configuratie, queue size en laatste success/error timestamps terug (zie ook health endpoint `GET /health` → `dependencies.integrations.rentGuy`).
+- **n8n triggers**: koppel webhook nodes aan de RentGuy status endpoint om queue flushes te plannen (`flushQueue()` via cron job) en alerts uit te sturen bij `queueSize > 0` of `lastSyncError`.
+- **Security**: beheer secrets via Config Dashboard → tab "RentGuy integratie" (keys `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, `RENTGUY_WORKSPACE_ID`, `RENTGUY_TIMEOUT_MS`). Rotation uitvoeren per kwartaal en auditloggen in n8n.
+- **Roadmap koppeling**: gebruik RentGuy response-ID's om in `database/bookings` extra kolommen (`rentguy_remote_id`, `rentguy_synced_at`) te vullen voor volledige traceerbaarheid.
+
+## 5. UAT naar >99% passrate
 
 | Testtype | Bereik | Run (16 okt) | Resultaat |
 | --- | --- | --- | --- |

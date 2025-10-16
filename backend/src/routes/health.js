@@ -3,6 +3,7 @@ const config = require('../config');
 const db = require('../lib/db');
 const { getContactServiceStatus } = require('../services/contactService');
 const { getBookingServiceStatus } = require('../services/bookingService');
+const { getStatus: getRentGuyStatus } = require('../services/rentGuyService');
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ router.get('/', (_req, res) => {
   const dbStatus = db.getStatus();
   const contactStatus = getContactServiceStatus();
   const bookingStatus = getBookingServiceStatus();
+  const rentGuyStatus = getRentGuyStatus();
 
   res.json({
     status: 'ok',
@@ -35,6 +37,9 @@ router.get('/', (_req, res) => {
           strategy: bookingStatus.storageStrategy,
           fallbackQueueSize: bookingStatus.fallbackQueueSize
         }
+      },
+      integrations: {
+        rentGuy: rentGuyStatus
       }
     }
   });
