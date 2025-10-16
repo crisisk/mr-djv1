@@ -30,26 +30,61 @@ describe('config', () => {
     expect(config.databaseUrl).toBeUndefined();
     expect(config.serviceName).toBe('mr-dj-backend');
     expect(config.version).toBe('1.0.0');
-    expect(config.dashboard).toEqual({
-      enabled: false,
-      username: null,
-      password: null,
-      allowedIps: [],
-      managedKeys: [
-        'NODE_ENV',
-        'HOST',
-        'PORT',
-        'SERVICE_NAME',
-        'LOG_FORMAT',
-        'CORS_ORIGIN',
-        'RATE_LIMIT_WINDOW_MS',
-        'RATE_LIMIT_MAX',
-        'DATABASE_URL',
-        'REDIS_URL',
-        'PGSSLMODE'
-      ],
-      storePath: DEFAULT_STORE_PATH
-    });
+    expect(config.dashboard.enabled).toBe(false);
+    expect(config.dashboard.username).toBeNull();
+    expect(config.dashboard.password).toBeNull();
+    expect(config.dashboard.allowedIps).toEqual([]);
+    expect(config.dashboard.managedKeys).toEqual([
+      'NODE_ENV',
+      'HOST',
+      'PORT',
+      'SERVICE_NAME',
+      'LOG_FORMAT',
+      'CORS_ORIGIN',
+      'RATE_LIMIT_WINDOW_MS',
+      'RATE_LIMIT_MAX',
+      'DATABASE_URL',
+      'REDIS_URL',
+      'PGSSLMODE',
+      'MAIL_PROVIDER',
+      'MAIL_API_KEY',
+      'MAIL_FROM_ADDRESS',
+      'MAIL_REPLY_TO',
+      'MAIL_TEMPLATES_CONTACT',
+      'MAIL_TEMPLATES_BOOKING'
+    ]);
+    expect(config.dashboard.sections).toEqual([
+      expect.objectContaining({
+        id: 'application',
+        label: 'Applicatie instellingen',
+        keys: [
+          'NODE_ENV',
+          'HOST',
+          'PORT',
+          'SERVICE_NAME',
+          'LOG_FORMAT',
+          'CORS_ORIGIN',
+          'RATE_LIMIT_WINDOW_MS',
+          'RATE_LIMIT_MAX',
+          'DATABASE_URL',
+          'REDIS_URL',
+          'PGSSLMODE'
+        ]
+      }),
+      expect.objectContaining({
+        id: 'mail',
+        label: 'E-mailintegratie',
+        keys: [
+          'MAIL_PROVIDER',
+          'MAIL_API_KEY',
+          'MAIL_FROM_ADDRESS',
+          'MAIL_REPLY_TO',
+          'MAIL_TEMPLATES_CONTACT',
+          'MAIL_TEMPLATES_BOOKING'
+        ]
+      })
+    ]);
+    expect(config.dashboard.storePath).toBe(DEFAULT_STORE_PATH);
   });
 
   it('parses numeric and list based configuration values', () => {
@@ -86,14 +121,18 @@ describe('config', () => {
     expect(config.redisUrl).toBe('redis://cache');
     expect(config.serviceName).toBe('custom-service');
     expect(config.version).toBe('2.3.4');
-    expect(config.dashboard).toEqual({
-      enabled: true,
-      username: 'admin',
-      password: 'secret',
-      allowedIps: ['127.0.0.1', '10.0.0.1'],
-      managedKeys: ['PORT', 'DATABASE_URL'],
-      storePath: path.resolve(process.cwd(), tmpPath)
-    });
+    expect(config.dashboard.enabled).toBe(true);
+    expect(config.dashboard.username).toBe('admin');
+    expect(config.dashboard.password).toBe('secret');
+    expect(config.dashboard.allowedIps).toEqual(['127.0.0.1', '10.0.0.1']);
+    expect(config.dashboard.managedKeys).toEqual(['PORT', 'DATABASE_URL']);
+    expect(config.dashboard.sections).toEqual([
+      expect.objectContaining({
+        id: 'application',
+        keys: ['PORT', 'DATABASE_URL']
+      })
+    ]);
+    expect(config.dashboard.storePath).toBe(path.resolve(process.cwd(), tmpPath));
   });
 
   it('supports wildcard CORS configuration', () => {

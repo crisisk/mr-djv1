@@ -47,7 +47,7 @@ function renderPage() {
       p.description {
         margin: 0.25rem 0 0;
         color: #4a5568;
-        max-width: 640px;
+        max-width: 720px;
       }
 
       .metadata {
@@ -58,6 +58,58 @@ function renderPage() {
       form {
         display: grid;
         gap: 1.5rem;
+      }
+
+      .tabs {
+        display: inline-flex;
+        gap: 0.6rem;
+        margin-bottom: 0.5rem;
+        padding: 0.35rem;
+        border-radius: 999px;
+        background: rgba(226, 232, 240, 0.6);
+      }
+
+      .tabs[data-hidden="true"] {
+        display: none;
+      }
+
+      .tabs button {
+        border: none;
+        border-radius: 999px;
+        padding: 0.45rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: transparent;
+        color: #475569;
+        cursor: pointer;
+        transition: background 120ms ease, color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .tabs button[data-active="true"] {
+        background: white;
+        color: #1e293b;
+        box-shadow: 0 8px 18px rgba(148, 163, 184, 0.35);
+      }
+
+      .group {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .group[hidden] {
+        display: none;
+      }
+
+      .group-header h2 {
+        margin: 0 0 0.35rem;
+        font-size: 1.15rem;
+        letter-spacing: -0.01em;
+      }
+
+      .group-header p {
+        margin: 0;
+        color: #4a5568;
+        font-size: 0.9rem;
       }
 
       .field {
@@ -172,6 +224,15 @@ function renderPage() {
         color: #b91c1c;
       }
 
+      .empty-state {
+        margin: 0;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        background: rgba(226, 232, 240, 0.35);
+        color: #475569;
+        font-size: 0.95rem;
+      }
+
       .toast {
         position: fixed;
         inset-inline: 50%;
@@ -219,7 +280,12 @@ function renderPage() {
         <div>
           <h1>Configuration Dashboard</h1>
           <p class="description">
-            Beheer de applicatie secrets en omgeving variabelen voor de staging omgeving. Waarden worden veilig opgeslagen op de server en direct toegepast zonder herstart.
+            Beheer de applicatie secrets en omgeving variabelen voor de staging omgeving. Waarden worden veilig opgeslagen op de
+            server en direct toegepast zonder herstart.
+          </p>
+          <p class="description">
+            Gebruik de tab "E-mailintegratie" om de provider, API-key, afzender en template-ID's voor transactionele mails in te
+            vullen zodat de app volledig functioneel is.
           </p>
         </div>
         <div class="metadata" id="metadata"></div>
@@ -227,19 +293,23 @@ function renderPage() {
       <form id="env-form">
         <section class="field">
           <h2>Applicatie variabelen</h2>
-          <p>Voer nieuwe waarden in om bij te werken. Laat het veld leeg om de huidige waarde te behouden of gebruik "Verwijderen" om een waarde te wissen.</p>
+          <p>Voer nieuwe waarden in om bij te werken. Laat het veld leeg om de huidige waarde te behouden of gebruik "Verwijderen"
+ om een waarde te wissen.</p>
         </section>
-        <div id="entries"></div>
+        <div class="tabs" id="tabs" role="tablist" aria-label="Configuratie categorieën"></div>
+        <div id="groups"></div>
         <button class="primary" type="submit">Wijzigingen opslaan</button>
       </form>
     </main>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script>
       const form = document.getElementById('env-form');
-      const entriesContainer = document.getElementById('entries');
+      const tabsContainer = document.getElementById('tabs');
+      const groupsContainer = document.getElementById('groups');
       const metadataEl = document.getElementById('metadata');
       const toastEl = document.getElementById('toast');
       let managedKeys = [];
+      let currentGroupId = null;
 
       function showToast(message) {
         toastEl.textContent = message;
@@ -247,6 +317,21 @@ function renderPage() {
         setTimeout(() => {
           toastEl.dataset.visible = 'false';
         }, 3200);
+      }
+
+      function setActiveGroup(groupId) {
+        currentGroupId = groupId;
+        const groupSections = groupsContainer.querySelectorAll('.group');
+        groupSections.forEach((section) => {
+          const isActive = section.dataset.groupId === groupId;
+          section.hidden = !isActive;
+          section.dataset.active = isActive ? 'true' : 'false';
+        });
+
+        const tabButtons = tabsContainer.querySelectorAll('button');
+        tabButtons.forEach((button) => {
+          button.dataset.active = button.dataset.groupId === groupId ? 'true' : 'false';
+        });
       }
 
       function createEntryRow(entry) {
@@ -306,6 +391,79 @@ function renderPage() {
         return wrapper;
       }
 
+      function createGroupSection(group) {
+        const section = document.createElement('section');
+        section.className = 'group';
+        section.dataset.groupId = group.id;
+        section.hidden = true;
+
+        const header = document.createElement('div');
+        header.className = 'group-header';
+
+        const title = document.createElement('h2');
+        title.textContent = group.label || group.id;
+        header.appendChild(title);
+
+        if (group.description) {
+          const paragraph = document.createElement('p');
+          paragraph.textContent = group.description;
+          header.appendChild(paragraph);
+        }
+
+        section.appendChild(header);
+
+        const entries = Array.isArray(group.entries) ? group.entries : [];
+        entries.forEach((entry) => {
+          section.appendChild(createEntryRow(entry));
+        });
+
+        return section;
+      }
+
+      function renderGroups(groups) {
+        tabsContainer.innerHTML = '';
+        groupsContainer.innerHTML = '';
+
+        if (!groups.length) {
+          tabsContainer.dataset.hidden = 'true';
+          const empty = document.createElement('p');
+          empty.className = 'empty-state';
+          empty.textContent = 'Er zijn momenteel geen beheerde variabelen geconfigureerd.';
+          groupsContainer.appendChild(empty);
+          return;
+        }
+
+        if (groups.length <= 1) {
+          tabsContainer.dataset.hidden = 'true';
+        } else {
+          delete tabsContainer.dataset.hidden;
+        }
+
+        let initialGroupId = null;
+
+        groups.forEach((group, index) => {
+          const section = createGroupSection(group);
+          groupsContainer.appendChild(section);
+
+          if (groups.length > 1) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.dataset.groupId = group.id;
+            button.textContent = group.label || group.id;
+            button.addEventListener('click', () => setActiveGroup(group.id));
+            tabsContainer.appendChild(button);
+          }
+
+          if (index === 0) {
+            initialGroupId = group.id;
+          }
+        });
+
+        if (initialGroupId) {
+          setActiveGroup(initialGroupId);
+        }
+      }
+
       async function loadState() {
         const response = await fetch('./api/variables', {
           headers: {
@@ -319,11 +477,7 @@ function renderPage() {
 
         const payload = await response.json();
         managedKeys = Array.isArray(payload.managedKeys) ? payload.managedKeys : [];
-        entriesContainer.innerHTML = '';
-
-        payload.entries.forEach((entry) => {
-          entriesContainer.appendChild(createEntryRow(entry));
-        });
+        renderGroups(Array.isArray(payload.groups) ? payload.groups : []);
 
         const metadataItems = [];
         if (payload.metadata?.lastModified) {

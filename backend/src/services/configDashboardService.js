@@ -34,16 +34,27 @@ function getCurrentValues() {
 }
 
 function buildState(values) {
+  const entryMap = new Map();
   const entries = config.dashboard.managedKeys.map((key) => {
     const existing = values[key];
     const effective = existing ?? process.env[key] ?? null;
 
-    return {
+    const entry = {
       name: key,
       hasValue: Boolean(effective),
       preview: effective ? maskValue(String(effective)) : null
     };
+
+    entryMap.set(key, entry);
+    return entry;
   });
+
+  const groups = (config.dashboard.sections || []).map((section) => ({
+    id: section.id,
+    label: section.label,
+    description: section.description,
+    entries: section.keys.map((key) => entryMap.get(key)).filter(Boolean)
+  }));
 
   let lastModified = null;
   const storePath = managedEnv.getStorePath();
@@ -57,6 +68,7 @@ function buildState(values) {
   return {
     managedKeys: [...config.dashboard.managedKeys],
     entries,
+    groups,
     metadata: {
       storePath: path.relative(process.cwd(), storePath),
       lastModified

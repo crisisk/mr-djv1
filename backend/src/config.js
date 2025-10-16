@@ -7,19 +7,45 @@ const DEFAULT_PORT = 3000;
 const DEFAULT_HOST = '0.0.0.0';
 const DEFAULT_RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_RATE_LIMIT_MAX = 100;
-const DEFAULT_MANAGED_KEYS = [
-  'NODE_ENV',
-  'HOST',
-  'PORT',
-  'SERVICE_NAME',
-  'LOG_FORMAT',
-  'CORS_ORIGIN',
-  'RATE_LIMIT_WINDOW_MS',
-  'RATE_LIMIT_MAX',
-  'DATABASE_URL',
-  'REDIS_URL',
-  'PGSSLMODE'
+const DEFAULT_SECTION_CONFIG = [
+  {
+    id: 'application',
+    label: 'Applicatie instellingen',
+    description:
+      'Basisconfiguratie voor runtime gedrag, databaseverbindingen en rate limiting voor de API.',
+    keys: [
+      'NODE_ENV',
+      'HOST',
+      'PORT',
+      'SERVICE_NAME',
+      'LOG_FORMAT',
+      'CORS_ORIGIN',
+      'RATE_LIMIT_WINDOW_MS',
+      'RATE_LIMIT_MAX',
+      'DATABASE_URL',
+      'REDIS_URL',
+      'PGSSLMODE'
+    ]
+  },
+  {
+    id: 'mail',
+    label: 'E-mailintegratie',
+    description:
+      'Credentials, afzender en templaten voor transactionele mails richting klanten en interne teams.',
+    keys: [
+      'MAIL_PROVIDER',
+      'MAIL_API_KEY',
+      'MAIL_FROM_ADDRESS',
+      'MAIL_REPLY_TO',
+      'MAIL_TEMPLATES_CONTACT',
+      'MAIL_TEMPLATES_BOOKING'
+    ]
+  }
 ];
+
+const DEFAULT_MANAGED_KEYS = Array.from(
+  new Set(DEFAULT_SECTION_CONFIG.flatMap((section) => section.keys))
+);
 
 function parseNumber(value, fallback) {
   const parsed = Number(value);
@@ -49,6 +75,37 @@ function parseCorsOrigin(value) {
   }
 
   return entries.length === 1 ? entries[0] : entries;
+}
+
+function buildDashboardSections(managedKeys) {
+  const managedKeySet = new Set(managedKeys);
+  const sections = [];
+
+  for (const section of DEFAULT_SECTION_CONFIG) {
+    const keys = section.keys.filter((key) => managedKeySet.has(key));
+    if (keys.length) {
+      sections.push({
+        id: section.id,
+        label: section.label,
+        description: section.description,
+        keys
+      });
+    }
+  }
+
+  const groupedKeys = new Set(sections.flatMap((section) => section.keys));
+  const leftovers = managedKeys.filter((key) => !groupedKeys.has(key));
+
+  if (leftovers.length) {
+    sections.push({
+      id: 'custom',
+      label: 'Overige variabelen',
+      description: 'Handmatig geconfigureerde variabelen die buiten de standaardsecties vallen.',
+      keys: leftovers
+    });
+  }
+
+  return sections;
 }
 
 function buildConfig() {
@@ -84,6 +141,7 @@ function buildConfig() {
       password: dashboardEnabled ? process.env.CONFIG_DASHBOARD_PASS : null,
       allowedIps: dashboardAllowedIps,
       managedKeys,
+      sections: buildDashboardSections(managedKeys),
       storePath: managedEnv.getStorePath()
     }
   };

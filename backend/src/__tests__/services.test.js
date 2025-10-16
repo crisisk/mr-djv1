@@ -201,6 +201,8 @@ describe('bookingService', () => {
 describe('catalog services', () => {
   afterEach(() => {
     jest.clearAllMocks();
+    packageService.resetCache();
+    reviewService.resetCache();
   });
 
   it('returns database backed packages when available', async () => {
@@ -232,7 +234,8 @@ describe('catalog services', () => {
           popular: true
         }
       ],
-      source: 'database'
+      source: 'database',
+      cacheStatus: 'refreshed'
     });
   });
 
@@ -244,7 +247,34 @@ describe('catalog services', () => {
     const result = await packageService.getPackages();
     expect(errorSpy).toHaveBeenCalled();
     expect(result.source).toBe('static');
+    expect(result.cacheStatus).toBe('refreshed');
     expect(result.packages.length).toBeGreaterThan(0);
+  });
+
+  it('serves cached packages on subsequent calls', async () => {
+    db.isConfigured.mockReturnValue(true);
+    db.runQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 'cached-package',
+          name: 'Cached',
+          price: '1000',
+          duration: '4 uur',
+          description: 'Cached desc',
+          features: ['DJ'],
+          popular: false
+        }
+      ]
+    });
+
+    const fresh = await packageService.getPackages();
+    expect(fresh.cacheStatus).toBe('refreshed');
+    expect(db.runQuery).toHaveBeenCalledTimes(1);
+
+    db.runQuery.mockClear();
+    const cached = await packageService.getPackages();
+    expect(cached.cacheStatus).toBe('hit');
+    expect(db.runQuery).not.toHaveBeenCalled();
   });
 
   it('returns database backed reviews when available', async () => {
@@ -274,7 +304,8 @@ describe('catalog services', () => {
           createdAt: new Date('2024-04-01T10:00:00Z')
         }
       ],
-      source: 'database'
+      source: 'database',
+      cacheStatus: 'refreshed'
     });
   });
 
@@ -286,6 +317,32 @@ describe('catalog services', () => {
     const result = await reviewService.getApprovedReviews();
     expect(errorSpy).toHaveBeenCalled();
     expect(result.source).toBe('static');
+    expect(result.cacheStatus).toBe('refreshed');
     expect(result.reviews.length).toBeGreaterThan(0);
+  });
+
+  it('serves cached reviews on subsequent calls', async () => {
+    db.isConfigured.mockReturnValue(true);
+    db.runQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 'review-1',
+          name: 'Reviewer',
+          eventType: 'Event',
+          rating: 5,
+          reviewText: 'Great!',
+          createdAt: new Date('2024-04-01T10:00:00Z')
+        }
+      ]
+    });
+
+    const fresh = await reviewService.getApprovedReviews(1);
+    expect(fresh.cacheStatus).toBe('refreshed');
+    expect(db.runQuery).toHaveBeenCalledTimes(1);
+
+    db.runQuery.mockClear();
+    const cached = await reviewService.getApprovedReviews(1);
+    expect(cached.cacheStatus).toBe('hit');
+    expect(db.runQuery).not.toHaveBeenCalled();
   });
 });

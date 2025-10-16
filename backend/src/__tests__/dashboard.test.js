@@ -70,6 +70,7 @@ describe('configuration dashboard', () => {
     const body = await response.text();
     expect(body).toContain('Configuration Dashboard');
     expect(body).toContain('Applicatie variabelen');
+    expect(body).toContain('E-mailintegratie');
   });
 
   it('returns the managed configuration state', async () => {
@@ -84,6 +85,16 @@ describe('configuration dashboard', () => {
     const payload = await response.json();
     expect(payload.managedKeys).toEqual(['PORT', 'DATABASE_URL']);
     expect(Array.isArray(payload.entries)).toBe(true);
+    expect(Array.isArray(payload.groups)).toBe(true);
+    expect(payload.groups).toEqual([
+      expect.objectContaining({
+        id: 'application',
+        entries: [
+          expect.objectContaining({ name: 'PORT' }),
+          expect.objectContaining({ name: 'DATABASE_URL' })
+        ]
+      })
+    ]);
   });
 
   it('persists updates and refreshes runtime configuration', async () => {
