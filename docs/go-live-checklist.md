@@ -25,6 +25,8 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 - [ ] Zet de `CONFIG_DASHBOARD_*` variabelen in `.env` zodat het dashboard geactiveerd wordt
 - [ ] Navigeer naar `https://staging.sevensa.nl/dashboard` en log in met de ingestelde Basic Auth inloggegevens
 - [ ] Vul alle verplichte variabelen (database, Redis, service naam, rate limit etc.) in en sla op
+- [ ] Open de tab **RentGuy integratie**, vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, `RENTGUY_WORKSPACE_ID` en controleer dat de statusindicator "API geconfigureerd" toont
+- [ ] Controleer in de RentGuy statuskaart dat de queue-grootte `0` is en gebruik eventueel **Queue flushen** om wachtrij-items te verwerken
 - [ ] Controleer dat de status-indicatoren groen kleuren en de `managed.env` op de server is bijgewerkt (`docker exec mr-dj-backend cat /app/managed.env`)
 - [ ] Herlaad de health endpoint (`/api/health`) en verifieer dat de database status `connected: true` toont
 

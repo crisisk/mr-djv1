@@ -115,7 +115,7 @@ describe('rentGuyService', () => {
     expect(rentGuyService.getStatus()).toMatchObject({ queueSize: 1, lastSyncError: expect.any(Object) });
 
     const flushResult = await rentGuyService.flushQueue();
-    expect(flushResult).toEqual({ attempted: 1, delivered: 1, remaining: 0 });
+    expect(flushResult).toEqual({ configured: true, attempted: 1, delivered: 1, remaining: 0 });
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(rentGuyService.getStatus()).toMatchObject({ queueSize: 0, lastSyncSuccess: expect.any(Object) });
   });

@@ -191,8 +191,11 @@ async function syncLead(lead, meta = {}) {
 }
 
 async function flushQueue(limit = queue.length) {
-  if (!isConfigured() || queue.length === 0) {
+  const configured = isConfigured();
+
+  if (!configured || queue.length === 0) {
     return {
+      configured,
       attempted: 0,
       delivered: 0,
       remaining: queue.length
@@ -216,6 +219,7 @@ async function flushQueue(limit = queue.length) {
   }
 
   return {
+    configured: true,
     attempted,
     delivered: deliveredCount,
     remaining: queue.length

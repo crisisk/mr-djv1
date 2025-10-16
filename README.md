@@ -27,7 +27,7 @@ chmod +x deploy.sh
 - **Functionaliteit**: beheer alle vereiste `.env` variabelen, schrijf veilig naar `managed.env` en push direct naar de draaiende applicatie
   - Tab **Applicatie instellingen**: core API, database en rate-limit configuratie
   - Tab **E-mailintegratie**: vul provider (`MAIL_PROVIDER`), API key (`MAIL_API_KEY`), afzender (`MAIL_FROM_ADDRESS` / `MAIL_REPLY_TO`) en template ID's (`MAIL_TEMPLATES_CONTACT`, `MAIL_TEMPLATES_BOOKING`) in voor volledige mailfunctionaliteit
-  - Tab **RentGuy integratie**: vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, optioneel `RENTGUY_WORKSPACE_ID` en een custom timeout (`RENTGUY_TIMEOUT_MS`) om leads/boekingen realtime te synchroniseren.
+  - Tab **RentGuy integratie**: vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, optioneel `RENTGUY_WORKSPACE_ID` en een custom timeout (`RENTGUY_TIMEOUT_MS`) om leads/boekingen realtime te synchroniseren. Gebruik de geïntegreerde statuskaart om de queue in te zien en via **Queue flushen** vastgelopen syncs opnieuw te proberen.
   - Volg de [go-live checklist](docs/go-live-checklist.md) voor een stap-voor-stap instructie
 
 ## 📚 Volledige documentatie
@@ -89,7 +89,7 @@ Gegeven de mate van maatwerk (design system, consent manager, local SEO scriptin
 - **Local SEO generator**: `node scripts/generate-city-pages.mjs` rendert 12 city-pages op basis van `content/local-seo/cities.json` inclusief cases, venues en FAQ. Draai het script na updates van de JSON.
 - **Realtime consent & analytics**: de `ConsentManager` en design-system componenten sturen granular Consent Mode v2 en DataLayer-events uit voor CRO-metingen.
 - **Roadmap & KPI framework**: zie [`docs/future-development-plan.md`](docs/future-development-plan.md) voor doorontwikkeling, meetplan en persona journeys.
-- **RentGuy integratie**: backend synchroniseert contact- en bookingdata via [`rentGuyService`](backend/src/services/rentGuyService.js) met fallback queue + `/integrations/rentguy/status` monitor endpoint.
+- **RentGuy integratie**: backend synchroniseert contact- en bookingdata via [`rentGuyService`](backend/src/services/rentGuyService.js) met fallback queue + `/integrations/rentguy/status` monitor endpoint én dashboard-acties voor status refresh & queue flush.
 - [Mailintegratie onderzoek](docs/mail-integration-report.md)
 - [Performance, SEO & klantfit onderzoek](docs/performance-seo-research.md)
 
@@ -98,6 +98,7 @@ Gegeven de mate van maatwerk (design system, consent manager, local SEO scriptin
 - **UAT rapport (58/58 suites, 95.5% coverage)** – zie [`docs/uat-report.md`](docs/uat-report.md).
 - **FINAL1–FINAL10 status** – bijgewerkt overzicht in [`docs/final-validation-status.md`](docs/final-validation-status.md).
 - **Doorgroei & journeys** – roadmap + KPI's in [`docs/future-development-plan.md`](docs/future-development-plan.md).
+- **QA checklists** – handboeken voor browsers, devices, accessibility & loadtests in [`tests/`](tests) en [`docs/load-testing-plan.md`](docs/load-testing-plan.md).
 
 ## 📞 Contact
 
