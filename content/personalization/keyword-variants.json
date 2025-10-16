@@ -83,7 +83,21 @@
       "leadCapture": {
         "formHeadline": "Laat ons checken of jullie datum vrij is",
         "formCopy": "We reageren binnen 12 uur met voorstel en planning.",
-        "successMessage": "Bedankt! Het team neemt binnen 12 uur contact op."
+        "successMessage": "Bedankt! Het team neemt binnen 12 uur contact op.",
+        "defaultMessage": "Vertel ons over locatie, aantal gasten en gewenste artiesten of uitbreidingen.",
+        "eventTypeOptions": [
+          "Bruiloft",
+          "Bedrijfsfeest",
+          "Private event",
+          "Festival"
+        ],
+        "packageOptions": [
+          "Brons",
+          "Zilver",
+          "Goud"
+        ],
+        "defaultEventType": "Bruiloft",
+        "defaultPackageId": "Zilver"
       }
     },
     {
@@ -191,7 +205,21 @@
       "leadCapture": {
         "formHeadline": "Plan jullie trouw-intake",
         "formCopy": "We delen draaiboeksjabloon, Spotify-planner en sample timeline.",
-        "successMessage": "Jullie trouwspecialist neemt vandaag nog contact op." }
+        "successMessage": "Jullie trouwspecialist neemt vandaag nog contact op.",
+        "defaultMessage": "Beschrijf ceremonie, locatie, gewenste live artiesten en eventuele draaiboekwensen.",
+        "eventTypeOptions": [
+          "Bruiloft",
+          "Ceremonie + feest",
+          "Destination wedding"
+        ],
+        "packageOptions": [
+          "Brons",
+          "Zilver",
+          "Goud"
+        ],
+        "defaultEventType": "Bruiloft",
+        "defaultPackageId": "Zilver"
+      }
     },
     {
       "id": "corporate_energy",
@@ -298,7 +326,22 @@
       "leadCapture": {
         "formHeadline": "Plan een productiecall",
         "formCopy": "We leveren binnen 24 uur draaiboek + budgetindicatie.",
-        "successMessage": "Het productie team neemt direct contact op." }
+        "successMessage": "Het productie team neemt direct contact op.",
+        "defaultMessage": "Omschrijf merkdoelstellingen, locatie, gewenste activaties en bezoekersaantallen.",
+        "eventTypeOptions": [
+          "Bedrijfsfeest",
+          "Awardshow",
+          "Product launch",
+          "Congres/Evenement"
+        ],
+        "packageOptions": [
+          "Brons",
+          "Zilver",
+          "Goud"
+        ],
+        "defaultEventType": "Bedrijfsfeest",
+        "defaultPackageId": "Goud"
+      }
     },
     {
       "id": "luxury_private",
@@ -405,7 +448,22 @@
       "leadCapture": {
         "formHeadline": "Creëer jullie boutique party",
         "formCopy": "Binnen 12 uur een conceptvoorstel met moodboard.",
-        "successMessage": "Je krijgt een WhatsApp-intake met onze creative director." }
+        "successMessage": "Je krijgt een WhatsApp-intake met onze creative director.",
+        "defaultMessage": "Vertel ons over thema, gastenlijst, locatie en gewenste live acts of effects.",
+        "eventTypeOptions": [
+          "Private event",
+          "Verjaardag",
+          "Jubileum",
+          "Tuinfeest"
+        ],
+        "packageOptions": [
+          "Brons",
+          "Zilver",
+          "Goud"
+        ],
+        "defaultEventType": "Private event",
+        "defaultPackageId": "Brons"
+      }
     }
   ]
 }

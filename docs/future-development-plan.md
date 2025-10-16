@@ -1,6 +1,8 @@
 # Verdere doorontwikkeling, KPI's & Customer Journeys
 
-_Laatst bijgewerkt: 2025-10-16_
+_Laatst bijgewerkt: 2025-10-18_
+
+> **Nieuw**: zie [`docs/value-acceleration-plan.md`](./value-acceleration-plan.md) voor het takenpakket richting een projectwaardering van €25k–€30k. De onderstaande roadmap sluit hierop aan en bepaalt de fasering per kwartaal.
 
 ## 1. Verdere doorontwikkeling (roadmap)
 
