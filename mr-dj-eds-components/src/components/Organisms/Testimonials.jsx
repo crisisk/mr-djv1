@@ -124,17 +124,49 @@ const categories = [
   },
 ];
 
-const useCategorisedTestimonials = () =>
-  useMemo(
-    () =>
-      categories.map((category) => ({
+const useCategorisedTestimonials = (segment) =>
+  useMemo(() => {
+    if (!segment) {
+      return categories.map((category) => ({
         ...category,
         testimonials: testimonialsData.filter((item) => item.category === category.key).slice(0, 3),
-      })),
-    []
-  );
+      }));
+    }
 
-const TestimonialCard = ({ testimonial }) => (
+    const testimonialIndex = testimonialsData.reduce((acc, testimonial) => {
+      acc[testimonial.id] = testimonial;
+      return acc;
+    }, {});
+
+    const highlightIds = Array.isArray(segment.testimonialIds) ? segment.testimonialIds : [];
+    const highlightTestimonials = highlightIds
+      .map((id) => testimonialIndex[id])
+      .filter(Boolean);
+
+    const highlightCategory = segment.highlightCategory || highlightTestimonials[0]?.category || 'bruiloft';
+    const baseCategory = categories.find((category) => category.key === highlightCategory);
+
+    const primaryGroup = {
+      key: 'personalization-highlight',
+      title: segment.headline || baseCategory?.title || 'Uitgelichte cases',
+      description: segment.subheadline || baseCategory?.description || '',
+      testimonials:
+        highlightTestimonials.length > 0
+          ? highlightTestimonials
+          : testimonialsData.filter((item) => item.category === highlightCategory).slice(0, 3),
+    };
+
+    const remainingGroups = categories
+      .filter((category) => category.key !== highlightCategory)
+      .map((category) => ({
+        ...category,
+        testimonials: testimonialsData.filter((item) => item.category === category.key).slice(0, 3),
+      }));
+
+    return [primaryGroup, ...remainingGroups];
+  }, [segment]);
+
+const TestimonialCard = ({ testimonial, segmentId }) => (
   <article className="flex flex-col gap-spacing-sm rounded-3xl border border-neutral-gray-100 bg-neutral-light p-spacing-xl shadow-lg">
     <StarRating rating={testimonial.rating} />
     <p className="text-font-size-h3 text-neutral-dark italic flex-grow">“{testimonial.quote}”</p>
@@ -149,6 +181,7 @@ const TestimonialCard = ({ testimonial }) => (
         trackEvent('testimonial_cta_click', {
           testimonial_id: testimonial.id,
           category: testimonial.category,
+          personalization_variant: segmentId || 'default',
         })
       }
     >
@@ -163,8 +196,11 @@ const MediaTile = ({ label }) => (
   </div>
 );
 
-const Testimonials = () => {
-  const groupedTestimonials = useCategorisedTestimonials();
+const Testimonials = ({ segment }) => {
+  const groupedTestimonials = useCategorisedTestimonials(segment);
+  const mediaTiles = Array.isArray(segment?.mediaTiles) && segment.mediaTiles.length
+    ? segment.mediaTiles
+    : testimonialsData.slice(0, 6).map((testimonial) => testimonial.media);
 
   useEffect(() => {
     groupedTestimonials.forEach((group) => {
@@ -173,18 +209,21 @@ const Testimonials = () => {
           testimonial_id: testimonial.id,
           category: testimonial.category,
           placement: 'design_system',
+          personalization_variant: segment?.id || 'default',
         });
       });
     });
-  }, [groupedTestimonials]);
+  }, [groupedTestimonials, segment?.id]);
 
   return (
     <section className="py-spacing-3xl bg-neutral-gray-100">
       <div className="container mx-auto px-spacing-md">
-        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-xl font-extrabold">Social Proof & Media</h2>
+        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-xl font-extrabold">
+          {segment?.headline || 'Social Proof & Media'}
+        </h2>
         <p className="text-center text-neutral-gray-600 max-w-2xl mx-auto mb-spacing-2xl">
-          Toon direct bewijs met categorie-specifieke testimonials en koppel ze aan je mediagallery. DataLayer events volgen
-          impressies en kliks voor CRO-analyse.
+          {segment?.subheadline ||
+            'Toon direct bewijs met categorie-specifieke testimonials en koppel ze aan je mediagallery. DataLayer events volgen impressies en kliks voor CRO-analyse.'}
         </p>
         <div className="grid gap-spacing-xl md:grid-cols-2">
           {groupedTestimonials.map((group) => (
@@ -195,7 +234,7 @@ const Testimonials = () => {
               </header>
               <div className="space-y-spacing-md">
                 {group.testimonials.map((testimonial) => (
-                  <TestimonialCard key={testimonial.id} testimonial={testimonial} />
+                  <TestimonialCard key={testimonial.id} testimonial={testimonial} segmentId={segment?.id} />
                 ))}
               </div>
             </div>
@@ -206,8 +245,8 @@ const Testimonials = () => {
               Selecteer bij elke testimonial het corresponderende beeldmateriaal zodat bezoekers de sfeer direct zien.
             </p>
             <div className="grid grid-cols-2 gap-spacing-md">
-              {testimonialsData.slice(0, 6).map((testimonial) => (
-                <MediaTile key={testimonial.id} label={testimonial.media} />
+              {mediaTiles.map((label) => (
+                <MediaTile key={label} label={label} />
               ))}
             </div>
           </div>

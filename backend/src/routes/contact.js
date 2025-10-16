@@ -42,6 +42,10 @@ router.post('/', validations, async (req, res, next) => {
       packageId: req.body.packageId
     });
 
+    const eventDateIso = contactRecord.eventDate
+      ? new Date(contactRecord.eventDate).toISOString()
+      : req.body.eventDate || null;
+
     res.status(201).json({
       success: true,
       message: 'Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.',
@@ -49,9 +53,10 @@ router.post('/', validations, async (req, res, next) => {
       status: contactRecord.status,
       persisted: contactRecord.persisted,
       eventType: contactRecord.eventType || req.body.eventType,
-      eventDate: contactRecord.eventDate || req.body.eventDate || null,
+      eventDate: eventDateIso,
       requestedPackage: contactRecord.packageId || req.body.packageId || null,
-      submittedAt: contactRecord.createdAt
+      submittedAt: contactRecord.createdAt,
+      rentGuySync: contactRecord.rentGuySync
     });
   } catch (error) {
     next(error);

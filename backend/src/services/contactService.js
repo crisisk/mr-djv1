@@ -1,5 +1,6 @@
 const { randomUUID } = require('crypto');
 const db = require('../lib/db');
+const rentGuyService = require('./rentGuyService');
 
 const inMemoryContacts = new Map();
 
@@ -15,10 +16,11 @@ function normalizeEventDate(value) {
 async function saveContact(payload) {
   const timestamp = new Date();
   const eventDate = normalizeEventDate(payload.eventDate);
+  let result;
 
   if (db.isConfigured()) {
     try {
-      const result = await db.runQuery(
+      const queryResult = await db.runQuery(
         `INSERT INTO contacts (name, email, phone, message, event_type, event_date, package_id, status, created_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, 'new', $8)
          RETURNING id, status, created_at AS "createdAt", event_type AS "eventType", event_date AS "eventDate", package_id AS "packageId"`,
@@ -34,38 +36,71 @@ async function saveContact(payload) {
         ]
       );
 
-      const row = result.rows[0];
-      return {
+      const row = queryResult.rows[0];
+      result = {
         id: row.id,
         status: row.status,
         createdAt: row.createdAt,
         eventType: row.eventType || payload.eventType || null,
         eventDate: row.eventDate || eventDate,
         packageId: row.packageId || payload.packageId || null,
-        persisted: true
+        persisted: true,
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        message: payload.message || null
       };
     } catch (error) {
       console.error('[contactService] Database insert failed:', error.message);
     }
   }
 
-  const id = randomUUID();
-  const record = {
-    id,
-    status: 'pending',
-    createdAt: timestamp,
-    persisted: false,
-    eventType: payload.eventType || null,
-    eventDate,
-    packageId: payload.packageId || null
+  if (!result) {
+    const id = randomUUID();
+    const record = {
+      id,
+      status: 'pending',
+      createdAt: timestamp,
+      persisted: false,
+      eventType: payload.eventType || null,
+      eventDate,
+      packageId: payload.packageId || null,
+      name: payload.name,
+      email: payload.email,
+      phone: payload.phone,
+      message: payload.message || null
+    };
+
+    inMemoryContacts.set(id, {
+      ...payload,
+      ...record
+    });
+
+    result = record;
+  }
+
+  const rentGuySync = await rentGuyService.syncLead(
+    {
+      id: result.id,
+      status: result.status,
+      eventType: result.eventType,
+      eventDate: result.eventDate,
+      packageId: result.packageId,
+      name: result.name,
+      email: result.email,
+      phone: result.phone,
+      message: result.message,
+      persisted: result.persisted
+    },
+    {
+      source: 'contact-form'
+    }
+  );
+
+  return {
+    ...result,
+    rentGuySync
   };
-
-  inMemoryContacts.set(id, {
-    ...payload,
-    ...record
-  });
-
-  return record;
 }
 
 function getContactServiceStatus() {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import Button from '../Atoms/Buttons.jsx';
+import { Button } from '../ui/button.jsx';
 import { trackEvent } from '../../lib/analytics.js';
 
 // HubSpot Form Submission Logic (Placeholder)
@@ -43,11 +43,13 @@ const submitToHubSpot = async (formData) => {
   }
 };
 
-const AvailabilityChecker = () => {
+const AvailabilityChecker = ({ personalization, onEvent }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(null); // 'success', 'error', 'loading'
   const [hasTrackedStart, setHasTrackedStart] = useState(false);
+
+  const leadCapture = personalization || {};
 
   const emitStartEvent = (context = {}) => {
     if (hasTrackedStart) return;
@@ -56,6 +58,11 @@ const AvailabilityChecker = () => {
       ...context,
     });
     setHasTrackedStart(true);
+    onEvent?.('journey_step', {
+      step: 'availability_start',
+      component: 'AvailabilityChecker',
+      ...context
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -91,6 +98,11 @@ const AvailabilityChecker = () => {
         lead_email_domain: email.split('@')[1] || null,
         event_date: selectedDate.toISOString(),
       });
+      onEvent?.('form_submit', {
+        form: 'availability_checker',
+        event_date: selectedDate.toISOString(),
+        email_domain: email.split('@')[1] || null
+      });
     } else {
       setStatus({ type: 'error', message: result.message });
     }
@@ -102,10 +114,10 @@ const AvailabilityChecker = () => {
     <section className="py-spacing-3xl bg-neutral-light">
       <div className="container mx-auto px-spacing-md max-w-lg shadow-xl rounded-lg p-spacing-2xl">
         <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-lg font-extrabold">
-          Controleer Beschikbaarheid
+          {leadCapture.formHeadline || 'Controleer Beschikbaarheid'}
         </h2>
         <p className="text-center text-neutral-dark mb-spacing-xl">
-          Kies uw gewenste datum en wij controleren direct of Mr. DJ beschikbaar is.
+          {leadCapture.formCopy || 'Kies uw gewenste datum en wij controleren direct of Mr. DJ beschikbaar is.'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-spacing-xl">
@@ -158,10 +170,19 @@ const AvailabilityChecker = () => {
           {/* Submit Button */}
           <Button
             type="submit"
-            variant="primary"
+            variant="secondary"
             size="lg"
             className="w-full"
             disabled={status && status.type === 'loading'}
+            onClick={() => {
+              trackEvent('availability_cta_click', {
+                component: 'AvailabilityChecker',
+              });
+              onEvent?.('cta_click', {
+                cta: 'availability_submit',
+                component: 'AvailabilityChecker'
+              });
+            }}
           >
             {status && status.type === 'loading' ? 'Bezig...' : 'Controleer & Vraag Aan'}
           </Button>
