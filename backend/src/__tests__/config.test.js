@@ -30,6 +30,13 @@ describe('config', () => {
     expect(config.databaseUrl).toBeUndefined();
     expect(config.serviceName).toBe('mr-dj-backend');
     expect(config.version).toBe('1.0.0');
+    expect(config.integrations.rentGuy).toEqual({
+      enabled: false,
+      baseUrl: null,
+      workspaceId: null,
+      timeoutMs: 5000
+    });
+    expect(config.personalization).toEqual({ automationWebhook: null });
     expect(config.dashboard.enabled).toBe(false);
     expect(config.dashboard.username).toBeNull();
     expect(config.dashboard.password).toBeNull();
@@ -51,7 +58,12 @@ describe('config', () => {
       'MAIL_FROM_ADDRESS',
       'MAIL_REPLY_TO',
       'MAIL_TEMPLATES_CONTACT',
-      'MAIL_TEMPLATES_BOOKING'
+      'MAIL_TEMPLATES_BOOKING',
+      'RENTGUY_API_BASE_URL',
+      'RENTGUY_API_KEY',
+      'RENTGUY_WORKSPACE_ID',
+      'RENTGUY_TIMEOUT_MS',
+      'N8N_PERSONALIZATION_WEBHOOK_URL'
     ]);
     expect(config.dashboard.sections).toEqual([
       expect.objectContaining({
@@ -82,6 +94,21 @@ describe('config', () => {
           'MAIL_TEMPLATES_CONTACT',
           'MAIL_TEMPLATES_BOOKING'
         ]
+      }),
+      expect.objectContaining({
+        id: 'rentguy',
+        label: 'RentGuy integratie',
+        keys: [
+          'RENTGUY_API_BASE_URL',
+          'RENTGUY_API_KEY',
+          'RENTGUY_WORKSPACE_ID',
+          'RENTGUY_TIMEOUT_MS'
+        ]
+      }),
+      expect.objectContaining({
+        id: 'personalization',
+        label: 'Personalization & CRO',
+        keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
       })
     ]);
     expect(config.dashboard.storePath).toBe(DEFAULT_STORE_PATH);
@@ -121,6 +148,12 @@ describe('config', () => {
     expect(config.redisUrl).toBe('redis://cache');
     expect(config.serviceName).toBe('custom-service');
     expect(config.version).toBe('2.3.4');
+    expect(config.integrations.rentGuy).toEqual({
+      enabled: false,
+      baseUrl: null,
+      workspaceId: null,
+      timeoutMs: 5000
+    });
     expect(config.dashboard.enabled).toBe(true);
     expect(config.dashboard.username).toBe('admin');
     expect(config.dashboard.password).toBe('secret');
@@ -133,6 +166,23 @@ describe('config', () => {
       })
     ]);
     expect(config.dashboard.storePath).toBe(path.resolve(process.cwd(), tmpPath));
+  });
+
+  it('exposes personalization automation webhook when configured', () => {
+    process.env = {
+      N8N_PERSONALIZATION_WEBHOOK_URL: 'https://n8n.test/webhook/personalization'
+    };
+
+    const config = loadConfig();
+
+    expect(config.personalization).toEqual({
+      automationWebhook: 'https://n8n.test/webhook/personalization'
+    });
+    const personalizationSection = config.dashboard.sections.find(
+      (section) => section.id === 'personalization'
+    );
+    expect(personalizationSection).toBeDefined();
+    expect(personalizationSection.keys).toContain('N8N_PERSONALIZATION_WEBHOOK_URL');
   });
 
   it('supports wildcard CORS configuration', () => {
@@ -148,5 +198,34 @@ describe('config', () => {
     expect(config.cors.credentials).toBe(false);
     expect(config.rateLimit.windowMs).toBe(15 * 60 * 1000);
     expect(config.rateLimit.max).toBe(100);
+  });
+
+  it('reloads configuration, copies arrays/objects and removes stale keys', () => {
+    process.env = {
+      CONFIG_DASHBOARD_ENABLED: 'true',
+      CONFIG_DASHBOARD_USER: 'admin',
+      CONFIG_DASHBOARD_PASS: 'secret',
+      CONFIG_DASHBOARD_KEYS: 'PORT,CUSTOM_KEY',
+      CUSTOM_KEY: 'value',
+      CORS_ORIGIN: ' , , '
+    };
+
+    const config = loadConfig();
+    expect(config.cors.origin).toBe('*');
+    const customSection = config.dashboard.sections.find((section) => section.id === 'custom');
+    expect(customSection).toBeDefined();
+    expect(customSection.keys).toEqual(['CUSTOM_KEY']);
+
+    config.temporary = 'remove-me';
+
+    process.env.CONFIG_DASHBOARD_KEYS = 'PORT';
+    delete process.env.CUSTOM_KEY;
+
+    const reloaded = config.reload();
+
+    expect(reloaded.dashboard.managedKeys).toEqual(['PORT']);
+    expect(reloaded.dashboard.sections.find((section) => section.id === 'custom')).toBeUndefined();
+    expect(reloaded.cors.origin).toBe('*');
+    expect(reloaded.temporary).toBeUndefined();
   });
 });

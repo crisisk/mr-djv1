@@ -5,6 +5,8 @@ const packagesRouter = require('./packages');
 const contactRouter = require('./contact');
 const bookingsRouter = require('./bookings');
 const reviewsRouter = require('./reviews');
+const integrationsRouter = require('./integrations');
+const personalizationRouter = require('./personalization');
 const dashboardRouter = require('./dashboard');
 
 const router = express.Router();
@@ -15,7 +17,14 @@ router.get('/', (_req, res) => {
     contact: '/contact',
     bookings: '/bookings',
     packages: '/packages',
-    reviews: '/reviews'
+    reviews: '/reviews',
+    integrations: {
+      rentGuy: '/integrations/rentguy/status'
+    },
+    personalization: {
+      keyword: '/personalization/keyword',
+      events: '/personalization/events'
+    }
   };
 
   if (config.dashboard.enabled) {
@@ -34,6 +43,8 @@ router.use('/packages', packagesRouter);
 router.use('/contact', contactRouter);
 router.use('/bookings', bookingsRouter);
 router.use('/reviews', reviewsRouter);
+router.use('/integrations', integrationsRouter);
+router.use('/personalization', personalizationRouter);
 
 if (config.dashboard.enabled) {
   router.use('/dashboard', dashboardRouter);

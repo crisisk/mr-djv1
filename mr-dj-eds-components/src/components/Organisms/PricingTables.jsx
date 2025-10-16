@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '../Atoms/Buttons.jsx';
+import { Button } from '../ui/button.jsx';
 import { trackEvent } from '../../lib/analytics.js';
 
 const packages = [
@@ -66,8 +66,8 @@ const packages = [
   },
 ];
 
-const PricingCard = ({ pkg }) => {
-  const { name, subtitle, price, duration, category, features, upsells, isFeatured, buttonText } = pkg;
+const PricingCard = ({ pkg, segmentId, onSelect }) => {
+  const { name, subtitle, price, duration, category, features, upsells, isFeatured, buttonText, badge } = pkg;
 
   const cardClasses = isFeatured
     ? 'bg-neutral-dark text-neutral-light shadow-2xl transform scale-105'
@@ -83,13 +83,16 @@ const PricingCard = ({ pkg }) => {
     trackEvent('package_cta_click', {
       package_name: name,
       placement: 'design_system_pricing_tables',
+      personalization_variant: segmentId || 'default',
     });
+    onSelect?.(pkg);
   };
 
   const handleHover = () => {
     trackEvent('package_view', {
       package_name: name,
       placement: 'design_system_pricing_tables',
+      personalization_variant: segmentId || 'default',
     });
   };
 
@@ -97,7 +100,7 @@ const PricingCard = ({ pkg }) => {
     <div className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}>
       {isFeatured && (
         <div className="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
-          Populair
+          {badge || 'Populair'}
         </div>
       )}
       <div className={`pb-spacing-md mb-spacing-md ${headerClasses}`}>
@@ -157,22 +160,54 @@ const PricingCard = ({ pkg }) => {
   );
 };
 
-const PricingTables = () => {
+const PricingTables = ({ segment, onSelect }) => {
+  const highlightPackage = segment?.highlightPackage;
+  const ctaOverrides = segment?.ctaOverrides || {};
+
+  const enrichedPackages = packages.map((pkg) => {
+    const isHighlighted = highlightPackage ? pkg.name === highlightPackage : pkg.isFeatured;
+    return {
+      ...pkg,
+      isFeatured: isHighlighted,
+      buttonText: ctaOverrides[pkg.name] || pkg.buttonText,
+      badge: isHighlighted ? segment?.badgeLabel || 'Aanbevolen' : undefined,
+    };
+  });
+
+  const heading = segment?.headline || 'Onze Pakketten';
+  const description =
+    segment?.subheadline ||
+    'Combineer basispakketten met uitbreidingen zoals sparkulars, branding en live-musici. De data-layer events volgen elke klik zodat marketingteams kunnen optimaliseren.';
+  const valueEmphasis = Array.isArray(segment?.valueEmphasis) ? segment.valueEmphasis : [];
+  const guaranteeCopy = segment?.guaranteeCopy;
+
   return (
     <section className="py-spacing-3xl bg-neutral-gray-100">
       <div className="container mx-auto px-spacing-md">
-        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">
-          Onze Pakketten
-        </h2>
-        <p className="text-center text-font-size-body text-neutral-gray-600 max-w-2xl mx-auto mb-spacing-2xl">
-          Combineer basispakketten met uitbreidingen zoals sparkulars, branding en live-musici. De data-layer events volgen elke
-          klik zodat marketingteams kunnen optimaliseren.
-        </p>
+        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">{heading}</h2>
+        <p className="text-center text-font-size-body text-neutral-gray-600 max-w-2xl mx-auto mb-spacing-2xl">{description}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-start">
-          {packages.map((pkg) => (
-            <PricingCard key={pkg.name} pkg={pkg} />
+          {enrichedPackages.map((pkg) => (
+            <PricingCard key={pkg.name} pkg={pkg} segmentId={segment?.id} onSelect={onSelect} />
           ))}
         </div>
+        {valueEmphasis.length > 0 && (
+          <div className="mt-spacing-2xl rounded-3xl border border-primary/20 bg-primary/5 p-spacing-xl">
+            <h3 className="text-font-size-h4 font-semibold text-neutral-dark mb-spacing-sm text-center">
+              Belangrijkste waardeproposities
+            </h3>
+            <ul className="grid gap-spacing-sm md:grid-cols-3 text-font-size-small text-neutral-dark/80">
+              {valueEmphasis.map((item) => (
+                <li key={item} className="rounded-lg bg-neutral-light px-spacing-md py-spacing-sm text-center shadow-sm">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {guaranteeCopy && (
+          <p className="mt-spacing-xl text-center text-neutral-dark font-semibold">{guaranteeCopy}</p>
+        )}
       </div>
     </section>
   );

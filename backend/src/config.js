@@ -7,6 +7,7 @@ const DEFAULT_PORT = 3000;
 const DEFAULT_HOST = '0.0.0.0';
 const DEFAULT_RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_RATE_LIMIT_MAX = 100;
+const DEFAULT_RENTGUY_TIMEOUT_MS = 5000;
 const DEFAULT_SECTION_CONFIG = [
   {
     id: 'application',
@@ -40,6 +41,20 @@ const DEFAULT_SECTION_CONFIG = [
       'MAIL_TEMPLATES_CONTACT',
       'MAIL_TEMPLATES_BOOKING'
     ]
+  },
+  {
+    id: 'rentguy',
+    label: 'RentGuy integratie',
+    description:
+      'API-parameters voor de synchronisatie van leads en boekingen richting de RentGuy applicatie.',
+    keys: ['RENTGUY_API_BASE_URL', 'RENTGUY_API_KEY', 'RENTGUY_WORKSPACE_ID', 'RENTGUY_TIMEOUT_MS']
+  },
+  {
+    id: 'personalization',
+    label: 'Personalization & CRO',
+    description:
+      'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
+    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
   }
 ];
 
@@ -135,6 +150,17 @@ function buildConfig() {
     redisUrl: process.env.REDIS_URL,
     serviceName: process.env.SERVICE_NAME || 'mr-dj-backend',
     version: process.env.npm_package_version || '1.0.0',
+    integrations: {
+      rentGuy: {
+        enabled: Boolean(process.env.RENTGUY_API_BASE_URL && process.env.RENTGUY_API_KEY),
+        baseUrl: process.env.RENTGUY_API_BASE_URL || null,
+        workspaceId: process.env.RENTGUY_WORKSPACE_ID || null,
+        timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS)
+      }
+    },
+    personalization: {
+      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null
+    },
     dashboard: {
       enabled: dashboardEnabled,
       username: dashboardEnabled ? process.env.CONFIG_DASHBOARD_USER : null,

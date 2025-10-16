@@ -1,6 +1,10 @@
 const app = require('../app');
 const { resetInMemoryStore: resetContactStore } = require('../services/contactService');
 const { resetInMemoryStore: resetBookingStore } = require('../services/bookingService');
+const {
+  resetLogs: resetPersonalizationLogs,
+  resetCache: resetPersonalizationCache
+} = require('../services/personalizationService');
 const http = require('http');
 
 let server;
@@ -59,6 +63,8 @@ describe('Mister DJ API', () => {
   afterEach(() => {
     resetContactStore();
     resetBookingStore();
+    resetPersonalizationLogs();
+    resetPersonalizationCache();
   });
 
   it('returns service metadata on the root route', async () => {
@@ -75,6 +81,15 @@ describe('Mister DJ API', () => {
         reviews: '/reviews'
       })
     });
+    expect(response.body.endpoints.integrations).toEqual(
+      expect.objectContaining({ rentGuy: '/integrations/rentguy/status' })
+    );
+    expect(response.body.endpoints.personalization).toEqual(
+      expect.objectContaining({
+        keyword: '/personalization/keyword',
+        events: '/personalization/events'
+      })
+    );
   });
 
   it('exposes a detailed health check', async () => {
@@ -139,6 +154,7 @@ describe('Mister DJ API', () => {
     expect(response.body.contactId).toBeDefined();
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
+    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
   });
 
   it('provides a curated set of fallback packages when no database is available', async () => {
@@ -175,6 +191,7 @@ describe('Mister DJ API', () => {
       status: 'pending'
     });
     expect(response.body.bookingId).toBeDefined();
+    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
 
     const listResponse = await request('GET', '/bookings');
     expect(listResponse.status).toBe(200);
@@ -194,5 +211,50 @@ describe('Mister DJ API', () => {
     expect(Array.isArray(response.body.reviews)).toBe(true);
     expect(response.body.reviews.length).toBeGreaterThan(0);
     expect(response.body).toMatchObject({ source: 'static' });
+  });
+
+  it('provides integration status for RentGuy', async () => {
+    const response = await request('GET', '/integrations/rentguy/status');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      configured: expect.any(Boolean),
+      queueSize: expect.any(Number)
+    });
+  });
+
+  it('personalises landing content for wedding keywords', async () => {
+    const response = await request('GET', '/personalization/keyword?keyword=bruiloft+dj');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      meta: expect.objectContaining({
+        variantId: 'romantic_wedding',
+        matchType: 'manual'
+      }),
+      variant: expect.objectContaining({
+        hero: expect.objectContaining({ title: expect.any(String) }),
+        pricing: expect.objectContaining({ highlightPackage: 'Zilver' })
+      })
+    });
+  });
+
+  it('records personalization events for CRO analytics', async () => {
+    const response = await request('POST', '/personalization/events', {
+      type: 'cta_click',
+      variantId: 'romantic_wedding',
+      keyword: 'bruiloft dj',
+      payload: { cta: 'Plan trouwgesprek' }
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      success: true,
+      event: expect.objectContaining({
+        variantId: 'romantic_wedding',
+        type: 'cta_click',
+        payload: { cta: 'Plan trouwgesprek' }
+      })
+    });
   });
 });
