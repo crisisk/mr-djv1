@@ -1,6 +1,6 @@
 import React from 'react';
 import HeroSection from '../Organisms/HeroSection.jsx';
-
+import Header from '../Molecules/Header.jsx';
 import Button from '../Atoms/Buttons.jsx';
 import { Helmet } from 'react-helmet';
 import ContactForm from '../Organisms/ContactForm.jsx';
@@ -15,6 +15,9 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 
     return (
                 <div className="LocalSeoPage">
+            {/* Header with Logo and Navigation */}
+            <Header />
+
             <Helmet>
                 <title>{seoTitle}</title>
                 <meta name="description" content={seoDescription} />

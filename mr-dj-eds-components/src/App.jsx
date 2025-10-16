@@ -2,6 +2,7 @@
 import { Routes, Route, useParams } from 'react-router-dom';
 import React, { Suspense } from 'react';
 import Button from './components/Atoms/Buttons.jsx';
+import CookieConsent from './components/Molecules/CookieConsent.jsx';
 // Use React.lazy for code splitting to improve initial load time (T6: Performance)
 const DjSaxLanding = React.lazy(() => import('./components/Templates/DjSaxLanding.jsx'));
 const LocalSeoPage = React.lazy(() => import('./components/Templates/LocalSeoPage.jsx'));
@@ -84,6 +85,9 @@ function App() {
           <Route path="*" element={<div className="p-10 text-center">Welkom bij Mr. DJ! Gebruik de URL /dj-in-eindhoven of /bruiloft-dj-eindhoven om de SEO pagina's te zien.</div>} />
         </Routes>
       </Suspense>
+
+      {/* T1.2: GDPR Cookie Consent Banner - Shows on all pages */}
+      <CookieConsent />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import Button from '../Atoms/Buttons.jsx';
+import Header from '../Molecules/Header.jsx';
 import HeroSection from '../Organisms/HeroSection.jsx';
 import PricingTables from '../Organisms/PricingTables.jsx';
 import AvailabilityChecker from '../Organisms/AvailabilityChecker.jsx';
@@ -43,6 +44,10 @@ const DjSaxLanding = () => {
         <title>Mister DJ - Dé Feestspecialist van het Zuiden</title>
         <meta name="description" content="DJ + Saxofoon - De ultieme live ervaring voor uw feest. Boek nu de perfecte combinatie van een top-DJ en live saxofonist voor bruiloften, bedrijfsfeesten en meer in Noord-Brabant en Limburg." />
       </Helmet>
+
+      {/* Header with Logo and Navigation */}
+      <Header />
+
       {/* 1. Hero Section (Using Reusable Component) */}
       <HeroSection
         title="DJ + SAXOFOON: De Ultieme Live Ervaring"
