@@ -452,6 +452,40 @@ h4 { font-size: 20px; }
     color: var(--color-dark-grey);
 }
 
+/* About Section */
+.about-section {
+    padding: var(--spacing-xxl) 0;
+    background: var(--color-white);
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.about-card {
+    background: var(--color-light-grey);
+    padding: var(--spacing-lg);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(26, 44, 75, 0.08);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.about-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(26, 44, 75, 0.12);
+}
+
+.about-card h3 {
+    margin-bottom: var(--spacing-sm);
+}
+
+.about-card p {
+    color: rgba(26, 44, 75, 0.8);
+}
+
 /* Packages Section */
 .packages-section {
     padding: var(--spacing-xxl) 0;
@@ -490,6 +524,24 @@ h4 { font-size: 20px; }
     border-radius: 4px;
 }
 
+.package-card.recommended {
+    border: 3px solid var(--color-blue);
+    box-shadow: 0 16px 32px rgba(0, 174, 239, 0.2);
+}
+
+.package-card.recommended::after {
+    content: 'AANBEVOLEN';
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background: var(--color-blue);
+    color: var(--color-white);
+    padding: 4px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 4px;
+}
+
 .package-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 16px rgba(26, 44, 75, 0.15);
@@ -519,6 +571,11 @@ h4 { font-size: 20px; }
     color: var(--color-dark-grey);
 }
 
+.package-description {
+    margin: var(--spacing-sm) 0;
+    color: rgba(26, 44, 75, 0.8);
+}
+
 .package-features {
     list-style: none;
     margin-bottom: var(--spacing-md);
@@ -527,6 +584,170 @@ h4 { font-size: 20px; }
 .package-features li {
     padding: var(--spacing-xs) 0;
     color: var(--color-dark-grey);
+}
+
+/* Audience Match Section */
+.audience-section {
+    padding: var(--spacing-xxl) 0;
+}
+
+.audience-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--spacing-xl);
+    align-items: flex-start;
+}
+
+.audience-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    position: sticky;
+    top: 100px;
+}
+
+.audience-tab {
+    background: var(--color-light-grey);
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 999px;
+    font-weight: 600;
+    color: var(--color-navy);
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.audience-tab:hover,
+.audience-tab:focus {
+    transform: translateX(4px);
+    outline: none;
+}
+
+.audience-tab.active {
+    background: var(--color-blue);
+    color: var(--color-white);
+    box-shadow: 0 12px 20px rgba(0, 174, 239, 0.25);
+}
+
+.audience-panel-wrapper {
+    background: var(--color-white);
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(26, 44, 75, 0.12);
+    padding: var(--spacing-xl);
+}
+
+.audience-panel {
+    display: none;
+    animation: fadeInUp 0.6s ease;
+}
+
+.audience-panel.active {
+    display: block;
+}
+
+.audience-panel h3 {
+    margin-bottom: var(--spacing-sm);
+}
+
+.audience-panel p {
+    color: rgba(26, 44, 75, 0.85);
+}
+
+.audience-highlights {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-sm);
+    margin: var(--spacing-lg) 0;
+}
+
+.audience-highlights li {
+    background: var(--color-light-grey);
+    padding: var(--spacing-sm);
+    border-radius: 8px;
+    font-weight: 500;
+    color: var(--color-navy);
+}
+
+.audience-proof {
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    border-left: 4px solid var(--color-blue);
+    background: rgba(0, 174, 239, 0.08);
+    border-radius: 8px;
+}
+
+.audience-proof p {
+    margin-bottom: var(--spacing-xs);
+}
+
+.audience-keywords {
+    margin-top: var(--spacing-md);
+    font-size: 14px;
+    color: rgba(26, 44, 75, 0.7);
+}
+
+.audience-keywords span {
+    display: inline-block;
+    margin-right: var(--spacing-xs);
+    padding: 4px 10px;
+    background: rgba(212, 175, 55, 0.15);
+    border-radius: 999px;
+    color: var(--color-gold);
+    font-weight: 600;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .audience-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .audience-tabs {
+        flex-direction: row;
+        position: static;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .audience-tab {
+        flex: 1 1 160px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .audience-panel-wrapper {
+        padding: var(--spacing-lg);
+    }
+
+    .audience-highlights {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .audience-tabs {
+        gap: var(--spacing-xs);
+    }
+
+    .audience-tab {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
 }
 
 /* Reviews Section */
@@ -557,6 +778,47 @@ h4 { font-size: 20px; }
     font-style: italic;
     margin-bottom: var(--spacing-md);
     color: var(--color-dark-grey);
+}
+
+/* FAQ Section */
+.faq-section {
+    padding: var(--spacing-xxl) 0;
+    background: var(--color-light-grey);
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+.faq-item {
+    background: var(--color-white);
+    border-radius: 12px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    box-shadow: 0 10px 24px rgba(26, 44, 75, 0.12);
+    border: none;
+}
+
+.faq-item summary {
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item[open] summary {
+    color: var(--color-blue);
+}
+
+.faq-item p {
+    margin-top: var(--spacing-sm);
+    color: rgba(26, 44, 75, 0.85);
 }
 
 .review-author strong {

@@ -1,4 +1,5 @@
 const db = require('../lib/db');
+const cache = require('../lib/cache');
 
 const fallbackReviews = [
   {
@@ -27,7 +28,22 @@ const fallbackReviews = [
   }
 ];
 
-async function getApprovedReviews(limit = 12) {
+const CACHE_KEY = 'reviews-service';
+const CACHE_TTL = 5 * 60 * 1000;
+
+async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
+  if (!forceRefresh) {
+    const cached = cache.get(CACHE_KEY);
+    if (cached) {
+      return { ...cached, cacheStatus: 'hit' };
+    }
+  }
+
+  let response = {
+    reviews: fallbackReviews,
+    source: 'static'
+  };
+
   if (db.isConfigured()) {
     try {
       const result = await db.runQuery(
@@ -39,8 +55,8 @@ async function getApprovedReviews(limit = 12) {
         [limit]
       );
 
-      if (result) {
-        return {
+      if (result && Array.isArray(result.rows) && result.rows.length > 0) {
+        response = {
           reviews: result.rows,
           source: 'database'
         };
@@ -50,12 +66,15 @@ async function getApprovedReviews(limit = 12) {
     }
   }
 
-  return {
-    reviews: fallbackReviews,
-    source: 'static'
-  };
+  cache.set(CACHE_KEY, response, CACHE_TTL);
+  return { ...response, cacheStatus: 'refreshed' };
+}
+
+function resetCache() {
+  cache.del(CACHE_KEY);
 }
 
 module.exports = {
-  getApprovedReviews
+  getApprovedReviews,
+  resetCache
 };

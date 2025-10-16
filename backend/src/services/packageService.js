@@ -1,4 +1,5 @@
 const db = require('../lib/db');
+const cache = require('../lib/cache');
 
 const fallbackPackages = [
   {
@@ -52,7 +53,39 @@ const fallbackPackages = [
   }
 ];
 
-async function getPackages() {
+const CACHE_KEY = 'packages-service';
+const CACHE_TTL = 5 * 60 * 1000;
+
+function mapDatabasePackages(result) {
+  if (!result) return null;
+  return result.rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    price: Number(row.price),
+    duration: row.duration,
+    description: row.description,
+    features: Array.isArray(row.features)
+      ? row.features
+      : row.features
+        ? row.features
+        : [],
+    popular: row.popular
+  }));
+}
+
+async function getPackages({ forceRefresh = false } = {}) {
+  if (!forceRefresh) {
+    const cached = cache.get(CACHE_KEY);
+    if (cached) {
+      return { ...cached, cacheStatus: 'hit' };
+    }
+  }
+
+  let response = {
+    packages: fallbackPackages,
+    source: 'static'
+  };
+
   if (db.isConfigured()) {
     try {
       const result = await db.runQuery(
@@ -62,18 +95,9 @@ async function getPackages() {
          ORDER BY price ASC`
       );
 
-      if (result) {
-        const packages = result.rows.map((row) => ({
-          id: row.id,
-          name: row.name,
-          price: Number(row.price),
-          duration: row.duration,
-          description: row.description,
-          features: Array.isArray(row.features) ? row.features : row.features ? row.features : [],
-          popular: row.popular
-        }));
-
-        return {
+      const packages = mapDatabasePackages(result);
+      if (packages && packages.length > 0) {
+        response = {
           packages,
           source: 'database'
         };
@@ -83,12 +107,15 @@ async function getPackages() {
     }
   }
 
-  return {
-    packages: fallbackPackages,
-    source: 'static'
-  };
+  cache.set(CACHE_KEY, response, CACHE_TTL);
+  return { ...response, cacheStatus: 'refreshed' };
+}
+
+function resetCache() {
+  cache.del(CACHE_KEY);
 }
 
 module.exports = {
-  getPackages
+  getPackages,
+  resetCache
 };

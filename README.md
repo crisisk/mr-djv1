@@ -38,6 +38,7 @@ Zie de uitgebreide README voor:
 - Maintenance commands
 - UAT rapport en go-live checklist
 - [Mailintegratie onderzoek](docs/mail-integration-report.md)
+- [Performance, SEO & klantfit onderzoek](docs/performance-seo-research.md)
 
 ## 📞 Contact
 

@@ -8,7 +8,8 @@ router.get('/', async (_req, res, next) => {
     const result = await getPackages();
     res.json({
       packages: result.packages,
-      source: result.source
+      source: result.source,
+      cacheStatus: result.cacheStatus
     });
   } catch (error) {
     next(error);
