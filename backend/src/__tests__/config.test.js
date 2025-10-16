@@ -63,7 +63,17 @@ describe('config', () => {
       'RENTGUY_API_KEY',
       'RENTGUY_WORKSPACE_ID',
       'RENTGUY_TIMEOUT_MS',
-      'N8N_PERSONALIZATION_WEBHOOK_URL'
+      'N8N_PERSONALIZATION_WEBHOOK_URL',
+      'SEO_AUTOMATION_API_URL',
+      'SEO_AUTOMATION_API_KEY',
+      'SEO_AUTOMATION_KEYWORDSET_ID',
+      'SEO_AUTOMATION_REGION',
+      'SEO_AUTOMATION_THEME_KEYWORDS',
+      'SEO_AUTOMATION_APPROVAL_EMAIL',
+      'CITY_AUTOMATION_LLM_PROVIDER',
+      'CITY_AUTOMATION_LLM_MODEL',
+      'CITY_AUTOMATION_LLM_API_KEY',
+      'CITY_AUTOMATION_DRY_RUN'
     ]);
     expect(config.dashboard.sections).toEqual([
       expect.objectContaining({
@@ -109,6 +119,22 @@ describe('config', () => {
         id: 'personalization',
         label: 'Personalization & CRO',
         keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
+      }),
+      expect.objectContaining({
+        id: 'automation',
+        label: 'Content automatisering',
+        keys: [
+          'SEO_AUTOMATION_API_URL',
+          'SEO_AUTOMATION_API_KEY',
+          'SEO_AUTOMATION_KEYWORDSET_ID',
+          'SEO_AUTOMATION_REGION',
+          'SEO_AUTOMATION_THEME_KEYWORDS',
+          'SEO_AUTOMATION_APPROVAL_EMAIL',
+          'CITY_AUTOMATION_LLM_PROVIDER',
+          'CITY_AUTOMATION_LLM_MODEL',
+          'CITY_AUTOMATION_LLM_API_KEY',
+          'CITY_AUTOMATION_DRY_RUN'
+        ]
       })
     ]);
     expect(config.dashboard.storePath).toBe(DEFAULT_STORE_PATH);
@@ -198,6 +224,46 @@ describe('config', () => {
     expect(config.cors.credentials).toBe(false);
     expect(config.rateLimit.windowMs).toBe(15 * 60 * 1000);
     expect(config.rateLimit.max).toBe(100);
+  });
+
+  it('exposes automation configuration for the city content workflow', () => {
+    process.env = {
+      SEO_AUTOMATION_API_URL: 'https://seo.internal/keywords',
+      SEO_AUTOMATION_API_KEY: 'token',
+      SEO_AUTOMATION_KEYWORDSET_ID: 'brabant',
+      SEO_AUTOMATION_REGION: 'Noord-Brabant',
+      SEO_AUTOMATION_THEME_KEYWORDS: 'dj, feest',
+      SEO_AUTOMATION_APPROVAL_EMAIL: 'marketing@mr-dj.nl',
+      CITY_AUTOMATION_LLM_PROVIDER: 'openai',
+      CITY_AUTOMATION_LLM_MODEL: 'gpt-4.1-mini',
+      CITY_AUTOMATION_LLM_API_KEY: 'openai-key',
+      CITY_AUTOMATION_DRY_RUN: 'true'
+    };
+
+    const config = loadConfig();
+
+    expect(config.automation).toEqual({
+      seo: {
+        apiUrl: 'https://seo.internal/keywords',
+        keywordSetId: 'brabant',
+        region: 'Noord-Brabant',
+        themeKeywords: ['dj', 'feest']
+      },
+      llm: {
+        provider: 'openai',
+        model: 'gpt-4.1-mini',
+        apiKeyConfigured: true
+      },
+      approvals: {
+        email: 'marketing@mr-dj.nl'
+      },
+      dryRun: true
+    });
+
+    const automationSection = config.dashboard.sections.find((section) => section.id === 'automation');
+    expect(automationSection).toBeDefined();
+    expect(automationSection.keys).toContain('SEO_AUTOMATION_API_URL');
+    expect(config.dashboard.managedKeys).toContain('CITY_AUTOMATION_LLM_MODEL');
   });
 
   it('reloads configuration, copies arrays/objects and removes stale keys', () => {

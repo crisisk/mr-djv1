@@ -55,6 +55,24 @@ const DEFAULT_SECTION_CONFIG = [
     description:
       'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
     keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
+  },
+  {
+    id: 'automation',
+    label: 'Content automatisering',
+    description:
+      'SEO keyword ingest, LLM-configuratie en reviewkanalen voor de interne city page generator.',
+    keys: [
+      'SEO_AUTOMATION_API_URL',
+      'SEO_AUTOMATION_API_KEY',
+      'SEO_AUTOMATION_KEYWORDSET_ID',
+      'SEO_AUTOMATION_REGION',
+      'SEO_AUTOMATION_THEME_KEYWORDS',
+      'SEO_AUTOMATION_APPROVAL_EMAIL',
+      'CITY_AUTOMATION_LLM_PROVIDER',
+      'CITY_AUTOMATION_LLM_MODEL',
+      'CITY_AUTOMATION_LLM_API_KEY',
+      'CITY_AUTOMATION_DRY_RUN'
+    ]
   }
 ];
 
@@ -160,6 +178,23 @@ function buildConfig() {
     },
     personalization: {
       automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null
+    },
+    automation: {
+      seo: {
+        apiUrl: process.env.SEO_AUTOMATION_API_URL || null,
+        keywordSetId: process.env.SEO_AUTOMATION_KEYWORDSET_ID || null,
+        region: process.env.SEO_AUTOMATION_REGION || 'Noord-Brabant',
+        themeKeywords: parseList(process.env.SEO_AUTOMATION_THEME_KEYWORDS)
+      },
+      llm: {
+        provider: process.env.CITY_AUTOMATION_LLM_PROVIDER || 'template',
+        model: process.env.CITY_AUTOMATION_LLM_MODEL || 'gpt-4.1-mini',
+        apiKeyConfigured: Boolean(process.env.CITY_AUTOMATION_LLM_API_KEY || process.env.OPENAI_API_KEY)
+      },
+      approvals: {
+        email: process.env.SEO_AUTOMATION_APPROVAL_EMAIL || null
+      },
+      dryRun: process.env.CITY_AUTOMATION_DRY_RUN === 'true'
     },
     dashboard: {
       enabled: dashboardEnabled,
