@@ -41,17 +41,15 @@ Zie de uitgebreide README voor:
 
 ## 📆 Activiteitenoverzicht & waardering
 
-Onderstaande tabel geeft een samenvatting van de belangrijkste oplevermomenten die in dit repo zijn terug te zien. De uren zijn ingeschat op basis van de omvang van de codebase (React frontend met design system, Node/Express backend met PostgreSQL integratie, deployment scripts, consent manager, local SEO generator en documentatie).
+Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository (zoals `DEPLOYMENT_SUCCESS.md`, `docs/uat-report.md` en onderzoeksrapporten). Alleen activiteiten met aantoonbare documentatie zijn meegenomen; de ureninschatting volgt uit de omvang van de bijbehorende deliverables.
 
-| Datum | Activiteit | Beschrijving | Uren (inschatting) | Waardevermeerdering* |
-| --- | --- | --- | --- | --- |
-| 2024-01-12 | Initiële architectuur & design system | Opzetten component library (`App.jsx`, `App.css`, design tokens, atoms/molecules/organisms) en responsive layout. | 60 | €5.000 |
-| 2024-02-05 | Backend API & database laag | Node/Express API met security middleware, PostgreSQL schema en `.env` beheer via dashboard. | 45 | €3.750 |
-| 2024-02-26 | Consent manager & analytics events | Uitrol `ConsentManager.jsx` met granular Google Consent Mode v2 en DataLayer events. | 24 | €2.000 |
-| 2024-03-11 | Local SEO automatisering | `scripts/generate-city-pages.mjs` + content JSON voor 12 city pages, interne linking & schema data. | 28 | €2.200 |
-| 2024-03-25 | Pricing & funnel optimalisaties | Uitwerking `/pricing/` money page, testimonials & availability checker met duidelijke CTA-flow. | 30 | €2.400 |
-| 2024-04-08 | CI/CD & infrastructuur | Docker compose, Traefik reverse proxy, Netlify configuratie en deploy scripts. | 18 | €1.500 |
-| 2024-04-22 | Testen & fine-tuning | Responsiveness QA, performance tweaks, bugfixes en documentatie (go-live checklist, mailrapport). | 22 | €1.800 |
+| Datum | Activiteit | Brondocument | Beschrijving | Uren (inschatting) | Waardevermeerdering* |
+| --- | --- | --- | --- | --- | --- |
+| 2025-10-11 | Brand guidelines & design system fundament | `docs/brand-guidelines/Mr_DJ_Brand_Guidelines_EXTENDED.md` | Uitwerken volledige huisstijl (logo, kleuren, typografie) + design-system referentie voor componenten. | 48 | €3.850 |
+| 2025-10-14 | Productie deployment & infrastructuur | `DEPLOYMENT_SUCCESS.md` | Live zetten van volledige stack (Traefik, frontend, backend, Postgres, Redis) incl. scripts en toegangsinstructies. | 36 | €2.900 |
+| 2025-10-14 | Local SEO & content generatie | `scripts/generate-city-pages.mjs`, `content/local-seo/cities.json` | Automatisch genereren van 12 city pages met venues, FAQ's en schema markup voor regionale vindbaarheid. | 32 | €2.500 |
+| 2025-10-15 | Test- & kwaliteitsborging (UAT) | `docs/uat-report.md` | Dekking 95%+ voor backend tests, validatie van API-functionaliteit en documentatie van resterende aandachtspunten. | 26 | €2.100 |
+| 2025-10-15 | Performance, SEO & personalisatie-audits | `docs/performance-seo-research.md`, `docs/mail-integration-report.md` | Verbeterplan voor laadtijden, structured data, persona-fit en mailintegraties inclusief technische roadmap. | 30 | €2.400 |
 
 *Indicatie op basis van marktconforme tarieven (€70–€90/uur) en de meerwaarde van de functionaliteit richting conversie, SEO en compliance.
 
