@@ -124,4 +124,59 @@ describe('configuration dashboard', () => {
     expect(fileContents).toContain('PORT=4500');
     expect(fileContents).toContain('DATABASE_URL=postgres://dashboard-db');
   });
+
+  it('rejects invalid payloads with a 400 status code', async () => {
+    const response = await fetch(`${baseUrl}/dashboard/api/variables`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ entries: ['not', 'an', 'object'] })
+    });
+
+    expect(response.status).toBe(400);
+    const payload = await response.json();
+    expect(payload).toEqual({ error: 'Invalid payload' });
+  });
+
+  it('clears values when empty strings are provided and ignores null', async () => {
+    await fetch(`${baseUrl}/dashboard/api/variables`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        entries: {
+          PORT: '4500',
+          DATABASE_URL: 'postgres://dashboard-db'
+        }
+      })
+    });
+
+    const response = await fetch(`${baseUrl}/dashboard/api/variables`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        entries: {
+          PORT: '',
+          DATABASE_URL: null
+        }
+      })
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    const portEntry = payload.entries.find((entry) => entry.name === 'PORT');
+    expect(portEntry.hasValue).toBe(false);
+    expect(portEntry.preview).toBeNull();
+
+    const config = require('../config');
+    expect(config.port).toBe(3000);
+    expect(config.databaseUrl).toBe('postgres://dashboard-db');
+  });
 });

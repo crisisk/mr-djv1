@@ -134,3 +134,120 @@ describe('error handlers', () => {
     expect(consoleError).toHaveBeenCalled();
   });
 });
+
+describe('dashboard auth middleware', () => {
+  function createResponse() {
+    return {
+      set: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+  }
+
+  afterEach(() => {
+    jest.resetModules();
+  });
+
+  function loadMiddleware(overrides = {}) {
+    jest.doMock('../config', () => ({
+      dashboard: {
+        enabled: true,
+        username: 'admin',
+        password: 'secret',
+        allowedIps: [],
+        ...overrides.dashboard
+      }
+    }));
+
+    return require('../middleware/dashboardAuth');
+  }
+
+  it('returns 404 when the dashboard is disabled', () => {
+    const dashboardAuth = loadMiddleware({ dashboard: { enabled: false } });
+    const res = createResponse();
+    dashboardAuth({}, res, jest.fn());
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Config dashboard disabled' });
+  });
+
+  it('requires basic auth credentials', () => {
+    const dashboardAuth = loadMiddleware();
+    const res = createResponse();
+
+    dashboardAuth({ headers: {} }, res, jest.fn());
+
+    expect(res.set).toHaveBeenCalledWith('WWW-Authenticate', 'Basic realm="Config Dashboard"');
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+  });
+
+  it('rejects malformed credentials and mismatched users', () => {
+    const dashboardAuth = loadMiddleware();
+    const res = createResponse();
+    const next = jest.fn();
+
+    dashboardAuth({ headers: { authorization: 'Basic !!!' } }, res, next);
+    expect(res.status).toHaveBeenCalledWith(401);
+
+    res.status.mockClear();
+    res.json.mockClear();
+    res.set.mockClear();
+
+    const badUser = Buffer.from('other:secret').toString('base64');
+    dashboardAuth({ headers: { authorization: `Basic ${badUser}` } }, res, next);
+    expect(res.status).toHaveBeenCalledWith(401);
+  });
+
+  it('enforces allowed IPs and normalizes IPv6 addresses', () => {
+    const dashboardAuth = loadMiddleware({
+      dashboard: { allowedIps: ['127.0.0.1', '10.0.0.1'] }
+    });
+    const res = createResponse();
+    const next = jest.fn();
+
+    dashboardAuth(
+      {
+        headers: {
+          authorization: `Basic ${Buffer.from('admin:secret').toString('base64')}`
+        },
+        ip: '192.168.0.1'
+      },
+      res,
+      next
+    );
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Forbidden' });
+
+    res.status.mockClear();
+    res.json.mockClear();
+
+    dashboardAuth(
+      {
+        headers: {
+          authorization: `Basic ${Buffer.from('admin:secret').toString('base64')}`
+        },
+        ip: '::ffff:127.0.0.1'
+      },
+      res,
+      next
+    );
+
+    expect(next).toHaveBeenCalledTimes(1);
+
+    const nextFromConnection = jest.fn();
+    dashboardAuth(
+      {
+        headers: {
+          authorization: `Basic ${Buffer.from('admin:secret').toString('base64')}`
+        },
+        connection: { remoteAddress: '::ffff:10.0.0.1' }
+      },
+      res,
+      nextFromConnection
+    );
+
+    expect(nextFromConnection).toHaveBeenCalledTimes(1);
+  });
+});

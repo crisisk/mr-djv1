@@ -9,11 +9,24 @@ jest.mock('../lib/db', () => ({
   }))
 }));
 
+jest.mock('../services/rentGuyService', () => ({
+  syncLead: jest.fn(() =>
+    Promise.resolve({ delivered: false, queued: true, reason: 'not-configured', queueSize: 1 })
+  ),
+  syncBooking: jest.fn(() =>
+    Promise.resolve({ delivered: false, queued: true, reason: 'not-configured', queueSize: 1 })
+  ),
+  getStatus: jest.fn(() => ({ configured: false, queueSize: 0 })),
+  flushQueue: jest.fn(),
+  reset: jest.fn()
+}));
+
 const db = require('../lib/db');
 const contactService = require('../services/contactService');
 const bookingService = require('../services/bookingService');
 const packageService = require('../services/packageService');
 const reviewService = require('../services/reviewService');
+const rentGuyService = require('../services/rentGuyService');
 
 function mockConsole(method = 'error') {
   return jest.spyOn(console, method).mockImplementation(() => {});
@@ -40,6 +53,7 @@ describe('contactService', () => {
         }
       ]
     });
+    rentGuyService.syncLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
 
     const result = await contactService.saveContact({
       name: 'Test',
@@ -56,9 +70,18 @@ describe('contactService', () => {
       status: 'new',
       persisted: true,
       eventType: 'Bruiloft',
-      packageId: 'gold'
+      packageId: 'gold',
+      rentGuySync: { delivered: true, queued: false }
     });
     expect(db.runQuery).toHaveBeenCalled();
+    expect(rentGuyService.syncLead).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'db-id',
+        name: 'Test',
+        email: 'test@example.com'
+      }),
+      { source: 'contact-form' }
+    );
   });
 
   it('falls back to in-memory storage when the database fails', async () => {
@@ -79,8 +102,10 @@ describe('contactService', () => {
     expect(result).toMatchObject({
       status: 'pending',
       persisted: false,
-      eventDate: null
+      eventDate: null,
+      rentGuySync: expect.objectContaining({ queued: true })
     });
+    expect(rentGuyService.syncLead).toHaveBeenCalled();
   });
 
   it('exposes the current status information', () => {
@@ -113,6 +138,7 @@ describe('bookingService', () => {
         }
       ]
     });
+    rentGuyService.syncBooking.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
 
     const result = await bookingService.createBooking({
       name: 'Booker',
@@ -128,8 +154,17 @@ describe('bookingService', () => {
       id: 'booking-id',
       status: 'pending',
       createdAt,
-      persisted: true
+      persisted: true,
+      rentGuySync: { delivered: true, queued: false, queueSize: 0 }
     });
+    expect(rentGuyService.syncBooking).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'booking-id',
+        name: 'Booker',
+        email: 'booker@example.com'
+      }),
+      { source: 'booking-flow' }
+    );
   });
 
   it('returns in-memory bookings when the database is unavailable', async () => {
@@ -145,6 +180,7 @@ describe('bookingService', () => {
     });
 
     expect(created.persisted).toBe(false);
+    expect(created.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
 
     const result = await bookingService.getRecentBookings(5);
     expect(result.persisted).toBe(false);

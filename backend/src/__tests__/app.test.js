@@ -75,6 +75,9 @@ describe('Mister DJ API', () => {
         reviews: '/reviews'
       })
     });
+    expect(response.body.endpoints.integrations).toEqual(
+      expect.objectContaining({ rentGuy: '/integrations/rentguy/status' })
+    );
   });
 
   it('exposes a detailed health check', async () => {
@@ -139,6 +142,7 @@ describe('Mister DJ API', () => {
     expect(response.body.contactId).toBeDefined();
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
+    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
   });
 
   it('provides a curated set of fallback packages when no database is available', async () => {
@@ -175,6 +179,7 @@ describe('Mister DJ API', () => {
       status: 'pending'
     });
     expect(response.body.bookingId).toBeDefined();
+    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
 
     const listResponse = await request('GET', '/bookings');
     expect(listResponse.status).toBe(200);
@@ -194,5 +199,15 @@ describe('Mister DJ API', () => {
     expect(Array.isArray(response.body.reviews)).toBe(true);
     expect(response.body.reviews.length).toBeGreaterThan(0);
     expect(response.body).toMatchObject({ source: 'static' });
+  });
+
+  it('provides integration status for RentGuy', async () => {
+    const response = await request('GET', '/integrations/rentguy/status');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      configured: expect.any(Boolean),
+      queueSize: expect.any(Number)
+    });
   });
 });
