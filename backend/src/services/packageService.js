@@ -46,7 +46,7 @@ const fallbackPackages = [
       'Rookmachine',
       'DJ booth met logo',
       'Muziekvoorkeuren formulier',
-      'Persoonlijk intakegesprek',
+      'Persoonlijk intakegesprek (Premium)',
       'Saxofonist (optioneel)',
       '100% Dansgarantie'
     ]
