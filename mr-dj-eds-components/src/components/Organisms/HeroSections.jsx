@@ -1,6 +1,7 @@
 import React from 'react';
 import SlideLayout from '../common/SlideLayout.jsx';
 import { Button } from '../ui/button.jsx';
+import { trackEvent } from '../../lib/analytics.js';
 
 const primaryStats = [
   { label: 'Events', value: '2500+' },
@@ -28,10 +29,29 @@ const HeroSections = () => (
             Professionele DJ service voor bruiloften en bedrijfsfeesten in heel Brabant. 15+ jaar ervaring, 2500+ geslaagde events en een dedicated planningsteam.
           </p>
           <div className="flex flex-wrap gap-spacing-sm">
-            <Button size="lg" className="bg-secondary text-neutral-dark hover:bg-secondary/90">
+            <Button
+              size="lg"
+              className="bg-secondary text-neutral-dark hover:bg-secondary/90"
+              onClick={() =>
+                trackEvent('cta_click', {
+                  location: 'hero_primary',
+                  persona: 'general',
+                })
+              }
+            >
               Direct beschikbaarheid
             </Button>
-            <Button variant="outline" size="lg" className="border-neutral-light text-neutral-light">
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-neutral-light text-neutral-light"
+              onClick={() =>
+                trackEvent('cta_click', {
+                  location: 'hero_secondary',
+                  persona: 'general',
+                })
+              }
+            >
               Bekijk pakketten
             </Button>
           </div>
@@ -66,10 +86,29 @@ const HeroSections = () => (
             ))}
           </div>
           <div className="flex flex-wrap gap-spacing-sm">
-            <Button size="lg">Vraag offerte aan</Button>
-            <Button variant="outline" size="lg">
-              Bekijk reviews
-            </Button>
+          <Button
+            size="lg"
+            onClick={() =>
+              trackEvent('cta_click', {
+                location: 'hero_local_primary',
+                persona: 'bruiloft',
+              })
+            }
+          >
+            Vraag offerte aan
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() =>
+              trackEvent('cta_click', {
+                location: 'hero_local_secondary',
+                persona: 'bruiloft',
+              })
+            }
+          >
+            Bekijk reviews
+          </Button>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-spacing-md rounded-3xl border border-neutral-gray-100 bg-neutral-light p-spacing-xl text-center shadow-inner">

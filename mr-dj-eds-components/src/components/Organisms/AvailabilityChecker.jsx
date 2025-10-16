@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import Button from '../Atoms/Buttons.jsx';
+import { trackEvent } from '../../lib/analytics.js';
 
 // HubSpot Form Submission Logic (Placeholder)
 const submitToHubSpot = async (formData) => {
@@ -46,6 +47,16 @@ const AvailabilityChecker = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(null); // 'success', 'error', 'loading'
+  const [hasTrackedStart, setHasTrackedStart] = useState(false);
+
+  const emitStartEvent = (context = {}) => {
+    if (hasTrackedStart) return;
+    trackEvent('availability_check_started', {
+      component: 'AvailabilityChecker',
+      ...context,
+    });
+    setHasTrackedStart(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,6 +66,10 @@ const AvailabilityChecker = () => {
     }
 
     setStatus({ type: 'loading', message: 'Bezig met controleren...' });
+
+    emitStartEvent({
+      event_date: selectedDate?.toISOString(),
+    });
 
     const formData = {
       event_date: selectedDate.toLocaleDateString('nl-NL'),
@@ -67,6 +82,15 @@ const AvailabilityChecker = () => {
 
     if (result.success) {
       setStatus({ type: 'success', message: 'Beschikbaarheid gecontroleerd! We nemen contact op via e-mail.' });
+      trackEvent('availability_check_success', {
+        component: 'AvailabilityChecker',
+        event_date: selectedDate.toISOString(),
+      });
+      trackEvent('lead_submitted', {
+        component: 'AvailabilityChecker',
+        lead_email_domain: email.split('@')[1] || null,
+        event_date: selectedDate.toISOString(),
+      });
     } else {
       setStatus({ type: 'error', message: result.message });
     }
@@ -90,7 +114,12 @@ const AvailabilityChecker = () => {
             <DayPicker
               mode="single"
               selected={selectedDate}
-              onSelect={setSelectedDate}
+              onSelect={(date) => {
+                setSelectedDate(date);
+                if (date) {
+                  emitStartEvent({ event_date: date.toISOString() });
+                }
+              }}
               modifiersClassNames={{
                 selected: 'bg-primary text-neutral-light rounded-full',
                 today: 'border border-primary rounded-full',
@@ -112,6 +141,7 @@ const AvailabilityChecker = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onFocus={() => emitStartEvent({})}
               className="w-full p-spacing-md border border-neutral-gray-500 rounded-md focus:ring-primary focus:border-primary"
               placeholder="uw.naam@voorbeeld.nl"
               required

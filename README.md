@@ -38,6 +38,12 @@ Zie de uitgebreide README voor:
 - Database schema
 - Maintenance commands
 - UAT rapport en go-live checklist
+
+## 🛠️ Nieuwe optimalisaties
+
+- **Pricing money page**: `/pricing/` toont alle pakketten als indexeerbare HTML met Offer/Service schema en koppelt direct naar het contactproces.
+- **Local SEO generator**: `node scripts/generate-city-pages.mjs` rendert 12 city-pages op basis van `content/local-seo/cities.json` inclusief cases, venues en FAQ. Draai het script na updates van de JSON.
+- **Realtime consent & analytics**: de `ConsentManager` en design-system componenten sturen granular Consent Mode v2 en DataLayer-events uit voor CRO-metingen.
 - [Mailintegratie onderzoek](docs/mail-integration-report.md)
 - [Performance, SEO & klantfit onderzoek](docs/performance-seo-research.md)
 

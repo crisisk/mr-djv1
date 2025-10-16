@@ -9,6 +9,8 @@
     <meta name="author" content="Mister DJ">
     <meta name="theme-color" content="#1A2C4B">
     <link rel="canonical" href="https://staging.sevensa.nl/">
+    <link rel="alternate" hreflang="nl-nl" href="https://staging.sevensa.nl/">
+    <link rel="alternate" hreflang="x-default" href="https://staging.sevensa.nl/">
     <title>Mister DJ - Dé Feestspecialist van het Zuiden | 100% Dansgarantie</title>
 
     <!-- Social Meta -->
@@ -18,20 +20,33 @@
     <meta property="og:url" content="https://staging.sevensa.nl/">
     <meta property="og:image" content="https://staging.sevensa.nl/assets/images/logo.png">
     <meta property="og:locale" content="nl_NL">
+    <meta property="og:site_name" content="Mister DJ">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Mister DJ - Dé Feestspecialist van het Zuiden">
     <meta name="twitter:description" content="Boek Mister DJ voor bruiloften, bedrijfsfeesten en private events met premium geluid, licht en 100% dansgarantie.">
     <meta name="twitter:image" content="https://staging.sevensa.nl/assets/images/logo.png">
+    <meta name="twitter:site" content="@misterdj">
+    <meta name="twitter:creator" content="@misterdj">
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Styles -->
     <link rel="preload" href="/assets/css/style.css" as="style">
     <link rel="stylesheet" href="/assets/css/style.css">
+
+    <!-- Module / Data Hints -->
+    <link rel="modulepreload" href="/assets/js/main.js">
+    <link rel="modulepreload" href="/assets/js/modules/analytics.js">
+    <link rel="modulepreload" href="/assets/js/modules/navigation.js">
+    <link rel="modulepreload" href="/assets/js/modules/reveal.js">
+    <link rel="modulepreload" href="/assets/js/modules/audience.js">
+    <link rel="modulepreload" href="/assets/js/modules/contact.js">
+    <link rel="modulepreload" href="/assets/js/modules/social-proof.js">
+    <link rel="modulepreload" href="/assets/js/modules/commerce.js">
+    <link rel="preload" href="/assets/data/packages.json" as="fetch" type="application/json" crossorigin="anonymous">
+    <link rel="preload" href="/assets/data/testimonials.json" as="fetch" type="application/json" crossorigin="anonymous">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/assets/images/logo.png">
@@ -40,6 +55,17 @@
         {
             "@context": "https://schema.org",
             "@graph": [
+                {
+                    "@type": "WebSite",
+                    "@id": "https://staging.sevensa.nl/#website",
+                    "name": "Mister DJ",
+                    "url": "https://staging.sevensa.nl/",
+                    "potentialAction": {
+                        "@type": "SearchAction",
+                        "target": "https://staging.sevensa.nl/?s={search_term_string}",
+                        "query-input": "required name=search_term_string"
+                    }
+                },
                 {
                     "@type": "LocalBusiness",
                     "@id": "https://staging.sevensa.nl/#mister-dj",
@@ -140,6 +166,35 @@
                             }
                         }
                     ]
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Home",
+                            "item": "https://staging.sevensa.nl/"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 2,
+                            "name": "Diensten",
+                            "item": "https://staging.sevensa.nl/#diensten"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 3,
+                            "name": "Pakketten",
+                            "item": "https://staging.sevensa.nl/#pakketten"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 4,
+                            "name": "Reviews",
+                            "item": "https://staging.sevensa.nl/#reviews"
+                        }
+                    ]
                 }
             ]
         }
@@ -163,11 +218,12 @@
                 <li><a href="#diensten">Diensten</a></li>
                 <li><a href="#over">Over Ons</a></li>
                 <li><a href="#pakketten">Pakketten</a></li>
+                <li><a href="/pricing/" class="nav-highlight">Pricing</a></li>
                 <li><a href="#match">Match</a></li>
                 <li><a href="#reviews">Reviews</a></li>
                 <li><a href="#faq">FAQ</a></li>
                 <li><a href="/dashboard" class="nav-admin-link" rel="nofollow">Admin</a></li>
-                <li><a href="#contact" class="btn-primary">Contact</a></li>
+                <li><a href="#contact" class="btn-primary" data-track="contact-start">Contact</a></li>
             </ul>
         </div>
     </nav>
@@ -180,7 +236,7 @@
                 <h1 class="hero-title">Maak van jouw feest een onvergetelijke ervaring</h1>
                 <p class="hero-subtitle">Met 15+ jaar ervaring en onze unieke <strong>100% dansgarantie</strong> zorgen wij ervoor dat de dansvloer de hele avond vol blijft.</p>
                 <div class="hero-cta">
-                    <a href="#contact" class="btn-primary btn-large">Vraag Gratis Offerte Aan</a>
+                    <a href="#contact" class="btn-primary btn-large" data-track="contact-start">Vraag Gratis Offerte Aan</a>
                     <a href="#pakketten" class="btn-secondary btn-large">Bekijk Pakketten</a>
                 </div>
                 <div class="hero-stats">
@@ -202,6 +258,55 @@
         <div class="scroll-indicator">
             <span>Scroll</span>
             <div class="arrow-down"></div>
+        </div>
+    </section>
+
+    <!-- Featured Social Proof -->
+    <section id="social-proof" class="social-proof-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Waarom Bruidsparen & Teams Mister DJ vertrouwen</h2>
+                <p>Actuele reviews uit 2023–2025 met meetbare resultaten en beeldmateriaal per event.</p>
+            </div>
+            <div id="featured-reviews" class="social-proof-wrapper">
+                <div class="loading">Testimonials laden...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Media Gallery -->
+    <section id="media-gallery" class="media-gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Momenten uit de Mister DJ media gallery</h2>
+                <p>Elke review linkt naar tastbare beelden zodat je de sfeer direct kunt ervaren.</p>
+            </div>
+            <div class="media-gallery-grid">
+                <figure class="media-item">
+                    <img src="/assets/images/gallery/bruiloft-eindhoven.svg" alt="Bruiloft DJ Eindhoven" loading="lazy" decoding="async">
+                    <figcaption>Bruiloft Eindhoven • DOMUSDELA</figcaption>
+                </figure>
+                <figure class="media-item">
+                    <img src="/assets/images/gallery/bruiloft-tilburg.svg" alt="Bruiloft DJ Tilburg" loading="lazy" decoding="async">
+                    <figcaption>Bruiloft Tilburg • Spoorzone</figcaption>
+                </figure>
+                <figure class="media-item">
+                    <img src="/assets/images/gallery/corporate-eindhoven.svg" alt="Bedrijfsfeest Eindhoven" loading="lazy" decoding="async">
+                    <figcaption>Corporate Eindhoven • High Tech Campus</figcaption>
+                </figure>
+                <figure class="media-item">
+                    <img src="/assets/images/gallery/corporate-denbosch.svg" alt="Bedrijfsfeest Den Bosch" loading="lazy" decoding="async">
+                    <figcaption>Corporate Den Bosch • Brabanthallen</figcaption>
+                </figure>
+                <figure class="media-item">
+                    <img src="/assets/images/gallery/private-veldhoven.svg" alt="Jubileumfeest Veldhoven" loading="lazy" decoding="async">
+                    <figcaption>Jubileum Veldhoven • Thuis op maat</figcaption>
+                </figure>
+                <figure class="media-item">
+                    <img src="/assets/images/gallery/corporate-amsterdam.svg" alt="Corporate Event Amsterdam" loading="lazy" decoding="async">
+                    <figcaption>Corporate Amsterdam • WesterUnie</figcaption>
+                </figure>
+            </div>
         </div>
     </section>
 
@@ -252,7 +357,7 @@
                             <li>✓ Ceremonie & receptie muziek</li>
                             <li>✓ Professionele apparatuur</li>
                         </ul>
-                        <a href="#contact" class="btn-secondary">Meer Info</a>
+                        <a href="#contact" class="btn-secondary" data-track="contact-start">Meer Info</a>
                     </div>
                 </div>
                 <div class="service-card">
@@ -266,7 +371,7 @@
                             <li>✓ Diverse muziekstijlen</li>
                             <li>✓ Professionele presentatie</li>
                         </ul>
-                        <a href="#contact" class="btn-secondary">Meer Info</a>
+                        <a href="#contact" class="btn-secondary" data-track="contact-start">Meer Info</a>
                     </div>
                 </div>
                 <div class="service-card">
@@ -280,7 +385,7 @@
                             <li>✓ Verzoekjes welkom</li>
                             <li>✓ Sfeerverlichting</li>
                         </ul>
-                        <a href="#contact" class="btn-secondary">Meer Info</a>
+                        <a href="#contact" class="btn-secondary" data-track="contact-start">Meer Info</a>
                     </div>
                 </div>
             </div>
@@ -351,7 +456,7 @@
                             <p><strong>Aanbevolen pakket:</strong> Zilver Pakket (meest gekozen door bruidsparen)</p>
                             <p><strong>Top review:</strong> "Onze dansvloer was tot het einde gevuld" – Sarah &amp; Tom</p>
                         </div>
-                        <a href="#contact" class="btn-primary">Plan een kennismaking</a>
+                        <a href="#contact" class="btn-primary" data-track="contact-start">Plan een kennismaking</a>
                         <p class="audience-keywords">Zo word je gevonden op: <span>DJ bruiloft Brabant</span> · <span>Bruiloft DJ Eindhoven</span></p>
                     </article>
                     <article id="persona-bedrijfsfeest" class="audience-panel" role="tabpanel" tabindex="0" data-persona="bedrijfsfeest" data-event-type="bedrijfsfeest" data-package="Goud Pakket" data-message="Voor ons bedrijfsfeest op [datum] zoeken we een professionele DJ die een diverse groep collega's op de dansvloer krijgt, inclusief aankondigingen en sfeervolle verlichting." data-keywords="DJ bedrijfsfeest Eindhoven">
@@ -366,7 +471,7 @@
                             <p><strong>Aanbevolen pakket:</strong> Goud Pakket met branding add-ons</p>
                             <p><strong>Resultaat:</strong> 95% tevredenheid bij recente bedrijfsfeesten in Eindhoven</p>
                         </div>
-                        <a href="#contact" class="btn-secondary">Vraag een bedrijfsvoorstel aan</a>
+                        <a href="#contact" class="btn-secondary" data-track="contact-start">Vraag een bedrijfsvoorstel aan</a>
                         <p class="audience-keywords">Zo word je gevonden op: <span>DJ bedrijfsfeest Eindhoven</span> · <span>Bedrijfsevenement DJ Brabant</span></p>
                     </article>
                     <article id="persona-private" class="audience-panel" role="tabpanel" tabindex="0" data-persona="private" data-event-type="verjaardag" data-package="Brons Pakket" data-message="Ik organiseer een [gelegenheid] in [locatie] voor [aantal] gasten en wil een DJ met allround playlist en feestverlichting." data-keywords="DJ verjaardag Veldhoven">
@@ -381,7 +486,7 @@
                             <p><strong>Aanbevolen pakket:</strong> Brons Pakket met optie tot uitbreiden</p>
                             <p><strong>Klantquote:</strong> "Iedereen stond op de dansvloer!" – Linda, jubileumfeest</p>
                         </div>
-                        <a href="#contact" class="btn-secondary">Check beschikbaarheid</a>
+                        <a href="#contact" class="btn-secondary" data-track="contact-start">Check beschikbaarheid</a>
                         <p class="audience-keywords">Zo word je gevonden op: <span>DJ verjaardag Veldhoven</span> · <span>DJ jubileum Brabant</span></p>
                     </article>
                 </div>
@@ -589,7 +694,7 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="/assets/js/main.js" defer></script>
+    <script type="module" src="/assets/js/main.js"></script>
     <script src="/assets/js/cms-loader.js" defer></script>
 </body>
 </html>
