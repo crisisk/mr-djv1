@@ -1,123 +1,78 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import SlideLayout from '../common/SlideLayout.jsx';
 
-const BrandFoundation = () => {
-    return (
-        <div className="slide-container">
-<h1>Brand Foundation</h1>
-<p className="subtitle">Design Tokens: Colors, Typography &amp; Spacing</p>
-<div className="content-grid">
-<!-- Colors Section -->
-<div className="section">
-<h2 className="section-title">Colors</h2>
-<div className="color-swatch">
-<div className="color-item">
-<div className="color-box" style="background: #1A2C4B;"></div>
-<div className="color-info">
-<div className="color-name">Deep Navy</div>
-<div className="color-code">#1A2C4B</div>
-</div>
-</div>
-<div className="color-item">
-<div className="color-box" style="background: #00AEEF;"></div>
-<div className="color-info">
-<div className="color-name">Bright Blue</div>
-<div className="color-code">#00AEEF</div>
-</div>
-</div>
-<div className="color-item">
-<div className="color-box" style="background: #D4AF37;"></div>
-<div className="color-info">
-<div className="color-name">Gold</div>
-<div className="color-code">#D4AF37</div>
-</div>
-</div>
-<div className="color-item">
-<div className="color-box" style="background: #FFFFFF; border: 2px solid #E5E5E5;"></div>
-<div className="color-info">
-<div className="color-name">White</div>
-<div className="color-code">#FFFFFF</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Typography Section -->
-<div className="section">
-<h2 className="section-title">Typography</h2>
-<div className="type-specimen">
-<div className="type-item">
-<div className="type-label">Heading 1</div>
-<div className="type-example type-h1">Montserrat Bold</div>
-</div>
-<div className="type-item">
-<div className="type-label">Heading 2</div>
-<div className="type-example type-h2">Montserrat SemiBold</div>
-</div>
-<div className="type-item">
-<div className="type-label">Body Text</div>
-<div className="type-example type-body">Montserrat Regular</div>
-</div>
-<div className="type-item">
-<div className="type-label">Caption</div>
-<div className="type-example type-caption">Montserrat Regular</div>
-</div>
-</div>
-</div>
-<!-- Spacing Section -->
-<div className="section">
-<h2 className="section-title">Spacing</h2>
-<div className="spacing-scale">
-<div className="spacing-item">
-<div className="spacing-visual" style="width: 64px; height: 8px;"></div>
-<div className="spacing-label">
-<span className="spacing-name">XXL</span>
-<span className="spacing-value">64px</span>
-</div>
-</div>
-<div className="spacing-item">
-<div className="spacing-visual" style="width: 48px; height: 8px;"></div>
-<div className="spacing-label">
-<span className="spacing-name">XL</span>
-<span className="spacing-value">48px</span>
-</div>
-</div>
-<div className="spacing-item">
-<div className="spacing-visual" style="width: 32px; height: 8px;"></div>
-<div className="spacing-label">
-<span className="spacing-name">L</span>
-<span className="spacing-value">32px</span>
-</div>
-</div>
-<div className="spacing-item">
-<div className="spacing-visual" style="width: 24px; height: 8px;"></div>
-<div className="spacing-label">
-<span className="spacing-name">M</span>
-<span className="spacing-value">24px</span>
-</div>
-</div>
-<div className="spacing-item">
-<div className="spacing-visual" style="width: 16px; height: 8px;"></div>
-<div className="spacing-label">
-<span className="spacing-name">S</span>
-<span className="spacing-value">16px</span>
-</div>
-</div>
-<div className="spacing-item">
-<div className="spacing-visual" style="width: 8px; height: 8px;"></div>
-<div className="spacing-label">
-<span className="spacing-name">XS</span>
-<span className="spacing-value">8px</span>
-</div>
-</div>
-</div>
-<div className="base-unit">
-<p className="base-unit-text"><strong>Base Unit:</strong> 8px<br/>All spacing follows 8px increments</p>
-</div>
-</div>
-</div>
-</div>
-    );
-};
+const colors = [
+  { name: 'Deep Navy', hex: '#1A2C4B' },
+  { name: 'Bright Blue', hex: '#00AEEF' },
+  { name: 'Gold', hex: '#D4AF37' },
+  { name: 'Pure White', hex: '#FFFFFF', border: true },
+];
+
+const typography = [
+  { label: 'Hero H1', description: 'Montserrat 900 / 48px / -2% tracking', usage: 'Home hero, product hero' },
+  { label: 'Section H2', description: 'Montserrat 700 / 36px', usage: 'Belangrijke secties, landingspagina’s' },
+  { label: 'Body', description: 'Montserrat 500 / 16px', usage: 'Lange teksten, formulier copy' },
+];
+
+const spacing = [
+  { token: 'Spacing 16', value: '16px', usage: 'Body copy, component padding' },
+  { token: 'Spacing 24', value: '24px', usage: 'Card padding, horizontaal ritme' },
+  { token: 'Spacing 48', value: '48px', usage: 'Secties desktop' },
+];
+
+const BrandFoundation = () => (
+  <SlideLayout
+    title="Brand Foundation"
+    subtitle="Design tokens voor kleur, typografie en spacing vormen de basis van elke Mister DJ ervaring."
+  >
+    <div className="grid gap-spacing-xl md:grid-cols-3">
+      <section className="space-y-spacing-md">
+        <h3 className="text-font-size-h3 font-semibold text-neutral-dark">Kleur</h3>
+        <div className="grid gap-spacing-md">
+          {colors.map((color) => (
+            <div key={color.name} className="flex items-center gap-spacing-md rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-md shadow-sm">
+              <div
+                className="size-16 rounded-2xl border border-neutral-gray-100"
+                style={{ backgroundColor: color.hex, borderColor: color.border ? '#E5E5E5' : 'transparent' }}
+              />
+              <div>
+                <p className="text-sm font-semibold text-neutral-dark">{color.name}</p>
+                <p className="text-xs text-neutral-gray-500">{color.hex}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      <section className="space-y-spacing-md">
+        <h3 className="text-font-size-h3 font-semibold text-neutral-dark">Typografie</h3>
+        <div className="space-y-spacing-md">
+          {typography.map((item) => (
+            <div key={item.label} className="rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-md shadow-sm">
+              <p className="text-sm font-semibold text-primary">{item.label}</p>
+              <p className="text-sm text-neutral-dark">{item.description}</p>
+              <p className="text-xs text-neutral-gray-500">Gebruik: {item.usage}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+      <section className="space-y-spacing-md">
+        <h3 className="text-font-size-h3 font-semibold text-neutral-dark">Spacing</h3>
+        <div className="space-y-spacing-sm">
+          {spacing.map((item) => (
+            <div key={item.token} className="flex items-center gap-spacing-md rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-md shadow-sm">
+              <div className="h-3 flex-1 rounded-full bg-secondary/30">
+                <div className="h-3 rounded-full bg-secondary" style={{ width: item.value === '16px' ? '30%' : item.value === '24px' ? '45%' : '80%' }} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-neutral-dark">{item.token}</p>
+                <p className="text-xs text-neutral-gray-500">{item.value} – {item.usage}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </SlideLayout>
+);
 
 export default BrandFoundation;

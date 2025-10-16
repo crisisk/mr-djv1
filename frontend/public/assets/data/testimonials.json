@@ -1,0 +1,167 @@
+[
+  {
+    "id": "bruiloft-eindhoven-2025",
+    "name": "Sarah & Tom",
+    "city": "Eindhoven",
+    "eventType": "Bruiloft",
+    "eventDate": "28 juni 2025",
+    "rating": 5,
+    "quote": "Van ceremonie tot laatste dans perfect begeleid. Onze gasten staan nog steeds op de aftermovie!",
+    "category": "bruiloft",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/bruiloft-eindhoven.svg",
+      "alt": "Bruiloft DJ Eindhoven"
+    }
+  },
+  {
+    "id": "bruiloft-tilburg-2024",
+    "name": "Lotte & Wouter",
+    "city": "Tilburg",
+    "eventType": "Bruiloft",
+    "eventDate": "12 april 2024",
+    "rating": 5,
+    "quote": "De saxofonist maakte onze openingsdans magisch en de dansvloer bleef vol tot sluitingstijd.",
+    "category": "bruiloft",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/bruiloft-tilburg.svg",
+      "alt": "Bruiloft DJ Tilburg"
+    }
+  },
+  {
+    "id": "bruiloft-maastricht-2025",
+    "name": "Amber & Jelle",
+    "city": "Maastricht",
+    "eventType": "Bruiloft",
+    "eventDate": "19 september 2025",
+    "rating": 5,
+    "quote": "Audio voor de ceremonie, live vocalist en een knalfeest in Château Neercanne: alles liep vlekkeloos.",
+    "category": "bruiloft",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/bruiloft-maastricht.svg",
+      "alt": "Bruiloft DJ Maastricht"
+    }
+  },
+  {
+    "id": "corporate-eindhoven-2024",
+    "name": "Philips Health",
+    "city": "Eindhoven",
+    "eventType": "Bedrijfsfeest",
+    "eventDate": "7 november 2024",
+    "rating": 5,
+    "quote": "Branding visuals, strakke cues en een energieke host. Onze awardshow voelde premium.",
+    "category": "bedrijfsfeest",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/corporate-eindhoven.svg",
+      "alt": "Bedrijfsfeest Eindhoven"
+    }
+  },
+  {
+    "id": "corporate-tilburg-2023",
+    "name": "CZ Zorgverzekeringen",
+    "city": "Tilburg",
+    "eventType": "Bedrijfsfeest",
+    "eventDate": "15 december 2023",
+    "rating": 5,
+    "quote": "Van borrel tot afterparty perfect getimed. De CO2 jets waren de kers op de taart.",
+    "category": "bedrijfsfeest",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/corporate-tilburg.svg",
+      "alt": "Bedrijfsfeest Tilburg"
+    }
+  },
+  {
+    "id": "corporate-denbosch-2025",
+    "name": "Heineken Nederland",
+    "city": "'s-Hertogenbosch",
+    "eventType": "Bedrijfsfeest",
+    "eventDate": "28 februari 2025",
+    "rating": 5,
+    "quote": "Interactieve DJ + MC, perfecte mix voor 500 medewerkers. Onze survey scoorde 97% tevredenheid.",
+    "category": "bedrijfsfeest",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/corporate-denbosch.svg",
+      "alt": "Bedrijfsfeest Den Bosch"
+    }
+  },
+  {
+    "id": "private-veldhoven-2024",
+    "name": "Familie Vermeer",
+    "city": "Veldhoven",
+    "eventType": "Jubileum",
+    "eventDate": "3 augustus 2024",
+    "rating": 5,
+    "quote": "Van seventies classics tot hedendaagse hits, iedereen heeft gedanst – zelfs oma van 82!",
+    "category": "private",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/private-veldhoven.svg",
+      "alt": "Jubileumfeest Veldhoven"
+    }
+  },
+  {
+    "id": "private-breda-2023",
+    "name": "Lisa's 30th",
+    "city": "Breda",
+    "eventType": "Verjaardag",
+    "eventDate": "9 september 2023",
+    "rating": 5,
+    "quote": "Silent disco + live visuals in de tuin. Productie stond binnen 90 minuten. Legendarische avond!",
+    "category": "private",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/private-breda.svg",
+      "alt": "Verjaardagsfeest Breda"
+    }
+  },
+  {
+    "id": "bruiloft-rotterdam-2024",
+    "name": "Noor & Ilias",
+    "city": "Rotterdam",
+    "eventType": "Bruiloft",
+    "eventDate": "6 juli 2024",
+    "rating": 5,
+    "quote": "Marokkaanse live percussion gecombineerd met club classics – de perfecte mix voor onze gasten.",
+    "category": "bruiloft",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/bruiloft-rotterdam.svg",
+      "alt": "Bruiloft DJ Rotterdam"
+    }
+  },
+  {
+    "id": "corporate-amsterdam-2025",
+    "name": "Booking.com",
+    "city": "Amsterdam",
+    "eventType": "Bedrijfsfeest",
+    "eventDate": "23 mei 2025",
+    "rating": 5,
+    "quote": "Hybride event met internationale gasten. Streaming audio & tweetalige MC werkten naadloos.",
+    "category": "bedrijfsfeest",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/corporate-amsterdam.svg",
+      "alt": "Corporate Event Amsterdam"
+    }
+  },
+  {
+    "id": "bruiloft-hilvarenbeek-2023",
+    "name": "Femke & David",
+    "city": "Hilvarenbeek",
+    "eventType": "Bruiloft",
+    "eventDate": "25 november 2023",
+    "rating": 5,
+    "quote": "Rustieke loods omgetoverd tot club. Het lichtontwerp en de MC gaven ons trouwfeest extra glans.",
+    "category": "bruiloft",
+    "media": {
+      "type": "image",
+      "src": "/assets/images/gallery/bruiloft-hilvarenbeek.svg",
+      "alt": "Bruiloft DJ Hilvarenbeek"
+    }
+  }
+]

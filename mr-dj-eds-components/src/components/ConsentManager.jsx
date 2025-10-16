@@ -1,77 +1,121 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
-// 1. Create the Context
 const ConsentContext = createContext(null);
 
-// Helper function to get the current consent status from Complianz
-const getConsentStatus = () => {
-  if (typeof window.complianz === 'undefined') {
+const getInitialConsent = () => {
+  if (typeof window === 'undefined') {
     return {
-      functional: false,
-      statistics: false,
-      marketing: false,
+      ad_storage: false,
+      analytics_storage: false,
+      ad_user_data: false,
+      ad_personalization: false,
     };
   }
+
+  if (window.complianz?.user_preferences) {
+    const prefs = window.complianz.user_preferences;
+    return {
+      ad_storage: prefs.marketing === 'allow',
+      analytics_storage: prefs.statistics === 'allow',
+      ad_user_data: prefs.marketing === 'allow',
+      ad_personalization: prefs.marketing === 'allow',
+    };
+  }
+
   return {
-    functional: window.complianz.user_preferences.functional === 'allow',
-    statistics: window.complianz.user_preferences.statistics === 'allow',
-    marketing: window.complianz.user_preferences.marketing === 'allow',
+    ad_storage: false,
+    analytics_storage: false,
+    ad_user_data: false,
+    ad_personalization: false,
   };
 };
 
-// 2. Create the Provider Component
-export const ConsentManager = ({ children }) => {
-  const [consent, setConsent] = useState(getConsentStatus());
+const pushConsentToDataLayer = (consent) => {
+  if (typeof window === 'undefined') return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'consent_update',
+    event_timestamp: new Date().toISOString(),
+    ...consent,
+  });
+
+  if (window.gtag) {
+    window.gtag('consent', 'update', consent);
+  }
+};
+
+export const ConsentManager = ({ children, showControls = false }) => {
+  const [consent, setConsent] = useState(getInitialConsent);
+
+  const updateConsent = (partial) => {
+    setConsent((prev) => {
+      const next = { ...prev, ...partial };
+      pushConsentToDataLayer(next);
+      return next;
+    });
+  };
 
   useEffect(() => {
-    // Function to update the state when Complianz fires an event
     const handleConsentChange = () => {
-      setConsent(getConsentStatus());
+      const next = getInitialConsent();
+      setConsent(next);
+      pushConsentToDataLayer(next);
     };
 
-    // Complianz fires a custom event when consent is set or changed
     window.addEventListener('cmplz_fire_categories', handleConsentChange);
-    
-    // Initial check in case the banner is already dismissed
     handleConsentChange();
 
-    return () => {
-      window.removeEventListener('cmplz_fire_categories', handleConsentChange);
-    };
+    return () => window.removeEventListener('cmplz_fire_categories', handleConsentChange);
   }, []);
 
-  // The value provided to consumers
-  const value = {
-    ...consent,
-    // Helper to check if a specific category is allowed
-    isAllowed: (category) => consent[category] || false,
-  };
+  useEffect(() => {
+    pushConsentToDataLayer(consent);
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      ...consent,
+      setConsent: updateConsent,
+      isAllowed: (category) => Boolean(consent[category]),
+    }),
+    [consent]
+  );
 
   return (
     <ConsentContext.Provider value={value}>
+      {showControls && (
+        <div className="fixed bottom-spacing-lg right-spacing-lg z-50 space-y-spacing-sm rounded-2xl border border-neutral-gray-100 bg-neutral-light/95 p-spacing-lg shadow-2xl">
+          <p className="text-font-size-small font-semibold text-neutral-dark">Consent toggles (design system)</p>
+          {[
+            ['analytics_storage', 'Analytics'],
+            ['ad_storage', 'Advertenties opslaan'],
+            ['ad_user_data', 'Advertentie-gebruiksdata'],
+            ['ad_personalization', 'Advertentie-personalisatie'],
+          ].map(([key, label]) => (
+            <label key={key} className="flex items-center justify-between gap-spacing-md text-font-size-small">
+              <span>{label}</span>
+              <input
+                type="checkbox"
+                checked={Boolean(consent[key])}
+                onChange={(event) =>
+                  updateConsent({
+                    [key]: event.target.checked,
+                  })
+                }
+              />
+            </label>
+          ))}
+        </div>
+      )}
       {children}
     </ConsentContext.Provider>
   );
 };
 
-// 3. Create a custom hook for easy consumption
 export const useConsent = () => {
   const context = useContext(ConsentContext);
-  if (context === undefined) {
+  if (context === undefined || context === null) {
     throw new Error('useConsent must be used within a ConsentManager');
   }
   return context;
 };
-
-// 4. Update the GCM v2 status when consent changes
-// This is crucial for Google Tag Manager to work correctly
-useEffect(() => {
-    if (typeof window.dataLayer !== 'undefined') {
-        window.dataLayer.push('consent', 'update', {
-            'ad_storage': consent.marketing ? 'granted' : 'denied',
-            'analytics_storage': consent.statistics ? 'granted' : 'denied',
-            'ad_user_data': consent.marketing ? 'granted' : 'denied',
-            'ad_personalization': consent.marketing ? 'granted' : 'denied',
-        });
-    }
-}, [consent]);

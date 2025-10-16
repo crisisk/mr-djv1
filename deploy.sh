@@ -3,41 +3,49 @@
 # Mister DJ - Deployment Script voor VPS
 # Usage: ./deploy.sh
 
-set -e
+set -euo pipefail
+IFS=$'\n\t'
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "🚀 Starting Mister DJ deployment..."
 
 # Configuration
 VPS_HOST="147.93.57.40"
 VPS_USER="root"
-# NOTE: VPS_PASSWORD is not used in this script for security reasons.
-# The user is expected to execute this script locally and provide credentials
-# or use an SSH key for the remote connection.
-# For the purpose of this simulation, we will assume the user has set up SSH keys
-# or will provide the password when prompted by the SSH client.
-# The original script used sshpass, which is not recommended for production.
-# We will remove the sshpass usage and rely on standard SSH authentication.
-# VPS_PASSWORD="J06o7EZfrU&YXBhHdsds"
 DEPLOY_DIR="/opt/mr-dj"
 DOMAIN="staging.sevensa.nl"
+PACKAGE_NAME="mr-dj-deploy.tar.gz"
 
-echo "📦 Creating deployment package..."
-# Ensure all necessary files are included
-tar -czf mr-dj-deploy.tar.gz \
+command -v ssh >/dev/null 2>&1 || { echo "❌ ssh command not found"; exit 1; }
+command -v scp >/dev/null 2>&1 || { echo "❌ scp command not found"; exit 1; }
+
+echo "🧪 Running local verification steps..."
+pushd "$ROOT_DIR/backend" >/dev/null
+echo "📦 Installing backend dependencies (if needed)..."
+npm install --no-audit --progress=false
+echo "🧪 Executing backend test suite..."
+npm test -- --runInBand
+popd >/dev/null
+
+echo "🧹 Preparing clean deployment artifact..."
+rm -f "$ROOT_DIR/$PACKAGE_NAME"
+
+tar -czf "$ROOT_DIR/$PACKAGE_NAME" \
+    --exclude='backend/node_modules' \
+    --exclude='backend/.env' \
+    --exclude='backend/.env.*' \
+    -C "$ROOT_DIR" \
     docker-compose.yml \
-    frontend/ \
-    backend/ \
-    database/ \
-    nginx/ \
-    # docs/ # Assuming docs are not critical for deployment
+    frontend \
+    backend \
+    database
 
 echo "📤 Uploading to VPS..."
-# Using standard scp, assuming SSH key or agent forwarding is set up
 scp -o StrictHostKeyChecking=no \
-    mr-dj-deploy.tar.gz ${VPS_USER}@${VPS_HOST}:/tmp/
+    "$ROOT_DIR/$PACKAGE_NAME" ${VPS_USER}@${VPS_HOST}:/tmp/
 
 echo "🔧 Deploying on VPS..."
-# Using standard ssh, assuming SSH key or agent forwarding is set up
 ssh -o StrictHostKeyChecking=no \
     ${VPS_USER}@${VPS_HOST} << 'ENDSSH'
 
@@ -48,10 +56,9 @@ if ! docker network ls | grep -q " web "; then
 fi
 
 # Stop existing containers for this project (using the new container names)
-# Note: The original script used 'docker-compose down' which is fine, but we'll
-# ensure we are in the correct directory.
-mkdir -p /opt/mr-dj
-cd /opt/mr-dj
+DEPLOY_DIR="/opt/mr-dj"
+mkdir -p "$DEPLOY_DIR"
+cd "$DEPLOY_DIR"
 
 # Stop and remove old containers if they exist, to prevent conflicts
 # The original script's 'docker-compose down' is sufficient if the project name is unique.
@@ -104,5 +111,5 @@ echo "✅ Deployment script completed!"
 echo "🌐 Check your website at: https://staging.sevensa.nl/eds"
 
 # Cleanup local tar
-rm -f mr-dj-deploy.tar.gz
+rm -f "$ROOT_DIR/$PACKAGE_NAME"
 

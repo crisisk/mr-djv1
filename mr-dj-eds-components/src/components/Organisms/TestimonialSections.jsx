@@ -1,156 +1,92 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import SlideLayout from '../common/SlideLayout.jsx';
+import StatHighlights from '../Molecules/StatHighlights.jsx';
 
-const TestimonialSections = () => {
-    return (
-        <div className="slide-container">
-<h1>Organisms: Testimonials</h1>
-<p className="subtitle">Social proof componenten met reviews, ratings en client testimonials voor vertrouwen en conversie</p>
-<div className="testimonials-grid">
-<!-- Featured Testimonial -->
-<div className="testimonial-featured">
-<div className="featured-content">
-<div className="featured-left">
-<div className="featured-badge">⭐ FEATURED REVIEW</div>
-<div className="featured-quote">
-                            "Onze bruiloft was absoluut perfect dankzij Mr. DJ! De hele avond stond de dansvloer vol en hij wist precies welke muziek wanneer te draaien. Professioneel, flexibel en super enthousiast. Onze gasten praten er nog steeds over!"
-                        </div>
-<div className="featured-author">
-<div className="author-avatar">SM</div>
-<div className="author-info">
-<div className="author-name">Sarah &amp; Mark</div>
-<div className="author-event">Bruiloft • Evoluon Eindhoven • 28 juli 2024</div>
-</div>
-</div>
-</div>
-<div className="featured-right">
-<div className="rating-display">
-<div className="rating-stars">⭐⭐⭐⭐⭐</div>
-<div className="rating-text">10/10 Perfect</div>
-</div>
-<div className="platform-badge">
-<span>📘</span>
-<span>Facebook Reviews</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Testimonial Card 1 -->
-<div className="testimonial-card">
-<div className="card-header">
-<div className="card-author">
-<div className="card-avatar">LB</div>
-<div className="card-author-info">
-<div className="card-name">Linda Bakker</div>
-<div className="card-event">Bedrijfsfeest</div>
-</div>
-</div>
-<div className="card-stars">⭐⭐⭐⭐⭐</div>
-</div>
-<div className="card-quote">
-                    "Voor ons bedrijfsfeest hebben we Mr. DJ ingehuurd en wat een succes! Hij las de sfeer perfect aan en zorgde ervoor dat iedereen zich vermaakt heeft. De lichtshow was spectaculair!"
-                </div>
-<div className="card-footer">
-<div className="card-date">12 september 2024</div>
-<div className="card-platform">
-<span>📷</span>
-<span>Instagram</span>
-</div>
-</div>
-</div>
-<!-- Testimonial Card 2 -->
-<div className="testimonial-card">
-<div className="card-header">
-<div className="card-author">
-<div className="card-avatar">JD</div>
-<div className="card-author-info">
-<div className="card-name">Jan de Vries</div>
-<div className="card-event">Bruiloft</div>
-</div>
-</div>
-<div className="card-stars">⭐⭐⭐⭐⭐</div>
-</div>
-<div className="card-quote">
-                    "Onze bruiloft was een droom die uitkwam, mede dankzij de geweldige DJ service van Mr. DJ. Hij nam alle tijd voor een intakegesprek en speelde precies de muziek die wij wilden."
-                </div>
-<div className="card-footer">
-<div className="card-date">5 augustus 2024</div>
-<div className="card-platform">
-<span>⭐</span>
-<span>Google Reviews</span>
-</div>
-</div>
-</div>
-<!-- Testimonial Card 3 -->
-<div className="testimonial-card">
-<div className="card-header">
-<div className="card-author">
-<div className="card-avatar">MJ</div>
-<div className="card-author-info">
-<div className="card-name">Maria Jansen</div>
-<div className="card-event">Verjaardag</div>
-</div>
-</div>
-<div className="card-stars">⭐⭐⭐⭐⭐</div>
-</div>
-<div className="card-quote">
-                    "Voor mijn 50e verjaardag wilde ik een onvergetelijk feest en Mr. DJ heeft dat mogelijk gemaakt! Professionele apparatuur, geweldige muziek en een DJ die echt met je meedenkt."
-                </div>
-<div className="card-footer">
-<div className="card-date">20 juni 2024</div>
-<div className="card-platform">
-<span>📘</span>
-<span>Facebook</span>
-</div>
-</div>
-</div>
-<!-- Testimonial Card 4 -->
-<div className="testimonial-card">
-<div className="card-header">
-<div className="card-author">
-<div className="card-avatar">PH</div>
-<div className="card-author-info">
-<div className="card-name">Peter Hendriks</div>
-<div className="card-event">Bedrijfsfeest</div>
-</div>
-</div>
-<div className="card-stars">⭐⭐⭐⭐⭐</div>
-</div>
-<div className="card-quote">
-                    "Als eventmanager heb ik met veel DJ's gewerkt, maar Mr. DJ springt er echt uit. Betrouwbaar, professioneel en altijd goed voorbereid. De communicatie vooraf was uitstekend."
-                </div>
-<div className="card-footer">
-<div className="card-date">15 oktober 2024</div>
-<div className="card-platform">
-<span>💼</span>
-<span>LinkedIn</span>
-</div>
-</div>
-</div>
-<!-- Stats Section -->
-<div className="stats-section">
-<div className="stat-item">
-<div className="stat-stars">⭐⭐⭐⭐⭐</div>
-<span className="stat-number">10/10</span>
-<span className="stat-label">Gemiddelde Score</span>
-</div>
-<div className="stat-item">
-<span className="stat-number">250+</span>
-<span className="stat-label">Verified Reviews</span>
-</div>
-<div className="stat-item">
-<span className="stat-number">98%</span>
-<span className="stat-label">Zou Aanbevelen</span>
-</div>
-<div className="stat-item">
-<span className="stat-number">2500+</span>
-<span className="stat-label">Geslaagde Events</span>
-</div>
-</div>
-</div>
-</div>
-    );
+const featuredTestimonial = {
+  title: '“De dansvloer zat vol van begin tot eind.”',
+  quote:
+    'Mister DJ nam alle zorg uit handen: perfecte voorbereiding, naadloze samenwerking met de saxofonist en een set die voelde alsof onze vrienden aan de draaitafels stonden.',
+  name: 'Eva & Tom',
+  meta: 'Bruiloft • Kasteel Maurick • 180 gasten',
 };
+
+const testimonialCards = [
+  {
+    name: 'Lisa & Mark',
+    meta: 'Bruiloft • Tilburg',
+    quote: 'De intake was super persoonlijk en onze playlist werd tot in detail verwerkt.',
+  },
+  {
+    name: 'Philips Lighting',
+    meta: 'Corporate Event • 450 gasten',
+    quote: 'Heldere communicatie, strakke productie en een gegarandeerde volle dansvloer.',
+  },
+  {
+    name: 'Sanne',
+    meta: 'Verjaardag • Eindhoven',
+    quote: 'Van licht tot geluid tot MC: alles liep vlekkeloos. Onze gasten praten er nog steeds over.',
+  },
+];
+
+const stats = [
+  {
+    label: 'Gemiddelde reviewscore',
+    value: '9,8',
+    description: 'Op basis van 250+ recensies via ThePerfectWedding, Google en Trustpilot.',
+  },
+  {
+    label: 'Aanvragen binnen 24 uur beantwoord',
+    value: '100%',
+    description: 'Dedicated planningsteam dat elke lead persoonlijk opvolgt.',
+  },
+  {
+    label: 'Succesvolle evenementen in 2024',
+    value: '312',
+    description: 'Van intieme bruiloften tot corporate events met 1000+ gasten.',
+  },
+];
+
+const TestimonialCard = ({ name, meta, quote }) => (
+  <article className="flex flex-col gap-spacing-sm rounded-2xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-lg shadow-md">
+    <div className="flex gap-spacing-sm text-secondary">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <span key={index}>★</span>
+      ))}
+    </div>
+    <p className="text-sm text-neutral-gray-600">“{quote}”</p>
+    <div>
+      <p className="font-semibold text-neutral-dark">{name}</p>
+      <p className="text-xs text-neutral-gray-500">{meta}</p>
+    </div>
+  </article>
+);
+
+const TestimonialSections = () => (
+  <SlideLayout
+    title="Organisms: Testimonials"
+    subtitle="Social proof secties met hero testimonial, quotes en onderbouwende statistieken."
+  >
+    <div className="grid gap-spacing-xl xl:grid-cols-[3fr,2fr]">
+      <section className="space-y-spacing-xl">
+        <article className="space-y-spacing-sm rounded-3xl border border-primary/30 bg-primary/5 p-spacing-xl shadow-xl">
+          <p className="text-font-size-h3 font-semibold text-primary">{featuredTestimonial.title}</p>
+          <p className="text-sm text-neutral-dark/80">{featuredTestimonial.quote}</p>
+          <div>
+            <p className="text-sm font-semibold text-neutral-dark">{featuredTestimonial.name}</p>
+            <p className="text-xs text-neutral-gray-500">{featuredTestimonial.meta}</p>
+          </div>
+        </article>
+        <div className="grid gap-spacing-md md:grid-cols-3">
+          {testimonialCards.map((testimonial) => (
+            <TestimonialCard key={testimonial.name} {...testimonial} />
+          ))}
+        </div>
+      </section>
+      <aside>
+        <StatHighlights stats={stats} title="Waarom Mister DJ" subtitle="Onze belofte in cijfers." orientation="vertical" />
+      </aside>
+    </div>
+  </SlideLayout>
+);
 
 export default TestimonialSections;
