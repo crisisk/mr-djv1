@@ -48,18 +48,17 @@ export const ConsentManager = ({ children, showControls = false }) => {
   const [consent, setConsent] = useState(getInitialConsent);
 
   const updateConsent = (partial) => {
-    setConsent((prev) => {
-      const next = { ...prev, ...partial };
-      pushConsentToDataLayer(next);
-      return next;
-    });
+    setConsent((prev) => ({ ...prev, ...partial }));
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
     const handleConsentChange = () => {
       const next = getInitialConsent();
       setConsent(next);
-      pushConsentToDataLayer(next);
     };
 
     window.addEventListener('cmplz_fire_categories', handleConsentChange);
@@ -70,7 +69,7 @@ export const ConsentManager = ({ children, showControls = false }) => {
 
   useEffect(() => {
     pushConsentToDataLayer(consent);
-  }, []);
+  }, [consent]);
 
   const value = useMemo(
     () => ({
