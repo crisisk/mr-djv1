@@ -1,4 +1,4 @@
-import tokens from './lib/design-tokens.json' assert { type: 'json' };
+import tokens from './lib/design-tokens.json';
 
 const flattenTokens = (object, prefix = []) => {
   return Object.entries(object).reduce((acc, [key, value]) => {

@@ -119,4 +119,31 @@ describe('rentGuyService', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(rentGuyService.getStatus()).toMatchObject({ queueSize: 0, lastSyncSuccess: expect.any(Object) });
   });
+
+  it('sends personalization events to the dedicated endpoint', async () => {
+    process.env.RENTGUY_API_BASE_URL = 'https://rentguy.test/api';
+    process.env.RENTGUY_API_KEY = 'secret';
+
+    const fetchMock = jest.fn().mockResolvedValue({ ok: true, status: 202, text: () => Promise.resolve('') });
+    global.fetch = fetchMock;
+
+    const rentGuyService = loadService();
+    rentGuyService.reset();
+
+    const result = await rentGuyService.syncPersonalizationEvent(
+      {
+        variantId: 'city_eindhoven',
+        eventType: 'impression',
+        keyword: 'dj eindhoven',
+        timestamp: new Date().toISOString()
+      },
+      { source: 'personalization-pipeline' }
+    );
+
+    expect(result).toEqual({ delivered: true, queued: false, queueSize: 0 });
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://rentguy.test/api/personalization-events',
+      expect.objectContaining({ method: 'POST' })
+    );
+  });
 });

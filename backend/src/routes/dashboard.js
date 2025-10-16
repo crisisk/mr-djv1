@@ -2,6 +2,8 @@ const express = require('express');
 const dashboardAuth = require('../middleware/dashboardAuth');
 const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
+const hubspotService = require('../services/hubspotService');
+const observabilityService = require('../services/observabilityService');
 
 const router = express.Router();
 
@@ -246,6 +248,11 @@ function renderPage() {
         color: #b91c1c;
       }
 
+      .status-pill[data-state="attention"] {
+        background: rgba(251, 191, 36, 0.18);
+        color: #92400e;
+      }
+
       .empty-state {
         margin: 0;
         padding: 1rem 1.5rem;
@@ -253,6 +260,65 @@ function renderPage() {
         background: rgba(226, 232, 240, 0.35);
         color: #475569;
         font-size: 0.95rem;
+      }
+
+      .metric-list {
+        list-style: none;
+        margin: 1rem 0 0;
+        padding: 0;
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .metric-list li {
+        background: rgba(226, 232, 240, 0.35);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        color: #1e293b;
+      }
+
+      .variant-table {
+        margin-top: 1rem;
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .variant-table article {
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        padding: 1rem 1.25rem;
+        background: rgba(248, 250, 252, 0.65);
+      }
+
+      .variant-table article h3 {
+        margin: 0 0 0.35rem;
+        font-size: 1rem;
+      }
+
+      .variant-table article dl {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+      }
+
+      .variant-table article dl dt {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 0.08em;
+      }
+
+      .variant-table article dl dd {
+        margin: 0;
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .variant-table article .keywords {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: #475569;
       }
 
       .toast {
@@ -380,6 +446,9 @@ function renderPage() {
       let managedKeys = [];
       let currentGroupId = null;
       let rentGuyStatusControls = null;
+      let hubSpotStatusControls = null;
+      let performanceStatusControls = null;
+      let variantAnalyticsControls = null;
 
       const FIELD_METADATA = {
         RENTGUY_API_BASE_URL: {
@@ -403,6 +472,25 @@ function renderPage() {
           min: '1000',
           step: '500',
           hint: 'Timeout in milliseconden voor API-calls. Laat leeg voor de standaardwaarde van 5000ms.'
+        },
+        HUBSPOT_SUBMIT_URL: {
+          placeholder: 'https://api.hsforms.com/submissions/v3/...',
+          hint: 'Volledige HubSpot submit URL vanuit het rentguy Config Dashboard (portal & form ID inbegrepen).',
+          autocomplete: 'off'
+        },
+        HUBSPOT_QUEUE_RETRY_DELAY_MS: {
+          type: 'number',
+          inputMode: 'numeric',
+          min: '1000',
+          step: '1000',
+          hint: 'Basis retry-interval in milliseconden voor HubSpot queue verwerking (standaard 15000ms).'
+        },
+        HUBSPOT_QUEUE_MAX_ATTEMPTS: {
+          type: 'number',
+          inputMode: 'numeric',
+          min: '1',
+          step: '1',
+          hint: 'Maximale aantal verstuurpogingen voordat een lead in de dead letter queue terechtkomt (standaard 5).'
         }
       };
 
@@ -632,6 +720,596 @@ function renderPage() {
         return card;
       }
 
+      function createHubSpotStatusCard() {
+        const card = document.createElement('section');
+        card.className = 'field integration-card';
+
+        const heading = document.createElement('h2');
+        heading.textContent = 'HubSpot submit & queue status';
+        card.appendChild(heading);
+
+        const description = document.createElement('p');
+        description.className = 'hint';
+        description.textContent =
+          'Monitor de HubSpot submit URL, retry-queue en dead letters. Gebruik flush voor handmatige retries of verifieer de submit URL via rentguy instructies.';
+        card.appendChild(description);
+
+        const indicator = document.createElement('div');
+        indicator.className = 'status-pill';
+        indicator.dataset.state = 'missing';
+        indicator.textContent = 'Submit URL ontbreekt';
+        card.appendChild(indicator);
+
+        const statusGrid = document.createElement('dl');
+        statusGrid.className = 'status-grid';
+
+        function createRow(label) {
+          const dt = document.createElement('dt');
+          dt.textContent = label;
+          const dd = document.createElement('dd');
+          dd.textContent = '—';
+          statusGrid.appendChild(dt);
+          statusGrid.appendChild(dd);
+          return dd;
+        }
+
+        const queueValue = createRow('Queue grootte');
+        const deadLetterValue = createRow('Dead letters');
+        const nextAttemptValue = createRow('Volgende retry');
+        const lastErrorValue = createRow('Laatste fout');
+
+        card.appendChild(statusGrid);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const refreshButton = document.createElement('button');
+        refreshButton.type = 'button';
+        refreshButton.className = 'secondary';
+        refreshButton.textContent = 'Status verversen';
+        refreshButton.addEventListener('click', () => {
+          refreshHubSpotStatus(true).catch((error) => {
+            console.error(error);
+          });
+        });
+        actions.appendChild(refreshButton);
+
+        const flushButton = document.createElement('button');
+        flushButton.type = 'button';
+        flushButton.className = 'secondary danger';
+        flushButton.textContent = 'Queue flushen';
+        flushButton.disabled = true;
+        flushButton.addEventListener('click', () => {
+          flushHubSpotQueue().catch((error) => {
+            console.error(error);
+          });
+        });
+        actions.appendChild(flushButton);
+
+        card.appendChild(actions);
+
+        const resultMessage = document.createElement('p');
+        resultMessage.className = 'hint result';
+        card.appendChild(resultMessage);
+
+        hubSpotStatusControls = {
+          card,
+          indicator,
+          queueValue,
+          deadLetterValue,
+          nextAttemptValue,
+          lastErrorValue,
+          refreshButton,
+          flushButton,
+          resultMessage
+        };
+
+        return card;
+      }
+
+      function createPerformanceStatusCard() {
+        const card = document.createElement('section');
+        card.className = 'field integration-card';
+
+        const heading = document.createElement('h2');
+        heading.textContent = 'Lighthouse & Axe monitoring';
+        card.appendChild(heading);
+
+        const description = document.createElement('p');
+        description.className = 'hint';
+        description.textContent =
+          'Automatiseer Lighthouse/Axe audits per pagina en device. Bekijk queue, gemiddelde scores en auditgeschiedenis.';
+        card.appendChild(description);
+
+        const indicator = document.createElement('div');
+        indicator.className = 'status-pill';
+        indicator.dataset.state = 'missing';
+        indicator.textContent = 'Nog geen audits';
+        card.appendChild(indicator);
+
+        const statusGrid = document.createElement('dl');
+        statusGrid.className = 'status-grid';
+
+        function createRow(label) {
+          const dt = document.createElement('dt');
+          dt.textContent = label;
+          const dd = document.createElement('dd');
+          dd.textContent = '—';
+          statusGrid.appendChild(dt);
+          statusGrid.appendChild(dd);
+          return dd;
+        }
+
+        const performanceValue = createRow('Gem. performance');
+        const accessibilityValue = createRow('Gem. accessibility');
+        const bestPracticesValue = createRow('Gem. best practices');
+        const seoValue = createRow('Gem. SEO');
+
+        card.appendChild(statusGrid);
+
+        const queueHeading = document.createElement('p');
+        queueHeading.className = 'hint';
+        queueHeading.textContent = 'In behandeling';
+        card.appendChild(queueHeading);
+
+        const queueList = document.createElement('ul');
+        queueList.className = 'metric-list';
+        card.appendChild(queueList);
+
+        const historyHeading = document.createElement('p');
+        historyHeading.className = 'hint';
+        historyHeading.textContent = 'Laatste runs';
+        card.appendChild(historyHeading);
+
+        const historyList = document.createElement('ul');
+        historyList.className = 'metric-list';
+        card.appendChild(historyList);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const targetSelect = document.createElement('select');
+        targetSelect.className = 'secondary';
+        targetSelect.style.flex = '1 0 220px';
+        actions.appendChild(targetSelect);
+
+        const refreshButton = document.createElement('button');
+        refreshButton.type = 'button';
+        refreshButton.className = 'secondary';
+        refreshButton.textContent = 'Monitoring verversen';
+        refreshButton.addEventListener('click', () => {
+          refreshPerformanceStatus(true).catch((error) => {
+            console.error(error);
+          });
+        });
+        actions.appendChild(refreshButton);
+
+        const runButton = document.createElement('button');
+        runButton.type = 'button';
+        runButton.className = 'secondary';
+        runButton.textContent = 'Audit starten';
+        runButton.addEventListener('click', () => {
+          triggerPerformanceRun().catch((error) => {
+            console.error(error);
+          });
+        });
+        actions.appendChild(runButton);
+
+        card.appendChild(actions);
+
+        performanceStatusControls = {
+          card,
+          indicator,
+          performanceValue,
+          accessibilityValue,
+          bestPracticesValue,
+          seoValue,
+          queueList,
+          historyList,
+          targetSelect,
+          refreshButton,
+          runButton,
+          targets: []
+        };
+
+        return card;
+      }
+
+      function renderPerformanceStatus(state) {
+        if (!performanceStatusControls) {
+          return;
+        }
+
+        const summary = state?.summary || {};
+        const averages = summary.averageScores || null;
+        const runs = Array.isArray(state?.runs) ? state.runs : [];
+        const queue = Array.isArray(state?.queue) ? state.queue : [];
+        const targets = Array.isArray(state?.targets) ? state.targets : [];
+
+        performanceStatusControls.targets = targets;
+
+        const select = performanceStatusControls.targetSelect;
+        const previousValue = select.value;
+        select.innerHTML = '';
+
+        if (targets.length) {
+          targets.forEach((target, index) => {
+            const option = document.createElement('option');
+            const fallbackId =
+              (target.url || '/') + '-' + (target.device || 'desktop') + '-' + index;
+            option.value = target.id || fallbackId;
+            const deviceLabel = target.device ? target.device : 'desktop';
+            const label = target.label || target.url;
+            option.textContent = label + ' (' + deviceLabel + ')';
+            select.appendChild(option);
+          });
+
+          if (targets.some((target) => target.id === previousValue)) {
+            select.value = previousValue;
+          }
+        } else {
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = 'Geen targets geconfigureerd';
+          select.appendChild(option);
+        }
+
+        performanceStatusControls.runButton.disabled = targets.length === 0;
+
+        if (!runs.length) {
+          performanceStatusControls.indicator.dataset.state = 'missing';
+          performanceStatusControls.indicator.textContent = 'Nog geen audits';
+        } else if (summary.degradedRuns > 0) {
+          performanceStatusControls.indicator.dataset.state = 'attention';
+          performanceStatusControls.indicator.textContent =
+            summary.degradedRuns + ' audit(s) vereisen aandacht';
+        } else {
+          performanceStatusControls.indicator.dataset.state = 'configured';
+          performanceStatusControls.indicator.textContent = 'Audits gezond';
+        }
+
+        const setValue = (element, value, suffix = '%') => {
+          if (typeof value === 'number' && Number.isFinite(value)) {
+            element.textContent = String(value) + suffix;
+          } else {
+            element.textContent = '—';
+          }
+        };
+
+        if (averages) {
+          setValue(performanceStatusControls.performanceValue, averages.performance);
+          setValue(performanceStatusControls.accessibilityValue, averages.accessibility);
+          setValue(performanceStatusControls.bestPracticesValue, averages.bestPractices);
+          setValue(performanceStatusControls.seoValue, averages.seo);
+        } else {
+          setValue(performanceStatusControls.performanceValue, null);
+          setValue(performanceStatusControls.accessibilityValue, null);
+          setValue(performanceStatusControls.bestPracticesValue, null);
+          setValue(performanceStatusControls.seoValue, null);
+        }
+
+        performanceStatusControls.queueList.innerHTML = '';
+        if (!queue.length) {
+          const li = document.createElement('li');
+          li.textContent = 'Geen geplande audits in de wachtrij.';
+          performanceStatusControls.queueList.appendChild(li);
+        } else {
+          queue.forEach((item) => {
+            const li = document.createElement('li');
+            const when = item.requestedAt ? new Date(item.requestedAt).toLocaleString() : 'onbekend';
+            li.textContent =
+              item.url + ' (' + item.device + ') – ' + item.status + ' • ' + when;
+            performanceStatusControls.queueList.appendChild(li);
+          });
+        }
+
+        performanceStatusControls.historyList.innerHTML = '';
+        if (!runs.length) {
+          const li = document.createElement('li');
+          li.textContent = 'Nog geen afgeronde audits.';
+          performanceStatusControls.historyList.appendChild(li);
+        } else {
+          runs.forEach((run) => {
+            const li = document.createElement('li');
+            const when = run.completedAt ? new Date(run.completedAt).toLocaleString() : 'in uitvoering';
+            const metrics = run.metrics || {};
+            const performance = metrics.performance != null ? metrics.performance : '—';
+            const accessibility = metrics.accessibility != null ? metrics.accessibility : '—';
+            const bestPractices = metrics.bestPractices != null ? metrics.bestPractices : '—';
+            const seoScore = metrics.seo != null ? metrics.seo : '—';
+            li.textContent =
+              when +
+              ' – ' +
+              run.url +
+              ' (' +
+              run.device +
+              ') • P' +
+              performance +
+              ' / A' +
+              accessibility +
+              ' / B' +
+              bestPractices +
+              ' / SEO ' +
+              seoScore;
+            performanceStatusControls.historyList.appendChild(li);
+          });
+        }
+      }
+
+      async function refreshPerformanceStatus(showToastOnSuccess = false) {
+        if (!performanceStatusControls) {
+          return;
+        }
+
+        performanceStatusControls.card.dataset.loading = 'true';
+
+        try {
+          const response = await fetch('./api/observability/performance', {
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon monitoring status niet ophalen');
+          }
+
+          const payload = await response.json();
+          renderPerformanceStatus(payload);
+
+          if (showToastOnSuccess) {
+            showToast('Monitoringstatus bijgewerkt');
+          }
+        } catch (error) {
+          console.error(error);
+          showToast(error.message || 'Monitoring niet beschikbaar');
+        } finally {
+          delete performanceStatusControls.card.dataset.loading;
+        }
+      }
+
+      async function triggerPerformanceRun() {
+        if (!performanceStatusControls) {
+          return;
+        }
+
+        const targets = performanceStatusControls.targets || [];
+        if (!targets.length) {
+          showToast('Geen audit-targets geconfigureerd');
+          return;
+        }
+
+        const selectedId = performanceStatusControls.targetSelect.value;
+        const selectedTarget =
+          targets.find((target) => target.id === selectedId) || targets[0] || { url: '/', device: 'desktop' };
+
+        performanceStatusControls.runButton.disabled = true;
+
+        try {
+          const response = await fetch('./api/observability/performance/run', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            },
+            body: JSON.stringify({
+              url: selectedTarget.url,
+              device: selectedTarget.device,
+              variantId: selectedTarget.variantId || null
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon audit niet plannen');
+          }
+
+          showToast('Audit ingepland');
+          await new Promise((resolve) => setTimeout(resolve, 75));
+          await refreshPerformanceStatus();
+        } catch (error) {
+          console.error(error);
+          showToast(error.message || 'Audit plannen mislukt');
+        } finally {
+          performanceStatusControls.runButton.disabled = false;
+        }
+      }
+
+      function createVariantAnalyticsCard() {
+        const card = document.createElement('section');
+        card.className = 'field integration-card';
+
+        const heading = document.createElement('h2');
+        heading.textContent = 'Variant analytics & CRO';
+        card.appendChild(heading);
+
+        const description = document.createElement('p');
+        description.className = 'hint';
+        description.textContent =
+          'Realtime overzicht van exposures, CTR en conversies per personalisatievariant. Gebruik dit om experimenten te sturen.';
+        card.appendChild(description);
+
+        const summaryGrid = document.createElement('dl');
+        summaryGrid.className = 'status-grid';
+
+        function createRow(label) {
+          const dt = document.createElement('dt');
+          dt.textContent = label;
+          const dd = document.createElement('dd');
+          dd.textContent = '—';
+          summaryGrid.appendChild(dt);
+          summaryGrid.appendChild(dd);
+          return dd;
+        }
+
+        const exposuresValue = createRow('Totaal exposures');
+        const ctaValue = createRow('CTA clicks');
+        const conversionValue = createRow('Conversies');
+        const conversionRateValue = createRow('Conversieratio');
+
+        card.appendChild(summaryGrid);
+
+        const updatedAt = document.createElement('p');
+        updatedAt.className = 'hint';
+        updatedAt.textContent = 'Laatste update: —';
+        card.appendChild(updatedAt);
+
+        const variantList = document.createElement('div');
+        variantList.className = 'variant-table';
+        card.appendChild(variantList);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const refreshButton = document.createElement('button');
+        refreshButton.type = 'button';
+        refreshButton.className = 'secondary';
+        refreshButton.textContent = 'Analytics verversen';
+        refreshButton.addEventListener('click', () => {
+          refreshVariantAnalytics(true).catch((error) => {
+            console.error(error);
+          });
+        });
+        actions.appendChild(refreshButton);
+
+        card.appendChild(actions);
+
+        variantAnalyticsControls = {
+          card,
+          exposuresValue,
+          ctaValue,
+          conversionValue,
+          conversionRateValue,
+          variantList,
+          refreshButton,
+          updatedAt
+        };
+
+        return card;
+      }
+
+      function renderVariantAnalytics(state) {
+        if (!variantAnalyticsControls) {
+          return;
+        }
+
+        const totals = state?.totals || {};
+        const variants = Array.isArray(state?.variants) ? state.variants : [];
+
+        const setNumber = (element, value, suffix = '') => {
+          if (typeof value === 'number' && Number.isFinite(value)) {
+            element.textContent = String(value) + suffix;
+          } else {
+            element.textContent = '0';
+          }
+        };
+
+        setNumber(variantAnalyticsControls.exposuresValue, totals.exposures || 0);
+        setNumber(variantAnalyticsControls.ctaValue, totals.ctaClicks || 0);
+        setNumber(variantAnalyticsControls.conversionValue, totals.conversions || 0);
+        setNumber(variantAnalyticsControls.conversionRateValue, totals.conversionRate || 0, '%');
+
+        if (state?.updatedAt) {
+          variantAnalyticsControls.updatedAt.textContent =
+            'Laatste update: ' + new Date(state.updatedAt).toLocaleString();
+        } else {
+          variantAnalyticsControls.updatedAt.textContent = 'Laatste update: onbekend';
+        }
+
+        variantAnalyticsControls.variantList.innerHTML = '';
+
+        if (!variants.length) {
+          const empty = document.createElement('p');
+          empty.className = 'hint';
+          empty.textContent = 'Nog geen variantdata ontvangen.';
+          variantAnalyticsControls.variantList.appendChild(empty);
+          return;
+        }
+
+        variants.forEach((variant) => {
+          const article = document.createElement('article');
+
+          const title = document.createElement('h3');
+          title.textContent = variant.label || variant.variantId;
+          article.appendChild(title);
+
+          if (variant.experimentId) {
+            const experiment = document.createElement('p');
+            experiment.className = 'hint';
+            experiment.textContent = 'Experiment: ' + variant.experimentId;
+            article.appendChild(experiment);
+          }
+
+          const metrics = document.createElement('dl');
+
+          const addMetric = (label, value, suffix = '') => {
+            const dt = document.createElement('dt');
+            dt.textContent = label;
+            const dd = document.createElement('dd');
+            dd.textContent = String(value) + suffix;
+            metrics.appendChild(dt);
+            metrics.appendChild(dd);
+          };
+
+          addMetric('Exposures', variant.exposures || 0);
+          addMetric('CTA rate', (variant.ctaClickRate || 0).toFixed(2), '%');
+          addMetric('Conversies', variant.conversions || 0);
+          addMetric('Conversieratio', (variant.conversionRate || 0).toFixed(2), '%');
+
+          article.appendChild(metrics);
+
+          if (variant.matchTypes) {
+            const matchSummary = Object.entries(variant.matchTypes)
+              .map(([key, value]) => key + ': ' + value)
+              .join(' • ');
+            if (matchSummary) {
+              const matchParagraph = document.createElement('p');
+              matchParagraph.className = 'hint';
+              matchParagraph.textContent = 'Match types: ' + matchSummary;
+              article.appendChild(matchParagraph);
+            }
+          }
+
+          if (Array.isArray(variant.topKeywords) && variant.topKeywords.length) {
+            const keywords = document.createElement('p');
+            keywords.className = 'keywords';
+            keywords.textContent =
+              'Top keywords: ' +
+              variant.topKeywords.map((item) => item.keyword + ' (' + item.count + ')').join(', ');
+            article.appendChild(keywords);
+          }
+
+          variantAnalyticsControls.variantList.appendChild(article);
+        });
+      }
+
+      async function refreshVariantAnalytics(showToastOnSuccess = false) {
+        if (!variantAnalyticsControls) {
+          return;
+        }
+
+        variantAnalyticsControls.card.dataset.loading = 'true';
+
+        try {
+          const response = await fetch('./api/observability/variants', {
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon variant analytics niet laden');
+          }
+
+          const payload = await response.json();
+          renderVariantAnalytics(payload);
+
+          if (showToastOnSuccess) {
+            showToast('Variant analytics bijgewerkt');
+          }
+        } catch (error) {
+          console.error(error);
+          showToast(error.message || 'Variant analytics niet beschikbaar');
+        } finally {
+          delete variantAnalyticsControls.card.dataset.loading;
+        }
+      }
+
       function renderRentGuyStatus(status) {
         if (!rentGuyStatusControls) {
           return;
@@ -650,7 +1328,7 @@ function renderPage() {
           const resource = success.resource || 'onbekend';
           const attempts = Number.isFinite(success.attempts) ? success.attempts : 0;
           rentGuyStatusControls.lastSuccessValue.textContent =
-            formatDateTime(success.at) + ' • ' + resource + ' (' + attempts + ' poging(en))';
+            formatDateTime(success.at) + ' - ' + resource + ' (' + attempts + ' poging(en))';
         } else {
           rentGuyStatusControls.lastSuccessValue.textContent = 'Nog geen succesvolle sync';
         }
@@ -659,7 +1337,7 @@ function renderPage() {
           const errorInfo = status.lastSyncError;
           const message = errorInfo.message || 'Onbekende fout';
           rentGuyStatusControls.lastErrorValue.textContent =
-            formatDateTime(errorInfo.at) + ' • ' + message;
+            formatDateTime(errorInfo.at) + ' - ' + message;
         } else {
           rentGuyStatusControls.lastErrorValue.textContent = 'Geen fouten geregistreerd';
         }
@@ -669,12 +1347,53 @@ function renderPage() {
           const resource = next.resource || 'onbekend';
           const attempts = Number.isFinite(next.attempts) ? next.attempts : 0;
           rentGuyStatusControls.nextRetryValue.textContent =
-            formatDateTime(next.enqueuedAt) + ' • ' + resource + ' (' + attempts + ' poging(en))';
+            formatDateTime(next.enqueuedAt) + ' - ' + resource + ' (' + attempts + ' poging(en))';
         } else {
           rentGuyStatusControls.nextRetryValue.textContent = 'Geen wachtrij';
         }
 
         rentGuyStatusControls.flushButton.disabled = !configured || queueSize === 0;
+      }
+
+      function renderHubSpotStatus(status) {
+        if (!hubSpotStatusControls) {
+          return;
+        }
+
+        const configured = Boolean(status && status.configured);
+        hubSpotStatusControls.indicator.dataset.state = configured ? 'configured' : 'missing';
+        hubSpotStatusControls.indicator.textContent = configured
+          ? 'Submit URL actief'
+          : 'Submit URL ontbreekt';
+
+        const queueSize = status && Number.isFinite(status.queueSize) ? status.queueSize : 0;
+        hubSpotStatusControls.queueValue.textContent = String(queueSize);
+
+        const deadLetters = status && Number.isFinite(status.deadLetterCount) ? status.deadLetterCount : 0;
+        hubSpotStatusControls.deadLetterValue.textContent = String(deadLetters);
+
+        if (status && status.nextInQueue) {
+          const next = status.nextInQueue;
+          const attempts = Number.isFinite(next.attempts) ? next.attempts : 0;
+          const detail = next.lastError ? ' - ' + next.lastError : '';
+          hubSpotStatusControls.nextAttemptValue.textContent =
+            formatDateTime(next.nextAttemptAt) + ' - poging ' + attempts + detail;
+        } else {
+          hubSpotStatusControls.nextAttemptValue.textContent = 'Geen wachtrij actief';
+        }
+
+        if (status && status.lastDeadLetter) {
+          const dead = status.lastDeadLetter;
+          const message = dead.lastError || 'Onbekende fout';
+          hubSpotStatusControls.lastErrorValue.textContent =
+            formatDateTime(dead.droppedAt) + ' - ' + message;
+        } else if (status && status.nextInQueue && status.nextInQueue.lastError) {
+          hubSpotStatusControls.lastErrorValue.textContent = status.nextInQueue.lastError;
+        } else {
+          hubSpotStatusControls.lastErrorValue.textContent = 'Geen fouten geregistreerd';
+        }
+
+        hubSpotStatusControls.flushButton.disabled = !configured || queueSize === 0;
       }
 
       async function refreshRentGuyStatus(showToastOnSuccess = false) {
@@ -705,6 +1424,92 @@ function renderPage() {
           showToast(error.message || 'RentGuy status niet beschikbaar');
         } finally {
           delete rentGuyStatusControls.card.dataset.loading;
+        }
+      }
+
+      async function refreshHubSpotStatus(showToastOnSuccess = false) {
+        if (!hubSpotStatusControls) {
+          return;
+        }
+
+        hubSpotStatusControls.card.dataset.loading = 'true';
+        hubSpotStatusControls.resultMessage.textContent = '';
+
+        try {
+          const response = await fetch('./api/integrations/hubspot/status', {
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon HubSpot status niet ophalen');
+          }
+
+          const payload = await response.json();
+          renderHubSpotStatus(payload);
+          if (showToastOnSuccess) {
+            showToast('HubSpot status bijgewerkt');
+          }
+        } catch (error) {
+          console.error(error);
+          hubSpotStatusControls.resultMessage.textContent = error.message || 'HubSpot status niet beschikbaar';
+          showToast(error.message || 'HubSpot status niet beschikbaar');
+        } finally {
+          delete hubSpotStatusControls.card.dataset.loading;
+        }
+      }
+
+      async function flushHubSpotQueue() {
+        if (!hubSpotStatusControls) {
+          return;
+        }
+
+        hubSpotStatusControls.card.dataset.loading = 'true';
+        hubSpotStatusControls.resultMessage.textContent = '';
+
+        try {
+          const response = await fetch('./api/integrations/hubspot/flush', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            },
+            body: JSON.stringify({})
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon HubSpot queue niet flushen');
+          }
+
+          const payload = await response.json();
+          if (!payload.configured) {
+            hubSpotStatusControls.resultMessage.textContent =
+              'Submit URL ontbreekt – configureer eerst de HubSpot submit URL.';
+            showToast('HubSpot flush overgeslagen: configureer de submit URL');
+            await refreshHubSpotStatus();
+            return;
+          }
+
+          hubSpotStatusControls.resultMessage.textContent =
+            'Flush uitgevoerd: ' +
+            payload.delivered +
+            '/' +
+            payload.attempted +
+            ' verstuurd, ' +
+            payload.remaining +
+            ' resterend.';
+          showToast('HubSpot queue flush uitgevoerd');
+          await refreshHubSpotStatus();
+        } catch (error) {
+          console.error(error);
+          hubSpotStatusControls.resultMessage.textContent = error.message || 'Flush mislukt';
+          showToast(error.message || 'HubSpot flush mislukt');
+          try {
+            await refreshHubSpotStatus();
+          } catch (refreshError) {
+            console.error(refreshError);
+          }
+        } finally {
+          delete hubSpotStatusControls.card.dataset.loading;
         }
       }
 
@@ -783,6 +1588,11 @@ function renderPage() {
 
         if (group.id === 'rentguy') {
           section.appendChild(createRentGuyStatusCard());
+        } else if (group.id === 'automation') {
+          section.appendChild(createHubSpotStatusCard());
+          section.appendChild(createPerformanceStatusCard());
+        } else if (group.id === 'personalization') {
+          section.appendChild(createVariantAnalyticsCard());
         }
 
         const entries = Array.isArray(group.entries) ? group.entries : [];
@@ -797,6 +1607,9 @@ function renderPage() {
         tabsContainer.innerHTML = '';
         groupsContainer.innerHTML = '';
         rentGuyStatusControls = null;
+        hubSpotStatusControls = null;
+        performanceStatusControls = null;
+        variantAnalyticsControls = null;
 
         if (!groups.length) {
           tabsContainer.dataset.hidden = 'true';
@@ -842,6 +1655,24 @@ function renderPage() {
             console.error(error);
           });
         }
+
+        if (hubSpotStatusControls) {
+          refreshHubSpotStatus().catch((error) => {
+            console.error(error);
+          });
+        }
+
+        if (performanceStatusControls) {
+          refreshPerformanceStatus().catch((error) => {
+            console.error(error);
+          });
+        }
+
+        if (variantAnalyticsControls) {
+          refreshVariantAnalytics().catch((error) => {
+            console.error(error);
+          });
+        }
       }
 
       async function loadState() {
@@ -866,7 +1697,7 @@ function renderPage() {
         if (payload.metadata?.storePath) {
           metadataItems.push('Opslagbestand: ' + payload.metadata.storePath);
         }
-        metadataEl.textContent = metadataItems.join(' • ');
+        metadataEl.textContent = metadataItems.join(' - ');
       }
 
       form.addEventListener('submit', async (event) => {
@@ -958,6 +1789,56 @@ router.post('/api/integrations/rentguy/flush', async (req, res, next) => {
     const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
     const result = await rentGuyService.flushQueue(limit);
     res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/api/integrations/hubspot/status', (_req, res) => {
+  res.json(hubspotService.getStatus());
+});
+
+router.post('/api/integrations/hubspot/flush', async (req, res, next) => {
+  try {
+    const rawLimit = req.body?.limit;
+    const parsedLimit = Number(rawLimit);
+    const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
+    const result = await hubspotService.flushQueue(limit);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/api/observability/performance', async (_req, res, next) => {
+  try {
+    const state = await observabilityService.getMonitoringState();
+    res.json(state);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/api/observability/performance/run', async (req, res, next) => {
+  try {
+    const entry = await observabilityService.scheduleRun({
+      url: req.body?.url,
+      device: req.body?.device,
+      variantId: req.body?.variantId || null,
+      trigger: 'dashboard',
+      tools: Array.isArray(req.body?.tools) ? req.body.tools : undefined
+    });
+
+    res.status(202).json({ scheduled: true, entry });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/api/observability/variants', async (_req, res, next) => {
+  try {
+    const analytics = await observabilityService.getVariantAnalytics();
+    res.json(analytics);
   } catch (error) {
     next(error);
   }

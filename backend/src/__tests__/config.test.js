@@ -30,12 +30,22 @@ describe('config', () => {
     expect(config.databaseUrl).toBeUndefined();
     expect(config.serviceName).toBe('mr-dj-backend');
     expect(config.version).toBe('1.0.0');
-    expect(config.integrations.rentGuy).toEqual({
-      enabled: false,
-      baseUrl: null,
-      workspaceId: null,
-      timeoutMs: 5000
-    });
+    expect(config.integrations).toEqual(
+      expect.objectContaining({
+        rentGuy: {
+          enabled: false,
+          baseUrl: null,
+          workspaceId: null,
+          timeoutMs: 5000
+        },
+        hubSpot: {
+          enabled: false,
+          submitUrl: null,
+          retryDelayMs: 15000,
+          maxAttempts: 5
+        }
+      })
+    );
     expect(config.personalization).toEqual({ automationWebhook: null });
     expect(config.dashboard.enabled).toBe(false);
     expect(config.dashboard.username).toBeNull();
@@ -63,6 +73,9 @@ describe('config', () => {
       'RENTGUY_API_KEY',
       'RENTGUY_WORKSPACE_ID',
       'RENTGUY_TIMEOUT_MS',
+      'HUBSPOT_SUBMIT_URL',
+      'HUBSPOT_QUEUE_RETRY_DELAY_MS',
+      'HUBSPOT_QUEUE_MAX_ATTEMPTS',
       'N8N_PERSONALIZATION_WEBHOOK_URL'
     ]);
     expect(config.dashboard.sections).toEqual([
@@ -103,6 +116,15 @@ describe('config', () => {
           'RENTGUY_API_KEY',
           'RENTGUY_WORKSPACE_ID',
           'RENTGUY_TIMEOUT_MS'
+        ]
+      }),
+      expect.objectContaining({
+        id: 'automation',
+        label: 'Automation & CRM',
+        keys: [
+          'HUBSPOT_SUBMIT_URL',
+          'HUBSPOT_QUEUE_RETRY_DELAY_MS',
+          'HUBSPOT_QUEUE_MAX_ATTEMPTS'
         ]
       }),
       expect.objectContaining({
@@ -148,12 +170,22 @@ describe('config', () => {
     expect(config.redisUrl).toBe('redis://cache');
     expect(config.serviceName).toBe('custom-service');
     expect(config.version).toBe('2.3.4');
-    expect(config.integrations.rentGuy).toEqual({
-      enabled: false,
-      baseUrl: null,
-      workspaceId: null,
-      timeoutMs: 5000
-    });
+    expect(config.integrations).toEqual(
+      expect.objectContaining({
+        rentGuy: {
+          enabled: false,
+          baseUrl: null,
+          workspaceId: null,
+          timeoutMs: 5000
+        },
+        hubSpot: {
+          enabled: false,
+          submitUrl: null,
+          retryDelayMs: 15000,
+          maxAttempts: 5
+        }
+      })
+    );
     expect(config.dashboard.enabled).toBe(true);
     expect(config.dashboard.username).toBe('admin');
     expect(config.dashboard.password).toBe('secret');

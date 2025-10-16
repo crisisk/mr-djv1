@@ -190,6 +190,10 @@ async function syncLead(lead, meta = {}) {
   return sendOrQueue('leads', mapLeadPayload(lead), meta);
 }
 
+async function syncPersonalizationEvent(event, meta = {}) {
+  return sendOrQueue('personalization-events', event, meta);
+}
+
 async function flushQueue(limit = queue.length) {
   const configured = isConfigured();
 
@@ -253,6 +257,7 @@ function reset() {
 module.exports = {
   syncBooking,
   syncLead,
+  syncPersonalizationEvent,
   flushQueue,
   getStatus,
   reset

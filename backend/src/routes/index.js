@@ -19,7 +19,8 @@ router.get('/', (_req, res) => {
     packages: '/packages',
     reviews: '/reviews',
     integrations: {
-      rentGuy: '/integrations/rentguy/status'
+      rentGuy: '/integrations/rentguy/status',
+      hubSpot: '/integrations/hubspot/status'
     },
     personalization: {
       keyword: '/personalization/keyword',

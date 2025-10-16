@@ -1,0 +1,60 @@
+nodes:
+  audit:
+    type: service
+    implementation: ContentAuditAgent
+    entrypoint: http://localhost:4010/jobs
+  brief:
+    type: worker
+    implementation: BriefingAgent
+    queue: redis://127.0.0.1:6379/5#brief.queue
+  writers:
+    type: worker
+    implementation: WriterEnsembleAgent
+    parallel: true
+    queue: redis://127.0.0.1:6379/5#writer.queue
+  ranker:
+    type: service
+    implementation: RankerAgent
+    entrypoint: http://localhost:4013/evaluate
+  visuals:
+    type: service
+    implementation: VisualsAgent
+    entrypoint: http://localhost:4014/generate
+  video:
+    type: service
+    implementation: VideoAgent
+    entrypoint: http://localhost:4015/render
+  compliance:
+    type: service
+    implementation: ComplianceAgent
+    entrypoint: http://localhost:4016/check
+  publisher:
+    type: service
+    implementation: PublisherAgent
+    entrypoint: http://localhost:4017/publish
+  telemetry:
+    type: service
+    implementation: TelemetryAgent
+    entrypoint: http://localhost:4018/metrics
+
+edges:
+  - from: audit
+    to: brief
+  - from: brief
+    to: writers
+  - from: writers
+    to: ranker
+  - from: ranker
+    to: compliance
+  - from: compliance
+    to: publisher
+  - from: brief
+    to: visuals
+  - from: visuals
+    to: compliance
+  - from: brief
+    to: video
+  - from: video
+    to: compliance
+  - from: publisher
+    to: telemetry
