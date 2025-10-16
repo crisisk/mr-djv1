@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '../Atoms/Buttons.jsx';
+import { Button } from '../ui/button.jsx';
 import HeroSection from '../Organisms/HeroSection.jsx';
 import PricingTables from '../Organisms/PricingTables.jsx';
 import AvailabilityChecker from '../Organisms/AvailabilityChecker.jsx';

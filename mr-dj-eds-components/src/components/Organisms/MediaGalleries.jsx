@@ -1,47 +1,73 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import SlideLayout from '../common/SlideLayout.jsx';
+import { Button } from '../ui/button.jsx';
 
-const MediaGalleries = () => {
-    return (
-        <div className="slide-container">
-<h1>Organisms: Media Galleries</h1>
-<p className="subtitle">Componenten voor het tonen van foto's en video's van evenementen (Grid, Carousel, Lightbox)</p>
-<div className="gallery-container">
-<!-- Grid Gallery (Voor Event Portfolio) -->
-<div className="gallery-section">
-<div className="gallery-title">Masonry Grid Gallery (4x4)</div>
-<div className="grid-gallery" style="height: 300px;">
-<div className="grid-item featured">Featured Video (16:9)</div>
-<div className="grid-item image-placeholder">Image 1</div>
-<div className="grid-item image-placeholder">Image 2</div>
-<div className="grid-item image-placeholder">Image 3</div>
-<div className="grid-item image-placeholder">Image 4</div>
-<div className="grid-item image-placeholder">Image 5</div>
-<div className="grid-item image-placeholder">Image 6</div>
-<div className="grid-item image-placeholder">Image 7</div>
-<div className="grid-item image-placeholder">Image 8</div>
-<div className="grid-item image-placeholder">Image 9</div>
-</div>
-</div>
-<!-- Carousel Gallery (Voor Testimonials/Hero) -->
-<div className="gallery-section" style="position: relative;">
-<div className="gallery-title">Full-Width Carousel (Auto-Play)</div>
-<div className="carousel-gallery">
-<div className="carousel-item video-placeholder">Video Item 1</div>
-<div className="carousel-item image-placeholder">Image Item 2</div>
-<div className="carousel-item image-placeholder">Image Item 3</div>
-<div className="carousel-item video-placeholder">Video Item 4</div>
-<div className="carousel-item image-placeholder">Image Item 5</div>
-</div>
-<div className="carousel-controls">
-<div className="control-button" style="margin-left: -20px;">&lt;</div>
-<div className="control-button" style="margin-right: -20px;">&gt;</div>
-</div>
-</div>
-</div>
-</div>
-    );
-};
+const gridMedia = [
+  { id: 1, label: 'Bruiloft • Eindhoven', image: '/images/gallery-1.jpg' },
+  { id: 2, label: 'Corporate • Philips', image: '/images/gallery-2.jpg' },
+  { id: 3, label: 'Festival • Breda', image: '/images/gallery-3.jpg' },
+  { id: 4, label: 'Private event • Tilburg', image: '/images/gallery-4.jpg' },
+];
+
+const carouselSlides = [
+  {
+    title: 'Sfeerimpressie',
+    description: 'Live mix van DJ + saxofonist tijdens bruiloft. Close-ups van interactie en dansvloer.',
+  },
+  {
+    title: 'Corporate aftermovie',
+    description: 'Highlights van een bedrijfsfeest met lichtshow, stage design en interviews.',
+  },
+  {
+    title: 'Silent disco setup',
+    description: 'Multikanaals silent disco met branding op hoofdtelefoons en verlichte booths.',
+  },
+];
+
+const MediaGalleries = () => (
+  <SlideLayout
+    title="Organisms: Media Galleries"
+    subtitle="Beeldcomponenten voor storytelling: image grids, carousels en video highlight-kaarten."
+  >
+    <div className="grid gap-spacing-xl lg:grid-cols-2">
+      <section className="space-y-spacing-md">
+        <h3 className="text-font-size-h3 font-semibold text-neutral-dark">Event grid</h3>
+        <div className="grid gap-spacing-md md:grid-cols-2">
+          {gridMedia.map((item) => (
+            <div
+              key={item.id}
+              className="relative h-48 overflow-hidden rounded-3xl border border-neutral-gray-100 bg-neutral-dark/80 text-neutral-light shadow-lg"
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-dark/70 to-transparent" />
+              <div className="absolute bottom-spacing-md left-spacing-md text-sm font-semibold">{item.label}</div>
+            </div>
+          ))}
+        </div>
+        <Button variant="outline" size="lg" className="w-full">
+          Bekijk volledige portfolio
+        </Button>
+      </section>
+      <section className="space-y-spacing-md">
+        <h3 className="text-font-size-h3 font-semibold text-neutral-dark">Carousel & video</h3>
+        <div className="space-y-spacing-sm rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-xl shadow-lg">
+          {carouselSlides.map((slide, index) => (
+            <div key={slide.title} className="flex items-start gap-spacing-md">
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                {index + 1}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-neutral-dark">{slide.title}</p>
+                <p className="text-sm text-neutral-gray-500">{slide.description}</p>
+              </div>
+            </div>
+          ))}
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-spacing-md text-sm text-neutral-dark">
+            Combineer video en foto’s in één component om sfeer, setup en klantquotes te tonen.
+          </div>
+        </div>
+      </section>
+    </div>
+  </SlideLayout>
+);
 
 export default MediaGalleries;

@@ -1,103 +1,93 @@
 import React from 'react';
+import { ArrowRight, CalendarCheck, Plus } from 'lucide-react';
+import SlideLayout from '../common/SlideLayout.jsx';
+import { Button } from '../ui/button.jsx';
 
-<<<<<<< HEAD
-const Buttons = () => {
-    return (
-        <div className="slide-container">
-<div className="left-section">
-<h1>Atoms: Buttons</h1>
-<p className="subtitle">Interactive button components met verschillende varianten, sizes en states</p>
-<div className="button-grid">
-<!-- Primary Buttons -->
-<div className="button-row">
-<div className="button-label">Primary Buttons</div>
-<div className="button-variants">
-<button className="btn bg-primary text-primary-foreground btn-sm">Small</button>
-<button className="btn bg-primary text-primary-foreground btn-md">Medium</button>
-<button className="btn bg-primary text-primary-foreground btn-lg">Large</button>
-<button className="btn bg-primary text-primary-foreground btn-md" disabled="">Disabled</button>
-</div>
-</div>
-<!-- Secondary Buttons -->
-<div className="button-row">
-<div className="button-label">Secondary Buttons</div>
-<div className="button-variants">
-<button className="btn bg-secondary text-secondary-foreground btn-sm">Small</button>
-<button className="btn bg-secondary text-secondary-foreground btn-md">Medium</button>
-<button className="btn bg-secondary text-secondary-foreground btn-lg">Large</button>
-</div>
-</div>
-<!-- Outline Buttons -->
-<div className="button-row">
-<div className="button-label">Outline Buttons</div>
-<div className="button-variants">
-<button className="btn border-primary text-primary btn-sm">Small</button>
-<button className="btn border-primary text-primary btn-md">Medium</button>
-<button className="btn border-primary text-primary btn-lg">Large</button>
-</div>
-</div>
-<!-- Ghost Buttons -->
-<div className="button-row">
-<div className="button-label">Ghost Buttons</div>
-<div className="button-variants">
-<button className="btn text-primary hover:bg-primary/10 btn-sm">Small</button>
-<button className="btn text-primary hover:bg-primary/10 btn-md">Medium</button>
-<button className="btn text-primary hover:bg-primary/10 btn-lg">Large</button>
-</div>
-</div>
-<!-- Icon Buttons -->
-<div className="button-row">
-<div className="button-label">With Icons</div>
-<div className="button-variants">
-<button className="btn bg-primary text-primary-foreground btn-md">
-<svg fill="currentColor" height="18" viewbox="0 0 20 20" width="18">
-<path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"></path>
-</svg>
-                            Boek Nu
-                        </button>
-<button className="btn border-primary text-primary btn-md">
-                            Meer Info
-                            <svg fill="currentColor" height="18" viewbox="0 0 20 20" width="18">
-<path clip-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" fill-rule="evenodd"></path>
-</svg>
-</button>
-</div>
-</div>
-</div>
-</div>
-<!-- Code Section -->
-<div className="code-section">
-<div className="code-title">React Component</div>
-<div className="code-block">
-<span className="code-comment">// Button.tsx</span>
-<span className="code-keyword">import</span> React <span className="code-keyword">from</span> <span className="code-string">'react'</span>;
-=======
-const Button = ({ children, variant = 'primary', size = 'medium', onClick, className = '' }) => {
-  const baseStyle = 'font-semibold rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-4';
-  
-  const variantStyles = {
-    primary: 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-300',
-    secondary: 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 focus:ring-neutral-400',
-    outline: 'bg-transparent border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white focus:ring-primary-300',
-    ghost: 'bg-transparent text-neutral-800 hover:bg-neutral-100 focus:ring-neutral-200',
-  };
->>>>>>> a17057fd1b60325dffe5679689a8e8abbbe39b4d
+const buttonSizes = [
+  { label: 'Small', size: 'sm' },
+  { label: 'Medium', size: 'default' },
+  { label: 'Large', size: 'lg' },
+];
 
-  const sizeStyles = {
-    small: 'px-3 py-1 text-sm',
-    medium: 'px-4 py-2 text-base',
-    large: 'px-6 py-3 text-lg',
-  };
+const variantConfig = [
+  {
+    title: 'Primary',
+    variant: 'default',
+    description: 'Hoofdcall-to-action voor conversies.',
+  },
+  {
+    title: 'Secondary',
+    variant: 'secondary',
+    description: 'Gebruik voor secundaire acties of dashboards.',
+  },
+  {
+    title: 'Outline',
+    variant: 'outline',
+    description: 'Transparante CTA’s op donkere achtergronden.',
+  },
+  {
+    title: 'Ghost',
+    variant: 'ghost',
+    description: 'Subtle link-knoppen en tertiary actions.',
+  },
+];
 
-  return (
-    <button
-      onClick={onClick}
-      className={`${baseStyle} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
-    >
-      {children}
-    </button>
-  );
-};
+const Buttons = () => (
+  <SlideLayout
+    title="Atoms: Buttons"
+    subtitle="Interactiepatronen met duidelijk visueel gewicht en consistente focus states."
+  >
+    <div className="grid gap-spacing-xl lg:grid-cols-[2fr,1fr]">
+      <div className="space-y-spacing-xl">
+        {variantConfig.map(({ title, variant, description }) => (
+          <section key={variant} className="space-y-spacing-sm">
+            <div className="flex items-baseline justify-between">
+              <h3 className="text-font-size-h3 font-semibold text-neutral-dark">{title}</h3>
+              <span className="text-sm text-neutral-gray-500">{description}</span>
+            </div>
+            <div className="flex flex-wrap gap-spacing-sm">
+              {buttonSizes.map(({ label, size }) => (
+                <div key={`${variant}-${size}`} className="flex flex-col items-center gap-spacing-xs">
+                  <Button variant={variant} size={size}>
+                    {title} {label}
+                  </Button>
+                  <span className="text-xs uppercase tracking-wide text-neutral-gray-500">{label}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
 
-export default Button;
+        <section className="space-y-spacing-sm">
+          <h3 className="text-font-size-h3 font-semibold text-neutral-dark">Met Iconen</h3>
+          <div className="flex flex-wrap gap-spacing-sm">
+            <Button variant="default" size="lg" className="gap-spacing-sm">
+              <CalendarCheck className="size-4" aria-hidden />
+              Check Beschikbaarheid
+            </Button>
+            <Button variant="outline" size="default" className="gap-spacing-sm">
+              Meer info
+              <ArrowRight className="size-4" aria-hidden />
+            </Button>
+            <Button variant="secondary" size="sm" className="gap-spacing-xs">
+              <Plus className="size-4" aria-hidden />
+              Voeg add-on toe
+            </Button>
+          </div>
+        </section>
+      </div>
 
+      <aside className="rounded-3xl border border-neutral-gray-100 bg-neutral-light/80 p-spacing-xl shadow-lg">
+        <h4 className="text-font-size-h3 font-semibold text-neutral-dark">Design Richtlijnen</h4>
+        <ul className="mt-spacing-md space-y-spacing-sm text-sm text-neutral-gray-500">
+          <li><strong>Focus states:</strong> Altijd een ring met merkcontrast voor toetsenbordgebruikers.</li>
+          <li><strong>Spacing:</strong> Gebruik spacing tokens (px-4/6) voor consistente ritmes.</li>
+          <li><strong>Disabled:</strong> Verlaag opacity naar 50% maar behoud leesbaarheid van de labeltekst.</li>
+          <li><strong>Responsive:</strong> Volle breedte op mobile in formulieren voor optimale tappability.</li>
+        </ul>
+      </aside>
+    </div>
+  </SlideLayout>
+);
+
+export default Buttons;
