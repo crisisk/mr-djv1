@@ -1,70 +1,74 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import SlideLayout from '../common/SlideLayout.jsx';
 
-const TypographySystem = () => {
-    return (
-        <div className="slide-container">
-<h1>Atoms: Typography System</h1>
-<p className="subtitle">Definitie van lettertype, hiërarchie, groottes en gewichten voor alle tekstelementen.</p>
-<div className="typography-grid">
-<!-- Kolom 1: Headings & Body -->
-<div>
-<div className="font-spec">
-<div className="font-example h1-style">H1 - De Perfecte Mix</div>
-<div className="font-details"><span>48px</span> / Extra Bold (900) / Page Title</div>
-</div>
-<div className="font-spec">
-<div className="font-example h2-style">H2 - Onze Diensten</div>
-<div className="font-details"><span>36px</span> / Bold (800) / Section Title</div>
-</div>
-<div className="font-spec">
-<div className="font-example h3-style">H3 - Bruiloft DJ</div>
-<div className="font-details"><span>28px</span> / Bold (800) / Sub-Section Title</div>
-</div>
-<div className="font-spec">
-<div className="font-example h4-style">H4 - Pakket Details</div>
-<div className="font-details"><span>20px</span> / Semi-Bold (700) / Card Title</div>
-</div>
-<div className="font-spec">
-<div className="font-example h5-style">H5 - Belangrijke Informatie</div>
-<div className="font-details"><span>16px</span> / Semi-Bold (700) / Widget Title</div>
-</div>
-<div className="font-spec">
-<div className="font-example body-large-style">Body Large - Dit is de grote body tekst voor de introductie van een pagina.</div>
-<div className="font-details"><span>18px</span> / Regular (400) / Lead Paragraph</div>
-</div>
-<div className="font-spec">
-<div className="font-example body-style">Body - Dit is de standaard body tekst voor paragrafen, lijsten en algemene content.</div>
-<div className="font-details"><span>16px</span> / Regular (400) / Standard Paragraph</div>
-</div>
-</div>
-<!-- Kolom 2: Usage & Caption -->
-<div>
-<div className="font-spec">
-<div className="font-example caption-style">Caption - Call to Action Label</div>
-<div className="font-details"><span>12px</span> / Semi-Bold (600) / Uppercase / Labels &amp; Metadata</div>
-</div>
-<div className="usage-box">
-<div className="usage-title">Font Family</div>
-<div className="font-example h3-style" style="margin-bottom: 10px;">Montserrat</div>
-<div className="font-details"><span>Primary Font:</span> Montserrat (Google Fonts)</div>
-<div className="font-details"><span>Fallback:</span> sans-serif</div>
-</div>
-<div className="usage-box" style="margin-top: 20px; border-color: #D4AF37;">
-<div className="usage-title" style="color: #D4AF37;">Best Practices</div>
-<ul className="usage-list">
-<li>Gebruik maximaal één H1 per pagina.</li>
-<li>Zorg voor een logische hiërarchie (H1 → H2 → H3).</li>
-<li>Gebruik **Bold** (700+) voor nadruk, niet voor hele zinnen.</li>
-<li>Lijnhoogte (Line Height) moet 1.2 voor headings en 1.6 voor body tekst zijn.</li>
-<li>De standaard tekstkleur is Dark Blue (#1A2C4B) voor optimale leesbaarheid.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-    );
-};
+const headings = [
+  { level: 'H1', sample: 'Bruiloft DJ met 100% dansgarantie', className: 'text-font-size-h1', usage: 'Hero headlines, key marketing claims' },
+  { level: 'H2', sample: 'Waarom kiezen voor Mister DJ', className: 'text-font-size-h2', usage: 'Sectietitels, hoofdstukken in decks' },
+  { level: 'H3', sample: 'Live saxofonist inbegrepen', className: 'text-font-size-h3', usage: 'Subsecties, feature highlights' },
+];
+
+const bodyStyles = [
+  { label: 'Body', className: 'text-font-size-body', usage: 'Paragrafen, component copy' },
+  { label: 'Small', className: 'text-font-size-small', usage: 'Captions, helptekst, label toelichtingen' },
+];
+
+const TypographySystem = () => (
+  <SlideLayout
+    title="Atoms: Typografie"
+    subtitle="Consistente typografische schaal gebaseerd op Montserrat voor impactvolle copy en toegankelijke leesbaarheid."
+  >
+    <div className="grid gap-spacing-xl md:grid-cols-2">
+      <div className="space-y-spacing-lg">
+        <h3 className="text-font-size-h3 font-bold text-primary">Headings & Body</h3>
+        <div className="flex flex-col gap-spacing-lg">
+          {headings.map(({ level, sample, className, usage }) => (
+            <div key={level} className="rounded-2xl border border-neutral-gray-100 p-spacing-lg shadow-sm">
+              <div className="flex items-baseline justify-between text-sm font-semibold uppercase text-neutral-gray-500">
+                <span>{level}</span>
+                <span>{className.replace('text-', '')}</span>
+              </div>
+              <p className={`mt-spacing-sm font-extrabold text-neutral-dark ${className}`}>{sample}</p>
+              <p className="mt-spacing-sm text-font-size-body text-neutral-gray-500">{usage}</p>
+            </div>
+          ))}
+          {bodyStyles.map(({ label, className, usage }) => (
+            <div key={label} className="rounded-2xl border border-neutral-gray-100 p-spacing-lg shadow-sm">
+              <div className="flex items-baseline justify-between text-sm font-semibold uppercase text-neutral-gray-500">
+                <span>{label}</span>
+                <span>{className.replace('text-', '')}</span>
+              </div>
+              <p className={`mt-spacing-sm text-neutral-dark ${className}`}>
+                Mister DJ levert full-service entertainment met persoonlijke begeleiding van intake tot aftermovie.
+              </p>
+              <p className="mt-spacing-sm text-font-size-body text-neutral-gray-500">{usage}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-spacing-lg">
+        <h3 className="text-font-size-h3 font-bold text-primary">Gebruik & Pairing</h3>
+        <div className="rounded-3xl border border-primary/20 bg-primary/5 p-spacing-xl text-neutral-dark shadow-lg">
+          <p className="text-font-size-h3 font-semibold">Primary Font</p>
+          <p className="text-font-size-body text-neutral-dark/80">
+            Montserrat, sans-serif — bold voor titels, semi-bold voor subkoppen en regular voor body. Combineer met voldoende
+            whitespace voor ademruimte en consistent gebruik van onze kleur tokens voor optimale leesbaarheid.
+          </p>
+          <ul className="mt-spacing-lg space-y-spacing-sm text-font-size-body text-neutral-dark/80">
+            <li><strong>Line-height:</strong> 1.4 voor headings, 1.6 voor body copy.</li>
+            <li><strong>Letterspacing:</strong> Gebruik uppercase tracking voor badges en navigatie-items.</li>
+            <li><strong>Responsive:</strong> Schaal headings terug op mobile (-8px) voor optimale hiërarchie.</li>
+          </ul>
+        </div>
+        <div className="rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-xl shadow-md">
+          <h4 className="text-font-size-h3 font-semibold text-neutral-dark">Tone of Voice</h4>
+          <p className="mt-spacing-sm text-font-size-body text-neutral-gray-500">
+            Energiek, professioneel en persoonlijk. Gebruik actieve zinnen, spreek de lezer aan en benadruk vertrouwen met
+            concrete cijfers (reviews, jaren ervaring) om zowel SEO als conversie te versterken.
+          </p>
+        </div>
+      </div>
+    </div>
+  </SlideLayout>
+);
 
 export default TypographySystem;

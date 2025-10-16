@@ -1,81 +1,85 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import SlideLayout from '../common/SlideLayout.jsx';
+import { Button } from '../ui/button.jsx';
 
-const HeroSections = () => {
-    return (
-        <div className="slide-container">
-<h1>Organisms: Hero Sections</h1>
-<p className="subtitle">Conversie-geoptimaliseerde hero components voor verschillende pagina types</p>
-<div className="hero-examples">
-<!-- Homepage Hero -->
-<div className="hero-wrapper">
-<div className="hero-label">Homepage Hero</div>
-<div className="hero-homepage">
-<div className="hero-content">
-<div className="hero-badge">✨ 100% Dansgarantie</div>
-<h2 className="hero-title">
-                            Jouw Feest,<br/>
-<span className="highlight">Onvergetelijk</span> Gemaakt
-                        </h2>
-<p className="hero-description">
-                            Professionele DJ service voor bruiloften en bedrijfsfeesten in heel Brabant. 15+ jaar ervaring, 2500+ geslaagde events.
-                        </p>
-<div className="hero-ctas">
-<button className="hero-btn hero-btn-primary">Direct Beschikbaarheid</button>
-<button className="hero-btn hero-btn-secondary">Bekijk Pakketten</button>
-</div>
-</div>
-<div className="hero-stats">
-<div className="stat-item">
-<span className="stat-number">2500+</span>
-<span className="stat-label">Events</span>
-</div>
-<div className="stat-item">
-<span className="stat-number">10/10</span>
-<span className="stat-label">Reviews</span>
-</div>
-<div className="stat-item">
-<span className="stat-number">15+</span>
-<span className="stat-label">Jaar</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Local SEO Hero -->
-<div className="hero-wrapper">
-<div className="hero-label">Local SEO Hero (City Pages)</div>
-<div className="hero-local">
-<div className="local-content">
-<div className="local-location">
-<span>📍</span>
-<span>EINDHOVEN</span>
-</div>
-<h2 className="local-title">
-                            Bruiloft DJ Eindhoven
-                        </h2>
-<p className="local-description">
-                            Op zoek naar een professionele bruiloft DJ in Eindhoven? Mister DJ zorgt voor een onvergetelijke feestavond met 100% dansgarantie.
-                        </p>
-<div className="local-features">
-<div className="local-feature">15+ jaar ervaring</div>
-<div className="local-feature">100% dansgarantie</div>
-<div className="local-feature">Lokale kennis</div>
-</div>
-<div className="local-cta">
-<button className="hero-btn hero-btn-primary">Vraag Offerte Aan</button>
-<button className="hero-btn hero-btn-secondary">Bekijk Reviews</button>
-</div>
-</div>
-<div className="local-booking">
-<div className="booking-icon">📅</div>
-<div className="booking-text">Check<br/>Beschikbaarheid</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-    );
-};
+const primaryStats = [
+  { label: 'Events', value: '2500+' },
+  { label: 'Reviews', value: '10/10' },
+  { label: 'Jaar ervaring', value: '15+' },
+];
+
+const localFeatures = ['15+ jaar ervaring', '100% dansgarantie', 'Lokale kennis'];
+
+const HeroSections = () => (
+  <SlideLayout
+    title="Organisms: Hero Sections"
+    subtitle="Hero varianten voor home en lokale SEO pagina’s met sterke propositie en duidelijke CTA’s."
+  >
+    <div className="space-y-spacing-xl">
+      <section className="grid gap-spacing-xl rounded-3xl border border-neutral-gray-100 bg-neutral-dark/95 p-spacing-xl text-neutral-light shadow-xl md:grid-cols-2">
+        <div className="space-y-spacing-md">
+          <span className="inline-flex items-center gap-spacing-xs rounded-full bg-secondary/20 px-spacing-md py-spacing-xs text-xs font-semibold uppercase tracking-wide text-secondary">
+            ✨ 100% Dansgarantie
+          </span>
+          <h3 className="text-font-size-h1 font-extrabold leading-tight">
+            Jouw feest, <span className="text-secondary">onvergetelijk</span> gemaakt
+          </h3>
+          <p className="text-font-size-body text-neutral-light/80">
+            Professionele DJ service voor bruiloften en bedrijfsfeesten in heel Brabant. 15+ jaar ervaring, 2500+ geslaagde events en een dedicated planningsteam.
+          </p>
+          <div className="flex flex-wrap gap-spacing-sm">
+            <Button size="lg" className="bg-secondary text-neutral-dark hover:bg-secondary/90">
+              Direct beschikbaarheid
+            </Button>
+            <Button variant="outline" size="lg" className="border-neutral-light text-neutral-light">
+              Bekijk pakketten
+            </Button>
+          </div>
+        </div>
+        <div className="grid gap-spacing-md rounded-3xl border border-neutral-light/10 bg-neutral-light/5 p-spacing-xl text-neutral-light">
+          {primaryStats.map((stat) => (
+            <div key={stat.label} className="flex items-center justify-between border-b border-neutral-light/10 pb-spacing-sm last:border-none">
+              <span className="text-sm uppercase tracking-wide text-neutral-light/70">{stat.label}</span>
+              <span className="text-3xl font-bold">{stat.value}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-spacing-xl rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-xl shadow-lg md:grid-cols-[2fr,1fr]">
+        <div className="space-y-spacing-md">
+          <div className="flex items-center gap-spacing-sm text-primary">
+            <span role="img" aria-label="locatie">
+              📍
+            </span>
+            <span className="text-sm font-semibold uppercase tracking-wide">Eindhoven</span>
+          </div>
+          <h3 className="text-font-size-h2 font-bold text-neutral-dark">Bruiloft DJ Eindhoven</h3>
+          <p className="text-sm text-neutral-gray-600">
+            Op zoek naar een professionele bruiloft DJ in Eindhoven? Mister DJ zorgt voor een onvergetelijke feestavond met 100% dansgarantie.
+          </p>
+          <div className="flex flex-wrap gap-spacing-sm">
+            {localFeatures.map((feature) => (
+              <span key={feature} className="rounded-full bg-primary/10 px-spacing-md py-spacing-xs text-sm font-semibold text-primary">
+                {feature}
+              </span>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-spacing-sm">
+            <Button size="lg">Vraag offerte aan</Button>
+            <Button variant="outline" size="lg">
+              Bekijk reviews
+            </Button>
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-center gap-spacing-md rounded-3xl border border-neutral-gray-100 bg-neutral-light p-spacing-xl text-center shadow-inner">
+          <div className="flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary text-3xl">📅</div>
+          <p className="text-sm font-semibold text-neutral-dark">Check beschikbaarheid</p>
+          <p className="text-xs text-neutral-gray-500">We bevestigen binnen 24 uur.</p>
+        </div>
+      </section>
+    </div>
+  </SlideLayout>
+);
 
 export default HeroSections;
