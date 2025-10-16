@@ -1,14 +1,13 @@
 
 import { Routes, Route, useParams } from 'react-router-dom';
 import React, { Suspense } from 'react';
-import Button from './components/Atoms/Buttons.jsx';
 // Use React.lazy for code splitting to improve initial load time (T6: Performance)
 const DjSaxLanding = React.lazy(() => import('./components/Templates/DjSaxLanding.jsx'));
 const LocalSeoPage = React.lazy(() => import('./components/Templates/LocalSeoPage.jsx'));
 const PricingTables = React.lazy(() => import('./components/Organisms/PricingTables.jsx'));
 const Testimonials = React.lazy(() => import('./components/Organisms/Testimonials.jsx'));
-import { localSeoData, getLocalSeoDataBySlug } from './data/local_seo_data.js';
-import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from './data/local_seo_bruiloft_data.js';
+import { getLocalSeoDataBySlug } from './data/local_seo_data.js';
+import { getLocalSeoBruiloftDataBySlug } from './data/local_seo_bruiloft_data.js';
 import './App.css'
 
 // Component to handle dynamic data fetching and rendering for local SEO pages

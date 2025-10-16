@@ -1,4 +1,7 @@
-import tokens from './src/lib/design-tokens.json' assert { type: 'json' };
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const tokens = require('./src/lib/design-tokens.json');
 
 const convertTokens = (tokenSet) => {
   const colors = {};
