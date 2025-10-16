@@ -40,6 +40,24 @@ Zie de uitgebreide README voor:
 - Maintenance commands
 - UAT rapport en go-live checklist
 
+## 🔎 Kritische codebase-analyse (november 2025)
+
+### Sterktes
+- **Backend met duidelijke lagen en herlaadbare configuratie** – `app.js` combineert security-, logging- en rate-limit-middleware terwijl `config.js` runtime waarden valideert en dynamisch kan herladen, waardoor deploys voorspelbaar blijven.
+- **Robuuste integratie-laag** – de RentGuy-service bouwt herbruikbare payload-mappers en queueing met automatische retries zodat bookings, leads en personalisatie-events consistent verwerkt worden.
+- **Personalisatie-gedreven frontend** – de Dj + Sax landing past hero, CRO-blokken, testimonials en pricing dynamisch aan; dankzij `useKeywordPersonalization` is er een rijk fallback-profiel en event-tracking richting de backend.
+- **SEO-routes & componentbibliotheek** – de component-app ondersteunt lazy loading van sjablonen en dynamische city-pagina’s, waardoor lokale SEO-scope schaalbaar blijft.
+
+### Risico's & aanbevelingen
+- **In-memory queues** – zowel RentGuy-sync als personalisatie-logs draaien volledig in geheugen; persistentie (bv. Redis) is nodig om data bij restarts niet te verliezen.
+- **Client-only aannames** – meerdere modules vertrouwen op `window` en side-effects (`console.log`) tijdens render, wat server-side rendering en performance optimalisaties bemoeilijkt.
+- **Repo-bloat** – ingecheckte `node_modules` en grote zip-artefacten vergroten deploy-time en kwetsen supply-chain hygiene; migreer naar geignorede builds en artefact storage.
+- **Monitoring** – hoewel logs worden bijgehouden, ontbreken structurele alerting hooks richting observability tooling; voeg webhooks of externe logging toe voor productie.
+
+### 📊 Waarderingsupdate Q4 2025
+
+Op basis van de huidige functionaliteitsset (configuratie-dashboard, automatiseringen, personalisatie, integraties) en marktconforme tarieven blijft de totale projectwaarde op **circa €26.500**. Dat ligt in het midden van de eerder gedefinieerde bandbreedte en houdt rekening met de tijdsbesteding voor onderhoud, QA en toekomstige optimalisaties.
+
 ## 📆 Activiteitenoverzicht & waardering
 
 Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository (zoals `DEPLOYMENT_SUCCESS.md`, `docs/uat-report.md` en onderzoeksrapporten). Alleen activiteiten met aantoonbare documentatie zijn meegenomen; de ureninschatting volgt uit de omvang van de bijbehorende deliverables.
