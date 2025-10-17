@@ -70,7 +70,7 @@ _Laatst bijgewerkt: 2025-10-15_
 2. **Enrichment**: Clearbit/Clay via HTTP node voor bedrijfsinfo bij B2B leads.
 3. **Scoring**: Function node berekent score (budget indicatie, leadbron, eventdatum).
 4. **Routing**:
-   - Hoge score → Slack alert + HubSpot/ActiveCampaign create deal.
+   - Hoge score → Slack alert + Sevensa/ActiveCampaign create deal.
    - Lage score → Stuur nurture-sequence in MailerLite (SMTP API) met gepersonaliseerde content (gebaseerd op eventtype).
 5. **Dashboard sync**: Update `managed.env` of Postgres config met lead statuses voor weergave in configuratie-dashboard (extra widget).
 6. **Reporting**: Dagelijks 08:00 rapport in Notion/Google Sheets met leads, status, opvolging.

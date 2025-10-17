@@ -8,8 +8,8 @@ const DEFAULT_HOST = '0.0.0.0';
 const DEFAULT_RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_RATE_LIMIT_MAX = 100;
 const DEFAULT_RENTGUY_TIMEOUT_MS = 5000;
-const DEFAULT_HUBSPOT_RETRY_DELAY_MS = 15000;
-const DEFAULT_HUBSPOT_MAX_ATTEMPTS = 5;
+const DEFAULT_SEVENSA_RETRY_DELAY_MS = 15000;
+const DEFAULT_SEVENSA_MAX_ATTEMPTS = 5;
 const DEFAULT_SECTION_CONFIG = [
   {
     id: 'application',
@@ -27,6 +27,9 @@ const DEFAULT_SECTION_CONFIG = [
       'RATE_LIMIT_MAX',
       'DATABASE_URL',
       'REDIS_URL',
+      'REDIS_TLS',
+      'REDIS_NAMESPACE',
+      'REDIS_TLS_REJECT_UNAUTHORIZED',
       'PGSSLMODE'
     ]
   },
@@ -52,11 +55,11 @@ const DEFAULT_SECTION_CONFIG = [
     keys: ['RENTGUY_API_BASE_URL', 'RENTGUY_API_KEY', 'RENTGUY_WORKSPACE_ID', 'RENTGUY_TIMEOUT_MS']
   },
   {
-    id: 'automation',
+    id: 'content-automation',
     label: 'Automation & CRM',
     description:
-      'Instellingen voor HubSpot submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
-    keys: ['HUBSPOT_SUBMIT_URL', 'HUBSPOT_QUEUE_RETRY_DELAY_MS', 'HUBSPOT_QUEUE_MAX_ATTEMPTS']
+      'Instellingen voor Sevensa submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
+    keys: ['SEVENSA_SUBMIT_URL', 'SEVENSA_QUEUE_RETRY_DELAY_MS', 'SEVENSA_QUEUE_MAX_ATTEMPTS']
   },
   {
     id: 'personalization',
@@ -174,7 +177,12 @@ function buildConfig() {
       max: parseNumber(process.env.RATE_LIMIT_MAX, DEFAULT_RATE_LIMIT_MAX)
     },
     databaseUrl: process.env.DATABASE_URL,
-    redisUrl: process.env.REDIS_URL,
+    redis: {
+      url: process.env.REDIS_URL || null,
+      tls: process.env.REDIS_TLS === 'true',
+      namespace: process.env.REDIS_NAMESPACE || 'mr-dj',
+      tlsRejectUnauthorized: process.env.REDIS_TLS_REJECT_UNAUTHORIZED !== 'false'
+    },
     serviceName: process.env.SERVICE_NAME || 'mr-dj-backend',
     version: process.env.npm_package_version || '1.0.0',
     integrations: {
@@ -184,16 +192,16 @@ function buildConfig() {
         workspaceId: process.env.RENTGUY_WORKSPACE_ID || null,
         timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS)
       },
-      hubSpot: {
-        enabled: Boolean(process.env.HUBSPOT_SUBMIT_URL),
-        submitUrl: process.env.HUBSPOT_SUBMIT_URL || null,
+      sevensa: {
+        enabled: Boolean(process.env.SEVENSA_SUBMIT_URL),
+        submitUrl: process.env.SEVENSA_SUBMIT_URL || null,
         retryDelayMs: parseNumber(
-          process.env.HUBSPOT_QUEUE_RETRY_DELAY_MS,
-          DEFAULT_HUBSPOT_RETRY_DELAY_MS
+          process.env.SEVENSA_QUEUE_RETRY_DELAY_MS,
+          DEFAULT_SEVENSA_RETRY_DELAY_MS
         ),
         maxAttempts: parseNumber(
-          process.env.HUBSPOT_QUEUE_MAX_ATTEMPTS,
-          DEFAULT_HUBSPOT_MAX_ATTEMPTS
+          process.env.SEVENSA_QUEUE_MAX_ATTEMPTS,
+          DEFAULT_SEVENSA_MAX_ATTEMPTS
         )
       }
     },

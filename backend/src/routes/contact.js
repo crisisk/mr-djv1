@@ -57,7 +57,7 @@ router.post('/', validations, async (req, res, next) => {
       requestedPackage: contactRecord.packageId || req.body.packageId || null,
       submittedAt: contactRecord.createdAt,
       rentGuySync: contactRecord.rentGuySync,
-      hubSpotSync: contactRecord.hubSpotSync
+      sevensaSync: contactRecord.sevensaSync
     });
   } catch (error) {
     next(error);

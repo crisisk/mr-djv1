@@ -16,7 +16,7 @@ describe('configuration dashboard', () => {
   let storePath;
   let authHeader;
   let rentGuyService;
-  let hubspotService;
+  let sevensaService;
   let observabilityService;
   let personalizationService;
 
@@ -38,8 +38,8 @@ describe('configuration dashboard', () => {
     server = http.createServer(app);
     rentGuyService = require('../services/rentGuyService');
     rentGuyService.reset();
-    hubspotService = require('../services/hubspotService');
-    hubspotService.reset();
+    sevensaService = require('../services/sevensaService');
+    sevensaService.reset();
     observabilityService = require('../services/observabilityService');
     observabilityService.reset();
     personalizationService = require('../services/personalizationService');
@@ -67,8 +67,8 @@ describe('configuration dashboard', () => {
     if (rentGuyService?.reset) {
       rentGuyService.reset();
     }
-    if (hubspotService?.reset) {
-      hubspotService.reset();
+    if (sevensaService?.reset) {
+      sevensaService.reset();
     }
     if (observabilityService?.reset) {
       observabilityService.reset();
@@ -262,11 +262,12 @@ describe('configuration dashboard', () => {
         remaining: 1
       })
     );
-    expect(rentGuyService.getStatus().queueSize).toBe(1);
+    const rentGuyStatus = await rentGuyService.getStatus();
+    expect(rentGuyStatus.queueSize).toBe(1);
   });
 
-  it('exposes hubspot status through the dashboard API', async () => {
-    const response = await fetch(`${baseUrl}/dashboard/api/integrations/hubspot/status`, {
+  it('exposes sevensa status through the dashboard API', async () => {
+    const response = await fetch(`${baseUrl}/dashboard/api/integrations/sevensa/status`, {
       headers: {
         Authorization: authHeader,
         Accept: 'application/json'
@@ -364,14 +365,14 @@ describe('configuration dashboard', () => {
     expect(wedding.conversions).toBeGreaterThanOrEqual(1);
   });
 
-  it('flushes the hubspot queue via the dashboard API', async () => {
-    await hubspotService.submitLead({
-      id: 'lead-hubspot-1',
+  it('flushes the sevensa queue via the dashboard API', async () => {
+    await sevensaService.submitLead({
+      id: 'lead-sevensa-1',
       email: 'queued@example.com',
       firstName: 'Queued'
     });
 
-    const response = await fetch(`${baseUrl}/dashboard/api/integrations/hubspot/flush`, {
+    const response = await fetch(`${baseUrl}/dashboard/api/integrations/sevensa/flush`, {
       method: 'POST',
       headers: {
         Authorization: authHeader,
@@ -390,6 +391,7 @@ describe('configuration dashboard', () => {
         remaining: 1
       })
     );
-    expect(hubspotService.getStatus().queueSize).toBe(1);
+    const sevensaStatus = await sevensaService.getStatus();
+    expect(sevensaStatus.queueSize).toBe(1);
   });
 });

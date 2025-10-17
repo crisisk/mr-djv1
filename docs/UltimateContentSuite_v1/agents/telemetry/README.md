@@ -4,7 +4,7 @@
 - **Bronnen**:
   - GA4 (events, conversies) via `GA4_KEYFILE`.
   - GSC (CTR, positie).
-  - HubSpot/RentGuy API voor lead status.
+  - Sevensa/RentGuy API voor lead status.
 - **Taken**:
   - Schrijf KPI snapshots naar SQLite (`database/telemetry.db`).
   - Detecteer dalende content → push nieuw audit-job naar `audit.queue`.

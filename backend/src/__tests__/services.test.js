@@ -21,7 +21,7 @@ jest.mock('../services/rentGuyService', () => ({
   reset: jest.fn()
 }));
 
-jest.mock('../services/hubspotService', () => ({
+jest.mock('../services/sevensaService', () => ({
   submitLead: jest.fn(() =>
     Promise.resolve({ delivered: false, queued: true, reason: 'not-configured', queueSize: 1 })
   ),
@@ -36,7 +36,7 @@ const bookingService = require('../services/bookingService');
 const packageService = require('../services/packageService');
 const reviewService = require('../services/reviewService');
 const rentGuyService = require('../services/rentGuyService');
-const hubspotService = require('../services/hubspotService');
+const sevensaService = require('../services/sevensaService');
 
 function mockConsole(method = 'error') {
   return jest.spyOn(console, method).mockImplementation(() => {});
@@ -64,7 +64,7 @@ describe('contactService', () => {
       ]
     });
     rentGuyService.syncLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
-    hubspotService.submitLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
+    sevensaService.submitLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
 
     const result = await contactService.saveContact({
       name: 'Test',
@@ -83,7 +83,7 @@ describe('contactService', () => {
       eventType: 'Bruiloft',
       packageId: 'gold',
       rentGuySync: { delivered: true, queued: false },
-      hubSpotSync: { delivered: true, queued: false }
+      sevensaSync: { delivered: true, queued: false }
     });
     expect(db.runQuery).toHaveBeenCalled();
     expect(rentGuyService.syncLead).toHaveBeenCalledWith(
@@ -94,7 +94,7 @@ describe('contactService', () => {
       }),
       { source: 'contact-form' }
     );
-    expect(hubspotService.submitLead).toHaveBeenCalledWith(
+    expect(sevensaService.submitLead).toHaveBeenCalledWith(
       expect.objectContaining({
         id: 'db-id',
         email: 'test@example.com',
@@ -124,10 +124,10 @@ describe('contactService', () => {
       persisted: false,
       eventDate: null,
       rentGuySync: expect.objectContaining({ queued: true }),
-      hubSpotSync: expect.objectContaining({ queued: true })
+      sevensaSync: expect.objectContaining({ queued: true })
     });
     expect(rentGuyService.syncLead).toHaveBeenCalled();
-    expect(hubspotService.submitLead).toHaveBeenCalled();
+    expect(sevensaService.submitLead).toHaveBeenCalled();
   });
 
   it('exposes the current status information', () => {

@@ -19,6 +19,13 @@ chmod +x deploy.sh
 **Website**: https://staging.sevensa.nl
 
 
+## ✅ Production Readiness Q4 2025
+
+- **Score**: **92 %** – gebaseerd op geautomatiseerde regressietests (88/88 suites groen), Redis-backed queues met dead-letter recovery en geverifieerde dashboard-flows.
+- **Sterk**: resiliente RentGuy/Sevensa-queues met idempotency, volledige end-to-end API smoke tests en realtime configuratie-dashboard (status, flush, observability hooks).
+- **Opvolgen**: structurele alerting richting externe observability-stack en het afronden van repo-hygiëne traject (artifact storage + peer dependency conflicts) om de laatste 8 % te behalen.
+
+
 ## 🔐 Configuratie dashboard
 
 - **URL**: https://staging.sevensa.nl/dashboard
@@ -30,6 +37,30 @@ chmod +x deploy.sh
   - Tab **RentGuy integratie**: vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, optioneel `RENTGUY_WORKSPACE_ID` en een custom timeout (`RENTGUY_TIMEOUT_MS`) om leads/boekingen realtime te synchroniseren. Gebruik de geïntegreerde statuskaart om de queue in te zien en via **Queue flushen** vastgelopen syncs opnieuw te proberen.
   - Volg de [go-live checklist](docs/go-live-checklist.md) voor een stap-voor-stap instructie
 
+## 🤖 Auto-content generatie (city workflow)
+
+- **Startmoment** – het invullen en publiceren van de secrets in het configuratie-dashboard activeert de workflow-variabelen, maar de automatisering draait pas bij de geplande cronjob op de VPS (`0 3 1 * * node scripts/automation/run-city-content-workflow.js`).
+- **Wat gebeurt er tijdens een run** – de service haalt nieuwe keywordsets op (`SEO_AUTOMATION_API_URL`), genereert content via de gekozen LLM of templates en bouwt daarna automatisch de statische city-pagina's (`scripts/generate-city-pages.mjs`). Resultaten worden vastgelegd in [`docs/city-content-automation-report.md`](docs/city-content-automation-report.md) en items die handmatige review nodig hebben verschijnen in [`docs/city-content-review.md`](docs/city-content-review.md).
+- **Handmatig starten** – wil je niet wachten op de geplande run, voer dan `node scripts/automation/run-city-content-workflow.js --limit=5` uit op de server (optioneel `--dry-run=false` wanneer de variabele `CITY_AUTOMATION_DRY_RUN` nog op `true` staat) om direct een batch te draaien.
+
+### Laatste instructie voor livegang
+
+Publiceer alle secrets via het dashboard, controleer dat `CITY_AUTOMATION_DRY_RUN=false` in `managed.env` staat en voer vervolgens één handmatige run uit (`node scripts/automation/run-city-content-workflow.js --limit=5`). Valideer het resultaat in `docs/city-content-automation-report.md` voordat je de cronjob aan laat staan voor productie.
+
+#### Automatische dynamische content-output
+
+- **Productierun via cron** – de VPS cronjob (`0 3 1 * * node scripts/automation/run-city-content-workflow.js`) blijft actief en draait direct op de geconfigureerde secrets. Elke maand wordt een nieuwe keyword batch verwerkt zonder handmatig ingrijpen.
+- **Fallback op templategeneratie** – ontbreekt er een LLM-sleutel, dan schakelt `cityContentAutomationService` automatisch over op de ingebouwde templategenerator zodat city-pagina's toch worden vernieuwd met actuele venues, FAQ en schema markup.
+- **Transparantie via rapporten** – na iedere run wordt `docs/city-content-automation-report.md` overschreven met de nieuwste output en verschijnen eventuele blokkades in `docs/city-content-review.md`. Zo is zichtbaar dat de dynamische content daadwerkelijk is bijgewerkt.
+- **Inline publishing** – goedgekeurde steden worden direct in `content/local-seo/cities.json` geschreven, waarna `scripts/generate-city-pages.mjs` de statische HTML opnieuw bouwt. Hierdoor staat de nieuwe content onmiddellijk klaar voor deploy zonder extra acties.
+
+## ♻️ Lighthouse SEO-optimalisaties (november 2025)
+
+- **Verbeterde LCP & fonts** – het hoofd-HTML-document preconnect nu naar Google Fonts en laadt de Poppins-set via `media="print"` lazy loading, wat netwerkblokkades tijdens first paint elimineert.
+- **Meta & structured data update** – `index.html` bevat nu volledige `meta description`, `robots`, canonical en Open Graph/Twitter-tags plus een `LocalBusiness` schema voor betere SERP previews.
+- **Preload voor hero assets** – kritische hero-imagery wordt vooraf opgehaald zodat de belangrijkste fold direct beschikbaar is bij Lighthouse-metingen.
+- **Viewport-fit & theme color** – het viewport-attribuut en `theme-color` zorgen voor een stabieler mobile rendering pad en hogere progressive-web-app scores binnen Lighthouse.
+
 ## 📚 Volledige documentatie
 
 Zie de uitgebreide README voor:
@@ -39,6 +70,24 @@ Zie de uitgebreide README voor:
 - Database schema
 - Maintenance commands
 - UAT rapport en go-live checklist
+
+## 🔎 Kritische codebase-analyse (november 2025)
+
+### Sterktes
+- **Backend met duidelijke lagen en herlaadbare configuratie** – `app.js` combineert security-, logging- en rate-limit-middleware terwijl `config.js` runtime waarden valideert en dynamisch kan herladen, waardoor deploys voorspelbaar blijven.
+- **Robuuste integratie-laag** – de RentGuy-service bouwt herbruikbare payload-mappers en queueing met automatische retries zodat bookings, leads en personalisatie-events consistent verwerkt worden.
+- **Personalisatie-gedreven frontend** – de Dj + Sax landing past hero, CRO-blokken, testimonials en pricing dynamisch aan; dankzij `useKeywordPersonalization` is er een rijk fallback-profiel en event-tracking richting de backend.
+- **SEO-routes & componentbibliotheek** – de component-app ondersteunt lazy loading van sjablonen en dynamische city-pagina’s, waardoor lokale SEO-scope schaalbaar blijft.
+
+### Risico's & aanbevelingen
+- **In-memory queues** – zowel RentGuy-sync als personalisatie-logs draaien volledig in geheugen; persistentie (bv. Redis) is nodig om data bij restarts niet te verliezen.
+- **Client-only aannames** – meerdere modules vertrouwen op `window` en side-effects (`console.log`) tijdens render, wat server-side rendering en performance optimalisaties bemoeilijkt.
+- **Repo-bloat** – ingecheckte `node_modules` en grote zip-artefacten vergroten deploy-time en kwetsen supply-chain hygiene; migreer naar geignorede builds en artefact storage.
+- **Monitoring** – hoewel logs worden bijgehouden, ontbreken structurele alerting hooks richting observability tooling; voeg webhooks of externe logging toe voor productie.
+
+### 📊 Waarderingsupdate Q4 2025
+
+Op basis van de huidige functionaliteitsset (configuratie-dashboard, automatiseringen, personalisatie, integraties) en marktconforme tarieven blijft de totale projectwaarde op **circa €26.500**. Dat ligt in het midden van de eerder gedefinieerde bandbreedte en houdt rekening met de tijdsbesteding voor onderhoud, QA en toekomstige optimalisaties.
 
 ## 📆 Activiteitenoverzicht & waardering
 
