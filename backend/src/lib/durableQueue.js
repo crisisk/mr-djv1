@@ -2,6 +2,7 @@ const { createHash } = require('crypto');
 const config = require('../config');
 const { createRedisConnection } = require('./redis');
 const { logger } = require('./logger');
+const { reportQueueMetrics, notifyQueueDeadLetter } = require('./alerts');
 
 const useInMemoryQueue = process.env.NODE_ENV === 'test';
 const registries = new Set();
@@ -114,6 +115,7 @@ function createInMemoryQueue(name, processor, { defaultJobOptions = {} } = {}) {
         if (typeof api.workerFailedHandler === 'function') {
           await api.workerFailedHandler(job, error);
         }
+        await notifyQueueDeadLetter(name, deadEntry);
       } else {
         failed.push(job);
       }
@@ -199,7 +201,9 @@ function createInMemoryQueue(name, processor, { defaultJobOptions = {} } = {}) {
     },
     async getMetrics() {
       const counts = await queue.getJobCounts();
-      return { counts, retryAgeP95: 0 };
+      const metrics = { counts, retryAgeP95: 0 };
+      await reportQueueMetrics(name, metrics);
+      return metrics;
     },
     async close() {}
   };
@@ -272,22 +276,24 @@ function createDurableQueue(name, processor, { concurrency = 5, defaultJobOption
       return;
     }
     try {
+      const entry = {
+        jobId: job.id,
+        name: job.name,
+        data: job.data,
+        attemptsMade: job.attemptsMade,
+        failedReason: error?.message || 'unknown-error',
+        failedAt: new Date().toISOString()
+      };
       await deadLetterQueue.add(
         'dead-letter',
-        {
-          jobId: job.id,
-          name: job.name,
-          data: job.data,
-          attemptsMade: job.attemptsMade,
-          failedReason: error?.message || 'unknown-error',
-          failedAt: new Date().toISOString()
-        },
+        entry,
         {
           jobId: `${job.id}:dead:${Date.now()}`,
           removeOnComplete: false,
           removeOnFail: false
         }
       );
+      await notifyQueueDeadLetter(queueName, entry);
     } catch (deadError) {
       logger.error(
         {
@@ -338,10 +344,13 @@ function createDurableQueue(name, processor, { concurrency = 5, defaultJobOption
     const p95Index = Math.ceil(ages.length * 0.95) - 1;
     const retryAgeP95 = ages.length ? ages[Math.max(0, p95Index)] : 0;
 
-    return {
+    const metrics = {
       counts,
       retryAgeP95
     };
+
+    await reportQueueMetrics(queueName, metrics);
+    return metrics;
   }
 
   const api = {

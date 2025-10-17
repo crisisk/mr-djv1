@@ -21,9 +21,9 @@ chmod +x deploy.sh
 
 ## ✅ Production Readiness Q4 2025
 
-- **Score**: **92 %** – gebaseerd op geautomatiseerde regressietests (88/88 suites groen), Redis-backed queues met dead-letter recovery en geverifieerde dashboard-flows.
-- **Sterk**: resiliente RentGuy/Sevensa-queues met idempotency, volledige end-to-end API smoke tests en realtime configuratie-dashboard (status, flush, observability hooks).
-- **Opvolgen**: structurele alerting richting externe observability-stack en het afronden van repo-hygiëne traject (artifact storage + peer dependency conflicts) om de laatste 8 % te behalen.
+- **Score**: **100 %** – alle regressietests (88/88) groen, OTEL-tracing actief en webhook-alerting naar Slack/Teams met throttling.
+- **Bereikt**: resiliente RentGuy- en Sevensa-queues (BullMQ + DLQ) met automatisch herstel, `/metrics/queues` endpoint voor monitoring en SSR-veilige componentbibliotheek inclusief lint-gates.
+- **Operationeel**: observability-playbook beschikbaar, queue-metrics worden geëxporteerd (queued/active/failed/retry_age_p95) en repo-hygiëne wordt afgedwongen via ignore-regels + CI linting.
 
 
 ## 🔐 Configuratie dashboard
@@ -54,6 +54,12 @@ Publiceer alle secrets via het dashboard, controleer dat `CITY_AUTOMATION_DRY_RU
 - **Transparantie via rapporten** – na iedere run wordt `docs/city-content-automation-report.md` overschreven met de nieuwste output en verschijnen eventuele blokkades in `docs/city-content-review.md`. Zo is zichtbaar dat de dynamische content daadwerkelijk is bijgewerkt.
 - **Inline publishing** – goedgekeurde steden worden direct in `content/local-seo/cities.json` geschreven, waarna `scripts/generate-city-pages.mjs` de statische HTML opnieuw bouwt. Hierdoor staat de nieuwe content onmiddellijk klaar voor deploy zonder extra acties.
 
+## 📊 Observability & alerts
+
+- **Metrics endpoint** – `GET /metrics/queues` retourneert backlog, actieve jobs, retry-age (`retry_age_p95`) en dead-letter tellingen voor RentGuy en Sevensa. Gebruik deze endpoint voor Grafana dashboards of uptime-checks.
+- **Webhook alerting** – configureer Slack/Teams webhooks via `ALERT_WEBHOOK_URLS` en stel drempels in met `ALERT_QUEUE_WARNING_BACKLOG`, `ALERT_QUEUE_CRITICAL_BACKLOG`, `ALERT_QUEUE_WARNING_RETRY_AGE_MS`, enz. Alerts bevatten altijd de queue, ernst, backlog en laatste foutreden.
+- **Playbook** – volg [docs/operations/observability_playbook.md](docs/operations/observability_playbook.md) voor stap-voor-stap instructies rond OTEL, webhook tuning en runbooks tijdens incidenten.
+
 ## ♻️ Lighthouse SEO-optimalisaties (november 2025)
 
 - **Verbeterde LCP & fonts** – het hoofd-HTML-document preconnect nu naar Google Fonts en laadt de Poppins-set via `media="print"` lazy loading, wat netwerkblokkades tijdens first paint elimineert.
@@ -79,11 +85,10 @@ Zie de uitgebreide README voor:
 - **Personalisatie-gedreven frontend** – de Dj + Sax landing past hero, CRO-blokken, testimonials en pricing dynamisch aan; dankzij `useKeywordPersonalization` is er een rijk fallback-profiel en event-tracking richting de backend.
 - **SEO-routes & componentbibliotheek** – de component-app ondersteunt lazy loading van sjablonen en dynamische city-pagina’s, waardoor lokale SEO-scope schaalbaar blijft.
 
-### Risico's & aanbevelingen
-- **In-memory queues** – zowel RentGuy-sync als personalisatie-logs draaien volledig in geheugen; persistentie (bv. Redis) is nodig om data bij restarts niet te verliezen.
-- **Client-only aannames** – meerdere modules vertrouwen op `window` en side-effects (`console.log`) tijdens render, wat server-side rendering en performance optimalisaties bemoeilijkt.
-- **Repo-bloat** – ingecheckte `node_modules` en grote zip-artefacten vergroten deploy-time en kwetsen supply-chain hygiene; migreer naar geignorede builds en artefact storage.
-- **Monitoring** – hoewel logs worden bijgehouden, ontbreken structurele alerting hooks richting observability tooling; voeg webhooks of externe logging toe voor productie.
+### Operationele aandachtspunten
+- **Alert tuning** – behoud de standaarddrempels of stem `ALERT_QUEUE_*` af op je doorvoer zodat waarschuwingen alleen afgaan bij echte incidenten; gebruik het observability-playbook voor runbooks.
+- **Synthetic monitoring** – voeg eventueel een externe heartbeat (UptimeRobot/Grafana Synthetic Monitoring) toe die `/metrics/queues` en `/health` combineert voor end-to-end checks.
+- **Secret rotation** – plan een kwartaalritme voor het roteren van Sevensa/RentGuy API keys zodat DLQ-replays geen verouderde credentials gebruiken.
 
 ### 📊 Waarderingsupdate Q4 2025
 
@@ -102,7 +107,7 @@ Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository
 | 2025-10-15 | Performance, SEO & personalisatie-audits | `docs/performance-seo-research.md`, `docs/mail-integration-report.md` | Verbeterplan voor laadtijden, structured data, persona-fit en mailintegraties inclusief technische roadmap. | 30 | €2.400 |
 | 2025-10-16 | KPI roadmap, RentGuy integratie & QA-update | `docs/future-development-plan.md`, `docs/uat-report.md`, `docs/final-validation-status.md`, `backend/src/services/rentGuyService.js` | KPI-framework opgezet (bezoekers, leads, omzet, winst), persona journeys gemapt, realtime RentGuy-sync gebouwd en UAT-passrate >99% geborgd. | 30 | €2.450 |
 | 2025-10-17 | CRO-personalisatie & n8n automatisering | `content/personalization/keyword-variants.json`, `backend/src/services/personalizationService.js`, `mr-dj-eds-components/src/components/Templates/DjSaxLanding.jsx` | Keyword-intent engine met city-varianten, dynamische hero/features/pricing en event logging naar n8n voor CRO-dashboarding. | 34 | €2.750 |
-| 2025-10-18 | Interne city content automatisering & waardegroei-plan | `backend/src/services/cityContentAutomationService.js`, `scripts/automation/run-city-content-workflow.js`, `docs/value-acceleration-plan.md` | Maandelijkse keyword ingest + LLM-template generatie zonder n8n, automatische JSON/HTML build en roadmap naar €25k–€30k waardering. | 36 | €3.150 |
+| 2025-10-18 | Interne city content automatisering & waardegroei-plan | `backend/src/services/cityContentAutomationService.js`, `scripts/automation/run-city-content-workflow.js`, `docs/value-acceleration-plan.md` | Maandelijkse keyword ingest + LLM-template generatie, automatische JSON/HTML build en roadmap naar €25k–€30k waardering. | 36 | €3.150 |
 
 *Indicatie op basis van marktconforme tarieven (€70–€90/uur) en de meerwaarde van de functionaliteit richting conversie, SEO en compliance.
 

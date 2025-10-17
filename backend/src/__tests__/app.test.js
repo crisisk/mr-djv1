@@ -87,6 +87,7 @@ describe('Mister DJ API', () => {
         sevensa: '/integrations/sevensa/status'
       })
     );
+    expect(response.body.endpoints.metrics).toBe('/metrics/queues');
     expect(response.body.endpoints.personalization).toEqual(
       expect.objectContaining({
         keyword: '/personalization/keyword',
@@ -113,6 +114,33 @@ describe('Mister DJ API', () => {
         })
       })
     });
+  });
+
+  it('provides queue metrics for observability tooling', async () => {
+    const response = await request('GET', '/metrics/queues');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        generatedAt: expect.any(String),
+        queues: expect.objectContaining({
+          rentguy: expect.objectContaining({
+            configured: expect.any(Boolean),
+            queueSize: expect.any(Number),
+            activeJobs: expect.any(Number),
+            retryAgeP95: expect.any(Number),
+            counts: expect.any(Object)
+          }),
+          sevensa: expect.objectContaining({
+            configured: expect.any(Boolean),
+            queueSize: expect.any(Number),
+            activeJobs: expect.any(Number),
+            retryAgeP95: expect.any(Number),
+            counts: expect.any(Object)
+          })
+        })
+      })
+    );
   });
 
   it('rejects invalid contact submissions', async () => {

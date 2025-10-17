@@ -9,6 +9,7 @@ import VideoHeroSection from '../Organisms/VideoHeroSection.jsx';
 import RoiCalculator from '../Organisms/RoiCalculator.jsx';
 import ContentHubShowcase from '../Organisms/ContentHubShowcase.jsx';
 import { useKeywordPersonalization } from '../../hooks/useKeywordPersonalization.js';
+import { getWindow } from '../../lib/environment.js';
 
 const DEFAULT_FEATURES = [
   { title: 'Live Interactie', icon: '🎤', description: 'De saxofonist beweegt zich tussen de gasten voor een onvergetelijke beleving.' },
@@ -26,14 +27,15 @@ function pickHeroVariant(abTest = {}, meta, hasVideo) {
   const variants = abTest?.variants;
   const defaultVariant = abTest?.defaultVariant || 'video';
 
-  if (typeof window === 'undefined') {
+  const browser = getWindow();
+  if (!browser) {
     return defaultVariant;
   }
 
   const storageKey = `${HERO_VARIANT_STORAGE_PREFIX}:${abTest?.id || 'global'}:${meta?.variantId || 'global'}`;
 
   try {
-    const stored = window.sessionStorage?.getItem(storageKey);
+    const stored = browser.sessionStorage?.getItem(storageKey);
     if (stored) {
       return stored;
     }
@@ -62,7 +64,7 @@ function pickHeroVariant(abTest = {}, meta, hasVideo) {
   }
 
   try {
-    window.sessionStorage?.setItem(storageKey, chosen);
+    browser.sessionStorage?.setItem(storageKey, chosen);
   } catch (error) {
     if (import.meta.env && import.meta.env.DEV) {
       console.warn('[DjSaxLanding] sessionStorage write failed', error);

@@ -10,6 +10,16 @@ const DEFAULT_RATE_LIMIT_MAX = 100;
 const DEFAULT_RENTGUY_TIMEOUT_MS = 5000;
 const DEFAULT_SEVENSA_RETRY_DELAY_MS = 15000;
 const DEFAULT_SEVENSA_MAX_ATTEMPTS = 5;
+const DEFAULT_ALERT_THROTTLE_MS = 2 * 60 * 1000;
+const DEFAULT_ALERT_QUEUE_THRESHOLDS = {
+  warningBacklog: 25,
+  criticalBacklog: 75,
+  recoveryBacklog: 5,
+  warningRetryAgeMs: 5 * 60 * 1000,
+  criticalRetryAgeMs: 15 * 60 * 1000,
+  recoveryRetryAgeMs: 2 * 60 * 1000,
+  deadLetterWarning: 1
+};
 const DEFAULT_SECTION_CONFIG = [
   {
     id: 'application',
@@ -162,6 +172,7 @@ function buildConfig() {
     process.env.CONFIG_DASHBOARD_ENABLED !== 'false' &&
     Boolean(process.env.CONFIG_DASHBOARD_USER) &&
     Boolean(process.env.CONFIG_DASHBOARD_PASS);
+  const alertWebhooks = parseList(process.env.ALERT_WEBHOOK_URLS);
 
   return {
     env: process.env.NODE_ENV || 'development',
@@ -224,6 +235,40 @@ function buildConfig() {
         email: process.env.SEO_AUTOMATION_APPROVAL_EMAIL || null
       },
       dryRun: process.env.CITY_AUTOMATION_DRY_RUN === 'true'
+    },
+    alerts: {
+      webhooks: alertWebhooks,
+      throttleMs: parseNumber(process.env.ALERT_THROTTLE_MS, DEFAULT_ALERT_THROTTLE_MS),
+      queue: {
+        warningBacklog: parseNumber(
+          process.env.ALERT_QUEUE_WARNING_BACKLOG,
+          DEFAULT_ALERT_QUEUE_THRESHOLDS.warningBacklog
+        ),
+        criticalBacklog: parseNumber(
+          process.env.ALERT_QUEUE_CRITICAL_BACKLOG,
+          DEFAULT_ALERT_QUEUE_THRESHOLDS.criticalBacklog
+        ),
+        recoveryBacklog: parseNumber(
+          process.env.ALERT_QUEUE_RECOVERY_BACKLOG,
+          DEFAULT_ALERT_QUEUE_THRESHOLDS.recoveryBacklog
+        ),
+        warningRetryAgeMs: parseNumber(
+          process.env.ALERT_QUEUE_WARNING_RETRY_AGE_MS,
+          DEFAULT_ALERT_QUEUE_THRESHOLDS.warningRetryAgeMs
+        ),
+        criticalRetryAgeMs: parseNumber(
+          process.env.ALERT_QUEUE_CRITICAL_RETRY_AGE_MS,
+          DEFAULT_ALERT_QUEUE_THRESHOLDS.criticalRetryAgeMs
+        ),
+        recoveryRetryAgeMs: parseNumber(
+          process.env.ALERT_QUEUE_RECOVERY_RETRY_AGE_MS,
+          DEFAULT_ALERT_QUEUE_THRESHOLDS.recoveryRetryAgeMs
+        ),
+        deadLetterWarning: parseNumber(
+          process.env.ALERT_QUEUE_DEAD_LETTER_WARNING,
+          DEFAULT_ALERT_QUEUE_THRESHOLDS.deadLetterWarning
+        )
+      }
     },
     dashboard: {
       enabled: dashboardEnabled,

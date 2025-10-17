@@ -5,17 +5,24 @@ import App from './App.jsx';
 import { BrowserRouter } from 'react-router-dom';
 import { ConsentManager } from './components/ConsentManager.jsx';
 import { applyDesignTokens } from './main.js';
+import { getDocument, getWindow } from './lib/environment.js';
 
-if (typeof window !== 'undefined') {
+const browser = getWindow();
+if (browser) {
   applyDesignTokens();
 }
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ConsentManager>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ConsentManager>
-  </StrictMode>,
-)
+const documentRef = getDocument();
+const rootElement = documentRef?.getElementById('root');
+
+if (rootElement) {
+  createRoot(rootElement).render(
+    <StrictMode>
+      <ConsentManager>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ConsentManager>
+    </StrictMode>
+  );
+}

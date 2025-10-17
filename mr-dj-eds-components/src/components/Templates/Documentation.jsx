@@ -47,9 +47,10 @@ const Documentation = () => (
         <div className="rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-xl shadow-md">
           <pre className="overflow-x-auto rounded-2xl bg-neutral-dark/90 p-spacing-md text-xs text-neutral-light">
 {`import { Button } from '@mrdj/eds-components';
+import { trackEvent } from '@mrdj/eds-components/lib/analytics';
 
 const Example = () => (
-  <Button variant="default" size="lg" onClick={() => console.log('Geboekt!')}>
+  <Button variant="default" size="lg" onClick={() => trackEvent('cta_click', { source: 'docs_example' })}>
     Boek nu
   </Button>
 );`}

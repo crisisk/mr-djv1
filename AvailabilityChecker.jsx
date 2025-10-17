@@ -3,6 +3,19 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import Button from '../Atoms/Buttons.jsx';
 
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+
+function resolvePageContext() {
+  if (!isBrowser) {
+    return { pageUri: null, pageName: null };
+  }
+
+  return {
+    pageUri: window.location.href,
+    pageName: document.title || 'Mister DJ'
+  };
+}
+
 // Sevensa Form Submission Logic (Placeholder)
 const submitToSevensa = async (formData) => {
   const accountId = 'YOUR_SEVENSA_ACCOUNT_ID'; // VERVANGEN
@@ -16,10 +29,7 @@ const submitToSevensa = async (formData) => {
 
   const data = {
     fields: fields,
-    context: {
-      pageUri: window.location.href,
-      pageName: document.title,
-    }
+    context: resolvePageContext()
   };
 
   try {

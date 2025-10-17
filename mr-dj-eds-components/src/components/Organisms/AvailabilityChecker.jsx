@@ -3,12 +3,14 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Button } from '../ui/button.jsx';
 import { trackEvent } from '../../lib/analytics.js';
+import { getWindow } from '../../lib/environment.js';
 
 const DEFAULT_EVENT_TYPES = ['Bruiloft', 'Bedrijfsfeest', 'Festival', 'Private event'];
 const DEFAULT_PACKAGE_OPTIONS = ['Brons', 'Zilver', 'Goud'];
 
 const resolveApiBase = () => {
-  if (typeof window === 'undefined') {
+  const browser = getWindow();
+  if (!browser) {
     return '/api';
   }
 

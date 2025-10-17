@@ -47,6 +47,19 @@ describe('config', () => {
       })
     );
     expect(config.personalization).toEqual({ automationWebhook: null });
+    expect(config.alerts).toEqual({
+      webhooks: [],
+      throttleMs: 2 * 60 * 1000,
+      queue: {
+        warningBacklog: 25,
+        criticalBacklog: 75,
+        recoveryBacklog: 5,
+        warningRetryAgeMs: 5 * 60 * 1000,
+        criticalRetryAgeMs: 15 * 60 * 1000,
+        recoveryRetryAgeMs: 2 * 60 * 1000,
+        deadLetterWarning: 1
+      }
+    });
     expect(config.dashboard.enabled).toBe(false);
     expect(config.dashboard.username).toBeNull();
     expect(config.dashboard.password).toBeNull();
@@ -192,7 +205,16 @@ describe('config', () => {
       CONFIG_DASHBOARD_PASS: 'secret',
       CONFIG_DASHBOARD_ALLOWED_IPS: '127.0.0.1,10.0.0.1',
       CONFIG_DASHBOARD_KEYS: 'PORT,DATABASE_URL',
-      CONFIG_DASHBOARD_STORE_PATH: tmpPath
+      CONFIG_DASHBOARD_STORE_PATH: tmpPath,
+      ALERT_WEBHOOK_URLS: 'https://hooks.example/alert, https://hooks.example/backup',
+      ALERT_THROTTLE_MS: '30000',
+      ALERT_QUEUE_WARNING_BACKLOG: '10',
+      ALERT_QUEUE_CRITICAL_BACKLOG: '40',
+      ALERT_QUEUE_RECOVERY_BACKLOG: '2',
+      ALERT_QUEUE_WARNING_RETRY_AGE_MS: '120000',
+      ALERT_QUEUE_CRITICAL_RETRY_AGE_MS: '240000',
+      ALERT_QUEUE_RECOVERY_RETRY_AGE_MS: '60000',
+      ALERT_QUEUE_DEAD_LETTER_WARNING: '2'
     };
 
     const config = loadConfig();
@@ -230,6 +252,20 @@ describe('config', () => {
         }
       })
     );
+    expect(config.alerts.webhooks).toEqual([
+      'https://hooks.example/alert',
+      'https://hooks.example/backup'
+    ]);
+    expect(config.alerts.throttleMs).toBe(30000);
+    expect(config.alerts.queue).toEqual({
+      warningBacklog: 10,
+      criticalBacklog: 40,
+      recoveryBacklog: 2,
+      warningRetryAgeMs: 120000,
+      criticalRetryAgeMs: 240000,
+      recoveryRetryAgeMs: 60000,
+      deadLetterWarning: 2
+    });
     expect(config.dashboard.enabled).toBe(true);
     expect(config.dashboard.username).toBe('admin');
     expect(config.dashboard.password).toBe('secret');
