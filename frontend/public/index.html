@@ -43,6 +43,7 @@
     <link rel="modulepreload" href="/assets/js/modules/reveal.js">
     <link rel="modulepreload" href="/assets/js/modules/hero-animations.js">
     <link rel="modulepreload" href="/assets/js/modules/scroll-animator.js">
+    <link rel="modulepreload" href="/assets/js/modules/mobile-cta.js">
     <link rel="modulepreload" href="/assets/js/modules/audience.js">
     <link rel="modulepreload" href="/assets/js/modules/contact.js">
     <link rel="modulepreload" href="/assets/js/modules/social-proof.js">
@@ -77,22 +78,65 @@
                     "telephone": "+31-40-8422594",
                     "image": "https://staging.sevensa.nl/assets/images/logo.png",
                     "logo": "https://staging.sevensa.nl/assets/images/logo.png",
-                    "priceRange": "€€",
+                    "priceRange": "€795-€1295",
                     "address": {
                         "@type": "PostalAddress",
                         "streetAddress": "Kapteijnlaan 17",
                         "postalCode": "5505 AV",
                         "addressLocality": "Veldhoven",
-                        "addressRegion": "NB",
+                        "addressRegion": "Noord-Brabant",
                         "addressCountry": "NL"
                     },
+                    "geo": {
+                        "@type": "GeoCoordinates",
+                        "latitude": "51.4197",
+                        "longitude": "5.4013"
+                    },
                     "areaServed": [
-                        "Brabant",
-                        "Eindhoven",
-                        "Tilburg",
-                        "Den Bosch",
-                        "Zuid-Nederland"
+                        {
+                            "@type": "City",
+                            "name": "Eindhoven"
+                        },
+                        {
+                            "@type": "City",
+                            "name": "Tilburg"
+                        },
+                        {
+                            "@type": "City",
+                            "name": "Den Bosch"
+                        },
+                        {
+                            "@type": "City",
+                            "name": "Breda"
+                        },
+                        {
+                            "@type": "City",
+                            "name": "Helmond"
+                        },
+                        {
+                            "@type": "State",
+                            "name": "Noord-Brabant"
+                        }
                     ],
+                    "aggregateRating": {
+                        "@type": "AggregateRating",
+                        "ratingValue": "4.9",
+                        "reviewCount": "87",
+                        "bestRating": "5",
+                        "worstRating": "1"
+                    },
+                    "openingHoursSpecification": {
+                        "@type": "OpeningHoursSpecification",
+                        "dayOfWeek": [
+                            "Monday",
+                            "Tuesday",
+                            "Wednesday",
+                            "Thursday",
+                            "Friday"
+                        ],
+                        "opens": "09:00",
+                        "closes": "18:00"
+                    },
                     "sameAs": [
                         "https://www.facebook.com/misterdj",
                         "https://www.instagram.com/misterdj",
@@ -102,23 +146,29 @@
                         {
                             "@type": "Offer",
                             "name": "Brons Pakket",
+                            "description": "Perfect startpakket voor kleinere feesten en bruiloften (tot 100 gasten)",
                             "price": "795",
                             "priceCurrency": "EUR",
-                            "availability": "https://schema.org/InStock"
+                            "availability": "https://schema.org/InStock",
+                            "validFrom": "2025-01-01"
                         },
                         {
                             "@type": "Offer",
                             "name": "Zilver Pakket",
+                            "description": "Onze populairste keuze met uitgebreide apparatuur (100-200 gasten)",
                             "price": "995",
                             "priceCurrency": "EUR",
-                            "availability": "https://schema.org/InStock"
+                            "availability": "https://schema.org/InStock",
+                            "validFrom": "2025-01-01"
                         },
                         {
                             "@type": "Offer",
                             "name": "Goud Pakket",
+                            "description": "Premium ervaring met complete show (200+ gasten)",
                             "price": "1295",
                             "priceCurrency": "EUR",
-                            "availability": "https://schema.org/InStock"
+                            "availability": "https://schema.org/InStock",
+                            "validFrom": "2025-01-01"
                         }
                     ]
                 },
@@ -148,7 +198,7 @@
                             "name": "In welke regio's treedt Mister DJ op?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "We draaien in heel Brabant en Zuid-Nederland, met veel aanvragen in Eindhoven, Tilburg, Den Bosch en de Kempen. Voor events buiten de regio bespreken we graag de mogelijkheden."
+                                "text": "We draaien in heel Brabant en Zuid-Nederland, met veel aanvragen in Eindhoven, Tilburg, Den Bosch, Breda en de Kempen. Voor events buiten de regio bespreken we graag de mogelijkheden."
                             }
                         },
                         {
@@ -156,7 +206,7 @@
                             "name": "Wat kost een DJ voor mijn bruiloft of bedrijfsfeest?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "Onze pakketten starten vanaf €795 voor het Brons pakket, €995 voor Zilver en €1295 voor Goud. Elk pakket bevat professionele licht- en geluidsapparatuur en kan worden uitgebreid met extra's zoals saxofonist of photobooth."
+                                "text": "Onze pakketten starten vanaf €795 voor het Brons pakket (perfect voor kleinere feesten), €995 voor Zilver (meest gekozen voor bruiloften) en €1295 voor Goud (premium ervaring). Elk pakket bevat professionele licht- en geluidsapparatuur en kan worden uitgebreid met extra's zoals saxofonist of photobooth."
                             }
                         },
                         {
@@ -165,6 +215,54 @@
                             "acceptedAnswer": {
                                 "@type": "Answer",
                                 "text": "Ja, al onze pakketten bevatten een complete licht- en geluidsset, inclusief op- en afbouw. We stemmen het volume af op de locatie en kunnen uitbreiden met showverlichting, sparkulars of een LED-dansvloer."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Wie is de beste bruiloft DJ in Eindhoven?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Mister DJ is een van de meest ervaren bruiloft DJs in Eindhoven en omgeving, met meer dan 15 jaar ervaring en 2500+ succesvolle events. We bieden een 100% dansgarantie, werken met professionele apparatuur en stemmen de muziek volledig af op jullie wensen."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Wat gebeurt er als de DJ ziek wordt?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Wij hebben altijd een backup DJ klaar staan. Alle details van jouw event worden gedeeld met ons team, zodat er altijd een professionele vervanger beschikbaar is die jouw wensen kent en kan waarmaken."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Hoe ver van tevoren moet ik een DJ boeken?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Voor bruiloften raden we aan om 6-12 maanden van tevoren te boeken, vooral voor populaire data in het voorjaar en de zomer. Voor bedrijfsfeesten en andere events is 2-3 maanden vaak voldoende. Neem contact op om de beschikbaarheid te checken."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Kan ik zelf muziek kiezen of aanvragen doen?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Absoluut! We bespreken vooraf jullie muziekvoorkeuren, must-plays en no-gos. Tijdens het event kunnen gasten ook aanvragen doen. Wij zorgen voor een balans tussen jullie wensen en het op gang houden van de dansvloer."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Wat is het verschil tussen de pakketten?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Het Brons pakket (€795) is geschikt voor kleinere feesten tot 100 gasten met basis licht en geluid. Zilver (€995) biedt uitgebreidere apparatuur voor 100-200 gasten. Goud (€1295) is onze premium ervaring met de beste apparatuur, uitgebreide verlichting en extra features voor 200+ gasten."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Draait Mister DJ ook op locaties buiten Brabant?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Ja, hoewel onze focus ligt op Brabant (Eindhoven, Tilburg, Den Bosch, Breda), draaien we ook graag op locaties in heel Nederland. Neem contact op om de mogelijkheden en eventuele reiskosten te bespreken."
                             }
                         }
                     ]
@@ -447,6 +545,124 @@
         </div>
     </section>
 
+    <!-- Trust Signals Section -->
+    <section id="trust-signals" class="trust-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Waarom je met vertrouwen kunt boeken</h2>
+                <p>Professionele garanties en veiligheden die concurrenten niet bieden</p>
+            </div>
+            <div class="trust-grid">
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3>€1M Aansprakelijkheidsverzekering</h3>
+                    <p>Volledige dekking voor eventuele schade aan locatie of apparatuur. Onze verzekering beschermt jouw event volledig.</p>
+                    <a href="#" class="trust-link">Bekijk certificaat →</a>
+                </div>
+
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="5"/>
+                            <path d="M20 21a8 8 0 0 0-16 0"/>
+                            <path d="M16 11h6m-3-3v6"/>
+                        </svg>
+                    </div>
+                    <h3>100% Backup DJ Garantie</h3>
+                    <p>Altijd een professionele vervanger klaar bij ziekte of noodgevallen. Jouw event gaat altijd door, zonder compromissen.</p>
+                    <a href="#faq" class="trust-link">Lees meer over ons backup systeem →</a>
+                </div>
+
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                    </div>
+                    <h3>Premium Apparatuur + Backup</h3>
+                    <p>Pioneer DJ-apparatuur, JBL Pro geluidsinstallaties en reserve-elektronica ter plaatse. Technische storing? We switchen in <90 seconden.</p>
+                    <a href="#" class="trust-link">Bekijk ons materiaal →</a>
+                </div>
+
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+                    <h3>15+ Jaar Zonder Klachten</h3>
+                    <p>2500+ succesvolle events zonder één annulering of klacht. Onze trackrecord spreekt voor zich.</p>
+                    <a href="#reviews" class="trust-link">Bekijk onze reviews →</a>
+                </div>
+
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <line x1="2" y1="10" x2="22" y2="10"/>
+                        </svg>
+                    </div>
+                    <h3>Transparante Contracten</h3>
+                    <p>Geen verborgen kosten of verrassingen. Contract preview beschikbaar vóór betaling, met duidelijke voorwaarden en opzegtermijn.</p>
+                    <a href="#contact" class="trust-link">Vraag een offerte aan →</a>
+                </div>
+
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="12" y1="18" x2="12" y2="12"/>
+                            <line x1="9" y1="15" x2="15" y2="15"/>
+                        </svg>
+                    </div>
+                    <h3>Buma/Stemra Licentie</h3>
+                    <p>100% legale muziekrechten voor commercieel gebruik. Wij zijn volledig gecertificeerd en betalen auteursrechten correct af.</p>
+                    <a href="#" class="trust-link">Onze certificeringen →</a>
+                </div>
+            </div>
+
+            <!-- Trust Badges Bar -->
+            <div class="trust-badges">
+                <div class="badge-item">
+                    <span class="badge-icon">⭐</span>
+                    <div class="badge-text">
+                        <strong>4.9/5</strong>
+                        <span>87 Reviews</span>
+                    </div>
+                </div>
+                <div class="badge-item">
+                    <span class="badge-icon">🏆</span>
+                    <div class="badge-text">
+                        <strong>KVK 68906277</strong>
+                        <span>Geregistreerd</span>
+                    </div>
+                </div>
+                <div class="badge-item">
+                    <span class="badge-icon">🔒</span>
+                    <div class="badge-text">
+                        <strong>SSL Beveiligd</strong>
+                        <span>Veilige betalingen</span>
+                    </div>
+                </div>
+                <div class="badge-item">
+                    <span class="badge-icon">💯</span>
+                    <div class="badge-text">
+                        <strong>100% Garantie</strong>
+                        <span>Dansvloer vol</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Packages Section -->
     <section id="pakketten" class="packages-section">
         <div class="container">
@@ -723,6 +939,25 @@
             </div>
         </div>
     </footer>
+
+    <!-- Sticky Mobile CTA Bar -->
+    <div class="mobile-cta-bar" id="mobileCTABar">
+        <a href="tel:+31408422594" class="mobile-cta-button mobile-cta-call">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <span>Bel Direct</span>
+        </a>
+        <a href="#contact" class="mobile-cta-button mobile-cta-book">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span>Boek Nu</span>
+        </a>
+    </div>
 
     <!-- Scripts -->
     <script type="module" src="/assets/js/main.js"></script>

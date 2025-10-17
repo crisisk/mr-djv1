@@ -3,6 +3,7 @@ import { initNavigation } from './modules/navigation.js';
 import { registerRevealTargets, observeSection } from './modules/reveal.js';
 import { initHeroAnimations } from './modules/hero-animations.js';
 import { initScrollAnimations } from './modules/scroll-animator.js';
+import { initMobileCTA } from './modules/mobile-cta.js';
 
 const createHintDispatcher = () => {
   const appended = new Set();
@@ -45,6 +46,7 @@ const bootstrap = async () => {
   initNavigation();
   initHeroAnimations();
   initScrollAnimations();
+  initMobileCTA();
   registerRevealTargets('.usp-card, .service-card, .about-card, .faq-item');
 
   const pricingLink = document.querySelector('a[href="/pricing/"]');

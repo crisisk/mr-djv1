@@ -1724,3 +1724,246 @@ h4 { font-size: 20px; }
     color: var(--color-dark-grey);
 }
 
+/* ==========================================================================
+   Sticky Mobile CTA Bar
+   ========================================================================== */
+
+.mobile-cta-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--color-navy) 0%, #0d47a1 100%);
+    display: none;
+    flex-direction: row;
+    gap: 0;
+    padding: 12px 16px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+.mobile-cta-bar.visible {
+    transform: translateY(0);
+}
+
+.mobile-cta-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.mobile-cta-button svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.mobile-cta-call {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-white);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.mobile-cta-call:active {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(0.98);
+}
+
+.mobile-cta-book {
+    background: var(--color-gold);
+    color: var(--color-navy);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+.mobile-cta-book:active {
+    background: #C29F2F;
+    transform: scale(0.98);
+}
+
+/* Show only on mobile devices */
+@media (max-width: 768px) {
+    .mobile-cta-bar {
+        display: flex;
+    }
+
+    /* Add padding to body to prevent content from being hidden behind the bar */
+    body {
+        padding-bottom: 80px;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .mobile-cta-bar {
+        display: none !important;
+    }
+}
+
+/* Hide on desktop */
+@media (min-width: 1025px) {
+    .mobile-cta-bar {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   Trust Signals Section
+   ========================================================================== */
+
+.trust-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    padding: var(--spacing-xxl) 0;
+    position: relative;
+}
+
+.trust-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-blue), transparent);
+}
+
+.trust-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.trust-card {
+    background: white;
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(26, 44, 75, 0.08);
+}
+
+.trust-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 174, 239, 0.15);
+    border-color: var(--color-blue);
+}
+
+.trust-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--color-blue) 0%, #0088cc 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+    color: white;
+}
+
+.trust-card h3 {
+    font-size: 1.25rem;
+    color: var(--color-navy);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 700;
+}
+
+.trust-card p {
+    color: var(--color-dark-grey);
+    line-height: 1.7;
+    margin-bottom: var(--spacing-md);
+}
+
+.trust-link {
+    color: var(--color-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.trust-link:hover {
+    color: #0088cc;
+    transform: translateX(4px);
+}
+
+/* Trust Badges Bar */
+.trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+}
+
+.badge-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.badge-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.badge-text strong {
+    font-size: 1rem;
+    color: var(--color-navy);
+    font-weight: 700;
+}
+
+.badge-text span {
+    font-size: 0.875rem;
+    color: var(--color-dark-grey);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .trust-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .trust-badges {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .badge-item {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .trust-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
