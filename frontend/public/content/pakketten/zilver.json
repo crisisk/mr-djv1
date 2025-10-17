@@ -1,0 +1,15 @@
+{
+  "title": "Zilver",
+  "price": 995,
+  "description": "De meest gekozen optie met uitgebreide verlichting",
+  "features": [
+    "Alles uit pakket Brons",
+    "Uitgebreide lichtshow (moving heads)",
+    "Rookmachine voor extra sfeer",
+    "DJ booth met LED verlichting",
+    "Persoonlijke afstemming muziek",
+    "Gratis voorbespreking op locatie"
+  ],
+  "popular": true,
+  "order": 2
+}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atoms: Spacing & Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .spacing-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00AEEF;
+            border-bottom: 2px solid #E5E5E5;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .spacing-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .spacing-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1A2C4B;
+            width: 80px;
+        }
+        
+        .spacing-bar {
+            height: 10px;
+            background: #D4AF37;
+            border-radius: 5px;
+        }
+        
+        .spacing-value {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        /* Grid System */
+        .grid-section {
+            background: #F8FCFF;
+            border: 2px solid #1A2C4B;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .grid-visualization {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px; /* 16px gutter */
+            height: 300px;
+            margin-top: 15px;
+            padding: 0 20px; /* Padding for the container */
+        }
+        
+        .grid-column {
+            background: rgba(0, 174, 239, 0.1);
+            border: 1px solid rgba(0, 174, 239, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #00AEEF;
+            font-weight: 700;
+        }
+        
+        .grid-column.span-4 {
+            grid-column: span 4;
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #D4AF37;
+            color: #D4AF37;
+        }
+        
+        .grid-column.span-8 {
+            grid-column: span 8;
+            background: rgba(26, 44, 75, 0.1);
+            border-color: #1A2C4B;
+            color: #1A2C4B;
+        }
+        
+        .grid-specs {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #1A2C4B;
+            font-weight: 600;
+        }
+        
+        .grid-specs div {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Atoms: Spacing & Grid</h1>
+        <p class="subtitle">Implementatie van het 8-punts spacing systeem en de 12-koloms grid structuur.</p>
+        
+        <div class="content-grid">
+            
+            <!-- Kolom 1: Spacing System -->
+            <div class="spacing-section">
+                <div class="section-title">8-Punts Spacing Systeem</div>
+                
+                <div class="spacing-item">
+                    <div class="spacing-label">Extra Small</div>
+                    <div class="spacing-bar" style="width: 8px;"></div>
+                    <div class="spacing-value">8px (0.5rem)</div>
+                </div>
+                
+                <div class="spacing-item">
+                    <div class="spacing-label">Small</div>
+                    <div class="spacing-bar" style="width: 16px;"></div>
+                    <div class="spacing-value">16px (1rem)</div>
+                </div>
+                
+                <div class="spacing-item">
+                    <div class="spacing-label">Medium</div>
+                    <div class="spacing-bar" style="width: 24px;"></div>
+                    <div class="spacing-value">24px (1.5rem)</div>
+                </div>
+                
+                <div class="spacing-item">
+                    <div class="spacing-label">Large</div>
+                    <div class="spacing-bar" style="width: 32px;"></div>
+                    <div class="spacing-value">32px (2rem)</div>
+                </div>
+                
+                <div class="spacing-item">
+                    <div class="spacing-label">Extra Large</div>
+                    <div class="spacing-bar" style="width: 48px;"></div>
+                    <div class="spacing-value">48px (3rem)</div>
+                </div>
+                
+                <div class="spacing-item">
+                    <div class="spacing-label">XXL</div>
+                    <div class="spacing-bar" style="width: 64px;"></div>
+                    <div class="spacing-value">64px (4rem)</div>
+                </div>
+                
+                <div class="spacing-item">
+                    <div class="spacing-label">Section</div>
+                    <div class="spacing-bar" style="width: 96px;"></div>
+                    <div class="spacing-value">96px (6rem)</div>
+                </div>
+                
+                <div class="grid-specs" style="margin-top: 30px;">
+                    <div>**Basis Eenheid:** 8px</div>
+                    <div>**Regel:** Alle afstanden moeten een veelvoud van 8 zijn (8, 16, 24, 32, 40, 48, etc.).</div>
+                    <div>**Voordeel:** Zorgt voor verticale ritme en visuele harmonie.</div>
+                </div>
+            </div>
+            
+            <!-- Kolom 2: Grid System -->
+            <div class="grid-section">
+                <div class="section-title">12-Koloms Grid Systeem</div>
+                
+                <div class="grid-visualization">
+                    <div class="grid-column span-4">4 Kolommen</div>
+                    <div class="grid-column span-8">8 Kolommen</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                    <div class="grid-column">1</div>
+                </div>
+                
+                <div class="grid-specs">
+                    <div>**Totaal Kolommen:** 12</div>
+                    <div>**Gutter (Tussenruimte):** 16px (Small Spacing)</div>
+                    <div>**Max Breedte:** 1440px (Desktop)</div>
+                    <div>**Responsiviteit:** Schakelt over naar 4 kolommen op mobiel.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

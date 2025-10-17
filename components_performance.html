@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Components: Performance Optimization</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00AEEF;
+            border-bottom: 2px solid #E5E5E5;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .metric-card {
+            background: #F8FCFF;
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .metric-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 5px;
+        }
+        
+        .metric-target {
+            font-size: 14px;
+            color: #4CAF50;
+            font-weight: 700;
+        }
+        
+        .optimization-list li {
+            font-size: 14px;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        
+        .optimization-list strong {
+            color: #1A2C4B;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Components: Performance Optimization</h1>
+        <p class="subtitle">Richtlijnen voor het behalen van optimale Core Web Vitals scores en een snelle gebruikerservaring.</p>
+        
+        <div class="content-grid">
+            
+            <div>
+                <div class="section-title">Core Web Vitals Doelstellingen</div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">Largest Contentful Paint (LCP)</div>
+                    <div class="metric-target">Doel: < 2.5 seconden</div>
+                    <p class="metric-target" style="color: #666; font-weight: 400;">Meet de laadtijd van het grootste zichtbare element.</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">First Input Delay (FID) / INP</div>
+                    <div class="metric-target">Doel: < 100 milliseconden</div>
+                    <p class="metric-target" style="color: #666; font-weight: 400;">Meet de reactietijd op de eerste gebruikersinteractie.</p>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">Cumulative Layout Shift (CLS)</div>
+                    <div class="metric-target">Doel: < 0.1</div>
+                    <p class="metric-target" style="color: #666; font-weight: 400;">Meet de visuele stabiliteit van de pagina.</p>
+                </div>
+            </div>
+            
+            <div>
+                <div class="section-title">Optimalisatie Strategieën</div>
+                <ul class="optimization-list">
+                    <li>**Afbeeldingen:** Gebruik moderne formaten (WebP, AVIF) en lazy loading voor off-screen beelden.</li>
+                    <li>**Fonts:** Preload kritieke fonts (`Montserrat`) en gebruik `font-display: swap`.</li>
+                    <li>**CSS/JS:** Minimaliseer en bundel assets. Gebruik tree-shaking en code splitting.</li>
+                    <li>**Componenten:** Zorg voor minimale render-tijd. Vermijd zware JavaScript-frameworks waar mogelijk.</li>
+                    <li>**Caching:** Implementeer sterke caching-headers voor statische assets.</li>
+                    <li>**Server:** Gebruik een snelle CDN (zoals Netlify) voor wereldwijde distributie.</li>
+                    <li>**CLS:** Reserveer ruimte voor afbeeldingen en embeds om layout shifts te voorkomen.</li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
+

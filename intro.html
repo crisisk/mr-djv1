@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introductie: Wat is het EDS?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .main-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #1A2C4B;
+        }
+        
+        .key-benefits {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .benefit-card {
+            background: #F8FCFF;
+            border-left: 5px solid #00AEEF;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .benefit-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 5px;
+        }
+        
+        .benefit-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .design-system-image {
+            background: #1A2C4B;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: #D4AF37;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Introductie: Wat is het Enterprise Design System (EDS)?</h1>
+        <p class="subtitle">Het doel, de scope en de voordelen van een uniform design systeem voor Mr. DJ.</p>
+        
+        <div class="content-grid">
+            
+            <div>
+                <p class="main-text">Het **Enterprise Design System (EDS)** is de centrale bron van waarheid voor alle design- en developmentbeslissingen binnen Mr. DJ. Het is een verzameling van herbruikbare componenten, duidelijke richtlijnen en best practices die zorgen voor een consistente, schaalbare en efficiënte digitale ervaring.</p>
+                
+                <div class="key-benefits">
+                    <div class="benefit-card">
+                        <div class="benefit-title">1. Consistente Merkbeleving</div>
+                        <div class="benefit-text">Elke pagina, van de homepage tot de 404-pagina, voelt en ziet eruit als Mr. DJ.</div>
+                    </div>
+                    <div class="benefit-card" style="border-left-color: #D4AF37;">
+                        <div class="benefit-title">2. Snellere Development</div>
+                        <div class="benefit-text">Door herbruikbare componenten te gebruiken, wordt de ontwikkeltijd met 30-50% verkort.</div>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-title">3. Hogere Kwaliteit & Toegankelijkheid</div>
+                        <div class="benefit-text">Componenten zijn vooraf getest op toegankelijkheid (WCAG) en prestaties.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="design-system-image">
+                <p>Atomic Design Principes: Atoms, Molecules, Organisms, Templates</p>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
+

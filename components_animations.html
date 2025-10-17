@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Components: Animations & Transitions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00AEEF;
+            border-bottom: 2px solid #E5E5E5;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .animation-example {
+            background: #F8FCFF;
+            border: 2px solid #1A2C4B;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .example-box {
+            width: 80px;
+            height: 80px;
+            background: #D4AF37;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Standard Ease */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1A2C4B;
+        }
+        
+        .example-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .animation-spec {
+            font-size: 14px;
+            color: #1A2C4B;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .guidelines-list li {
+            font-size: 14px;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        
+        .guidelines-list strong {
+            color: #00AEEF;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Components: Animations & Transitions</h1>
+        <p class="subtitle">Richtlijnen voor micro-interacties, hover-states en paginatransities om de gebruikerservaring te verbeteren.</p>
+        
+        <div class="content-grid">
+            
+            <div>
+                <div class="section-title">Standaard Animatie Specificaties</div>
+                
+                <div class="animation-example">
+                    <div class="example-box">Hover State</div>
+                    <div class="animation-spec">**Duur:** 300ms (Standaard)</div>
+                    <div class="animation-spec">**Timing:** `cubic-bezier(0.4, 0, 0.2, 1)` (Ease-in-out)</div>
+                    <div class="animation-spec">**Effect:** Scale (1.05 of 1.1) of Color Change</div>
+                </div>
+                
+                <div class="animation-example">
+                    <div class="example-box" style="background: #00AEEF; color: white;">Loading State</div>
+                    <div class="animation-spec">**Effect:** Subtiele puls of shimmer effect.</div>
+                    <div class="animation-spec">**Doel:** Gebruiker informeren dat er data wordt geladen.</div>
+                </div>
+                
+                <div class="animation-example">
+                    <div class="example-box" style="background: #4CAF50; color: white;">Success Feedback</div>
+                    <div class="animation-spec">**Effect:** Snelle fade-in/out (150ms).</div>
+                    <div class="animation-spec">**Doel:** Directe visuele bevestiging van een actie.</div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="section-title">Best Practices & Richtlijnen</div>
+                <ul class="guidelines-list">
+                    <li>**Performance First:** Gebruik alleen `transform` en `opacity` voor animaties om de GPU te benutten.</li>
+                    <li>**Minimalisme:** Animatie moet functioneel zijn, niet afleiden. Gebruik ze spaarzaam.</li>
+                    <li>**Consistentie:** Houd de standaardduur van **300ms** aan voor de meeste interacties.</li>
+                    <li>**Motion Sickness:** Vermijd snelle, schokkende of overmatige bewegingen.</li>
+                    <li>**Reduced Motion:** Respecteer de voorkeur van de gebruiker voor gereduceerde beweging (via CSS media query).</li>
+                    <li>**Eenvoudige Overgangen:** Gebruik de standaard `ease-in-out` curve voor een professionele, vloeiende look.</li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templates: Local SEO Pages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            gap: 25px;
+            flex: 1;
+        }
+        
+        /* Template Preview Column */
+        .preview-column {
+            flex: 1.3;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #00AEEF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .preview-container {
+            flex: 1;
+            background: #F8F8F8;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #E5E5E5;
+            overflow-y: auto;
+        }
+        
+        /* Local Page Template */
+        .local-page {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .local-hero {
+            background: white;
+            border: 2px solid #E5E5E5;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .local-hero-content {
+            flex: 1;
+        }
+        
+        .location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #F0F9FF;
+            color: #00AEEF;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .local-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        
+        .local-description {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .local-features {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .local-feature {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .local-feature::before {
+            content: '✓';
+            color: #00AEEF;
+            font-weight: 700;
+        }
+        
+        .local-cta-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .local-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            border: 2px solid transparent;
+        }
+        
+        .local-btn-primary {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+        }
+        
+        .local-btn-secondary {
+            background: white;
+            color: #1A2C4B;
+            border-color: #E5E5E5;
+        }
+        
+        .booking-circle {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #D4AF37 0%, #C19A2E 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+            flex-shrink: 0;
+        }
+        
+        .booking-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+            border: 1px solid #E5E5E5;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 10px;
+        }
+        
+        .section-content {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .venues-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .venue-item {
+            background: #F8F8F8;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .venue-name {
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 3px;
+        }
+        
+        .venue-type {
+            font-size: 10px;
+            color: #999;
+        }
+        
+        /* SEO Info Column */
+        .seo-column {
+            flex: 0.7;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .seo-info {
+            flex: 1;
+            background: #F8FCFF;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #00AEEF;
+        }
+        
+        .seo-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .seo-section {
+            margin-bottom: 18px;
+        }
+        
+        .seo-section-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #00AEEF;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .seo-item {
+            background: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #E5E5E5;
+        }
+        
+        .seo-item-label {
+            font-size: 10px;
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .seo-item-value {
+            font-size: 11px;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        
+        .dynamic-tag {
+            display: inline-block;
+            background: #FFF9E6;
+            color: #D4AF37;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .cities-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .city-tag {
+            background: white;
+            border: 1px solid #E5E5E5;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .automation-note {
+            margin-top: 16px;
+            padding: 12px;
+            background: #FFF9E6;
+            border-left: 3px solid #D4AF37;
+            border-radius: 6px;
+        }
+        
+        .automation-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 6px;
+        }
+        
+        .automation-text {
+            font-size: 10px;
+            color: #666;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Templates: Local SEO Pages</h1>
+        <p class="subtitle">Programmatisch gegenereerde city-specific landing pages voor lokale SEO dominantie</p>
+        
+        <div class="content-wrapper">
+            <!-- Template Preview Column -->
+            <div class="preview-column">
+                <div class="preview-label">Template Voorbeeld: Bruiloft DJ Eindhoven</div>
+                <div class="preview-container">
+                    <div class="local-page">
+                        <!-- Local Hero -->
+                        <div class="local-hero">
+                            <div class="local-hero-content">
+                                <div class="location-badge">
+                                    <span>📍</span>
+                                    <span>EINDHOVEN</span>
+                                </div>
+                                <h2 class="local-title">Bruiloft DJ Eindhoven</h2>
+                                <p class="local-description">
+                                    Op zoek naar een professionele bruiloft DJ in Eindhoven? Mister DJ zorgt voor een onvergetelijke feestavond met 100% dansgarantie. Lokale ervaring met 150+ bruiloften in Eindhoven en omgeving.
+                                </p>
+                                <div class="local-features">
+                                    <div class="local-feature">15+ jaar ervaring</div>
+                                    <div class="local-feature">100% dansgarantie</div>
+                                    <div class="local-feature">Lokale kennis</div>
+                                </div>
+                                <div class="local-cta-buttons">
+                                    <button class="local-btn local-btn-primary">Vraag Offerte Aan</button>
+                                    <button class="local-btn local-btn-secondary">Bekijk Reviews</button>
+                                </div>
+                            </div>
+                            <div class="booking-circle">
+                                <div class="booking-icon">📅</div>
+                                <div>Check<br>Beschikbaarheid</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Why Choose Section -->
+                        <div class="content-section">
+                            <h3 class="section-title">Waarom Kiezen voor Mr. DJ in Eindhoven?</h3>
+                            <p class="section-content">
+                                Als ervaren bruiloft DJ in Eindhoven ken ik de beste locaties, begrijp ik de lokale sfeer en weet ik precies hoe ik jullie gasten de hele avond aan het dansen houd. Met 15+ jaar ervaring en 150+ geslaagde bruiloften in Eindhoven en omgeving, ben ik dé DJ voor jullie grote dag.
+                            </p>
+                        </div>
+                        
+                        <!-- Local Venues -->
+                        <div class="content-section">
+                            <h3 class="section-title">Bekende Locaties in Eindhoven</h3>
+                            <div class="venues-grid">
+                                <div class="venue-item">
+                                    <div class="venue-name">Evoluon</div>
+                                    <div class="venue-type">Unieke trouwlocatie</div>
+                                </div>
+                                <div class="venue-item">
+                                    <div class="venue-name">Van der Valk</div>
+                                    <div class="venue-type">Hotel & Congres</div>
+                                </div>
+                                <div class="venue-item">
+                                    <div class="venue-name">Genneper Hoeve</div>
+                                    <div class="venue-type">Landelijk & Sfeervol</div>
+                                </div>
+                                <div class="venue-item">
+                                    <div class="venue-name">Strijp-S</div>
+                                    <div class="venue-type">Urban & Modern</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Local Reviews -->
+                        <div class="content-section">
+                            <h3 class="section-title">Reviews uit Eindhoven</h3>
+                            <p class="section-content">
+                                "Onze bruiloft in Eindhoven was perfect dankzij Mr. DJ! De hele avond stond de dansvloer vol. Hij kende de locatie goed en alles verliep vlekkeloos." - Sarah & Mark, Evoluon Eindhoven
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEO Info Column -->
+            <div class="seo-column">
+                <div class="preview-label">SEO Strategie & Implementatie</div>
+                <div class="seo-info">
+                    <div class="seo-title">
+                        <span>🎯</span>
+                        <span>Local SEO Setup</span>
+                    </div>
+                    
+                    <div class="seo-section">
+                        <div class="seo-section-title">Dynamic Content</div>
+                        <div class="seo-item">
+                            <div class="seo-item-label">Title Tag</div>
+                            <div class="seo-item-value">
+                                Bruiloft DJ <span class="dynamic-tag">{CITY}</span> | 100% Dansgarantie | Mr. DJ
+                            </div>
+                        </div>
+                        <div class="seo-item">
+                            <div class="seo-item-label">Meta Description</div>
+                            <div class="seo-item-value">
+                                Professionele bruiloft DJ in <span class="dynamic-tag">{CITY}</span>. 15+ jaar ervaring, lokale kennis...
+                            </div>
+                        </div>
+                        <div class="seo-item">
+                            <div class="seo-item-label">H1 Heading</div>
+                            <div class="seo-item-value">
+                                Bruiloft DJ <span class="dynamic-tag">{CITY}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="seo-section">
+                        <div class="seo-section-title">Target Cities (50+)</div>
+                        <div class="cities-list">
+                            <div class="city-tag">Eindhoven</div>
+                            <div class="city-tag">Tilburg</div>
+                            <div class="city-tag">Breda</div>
+                            <div class="city-tag">Den Bosch</div>
+                            <div class="city-tag">Helmond</div>
+                            <div class="city-tag">Veldhoven</div>
+                            <div class="city-tag">Oss</div>
+                            <div class="city-tag">Roosendaal</div>
+                            <div class="city-tag">Bergen op Zoom</div>
+                            <div class="city-tag">+41 meer</div>
+                        </div>
+                    </div>
+                    
+                    <div class="seo-section">
+                        <div class="seo-section-title">Lokale Data</div>
+                        <div class="seo-item">
+                            <div class="seo-item-label">Per Stad</div>
+                            <div class="seo-item-value">
+                                • Bekende trouwlocaties (4-8)<br>
+                                • Lokale reviews & testimonials<br>
+                                • Stad-specifieke content<br>
+                                • Afstandsberekening vanaf stad
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="automation-note">
+                        <div class="automation-title">🤖 Programmatische Generatie</div>
+                        <div class="automation-text">
+                            Template wordt automatisch gegenereerd voor 50+ steden in Brabant en Limburg. Elke pagina krijgt unieke content, lokale venues, en stad-specifieke SEO optimalisatie.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

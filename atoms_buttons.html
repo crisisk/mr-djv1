@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atoms: Buttons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+        }
+        
+        .left-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .button-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .button-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .button-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #00AEEF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .button-variants {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Button Base Styles */
+        .btn {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* Sizes */
+        .btn-sm {
+            padding: 7px 14px;
+            font-size: 13px;
+        }
+        
+        .btn-md {
+            padding: 10px 20px;
+            font-size: 15px;
+        }
+        
+        .btn-lg {
+            padding: 13px 26px;
+            font-size: 16px;
+        }
+        
+        /* Primary */
+        .btn-primary {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(0, 174, 239, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 174, 239, 0.4);
+        }
+        
+        /* Secondary */
+        .btn-secondary {
+            background: linear-gradient(135deg, #D4AF37 0%, #C19A2E 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+        
+        /* Outline */
+        .btn-outline {
+            background: transparent;
+            color: #00AEEF;
+            border-color: #00AEEF;
+        }
+        
+        .btn-outline:hover {
+            background: #00AEEF;
+            color: white;
+        }
+        
+        /* Ghost */
+        .btn-ghost {
+            background: transparent;
+            color: #1A2C4B;
+        }
+        
+        .btn-ghost:hover {
+            background: rgba(0, 174, 239, 0.1);
+        }
+        
+        /* Disabled */
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        /* Code Section */
+        .code-section {
+            background: #1A2C4B;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .code-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00AEEF;
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #0F1A2E;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #E5E5E5;
+            overflow-x: auto;
+            flex: 1;
+        }
+        
+        .code-keyword {
+            color: #FF79C6;
+        }
+        
+        .code-string {
+            color: #F1FA8C;
+        }
+        
+        .code-tag {
+            color: #8BE9FD;
+        }
+        
+        .code-attr {
+            color: #50FA7B;
+        }
+        
+        .code-comment {
+            color: #6272A4;
+            font-style: italic;
+        }
+        
+        .props-list {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .prop-item {
+            font-size: 11px;
+            color: #B0B0B0;
+            margin-bottom: 6px;
+        }
+        
+        .prop-name {
+            color: #00AEEF;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="left-section">
+            <h1>Atoms: Buttons</h1>
+            <p class="subtitle">Interactive button components met verschillende varianten, sizes en states</p>
+            
+            <div class="button-grid">
+                <!-- Primary Buttons -->
+                <div class="button-row">
+                    <div class="button-label">Primary Buttons</div>
+                    <div class="button-variants">
+                        <button class="btn btn-primary btn-sm">Small</button>
+                        <button class="btn btn-primary btn-md">Medium</button>
+                        <button class="btn btn-primary btn-lg">Large</button>
+                        <button class="btn btn-primary btn-md" disabled>Disabled</button>
+                    </div>
+                </div>
+                
+                <!-- Secondary Buttons -->
+                <div class="button-row">
+                    <div class="button-label">Secondary Buttons</div>
+                    <div class="button-variants">
+                        <button class="btn btn-secondary btn-sm">Small</button>
+                        <button class="btn btn-secondary btn-md">Medium</button>
+                        <button class="btn btn-secondary btn-lg">Large</button>
+                    </div>
+                </div>
+                
+                <!-- Outline Buttons -->
+                <div class="button-row">
+                    <div class="button-label">Outline Buttons</div>
+                    <div class="button-variants">
+                        <button class="btn btn-outline btn-sm">Small</button>
+                        <button class="btn btn-outline btn-md">Medium</button>
+                        <button class="btn btn-outline btn-lg">Large</button>
+                    </div>
+                </div>
+                
+                <!-- Ghost Buttons -->
+                <div class="button-row">
+                    <div class="button-label">Ghost Buttons</div>
+                    <div class="button-variants">
+                        <button class="btn btn-ghost btn-sm">Small</button>
+                        <button class="btn btn-ghost btn-md">Medium</button>
+                        <button class="btn btn-ghost btn-lg">Large</button>
+                    </div>
+                </div>
+                
+                <!-- Icon Buttons -->
+                <div class="button-row">
+                    <div class="button-label">With Icons</div>
+                    <div class="button-variants">
+                        <button class="btn btn-primary btn-md">
+                            <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+                            </svg>
+                            Boek Nu
+                        </button>
+                        <button class="btn btn-outline btn-md">
+                            Meer Info
+                            <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Code Section -->
+        <div class="code-section">
+            <div class="code-title">React Component</div>
+            <div class="code-block">
+<span class="code-comment">// Button.tsx</span>
+<span class="code-keyword">import</span> React <span class="code-keyword">from</span> <span class="code-string">'react'</span>;
+
+<span class="code-keyword">interface</span> ButtonProps {
+  variant?: <span class="code-string">'primary'</span> | <span class="code-string">'secondary'</span> | <span class="code-string">'outline'</span> | <span class="code-string">'ghost'</span>;
+  size?: <span class="code-string">'sm'</span> | <span class="code-string">'md'</span> | <span class="code-string">'lg'</span>;
+  children: React.ReactNode;
+  onClick?: () => <span class="code-keyword">void</span>;
+  disabled?: <span class="code-keyword">boolean</span>;
+}
+
+<span class="code-keyword">export const</span> Button: React.FC&lt;ButtonProps&gt; = ({
+  variant = <span class="code-string">'primary'</span>,
+  size = <span class="code-string">'md'</span>,
+  children,
+  onClick,
+  disabled = <span class="code-keyword">false</span>
+}) => {
+  <span class="code-keyword">return</span> (
+    &lt;<span class="code-tag">button</span>
+      <span class="code-attr">className</span>=<span class="code-string">{`btn btn-${variant} btn-${size}`}</span>
+      <span class="code-attr">onClick</span>={onClick}
+      <span class="code-attr">disabled</span>={disabled}
+    &gt;
+      {children}
+    &lt;/<span class="code-tag">button</span>&gt;
+  );
+};
+
+<span class="code-comment">// Usage</span>
+&lt;<span class="code-tag">Button</span> <span class="code-attr">variant</span>=<span class="code-string">"primary"</span> <span class="code-attr">size</span>=<span class="code-string">"lg"</span>&gt;
+  Boek Nu
+&lt;/<span class="code-tag">Button</span>&gt;
+            </div>
+            <div class="props-list">
+                <div class="prop-item"><span class="prop-name">variant:</span> primary | secondary | outline | ghost</div>
+                <div class="prop-item"><span class="prop-name">size:</span> sm | md | lg</div>
+                <div class="prop-item"><span class="prop-name">disabled:</span> boolean</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

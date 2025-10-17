@@ -1,0 +1,64 @@
+[
+  {
+    "id": "bronze",
+    "name": "Brons Pakket",
+    "price": 795,
+    "duration": "4 uur",
+    "eventTypes": ["bruiloft", "bedrijfsfeest", "private"],
+    "description": "Ideaal voor compacte zalen en woonhuizen met complete basis setup.",
+    "features": [
+      "Professionele allround DJ",
+      "Compact geluidssysteem",
+      "Basis sfeerverlichting",
+      "Online muziekplanner",
+      "Voorbereidend intakegesprek"
+    ],
+    "upsells": [
+      { "id": "rookmachine", "name": "Rookmachine met verlichting", "price": 75 },
+      { "id": "ceremonie", "name": "Ceremonie audio set", "price": 195 }
+    ]
+  },
+  {
+    "id": "silver",
+    "name": "Zilver Pakket",
+    "price": 995,
+    "duration": "5 uur",
+    "popular": true,
+    "eventTypes": ["bruiloft"],
+    "description": "Meest gekozen door bruidsparen – premium licht, geluid en persoonlijke voorbereiding.",
+    "features": [
+      "Professionele DJ",
+      "Premium geluidssysteem",
+      "Intelligente LED-verlichting",
+      "Sparkular start",
+      "Persoonlijk draaiboek & muziekprofiel",
+      "100% dansgarantie"
+    ],
+    "upsells": [
+      { "id": "sax", "name": "Live saxofonist", "price": 325 },
+      { "id": "photobooth", "name": "360° Photobooth", "price": 425 },
+      { "id": "sparks", "name": "Sparkular show", "price": 245 }
+    ]
+  },
+  {
+    "id": "gold",
+    "name": "Goud Pakket",
+    "price": 1295,
+    "duration": "6 uur",
+    "eventTypes": ["bedrijfsfeest", "bruiloft"],
+    "description": "Voor high-impact events met branding, special effects en uitgebreide show.",
+    "features": [
+      "Senior event-DJ",
+      "Line-array geluid",
+      "Moving heads & lichttechnicus",
+      "Custom DJ-booth met logo",
+      "Aftermovie & opnamerechten",
+      "24/7 productiecontact"
+    ],
+    "upsells": [
+      { "id": "vocalist", "name": "Host & vocalist", "price": 295 },
+      { "id": "branding", "name": "Corporate branding package", "price": 395 },
+      { "id": "sparkularline", "name": "Sparkular + CO2 jets", "price": 495 }
+    ]
+  }
+]

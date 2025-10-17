@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templates: Error Pages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .error-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .error-box {
+            border: 2px solid #FF4D4D;
+            border-radius: 12px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #FFF5F5;
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: 900;
+            color: #FF4D4D;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        .error-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .error-cta {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .error-box.server-error {
+            border-color: #D4AF37;
+            background: #FFF9E6;
+        }
+        
+        .error-box.server-error .error-code {
+            color: #D4AF37;
+        }
+        
+        .error-box.server-error .error-cta {
+            background: #1A2C4B;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Templates: Error Pages</h1>
+        <p class="subtitle">Gestandaardiseerde templates voor de 404 (Not Found) en 500 (Server Error) pagina's.</p>
+        
+        <div class="error-grid">
+            
+            <!-- Kolom 1: 404 Not Found -->
+            <div class="error-box">
+                <div class="error-code">404</div>
+                <div class="error-title">Pagina Niet Gevonden</div>
+                <div class="error-message">Oeps! De pagina die u zoekt is verhuisd of bestaat niet meer.</div>
+                <a href="#" class="error-cta">Terug naar de Homepage</a>
+            </div>
+            
+            <!-- Kolom 2: 500 Server Error -->
+            <div class="error-box server-error">
+                <div class="error-code">500</div>
+                <div class="error-title">Interne Server Fout</div>
+                <div class="error-message">Er is een onverwachte fout opgetreden. Onze technici zijn op de hoogte.</div>
+                <a href="#" class="error-cta">Probeer het Later Opnieuw</a>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
+

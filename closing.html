@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Steps</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: transparent;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Background Decoration */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -15%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 174, 239, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .slide-container::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -15%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+        
+        .logo-container {
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 180px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+        
+        h1 {
+            font-size: 56px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+        
+        .highlight {
+            color: #00AEEF;
+        }
+        
+        .subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+        
+        /* Timeline */
+        .timeline {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .timeline-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .timeline-phase {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-phase:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-4px);
+        }
+        
+        .phase-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            margin: 0 auto 12px;
+        }
+        
+        .phase-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .phase-description {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        
+        .phase-duration {
+            font-size: 11px;
+            color: #D4AF37;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Key Deliverables */
+        .deliverables {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .deliverables-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .deliverables-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .deliverable-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: left;
+        }
+        
+        .deliverable-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .deliverable-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            margin-top: 20px;
+        }
+        
+        .cta-text {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 20px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+        
+        .cta-button {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cta-primary {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 174, 239, 0.3);
+        }
+        
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 174, 239, 0.4);
+        }
+        
+        .cta-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .cta-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Footer Info */
+        .footer-info {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 16px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 600;
+        }
+        
+        .contact-icon {
+            font-size: 18px;
+        }
+        
+        .copyright {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="content-wrapper">
+            <div class="logo-container">
+                <img src="mr_dj_logo.png" alt="Mr. DJ Logo" class="logo">
+            </div>
+            
+            <h1>
+                Klaar voor <span class="highlight">Launch</span>
+            </h1>
+            <p class="subtitle">
+                Van design system naar live website: een gestructureerde aanpak voor maximale impact
+            </p>
+            
+            <!-- Implementation Timeline -->
+            <div class="timeline">
+                <div class="timeline-title">
+                    <span>🚀</span>
+                    <span>Implementatie Roadmap</span>
+                </div>
+                <div class="timeline-grid">
+                    <div class="timeline-phase">
+                        <div class="phase-number">1</div>
+                        <div class="phase-title">Foundation</div>
+                        <div class="phase-description">
+                            Setup development environment, component library initialisatie, design tokens implementatie
+                        </div>
+                        <div class="phase-duration">Week 1-2</div>
+                    </div>
+                    
+                    <div class="timeline-phase">
+                        <div class="phase-number">2</div>
+                        <div class="phase-title">Core Components</div>
+                        <div class="phase-description">
+                            Atoms & molecules bouwen, Storybook documentatie, responsive testing
+                        </div>
+                        <div class="phase-duration">Week 3-4</div>
+                    </div>
+                    
+                    <div class="timeline-phase">
+                        <div class="phase-number">3</div>
+                        <div class="phase-title">Templates & Launch</div>
+                        <div class="phase-description">
+                            Homepage, service pages, local SEO pages, CMS integratie, production deployment
+                        </div>
+                        <div class="phase-duration">Week 5-6</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Deliverables -->
+            <div class="deliverables">
+                <div class="deliverables-title">
+                    <span>📦</span>
+                    <span>Key Deliverables</span>
+                </div>
+                <div class="deliverables-grid">
+                    <div class="deliverable-item">
+                        <span class="deliverable-icon">🎨</span>
+                        <span class="deliverable-text">Complete Design System met 30+ componenten</span>
+                    </div>
+                    <div class="deliverable-item">
+                        <span class="deliverable-icon">📱</span>
+                        <span class="deliverable-text">Responsive website met 5+ page templates</span>
+                    </div>
+                    <div class="deliverable-item">
+                        <span class="deliverable-icon">📝</span>
+                        <span class="deliverable-text">Netlify CMS voor content management</span>
+                    </div>
+                    <div class="deliverable-item">
+                        <span class="deliverable-icon">🌍</span>
+                        <span class="deliverable-text">50+ Local SEO pages (programmatisch)</span>
+                    </div>
+                    <div class="deliverable-item">
+                        <span class="deliverable-icon">📚</span>
+                        <span class="deliverable-text">Storybook documentatie voor developers</span>
+                    </div>
+                    <div class="deliverable-item">
+                        <span class="deliverable-icon">⚡</span>
+                        <span class="deliverable-text">Performance optimized (Core Web Vitals)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <p class="cta-text">
+                    <strong>Laten we samen de beste DJ website van Nederland bouwen! 🎉</strong>
+                </p>
+                <div class="cta-buttons">
+                    <button class="cta-button cta-primary">
+                        <span>🚀</span>
+                        <span>Start Implementatie</span>
+                    </button>
+                    <button class="cta-button cta-secondary">
+                        <span>📅</span>
+                        <span>Plan Kickoff Meeting</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Footer Info -->
+            <div class="footer-info">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span class="contact-icon">🌐</span>
+                        <span>mr-dj.nl</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">📧</span>
+                        <span>info@mr-dj.nl</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">📱</span>
+                        <span>+31 6 12345678</span>
+                    </div>
+                </div>
+                <div class="copyright">
+                    © 2025 Mr. DJ | Enterprise Design System v1.0 | Gebouwd met ❤️ en 🎵
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

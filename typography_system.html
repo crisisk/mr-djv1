@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atoms: Typography System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .typography-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .font-spec {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #E5E5E5;
+        }
+        
+        .font-example {
+            font-family: 'Montserrat', sans-serif;
+            color: #1A2C4B;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+        
+        .font-details {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .font-details span {
+            color: #1A2C4B;
+            font-weight: 700;
+        }
+        
+        .h1-style { font-size: 48px; font-weight: 900; }
+        .h2-style { font-size: 36px; font-weight: 800; }
+        .h3-style { font-size: 28px; font-weight: 800; }
+        .h4-style { font-size: 20px; font-weight: 700; }
+        .h5-style { font-size: 16px; font-weight: 700; }
+        
+        .body-large-style { font-size: 18px; font-weight: 400; line-height: 1.6; }
+        .body-style { font-size: 16px; font-weight: 400; line-height: 1.6; }
+        .caption-style { font-size: 12px; font-weight: 600; text-transform: uppercase; color: #00AEEF; }
+        
+        .usage-box {
+            background: #F8FCFF;
+            border: 2px solid #00AEEF;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .usage-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #00AEEF;
+            margin-bottom: 10px;
+        }
+        
+        .usage-list li {
+            font-size: 14px;
+            color: #1A2C4B;
+            margin-bottom: 5px;
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Atoms: Typography System</h1>
+        <p class="subtitle">Definitie van lettertype, hiërarchie, groottes en gewichten voor alle tekstelementen.</p>
+        
+        <div class="typography-grid">
+            
+            <!-- Kolom 1: Headings & Body -->
+            <div>
+                <div class="font-spec">
+                    <div class="font-example h1-style">H1 - De Perfecte Mix</div>
+                    <div class="font-details"><span>48px</span> / Extra Bold (900) / Page Title</div>
+                </div>
+                
+                <div class="font-spec">
+                    <div class="font-example h2-style">H2 - Onze Diensten</div>
+                    <div class="font-details"><span>36px</span> / Bold (800) / Section Title</div>
+                </div>
+                
+                <div class="font-spec">
+                    <div class="font-example h3-style">H3 - Bruiloft DJ</div>
+                    <div class="font-details"><span>28px</span> / Bold (800) / Sub-Section Title</div>
+                </div>
+                
+                <div class="font-spec">
+                    <div class="font-example h4-style">H4 - Pakket Details</div>
+                    <div class="font-details"><span>20px</span> / Semi-Bold (700) / Card Title</div>
+                </div>
+                
+                <div class="font-spec">
+                    <div class="font-example h5-style">H5 - Belangrijke Informatie</div>
+                    <div class="font-details"><span>16px</span> / Semi-Bold (700) / Widget Title</div>
+                </div>
+                
+                <div class="font-spec">
+                    <div class="font-example body-large-style">Body Large - Dit is de grote body tekst voor de introductie van een pagina.</div>
+                    <div class="font-details"><span>18px</span> / Regular (400) / Lead Paragraph</div>
+                </div>
+                
+                <div class="font-spec">
+                    <div class="font-example body-style">Body - Dit is de standaard body tekst voor paragrafen, lijsten en algemene content.</div>
+                    <div class="font-details"><span>16px</span> / Regular (400) / Standard Paragraph</div>
+                </div>
+            </div>
+            
+            <!-- Kolom 2: Usage & Caption -->
+            <div>
+                <div class="font-spec">
+                    <div class="font-example caption-style">Caption - Call to Action Label</div>
+                    <div class="font-details"><span>12px</span> / Semi-Bold (600) / Uppercase / Labels & Metadata</div>
+                </div>
+                
+                <div class="usage-box">
+                    <div class="usage-title">Font Family</div>
+                    <div class="font-example h3-style" style="margin-bottom: 10px;">Montserrat</div>
+                    <div class="font-details"><span>Primary Font:</span> Montserrat (Google Fonts)</div>
+                    <div class="font-details"><span>Fallback:</span> sans-serif</div>
+                </div>
+                
+                <div class="usage-box" style="margin-top: 20px; border-color: #D4AF37;">
+                    <div class="usage-title" style="color: #D4AF37;">Best Practices</div>
+                    <ul class="usage-list">
+                        <li>Gebruik maximaal één H1 per pagina.</li>
+                        <li>Zorg voor een logische hiërarchie (H1 → H2 → H3).</li>
+                        <li>Gebruik **Bold** (700+) voor nadruk, niet voor hele zinnen.</li>
+                        <li>Lijnhoogte (Line Height) moet 1.2 voor headings en 1.6 voor body tekst zijn.</li>
+                        <li>De standaard tekstkleur is Dark Blue (#1A2C4B) voor optimale leesbaarheid.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementation Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        /* Tech Stack Section */
+        .tech-stack {
+            background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-stack::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 174, 239, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .tech-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .tech-category {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .category-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #00AEEF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .tech-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .tech-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tech-icon {
+            font-size: 14px;
+        }
+        
+        /* Development Workflow */
+        .workflow-section {
+            background: #F8FCFF;
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid #00AEEF;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .workflow-step {
+            background: white;
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid #E5E5E5;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 4px;
+        }
+        
+        .step-description {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        /* Component Structure */
+        .component-structure {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid #E5E5E5;
+        }
+        
+        .code-block {
+            background: #1A2C4B;
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #E5E5E5;
+            line-height: 1.6;
+            margin-top: 12px;
+            overflow-x: auto;
+        }
+        
+        .code-comment {
+            color: #999;
+        }
+        
+        .code-keyword {
+            color: #00AEEF;
+        }
+        
+        .code-string {
+            color: #D4AF37;
+        }
+        
+        .code-function {
+            color: #66D9EF;
+        }
+        
+        /* Best Practices */
+        .best-practices {
+            background: #FFF9E6;
+            border-radius: 16px;
+            padding: 24px;
+            border-left: 4px solid #D4AF37;
+        }
+        
+        .practice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .practice-icon {
+            color: #D4AF37;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .practice-text {
+            flex: 1;
+        }
+        
+        .practice-highlight {
+            font-weight: 700;
+            color: #1A2C4B;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Implementation Guide</h1>
+        <p class="subtitle">Tech stack, development workflow en component architectuur voor Mr. DJ Design System</p>
+        
+        <div class="content-grid">
+            <!-- Tech Stack -->
+            <div class="tech-stack">
+                <h2 class="section-title">
+                    <span>⚙️</span>
+                    <span>Tech Stack</span>
+                </h2>
+                
+                <div class="tech-categories">
+                    <div class="tech-category">
+                        <div class="category-label">Frontend Framework</div>
+                        <div class="tech-items">
+                            <div class="tech-item">
+                                <span class="tech-icon">⚛️</span>
+                                <span>React 18</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">📘</span>
+                                <span>TypeScript</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">⚡</span>
+                                <span>Vite</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-category">
+                        <div class="category-label">Styling & UI</div>
+                        <div class="tech-items">
+                            <div class="tech-item">
+                                <span class="tech-icon">🎨</span>
+                                <span>Tailwind CSS</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">✨</span>
+                                <span>Framer Motion</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">🎭</span>
+                                <span>Headless UI</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-category">
+                        <div class="category-label">Content Management</div>
+                        <div class="tech-items">
+                            <div class="tech-item">
+                                <span class="tech-icon">📝</span>
+                                <span>Netlify CMS</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">🔐</span>
+                                <span>Netlify Identity</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-category">
+                        <div class="category-label">Deployment & Hosting</div>
+                        <div class="tech-items">
+                            <div class="tech-item">
+                                <span class="tech-icon">🚀</span>
+                                <span>Netlify</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">🔄</span>
+                                <span>GitHub Actions</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">🌐</span>
+                                <span>CDN</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-category">
+                        <div class="category-label">Development Tools</div>
+                        <div class="tech-items">
+                            <div class="tech-item">
+                                <span class="tech-icon">📚</span>
+                                <span>Storybook</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">✅</span>
+                                <span>ESLint</span>
+                            </div>
+                            <div class="tech-item">
+                                <span class="tech-icon">💅</span>
+                                <span>Prettier</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Development Workflow -->
+            <div class="workflow-section">
+                <h2 class="section-title" style="color: #1A2C4B;">
+                    <span>🔄</span>
+                    <span>Development Workflow</span>
+                </h2>
+                
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Design in Figma</div>
+                            <div class="step-description">
+                                Component design met brand guidelines, export design tokens
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Build Component</div>
+                            <div class="step-description">
+                                React component met TypeScript, Tailwind CSS styling
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Document in Storybook</div>
+                            <div class="step-description">
+                                Stories voor alle varianten, props documentatie, usage examples
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Test & Review</div>
+                            <div class="step-description">
+                                Unit tests, accessibility checks, cross-browser testing
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-title">Deploy to Production</div>
+                            <div class="step-description">
+                                Git push → GitHub Actions → Netlify deployment (automatic)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Component Structure -->
+            <div class="component-structure">
+                <h2 class="section-title" style="color: #1A2C4B;">
+                    <span>📦</span>
+                    <span>Component Structure</span>
+                </h2>
+                
+                <div class="code-block">
+<span class="code-comment">// Example: Button Component</span>
+<span class="code-keyword">import</span> { <span class="code-function">ButtonHTMLAttributes</span> } <span class="code-keyword">from</span> <span class="code-string">'react'</span>
+
+<span class="code-keyword">interface</span> <span class="code-function">ButtonProps</span> {
+  variant: <span class="code-string">'primary'</span> | <span class="code-string">'secondary'</span> | <span class="code-string">'outline'</span>
+  size: <span class="code-string">'sm'</span> | <span class="code-string">'md'</span> | <span class="code-string">'lg'</span>
+  children: React.ReactNode
+}
+
+<span class="code-keyword">export const</span> <span class="code-function">Button</span> = ({
+  variant = <span class="code-string">'primary'</span>,
+  size = <span class="code-string">'md'</span>,
+  children,
+  ...props
+}) => {
+  <span class="code-keyword">return</span> (
+    &lt;<span class="code-keyword">button</span> 
+      <span class="code-function">className</span>={<span class="code-string">`btn btn-${variant} btn-${size}`</span>}
+      {...props}
+    &gt;
+      {children}
+    &lt;/<span class="code-keyword">button</span>&gt;
+  )
+}
+                </div>
+            </div>
+            
+            <!-- Best Practices -->
+            <div class="best-practices">
+                <h2 class="section-title" style="color: #1A2C4B;">
+                    <span>⭐</span>
+                    <span>Best Practices</span>
+                </h2>
+                
+                <div class="practice-list">
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Component-first:</span> Bouw herbruikbare components, geen page-specific code
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">TypeScript:</span> Gebruik types voor alle props en state voor type safety
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Accessibility:</span> WCAG 2.1 AA compliance, keyboard navigation, ARIA labels
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Performance:</span> Lazy loading, code splitting, image optimization
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Mobile-first:</span> Design en ontwikkel eerst voor mobile, dan desktop
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Documentation:</span> Elke component gedocumenteerd in Storybook met examples
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Version Control:</span> Semantic versioning, changelog bijhouden, feature branches
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

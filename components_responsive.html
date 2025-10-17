@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Components: Responsive Patterns</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        /* Breakpoints Section */
+        .breakpoints-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .breakpoint-card {
+            background: white;
+            border: 2px solid #E5E5E5;
+            border-radius: 12px;
+            padding: 18px 22px;
+            transition: all 0.3s ease;
+        }
+        
+        .breakpoint-card:hover {
+            border-color: #00AEEF;
+            box-shadow: 0 6px 20px rgba(0, 174, 239, 0.1);
+        }
+        
+        .breakpoint-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .breakpoint-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .breakpoint-icon {
+            font-size: 24px;
+        }
+        
+        .breakpoint-label {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1A2C4B;
+        }
+        
+        .breakpoint-range {
+            background: #F8FCFF;
+            color: #00AEEF;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .breakpoint-description {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .breakpoint-specs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .spec-item {
+            background: #F8F8F8;
+            padding: 8px 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .spec-label {
+            font-size: 10px;
+            color: #999;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .spec-value {
+            font-size: 12px;
+            color: #1A2C4B;
+            font-weight: 800;
+        }
+        
+        /* Visual Examples */
+        .visual-examples {
+            background: #F8FCFF;
+            border: 2px solid #00AEEF;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .example-device {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 14px;
+            border: 2px solid #E5E5E5;
+        }
+        
+        .device-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #00AEEF;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Mobile Layout */
+        .mobile-layout {
+            background: #F8F8F8;
+            border-radius: 8px;
+            padding: 10px;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        
+        .mobile-header {
+            background: #1A2C4B;
+            height: 30px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .mobile-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .mobile-block {
+            background: white;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid #E5E5E5;
+        }
+        
+        /* Tablet Layout */
+        .tablet-layout {
+            background: #F8F8F8;
+            border-radius: 8px;
+            padding: 10px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+        
+        .tablet-header {
+            background: #1A2C4B;
+            height: 30px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .tablet-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        
+        .tablet-block {
+            background: white;
+            height: 50px;
+            border-radius: 6px;
+            border: 1px solid #E5E5E5;
+        }
+        
+        /* Desktop Layout */
+        .desktop-layout {
+            background: #F8F8F8;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .desktop-header {
+            background: #1A2C4B;
+            height: 30px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .desktop-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        
+        .desktop-block {
+            background: white;
+            height: 50px;
+            border-radius: 6px;
+            border: 1px solid #E5E5E5;
+        }
+        
+        /* Best Practices */
+        .best-practices {
+            background: #FFF9E6;
+            border-radius: 12px;
+            padding: 18px;
+            border-left: 4px solid #D4AF37;
+            margin-top: 16px;
+        }
+        
+        .practices-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .practice-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .practice-icon {
+            color: #D4AF37;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .practice-text {
+            flex: 1;
+        }
+        
+        .practice-highlight {
+            font-weight: 700;
+            color: #1A2C4B;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Components: Responsive Patterns</h1>
+        <p class="subtitle">Breakpoints, responsive behavior en mobile-first design richtlijnen voor alle devices</p>
+        
+        <div class="content-grid">
+            <!-- Breakpoints Section -->
+            <div class="breakpoints-section">
+                <div class="section-title">
+                    <span>📱</span>
+                    <span>Responsive Breakpoints</span>
+                </div>
+                
+                <!-- Mobile -->
+                <div class="breakpoint-card">
+                    <div class="breakpoint-header">
+                        <div class="breakpoint-name">
+                            <span class="breakpoint-icon">📱</span>
+                            <span class="breakpoint-label">Mobile</span>
+                        </div>
+                        <div class="breakpoint-range">0 - 767px</div>
+                    </div>
+                    <div class="breakpoint-description">
+                        Single column layout, hamburger menu, touch-optimized buttons (min 44x44px), simplified navigation, stacked components.
+                    </div>
+                    <div class="breakpoint-specs">
+                        <div class="spec-item">
+                            <div class="spec-label">Columns</div>
+                            <div class="spec-value">1</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Font Scale</div>
+                            <div class="spec-value">Base</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Padding</div>
+                            <div class="spec-value">16px</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tablet -->
+                <div class="breakpoint-card">
+                    <div class="breakpoint-header">
+                        <div class="breakpoint-name">
+                            <span class="breakpoint-icon">📱</span>
+                            <span class="breakpoint-label">Tablet</span>
+                        </div>
+                        <div class="breakpoint-range">768 - 1023px</div>
+                    </div>
+                    <div class="breakpoint-description">
+                        2-column grid, expanded navigation, larger touch targets, optimized for both portrait and landscape orientations.
+                    </div>
+                    <div class="breakpoint-specs">
+                        <div class="spec-item">
+                            <div class="spec-label">Columns</div>
+                            <div class="spec-value">2</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Font Scale</div>
+                            <div class="spec-value">+5%</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Padding</div>
+                            <div class="spec-value">24px</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Desktop -->
+                <div class="breakpoint-card">
+                    <div class="breakpoint-header">
+                        <div class="breakpoint-name">
+                            <span class="breakpoint-icon">💻</span>
+                            <span class="breakpoint-label">Desktop</span>
+                        </div>
+                        <div class="breakpoint-range">1024 - 1439px</div>
+                    </div>
+                    <div class="breakpoint-description">
+                        3-column grid, full navigation bar, hover states, larger content areas, optimized for mouse and keyboard interaction.
+                    </div>
+                    <div class="breakpoint-specs">
+                        <div class="spec-item">
+                            <div class="spec-label">Columns</div>
+                            <div class="spec-value">3</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Font Scale</div>
+                            <div class="spec-value">+10%</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Padding</div>
+                            <div class="spec-value">32px</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Wide Desktop -->
+                <div class="breakpoint-card">
+                    <div class="breakpoint-header">
+                        <div class="breakpoint-name">
+                            <span class="breakpoint-icon">🖥️</span>
+                            <span class="breakpoint-label">Wide Desktop</span>
+                        </div>
+                        <div class="breakpoint-range">1440px+</div>
+                    </div>
+                    <div class="breakpoint-description">
+                        4+ column grid, max-width container (1280px), enhanced spacing, full feature set, optimized for large displays.
+                    </div>
+                    <div class="breakpoint-specs">
+                        <div class="spec-item">
+                            <div class="spec-label">Columns</div>
+                            <div class="spec-value">4+</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Font Scale</div>
+                            <div class="spec-value">+15%</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Padding</div>
+                            <div class="spec-value">40px</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Visual Examples -->
+            <div>
+                <div class="visual-examples">
+                    <div class="section-title" style="font-size: 16px; margin-bottom: 16px;">
+                        <span>👁️</span>
+                        <span>Layout Examples</span>
+                    </div>
+                    
+                    <!-- Mobile Example -->
+                    <div class="example-device">
+                        <div class="device-label">
+                            <span>📱</span>
+                            <span>Mobile (375px)</span>
+                        </div>
+                        <div class="mobile-layout">
+                            <div class="mobile-header"></div>
+                            <div class="mobile-content">
+                                <div class="mobile-block"></div>
+                                <div class="mobile-block"></div>
+                                <div class="mobile-block"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tablet Example -->
+                    <div class="example-device">
+                        <div class="device-label">
+                            <span>📱</span>
+                            <span>Tablet (768px)</span>
+                        </div>
+                        <div class="tablet-layout">
+                            <div class="tablet-header"></div>
+                            <div class="tablet-content">
+                                <div class="tablet-block"></div>
+                                <div class="tablet-block"></div>
+                                <div class="tablet-block"></div>
+                                <div class="tablet-block"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Desktop Example -->
+                    <div class="example-device">
+                        <div class="device-label">
+                            <span>💻</span>
+                            <span>Desktop (1280px)</span>
+                        </div>
+                        <div class="desktop-layout">
+                            <div class="desktop-header"></div>
+                            <div class="desktop-content">
+                                <div class="desktop-block"></div>
+                                <div class="desktop-block"></div>
+                                <div class="desktop-block"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Best Practices -->
+                <div class="best-practices">
+                    <div class="practices-title">
+                        <span>⚡</span>
+                        <span>Best Practices</span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Mobile-First:</span> Ontwerp eerst voor mobile, dan scale up naar desktop
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Touch Targets:</span> Minimum 44x44px voor alle interactieve elementen
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Fluid Typography:</span> Gebruik clamp() voor responsive font sizes
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Container Queries:</span> Component-level responsive behavior waar mogelijk
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Performance:</span> Lazy load images, optimize assets per breakpoint
+                        </span>
+                    </div>
+                    
+                    <div class="practice-item">
+                        <span class="practice-icon">✓</span>
+                        <span class="practice-text">
+                            <span class="practice-highlight">Testing:</span> Test op echte devices, niet alleen browser dev tools
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

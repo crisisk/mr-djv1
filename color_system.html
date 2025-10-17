@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atoms: Color System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .color-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .color-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1A2C4B;
+            border-bottom: 2px solid #E5E5E5;
+            padding-bottom: 5px;
+        }
+        
+        .color-swatch {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .color-box {
+            height: 100px;
+            display: flex;
+            align-items: flex-end;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .color-info {
+            padding: 10px;
+            background: #F8FCFF;
+            font-size: 12px;
+            color: #1A2C4B;
+        }
+        
+        .color-name {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .text-white {
+            color: white;
+        }
+        
+        /* Custom Colors */
+        .bg-primary { background-color: #00AEEF; }
+        .bg-secondary { background-color: #D4AF37; }
+        .bg-dark { background-color: #1A2C4B; }
+        .bg-light { background-color: #F8FCFF; }
+        .bg-white { background-color: #FFFFFF; border: 1px solid #E5E5E5; }
+        .bg-success { background-color: #4CAF50; }
+        .bg-error { background-color: #FF4D4D; }
+        .bg-neutral { background-color: #E5E5E5; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Atoms: Color System</h1>
+        <p class="subtitle">Het officiële kleurenpalet van het Enterprise Design System, inclusief primaire, secundaire en functionele kleuren.</p>
+        
+        <div class="color-grid">
+            
+            <!-- Kolom 1: Primary & Secondary -->
+            <div class="color-group">
+                <div class="color-title">Merk Kleuren</div>
+                
+                <div class="color-swatch">
+                    <div class="color-box bg-primary text-white">Primary Blue</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Blue</div>
+                        <div>HEX: #00AEEF</div>
+                        <div>Gebruik: CTA's, Hoogtepunten, Iconen</div>
+                    </div>
+                </div>
+                
+                <div class="color-swatch">
+                    <div class="color-box bg-secondary text-dark" style="color: #1A2C4B;">Secondary Gold</div>
+                    <div class="color-info">
+                        <div class="color-name">Secondary Gold</div>
+                        <div>HEX: #D4AF37</div>
+                        <div>Gebruik: Featured Items, Accent, Ratings</div>
+                    </div>
+                </div>
+                
+                <div class="color-swatch">
+                    <div class="color-box bg-dark text-white">Dark Blue</div>
+                    <div class="color-info">
+                        <div class="color-name">Dark Blue</div>
+                        <div>HEX: #1A2C4B</div>
+                        <div>Gebruik: Tekst, Achtergronden, Headers</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kolom 2: Neutrals -->
+            <div class="color-group">
+                <div class="color-title">Neutrale Kleuren</div>
+                
+                <div class="color-swatch">
+                    <div class="color-box bg-white" style="color: #1A2C4B;">White</div>
+                    <div class="color-info">
+                        <div class="color-name">White</div>
+                        <div>HEX: #FFFFFF</div>
+                        <div>Gebruik: Achtergronden, Kaarten, Tekst</div>
+                    </div>
+                </div>
+                
+                <div class="color-swatch">
+                    <div class="color-box bg-light" style="color: #1A2C4B;">Light Background</div>
+                    <div class="color-info">
+                        <div class="color-name">Light Background</div>
+                        <div>HEX: #F8FCFF</div>
+                        <div>Gebruik: Sectie Achtergronden, Formuliervelden</div>
+                    </div>
+                </div>
+                
+                <div class="color-swatch">
+                    <div class="color-box bg-neutral" style="color: #1A2C4B;">Border/Divider</div>
+                    <div class="color-info">
+                        <div class="color-name">Border/Divider</div>
+                        <div>HEX: #E5E5E5</div>
+                        <div>Gebruik: Lijnen, Borders, Scheidingen</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kolom 3: Functional & System -->
+            <div class="color-group">
+                <div class="color-title">Functionele Kleuren</div>
+                
+                <div class="color-swatch">
+                    <div class="color-box bg-success text-white">Success</div>
+                    <div class="color-info">
+                        <div class="color-name">Success</div>
+                        <div>HEX: #4CAF50</div>
+                        <div>Gebruik: Bevestigingen, Positieve Feedback</div>
+                    </div>
+                </div>
+                
+                <div class="color-swatch">
+                    <div class="color-box bg-error text-white">Error</div>
+                    <div class="color-info">
+                        <div class="color-name">Error</div>
+                        <div>HEX: #FF4D4D</div>
+                        <div>Gebruik: Foutmeldingen, Negatieve Feedback</div>
+                    </div>
+                </div>
+                
+                <div class="color-swatch">
+                    <div class="color-box" style="background-color: #FFC107; color: #1A2C4B;">Warning</div>
+                    <div class="color-info">
+                        <div class="color-name">Warning</div>
+                        <div>HEX: #FFC107</div>
+                        <div>Gebruik: Waarschuwingen, Belangrijke Notificaties</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

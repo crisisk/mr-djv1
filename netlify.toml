@@ -1,0 +1,75 @@
+[build]
+  # Build command - we're using static HTML so just copy files
+  command = "echo 'Building Mr. DJ website...' && ls -la frontend/public"
+  
+  # Publish directory - where the static files are
+  publish = "frontend/public"
+  
+  # Functions directory (for serverless functions if needed later)
+  functions = "backend/functions"
+
+[build.environment]
+  # Node version
+  NODE_VERSION = "18"
+
+# Redirect rules
+[[redirects]]
+  # Redirect /api/* to backend (if we deploy backend separately)
+  from = "/api/*"
+  to = "https://staging.sevensa.nl/api/:splat"
+  status = 200
+  force = false
+
+[[redirects]]
+  # SPA fallback - redirect all routes to index.html
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["admin"]}
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Netlify Identity settings
+[context.production]
+  environment = { NODE_ENV = "production" }
+
+[context.deploy-preview]
+  environment = { NODE_ENV = "staging" }
+
+# Plugin configuration
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+  
+  [plugins.inputs]
+    output_path = "reports/lighthouse.html"
+
+# Enable Netlify Forms
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true

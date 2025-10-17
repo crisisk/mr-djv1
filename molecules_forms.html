@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Molecules: Forms</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .forms-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .form-card {
+            background: #F8FCFF;
+            border: 2px solid #E5E5E5;
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #00AEEF;
+            padding-bottom: 5px;
+        }
+        
+        .form-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .input-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1A2C4B;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E5E5;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #00AEEF;
+            box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.2);
+        }
+        
+        .input-field.error {
+            border-color: #FF4D4D;
+        }
+        
+        .error-message {
+            font-size: 10px;
+            color: #FF4D4D;
+            font-weight: 600;
+        }
+        
+        .textarea-field {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .submit-button {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 174, 239, 0.4);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #00AEEF;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .form-type-badge {
+            display: inline-block;
+            background: #D4AF37;
+            color: #1A2C4B;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .form-type-badge.primary {
+            background: #00AEEF;
+            color: white;
+        }
+        
+        .form-type-badge.secondary {
+            background: #1A2C4B;
+            color: white;
+        }
+        
+        .form-specs {
+            grid-column: 1 / -1;
+            background: #FFF9E6;
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 14px;
+            color: #1A2C4B;
+            font-weight: 600;
+        }
+        
+        .form-specs-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .spec-list {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+        }
+        
+        .spec-item {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .spec-label {
+            font-weight: 700;
+        }
+        
+        .spec-value {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Molecules: Forms</h1>
+        <p class="subtitle">Gestandaardiseerde formulieren voor contact, offerte aanvraag en intakegesprekken</p>
+        
+        <div class="forms-grid">
+            <!-- Offerte Aanvraag Formulier -->
+            <div class="form-card">
+                <div class="form-type-badge primary">Offerte Aanvraag</div>
+                <div class="form-title">Vraag een Vrijblijvende Offerte Aan</div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="name-offerte">Volledige Naam *</label>
+                    <input type="text" id="name-offerte" class="input-field" placeholder="Jan Jansen">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="email-offerte">E-mailadres *</label>
+                    <input type="email" id="email-offerte" class="input-field error" placeholder="jan.jansen@voorbeeld.nl">
+                    <div class="error-message">Dit e-mailadres is ongeldig.</div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="phone-offerte">Telefoonnummer</label>
+                    <input type="tel" id="phone-offerte" class="input-field" placeholder="+31 6 12345678">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="event-type">Type Evenement *</label>
+                    <select id="event-type" class="input-field">
+                        <option>Kies een optie</option>
+                        <option>Bruiloft</option>
+                        <option>Bedrijfsfeest</option>
+                        <option>Private Feest</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="date-offerte">Datum Evenement *</label>
+                    <input type="date" id="date-offerte" class="input-field">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="message-offerte">Extra Opmerkingen</label>
+                    <textarea id="message-offerte" class="input-field textarea-field" placeholder="Vertel ons meer over uw wensen..."></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="privacy-offerte">
+                    <label for="privacy-offerte">Ik ga akkoord met de <a href="#" class="text-blue-500 underline">privacyverklaring</a> *</label>
+                </div>
+                
+                <div class="submit-button">Offerte Aanvragen</div>
+            </div>
+            
+            <!-- Muziekvoorkeuren Formulier (Intake) -->
+            <div class="form-card">
+                <div class="form-type-badge secondary">Intake Formulier</div>
+                <div class="form-title">Muziekvoorkeuren & Planning</div>
+                <div class="form-subtitle">Dit formulier wordt gebruikt na boeking voor een perfecte match.</div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="first-dance">Eerste Dans Nummer</label>
+                    <input type="text" id="first-dance" class="input-field" placeholder="Artiest - Titel">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="must-play">Must-Play Nummers (Max 10)</label>
+                    <textarea id="must-play" class="input-field textarea-field" placeholder="Lijst van nummers, één per regel"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="do-not-play">Do-Not-Play Lijst</label>
+                    <textarea id="do-not-play" class="input-field textarea-field" placeholder="Muziek die absoluut niet gedraaid mag worden"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="genres">Voorkeursgenres (Meerdere selecties mogelijk)</label>
+                    <select id="genres" class="input-field" multiple size="5">
+                        <option>Jaren '80 & '90</option>
+                        <option>Top 40 / Pop</option>
+                        <option>House / Dance</option>
+                        <option>R&B / Hip-Hop</option>
+                        <option>Latin / Salsa</option>
+                        <option>Rock / Indie</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="vibe">Gewenste Sfeer</label>
+                    <input type="text" id="vibe" class="input-field" placeholder="Bijv. 'Chille lounge tijdens receptie, knallend feest na 22:00'">
+                </div>
+                
+                <div class="submit-button" style="background: #1A2C4B;">Voorkeuren Opslaan</div>
+            </div>
+            
+            <div class="form-specs">
+                <div class="form-specs-title">Formulier Specificaties</div>
+                <div class="spec-list">
+                    <div class="spec-item"><span class="spec-label">Input Hoogte:</span> <span class="spec-value">44px</span></div>
+                    <div class="spec-item"><span class="spec-label">Border Radius:</span> <span class="spec-value">8px</span></div>
+                    <div class="spec-item"><span class="spec-label">Focus State:</span> <span class="spec-value">Primary Blue Shadow</span></div>
+                    <div class="spec-item"><span class="spec-label">Error State:</span> <span class="spec-value">Red Border</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

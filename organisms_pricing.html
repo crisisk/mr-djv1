@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organisms: Pricing Tables</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #1A2C4B;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .pricing-card {
+            background: white;
+            border: 2px solid #E5E5E5;
+            border-radius: 16px;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Bronze Card */
+        .pricing-card.bronze {
+            border-color: #CD7F32;
+        }
+        
+        .pricing-card.bronze .tier-badge {
+            background: linear-gradient(135deg, #CD7F32 0%, #B87333 100%);
+        }
+        
+        /* Silver Card - Featured */
+        .pricing-card.silver {
+            border-color: #00AEEF;
+            border-width: 3px;
+            box-shadow: 0 8px 30px rgba(0, 174, 239, 0.15);
+        }
+        
+        .pricing-card.silver .tier-badge {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+        }
+        
+        .pricing-card.silver::before {
+            content: '⭐ MEEST GEKOZEN';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Gold Card */
+        .pricing-card.gold {
+            border-color: #D4AF37;
+        }
+        
+        .pricing-card.gold .tier-badge {
+            background: linear-gradient(135deg, #D4AF37 0%, #C19A2E 100%);
+        }
+        
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            font-size: 24px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tier-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1A2C4B;
+            margin-bottom: 6px;
+        }
+        
+        .tier-description {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            min-height: 32px;
+        }
+        
+        .price-wrapper {
+            margin-bottom: 18px;
+        }
+        
+        .price {
+            font-size: 36px;
+            font-weight: 900;
+            color: #1A2C4B;
+            line-height: 1;
+        }
+        
+        .price-period {
+            font-size: 13px;
+            color: #999;
+            font-weight: 600;
+        }
+        
+        .features-list {
+            flex: 1;
+            margin-bottom: 18px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .feature-icon {
+            color: #00AEEF;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .cta-button {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+        
+        .cta-primary {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+        }
+        
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 174, 239, 0.4);
+        }
+        
+        .cta-secondary {
+            background: white;
+            color: #1A2C4B;
+            border-color: #E5E5E5;
+        }
+        
+        .cta-secondary:hover {
+            border-color: #00AEEF;
+            background: #F8FCFF;
+        }
+        
+        .pricing-note {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Organisms: Pricing Tables</h1>
+        <p class="subtitle">Conversie-geoptimaliseerde pricing components met duidelijke waardepropositie</p>
+        
+        <div class="pricing-grid">
+            <!-- Bronze Package -->
+            <div class="pricing-card bronze">
+                <div class="tier-badge">🥉</div>
+                <h3 class="tier-name">Brons Pakket</h3>
+                <p class="tier-description">Perfect voor kleinere feesten en intieme bijeenkomsten</p>
+                
+                <div class="price-wrapper">
+                    <div class="price">€495</div>
+                    <div class="price-period">per evenement</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">4 uur DJ service</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Professionele geluidsapparatuur</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Basis lichtshow</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Muziekwensen vooraf</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Tot 100 gasten</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Standaard setup</span>
+                    </div>
+                </div>
+                
+                <button class="cta-button cta-secondary">Vraag Offerte Aan</button>
+            </div>
+            
+            <!-- Silver Package - Featured -->
+            <div class="pricing-card silver">
+                <div class="tier-badge">🥈</div>
+                <h3 class="tier-name">Zilver Pakket</h3>
+                <p class="tier-description">De complete ervaring voor onvergetelijke feesten</p>
+                
+                <div class="price-wrapper">
+                    <div class="price">€795</div>
+                    <div class="price-period">per evenement</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>6 uur DJ service</strong></span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Premium geluidsapparatuur</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>Uitgebreide lichtshow</strong></span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Persoonlijk intakegesprek</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Tot 200 gasten</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Draadloze microfoon</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>100% Dansgarantie</strong></span>
+                    </div>
+                </div>
+                
+                <button class="cta-button cta-primary">Direct Boeken</button>
+            </div>
+            
+            <!-- Gold Package -->
+            <div class="pricing-card gold">
+                <div class="tier-badge">🥇</div>
+                <h3 class="tier-name">Goud Pakket</h3>
+                <p class="tier-description">De ultieme all-inclusive entertainment ervaring</p>
+                
+                <div class="price-wrapper">
+                    <div class="price">€1.295</div>
+                    <div class="price-period">per evenement</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>8 uur DJ service</strong></span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Premium+ geluidsapparatuur</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>Spectaculaire lichtshow</strong></span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">DJ + Live Saxofonist</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Onbeperkt gasten</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Meerdere microfoons</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Persoonlijke playlist curation</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>VIP behandeling</strong></span>
+                    </div>
+                </div>
+                
+                <button class="cta-button cta-secondary">Vraag Offerte Aan</button>
+            </div>
+        </div>
+        
+        <p class="pricing-note">
+            * Alle pakketten inclusief opbouw, afbraak en reiskosten binnen 50km. Prijzen zijn exclusief BTW.
+        </p>
+    </div>
+</body>
+</html>
+
