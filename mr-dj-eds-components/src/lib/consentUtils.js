@@ -1,3 +1,5 @@
+import { getWindow } from './environment.js';
+
 const DEFAULT_CONSENT_STATE = Object.freeze({
   ad_storage: false,
   analytics_storage: false,
@@ -6,11 +8,12 @@ const DEFAULT_CONSENT_STATE = Object.freeze({
 });
 
 function readComplianzPreferences() {
-  if (typeof window === 'undefined') {
+  const browser = getWindow();
+  if (!browser) {
     return null;
   }
 
-  const prefs = window.complianz?.user_preferences;
+  const prefs = browser.complianz?.user_preferences;
   if (!prefs) {
     return null;
   }
@@ -24,10 +27,6 @@ function readComplianzPreferences() {
 }
 
 export function getInitialConsent() {
-  if (typeof window === 'undefined') {
-    return { ...DEFAULT_CONSENT_STATE };
-  }
-
   const complianz = readComplianzPreferences();
   if (complianz) {
     return complianz;
@@ -37,17 +36,18 @@ export function getInitialConsent() {
 }
 
 export function pushConsentToDataLayer(consent) {
-  if (typeof window === 'undefined') return;
+  const browser = getWindow();
+  if (!browser) return;
 
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
+  browser.dataLayer = browser.dataLayer || [];
+  browser.dataLayer.push({
     event: 'consent_update',
     event_timestamp: new Date().toISOString(),
     ...consent
   });
 
-  if (typeof window.gtag === 'function') {
-    window.gtag('consent', 'update', consent);
+  if (typeof browser.gtag === 'function') {
+    browser.gtag('consent', 'update', consent);
   }
 }
 
@@ -58,7 +58,8 @@ export function createConsentStateUpdater(setter) {
 }
 
 export function subscribeToComplianz(onChange) {
-  if (typeof window === 'undefined') {
+  const browser = getWindow();
+  if (!browser) {
     return () => {};
   }
 
@@ -67,11 +68,11 @@ export function subscribeToComplianz(onChange) {
     onChange(next);
   };
 
-  window.addEventListener('cmplz_fire_categories', handler);
+  browser.addEventListener('cmplz_fire_categories', handler);
   handler();
 
   return () => {
-    window.removeEventListener('cmplz_fire_categories', handler);
+    browser.removeEventListener('cmplz_fire_categories', handler);
   };
 }
 

@@ -1,15 +1,25 @@
 const express = require('express');
 const rentGuyService = require('../services/rentGuyService');
-const hubspotService = require('../services/hubspotService');
+const sevensaService = require('../services/sevensaService');
 
 const router = express.Router();
 
-router.get('/rentguy/status', (_req, res) => {
-  res.json(rentGuyService.getStatus());
+router.get('/rentguy/status', async (_req, res, next) => {
+  try {
+    const status = await rentGuyService.getStatus();
+    res.json(status);
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.get('/hubspot/status', (_req, res) => {
-  res.json(hubspotService.getStatus());
+router.get('/sevensa/status', async (_req, res, next) => {
+  try {
+    const status = await sevensaService.getStatus();
+    res.json(status);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;

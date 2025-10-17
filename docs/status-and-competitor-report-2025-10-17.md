@@ -8,7 +8,7 @@
 
 ## 2. Gerealiseerde functionaliteiten
 - **Keyword-gebaseerde personalisatie** (`useKeywordPersonalization`) met CRO-blokken, persona showcasers en event-tracking.
-- **Availability checker** met HubSpot webhook placeholder, event logging en error states.
+- **Availability checker** met Sevensa webhook placeholder, event logging en error states.
 - **Local SEO pagina-template** met JSON-LD, lokale venues, review highlight en interne linkhub.
 - **Design tokens pipeline** (`src/main.js`, `tailwind.config.js`) zet tokens om naar CSS variabelen en Tailwind thema-extensies.
 
@@ -24,7 +24,7 @@
    - Video hero module (A/B-testbaar) en CTA microcopy per persona.
    - ROI-calculator component koppelen aan bestaande pricing data (`content/pakketten/*.json`).
 2. **Automation & CRM**
-   - HubSpot submit-URL parametriseren via Config Dashboard; voeg queue fallback + retry logica toe.
+   - Sevensa submit-URL parametriseren via Config Dashboard; voeg queue fallback + retry logica toe.
    - Personalisation events naar n8n pipeline voor lead scoring en nurture.
 3. **Content & SEO**
    - Uitbreiding city dataset met Limburg/Overijssel gaps; gebruik scripts/generate-city-pages.mjs.
@@ -35,7 +35,7 @@
 
 ## 5. KPI-impact verwachting
 - **Lead conversie**: +8-12% door ROI-calculator + video hero tests.
-- **MQL-kwaliteit**: +10% via HubSpot enrichment en n8n scoring.
+- **MQL-kwaliteit**: +10% via Sevensa enrichment en n8n scoring.
 - **Organische sessies**: +15% door extra city pages en content hub.
 - **Operationele efficiëntie**: -20% handmatig werk door geautomatiseerde submit/queue workflows.
 
@@ -45,8 +45,8 @@
 ## 6. Follow-up (19 oktober 2025)
 - **Video hero experiment live**: nieuwe video hero module met session-based A/B variant (60% video, 40% klassiek) inclusief persona microcopy.
 - **ROI-calculator**: interactieve component gekoppeld aan `content/pakketten` data + API fallback, ondersteunt corporate/wedding/nightlife persona’s.
-- **Automation dashboard**: Config Dashboard bevat nu sectie *Automation & CRM* met HubSpot submit URL + retry settings, inclusief status- en flush-acties.
-- **HubSpot queue service**: backend queue met dead-letter logging, tests en dashboard integratie; Availability flows kunnen veilig naar HubSpot/n8n pipeline.
+- **Automation dashboard**: Config Dashboard bevat nu sectie *Automation & CRM* met Sevensa submit URL + retry settings, inclusief status- en flush-acties.
+- **Sevensa queue service**: backend queue met dead-letter logging, tests en dashboard integratie; Availability flows kunnen veilig naar Sevensa/n8n pipeline.
 - **RentGuy pipeline**: personalisatie-events worden naar RentGuy API doorgestuurd (queue fallback) naast bestaande n8n webhook.
 - **Content hub**: nieuw front-end blok met nurture assets en video testimonials om content & SEO roadmap te kickstarten.
 - **City dataset**: Limburg en Overijssel aanvulling (Maastricht, Venlo, Roermond, Zwolle, Deventer) voor lokale SEO scripts.

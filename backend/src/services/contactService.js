@@ -1,7 +1,7 @@
 const { randomUUID } = require('crypto');
 const db = require('../lib/db');
 const rentGuyService = require('./rentGuyService');
-const hubspotService = require('./hubspotService');
+const sevensaService = require('./sevensaService');
 
 const inMemoryContacts = new Map();
 
@@ -112,7 +112,7 @@ async function saveContact(payload) {
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   })();
 
-  const hubSpotSync = await hubspotService.submitLead(
+  const sevensaSync = await sevensaService.submitLead(
     {
       id: result.id,
       firstName: firstName || undefined,
@@ -132,7 +132,7 @@ async function saveContact(payload) {
   return {
     ...result,
     rentGuySync,
-    hubSpotSync
+    sevensaSync
   };
 }
 

@@ -8,6 +8,7 @@ const reviewsRouter = require('./reviews');
 const integrationsRouter = require('./integrations');
 const personalizationRouter = require('./personalization');
 const dashboardRouter = require('./dashboard');
+const metricsRouter = require('./metrics');
 
 const router = express.Router();
 
@@ -20,8 +21,9 @@ router.get('/', (_req, res) => {
     reviews: '/reviews',
     integrations: {
       rentGuy: '/integrations/rentguy/status',
-      hubSpot: '/integrations/hubspot/status'
+      sevensa: '/integrations/sevensa/status'
     },
+    metrics: '/metrics/queues',
     personalization: {
       keyword: '/personalization/keyword',
       events: '/personalization/events'
@@ -46,6 +48,7 @@ router.use('/bookings', bookingsRouter);
 router.use('/reviews', reviewsRouter);
 router.use('/integrations', integrationsRouter);
 router.use('/personalization', personalizationRouter);
+router.use('/metrics', metricsRouter);
 
 if (config.dashboard.enabled) {
   router.use('/dashboard', dashboardRouter);

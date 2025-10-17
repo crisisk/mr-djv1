@@ -2,7 +2,7 @@ const express = require('express');
 const dashboardAuth = require('../middleware/dashboardAuth');
 const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
-const hubspotService = require('../services/hubspotService');
+const sevensaService = require('../services/sevensaService');
 const observabilityService = require('../services/observabilityService');
 
 const router = express.Router();
@@ -446,7 +446,7 @@ function renderPage() {
       let managedKeys = [];
       let currentGroupId = null;
       let rentGuyStatusControls = null;
-      let hubSpotStatusControls = null;
+      let sevensaStatusControls = null;
       let performanceStatusControls = null;
       let variantAnalyticsControls = null;
 
@@ -473,19 +473,19 @@ function renderPage() {
           step: '500',
           hint: 'Timeout in milliseconden voor API-calls. Laat leeg voor de standaardwaarde van 5000ms.'
         },
-        HUBSPOT_SUBMIT_URL: {
+        SEVENSA_SUBMIT_URL: {
           placeholder: 'https://api.hsforms.com/submissions/v3/...',
-          hint: 'Volledige HubSpot submit URL vanuit het rentguy Config Dashboard (portal & form ID inbegrepen).',
+          hint: 'Volledige Sevensa submit URL vanuit het rentguy Config Dashboard (portal & form ID inbegrepen).',
           autocomplete: 'off'
         },
-        HUBSPOT_QUEUE_RETRY_DELAY_MS: {
+        SEVENSA_QUEUE_RETRY_DELAY_MS: {
           type: 'number',
           inputMode: 'numeric',
           min: '1000',
           step: '1000',
-          hint: 'Basis retry-interval in milliseconden voor HubSpot queue verwerking (standaard 15000ms).'
+          hint: 'Basis retry-interval in milliseconden voor Sevensa queue verwerking (standaard 15000ms).'
         },
-        HUBSPOT_QUEUE_MAX_ATTEMPTS: {
+        SEVENSA_QUEUE_MAX_ATTEMPTS: {
           type: 'number',
           inputMode: 'numeric',
           min: '1',
@@ -720,18 +720,18 @@ function renderPage() {
         return card;
       }
 
-      function createHubSpotStatusCard() {
+      function createSevensaStatusCard() {
         const card = document.createElement('section');
         card.className = 'field integration-card';
 
         const heading = document.createElement('h2');
-        heading.textContent = 'HubSpot submit & queue status';
+        heading.textContent = 'Sevensa submit & queue status';
         card.appendChild(heading);
 
         const description = document.createElement('p');
         description.className = 'hint';
         description.textContent =
-          'Monitor de HubSpot submit URL, retry-queue en dead letters. Gebruik flush voor handmatige retries of verifieer de submit URL via rentguy instructies.';
+          'Monitor de Sevensa submit URL, retry-queue en dead letters. Gebruik flush voor handmatige retries of verifieer de submit URL via rentguy instructies.';
         card.appendChild(description);
 
         const indicator = document.createElement('div');
@@ -768,7 +768,7 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Status verversen';
         refreshButton.addEventListener('click', () => {
-          refreshHubSpotStatus(true).catch((error) => {
+          refreshSevensaStatus(true).catch((error) => {
             console.error(error);
           });
         });
@@ -780,7 +780,7 @@ function renderPage() {
         flushButton.textContent = 'Queue flushen';
         flushButton.disabled = true;
         flushButton.addEventListener('click', () => {
-          flushHubSpotQueue().catch((error) => {
+          flushSevensaQueue().catch((error) => {
             console.error(error);
           });
         });
@@ -792,7 +792,7 @@ function renderPage() {
         resultMessage.className = 'hint result';
         card.appendChild(resultMessage);
 
-        hubSpotStatusControls = {
+        sevensaStatusControls = {
           card,
           indicator,
           queueValue,
@@ -1355,45 +1355,45 @@ function renderPage() {
         rentGuyStatusControls.flushButton.disabled = !configured || queueSize === 0;
       }
 
-      function renderHubSpotStatus(status) {
-        if (!hubSpotStatusControls) {
+      function renderSevensaStatus(status) {
+        if (!sevensaStatusControls) {
           return;
         }
 
         const configured = Boolean(status && status.configured);
-        hubSpotStatusControls.indicator.dataset.state = configured ? 'configured' : 'missing';
-        hubSpotStatusControls.indicator.textContent = configured
+        sevensaStatusControls.indicator.dataset.state = configured ? 'configured' : 'missing';
+        sevensaStatusControls.indicator.textContent = configured
           ? 'Submit URL actief'
           : 'Submit URL ontbreekt';
 
         const queueSize = status && Number.isFinite(status.queueSize) ? status.queueSize : 0;
-        hubSpotStatusControls.queueValue.textContent = String(queueSize);
+        sevensaStatusControls.queueValue.textContent = String(queueSize);
 
         const deadLetters = status && Number.isFinite(status.deadLetterCount) ? status.deadLetterCount : 0;
-        hubSpotStatusControls.deadLetterValue.textContent = String(deadLetters);
+        sevensaStatusControls.deadLetterValue.textContent = String(deadLetters);
 
         if (status && status.nextInQueue) {
           const next = status.nextInQueue;
           const attempts = Number.isFinite(next.attempts) ? next.attempts : 0;
           const detail = next.lastError ? ' - ' + next.lastError : '';
-          hubSpotStatusControls.nextAttemptValue.textContent =
+          sevensaStatusControls.nextAttemptValue.textContent =
             formatDateTime(next.nextAttemptAt) + ' - poging ' + attempts + detail;
         } else {
-          hubSpotStatusControls.nextAttemptValue.textContent = 'Geen wachtrij actief';
+          sevensaStatusControls.nextAttemptValue.textContent = 'Geen wachtrij actief';
         }
 
         if (status && status.lastDeadLetter) {
           const dead = status.lastDeadLetter;
           const message = dead.lastError || 'Onbekende fout';
-          hubSpotStatusControls.lastErrorValue.textContent =
+          sevensaStatusControls.lastErrorValue.textContent =
             formatDateTime(dead.droppedAt) + ' - ' + message;
         } else if (status && status.nextInQueue && status.nextInQueue.lastError) {
-          hubSpotStatusControls.lastErrorValue.textContent = status.nextInQueue.lastError;
+          sevensaStatusControls.lastErrorValue.textContent = status.nextInQueue.lastError;
         } else {
-          hubSpotStatusControls.lastErrorValue.textContent = 'Geen fouten geregistreerd';
+          sevensaStatusControls.lastErrorValue.textContent = 'Geen fouten geregistreerd';
         }
 
-        hubSpotStatusControls.flushButton.disabled = !configured || queueSize === 0;
+        sevensaStatusControls.flushButton.disabled = !configured || queueSize === 0;
       }
 
       async function refreshRentGuyStatus(showToastOnSuccess = false) {
@@ -1427,47 +1427,47 @@ function renderPage() {
         }
       }
 
-      async function refreshHubSpotStatus(showToastOnSuccess = false) {
-        if (!hubSpotStatusControls) {
+      async function refreshSevensaStatus(showToastOnSuccess = false) {
+        if (!sevensaStatusControls) {
           return;
         }
 
-        hubSpotStatusControls.card.dataset.loading = 'true';
-        hubSpotStatusControls.resultMessage.textContent = '';
+        sevensaStatusControls.card.dataset.loading = 'true';
+        sevensaStatusControls.resultMessage.textContent = '';
 
         try {
-          const response = await fetch('./api/integrations/hubspot/status', {
+          const response = await fetch('./api/integrations/sevensa/status', {
             headers: { Accept: 'application/json' }
           });
 
           if (!response.ok) {
-            throw new Error('Kon HubSpot status niet ophalen');
+            throw new Error('Kon Sevensa status niet ophalen');
           }
 
           const payload = await response.json();
-          renderHubSpotStatus(payload);
+          renderSevensaStatus(payload);
           if (showToastOnSuccess) {
-            showToast('HubSpot status bijgewerkt');
+            showToast('Sevensa status bijgewerkt');
           }
         } catch (error) {
           console.error(error);
-          hubSpotStatusControls.resultMessage.textContent = error.message || 'HubSpot status niet beschikbaar';
-          showToast(error.message || 'HubSpot status niet beschikbaar');
+          sevensaStatusControls.resultMessage.textContent = error.message || 'Sevensa status niet beschikbaar';
+          showToast(error.message || 'Sevensa status niet beschikbaar');
         } finally {
-          delete hubSpotStatusControls.card.dataset.loading;
+          delete sevensaStatusControls.card.dataset.loading;
         }
       }
 
-      async function flushHubSpotQueue() {
-        if (!hubSpotStatusControls) {
+      async function flushSevensaQueue() {
+        if (!sevensaStatusControls) {
           return;
         }
 
-        hubSpotStatusControls.card.dataset.loading = 'true';
-        hubSpotStatusControls.resultMessage.textContent = '';
+        sevensaStatusControls.card.dataset.loading = 'true';
+        sevensaStatusControls.resultMessage.textContent = '';
 
         try {
-          const response = await fetch('./api/integrations/hubspot/flush', {
+          const response = await fetch('./api/integrations/sevensa/flush', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -1477,19 +1477,19 @@ function renderPage() {
           });
 
           if (!response.ok) {
-            throw new Error('Kon HubSpot queue niet flushen');
+            throw new Error('Kon Sevensa queue niet flushen');
           }
 
           const payload = await response.json();
           if (!payload.configured) {
-            hubSpotStatusControls.resultMessage.textContent =
-              'Submit URL ontbreekt – configureer eerst de HubSpot submit URL.';
-            showToast('HubSpot flush overgeslagen: configureer de submit URL');
-            await refreshHubSpotStatus();
+            sevensaStatusControls.resultMessage.textContent =
+              'Submit URL ontbreekt – configureer eerst de Sevensa submit URL.';
+            showToast('Sevensa flush overgeslagen: configureer de submit URL');
+            await refreshSevensaStatus();
             return;
           }
 
-          hubSpotStatusControls.resultMessage.textContent =
+          sevensaStatusControls.resultMessage.textContent =
             'Flush uitgevoerd: ' +
             payload.delivered +
             '/' +
@@ -1497,19 +1497,19 @@ function renderPage() {
             ' verstuurd, ' +
             payload.remaining +
             ' resterend.';
-          showToast('HubSpot queue flush uitgevoerd');
-          await refreshHubSpotStatus();
+          showToast('Sevensa queue flush uitgevoerd');
+          await refreshSevensaStatus();
         } catch (error) {
           console.error(error);
-          hubSpotStatusControls.resultMessage.textContent = error.message || 'Flush mislukt';
-          showToast(error.message || 'HubSpot flush mislukt');
+          sevensaStatusControls.resultMessage.textContent = error.message || 'Flush mislukt';
+          showToast(error.message || 'Sevensa flush mislukt');
           try {
-            await refreshHubSpotStatus();
+            await refreshSevensaStatus();
           } catch (refreshError) {
             console.error(refreshError);
           }
         } finally {
-          delete hubSpotStatusControls.card.dataset.loading;
+          delete sevensaStatusControls.card.dataset.loading;
         }
       }
 
@@ -1589,7 +1589,7 @@ function renderPage() {
         if (group.id === 'rentguy') {
           section.appendChild(createRentGuyStatusCard());
         } else if (group.id === 'automation') {
-          section.appendChild(createHubSpotStatusCard());
+          section.appendChild(createSevensaStatusCard());
           section.appendChild(createPerformanceStatusCard());
         } else if (group.id === 'personalization') {
           section.appendChild(createVariantAnalyticsCard());
@@ -1607,7 +1607,7 @@ function renderPage() {
         tabsContainer.innerHTML = '';
         groupsContainer.innerHTML = '';
         rentGuyStatusControls = null;
-        hubSpotStatusControls = null;
+        sevensaStatusControls = null;
         performanceStatusControls = null;
         variantAnalyticsControls = null;
 
@@ -1656,8 +1656,8 @@ function renderPage() {
           });
         }
 
-        if (hubSpotStatusControls) {
-          refreshHubSpotStatus().catch((error) => {
+        if (sevensaStatusControls) {
+          refreshSevensaStatus().catch((error) => {
             console.error(error);
           });
         }
@@ -1778,8 +1778,13 @@ router.post('/api/variables', async (req, res, next) => {
   }
 });
 
-router.get('/api/integrations/rentguy/status', (_req, res) => {
-  res.json(rentGuyService.getStatus());
+router.get('/api/integrations/rentguy/status', async (_req, res, next) => {
+  try {
+    const status = await rentGuyService.getStatus();
+    res.json(status);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/api/integrations/rentguy/flush', async (req, res, next) => {
@@ -1794,16 +1799,21 @@ router.post('/api/integrations/rentguy/flush', async (req, res, next) => {
   }
 });
 
-router.get('/api/integrations/hubspot/status', (_req, res) => {
-  res.json(hubspotService.getStatus());
+router.get('/api/integrations/sevensa/status', async (_req, res, next) => {
+  try {
+    const status = await sevensaService.getStatus();
+    res.json(status);
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.post('/api/integrations/hubspot/flush', async (req, res, next) => {
+router.post('/api/integrations/sevensa/flush', async (req, res, next) => {
   try {
     const rawLimit = req.body?.limit;
     const parsedLimit = Number(rawLimit);
     const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
-    const result = await hubspotService.flushQueue(limit);
+    const result = await sevensaService.flushQueue(limit);
     res.json(result);
   } catch (error) {
     next(error);

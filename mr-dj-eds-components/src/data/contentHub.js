@@ -3,7 +3,7 @@ export const CONTENT_HUB_SECTIONS = [
     id: 'corporate-roi',
     title: 'Corporate ROI library',
     description:
-      'Gebruik deze assets in nurture flows en automation om CFO’s en event teams te overtuigen. Klaar voor HubSpot en RentGuy workflows.',
+      'Gebruik deze assets in nurture flows en automation om CFO’s en event teams te overtuigen. Klaar voor Sevensa en RentGuy workflows.',
     hero: {
       label: 'ROI demo',
       videoUrl: 'https://videos.rentguy.nl/mrdj/roi-demo.mp4',

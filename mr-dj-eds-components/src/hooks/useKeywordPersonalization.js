@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { trackEvent } from '../lib/analytics.js';
 import { resolveApiBase } from '../lib/apiBase.js';
+import { getDocument, getWindow } from '../lib/environment.js';
 
 const FALLBACK_PERSONALIZATION = {
   id: 'default_master',
@@ -204,16 +205,17 @@ export function useKeywordPersonalization() {
   );
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    const browser = getWindow();
+    if (!browser) {
       setState((prev) => ({ ...prev, loading: false }));
       return undefined;
     }
 
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(browser.location.search);
     const keyword = params.get('keyword') || params.get('utm_term') || params.get('q');
     const persona = params.get('persona') || params.get('intent');
-    const landing = window.location.pathname;
-    const referrer = typeof document !== 'undefined' ? document.referrer : undefined;
+    const landing = browser.location.pathname;
+    const referrer = getDocument()?.referrer;
 
     const query = new URLSearchParams();
     if (keyword) query.set('keyword', keyword);

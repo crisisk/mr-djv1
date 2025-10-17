@@ -1,4 +1,5 @@
 import tokens from './lib/design-tokens.json';
+import { getDocument } from './lib/environment.js';
 
 const flattenTokens = (object, prefix = []) => {
   return Object.entries(object).reduce((acc, [key, value]) => {
@@ -29,7 +30,7 @@ const flattenTokens = (object, prefix = []) => {
  * When no element is supplied, the document root is used so the tokens are
  * available application wide.
  */
-export const applyDesignTokens = (target = typeof document !== 'undefined' ? document.documentElement : null) => {
+export const applyDesignTokens = (target = getDocument()?.documentElement ?? null) => {
   if (!target || !target.style) {
     return;
   }
