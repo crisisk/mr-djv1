@@ -20,7 +20,7 @@ router.get('/', (_req, res) => {
     reviews: '/reviews',
     integrations: {
       rentGuy: '/integrations/rentguy/status',
-      hubSpot: '/integrations/hubspot/status'
+      sevensa: '/integrations/sevensa/status'
     },
     personalization: {
       keyword: '/personalization/keyword',

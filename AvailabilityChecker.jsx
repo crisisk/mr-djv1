@@ -3,11 +3,11 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import Button from '../Atoms/Buttons.jsx';
 
-// HubSpot Form Submission Logic (Placeholder)
-const submitToHubSpot = async (formData) => {
-  const portalId = 'YOUR_HUBSPOT_PORTAL_ID'; // VERVANGEN
-  const formGuid = 'YOUR_HUBSPOT_FORM_GUID'; // VERVANGEN
-  const url = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`;
+// Sevensa Form Submission Logic (Placeholder)
+const submitToSevensa = async (formData) => {
+  const accountId = 'YOUR_SEVENSA_ACCOUNT_ID'; // VERVANGEN
+  const formId = 'YOUR_SEVENSA_FORM_ID'; // VERVANGEN
+  const url = `https://api.sevensa.com/forms/${accountId}/${formId}/submit`;
 
   const fields = Object.keys(formData).map(key => ({
     name: key,
@@ -62,8 +62,8 @@ const AvailabilityChecker = () => {
       // Voeg hier meer velden toe indien nodig
     };
 
-    // Simuleer beschikbaarheidscheck en HubSpot-verzending
-    const result = await submitToHubSpot(formData);
+    // Simuleer beschikbaarheidscheck en Sevensa-verzending
+    const result = await submitToSevensa(formData);
 
     if (result.success) {
       setStatus({ type: 'success', message: 'Beschikbaarheid gecontroleerd! We nemen contact op via e-mail.' });

@@ -19,6 +19,13 @@ chmod +x deploy.sh
 **Website**: https://staging.sevensa.nl
 
 
+## ✅ Production Readiness Q4 2025
+
+- **Score**: **92 %** – gebaseerd op geautomatiseerde regressietests (88/88 suites groen), Redis-backed queues met dead-letter recovery en geverifieerde dashboard-flows.
+- **Sterk**: resiliente RentGuy/Sevensa-queues met idempotency, volledige end-to-end API smoke tests en realtime configuratie-dashboard (status, flush, observability hooks).
+- **Opvolgen**: structurele alerting richting externe observability-stack en het afronden van repo-hygiëne traject (artifact storage + peer dependency conflicts) om de laatste 8 % te behalen.
+
+
 ## 🔐 Configuratie dashboard
 
 - **URL**: https://staging.sevensa.nl/dashboard

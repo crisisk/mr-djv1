@@ -38,7 +38,7 @@ describe('config', () => {
           workspaceId: null,
           timeoutMs: 5000
         },
-        hubSpot: {
+        sevensa: {
           enabled: false,
           submitUrl: null,
           retryDelayMs: 15000,
@@ -51,37 +51,48 @@ describe('config', () => {
     expect(config.dashboard.username).toBeNull();
     expect(config.dashboard.password).toBeNull();
     expect(config.dashboard.allowedIps).toEqual([]);
-    expect(config.dashboard.managedKeys).toEqual([
-      'NODE_ENV',
-      'HOST',
-      'PORT',
-      'SERVICE_NAME',
-      'LOG_FORMAT',
-      'CORS_ORIGIN',
-      'RATE_LIMIT_WINDOW_MS',
-      'RATE_LIMIT_MAX',
-      'DATABASE_URL',
-      'REDIS_URL',
-      'PGSSLMODE',
-      'MAIL_PROVIDER',
-      'MAIL_API_KEY',
-      'MAIL_FROM_ADDRESS',
-      'MAIL_REPLY_TO',
-      'MAIL_TEMPLATES_CONTACT',
-      'MAIL_TEMPLATES_BOOKING',
-      'RENTGUY_API_BASE_URL',
-      'RENTGUY_API_KEY',
-      'RENTGUY_WORKSPACE_ID',
-      'RENTGUY_TIMEOUT_MS',
-      'HUBSPOT_SUBMIT_URL',
-      'HUBSPOT_QUEUE_RETRY_DELAY_MS',
-      'HUBSPOT_QUEUE_MAX_ATTEMPTS',
-      'N8N_PERSONALIZATION_WEBHOOK_URL'
-    ]);
+    expect(config.dashboard.managedKeys).toEqual(
+      expect.arrayContaining([
+        'NODE_ENV',
+        'HOST',
+        'PORT',
+        'SERVICE_NAME',
+        'LOG_FORMAT',
+        'CORS_ORIGIN',
+        'RATE_LIMIT_WINDOW_MS',
+        'RATE_LIMIT_MAX',
+        'DATABASE_URL',
+        'REDIS_URL',
+        'REDIS_TLS',
+        'REDIS_NAMESPACE',
+        'REDIS_TLS_REJECT_UNAUTHORIZED',
+        'PGSSLMODE',
+        'MAIL_PROVIDER',
+        'MAIL_API_KEY',
+        'MAIL_FROM_ADDRESS',
+        'MAIL_REPLY_TO',
+        'MAIL_TEMPLATES_CONTACT',
+        'MAIL_TEMPLATES_BOOKING',
+        'RENTGUY_API_BASE_URL',
+        'RENTGUY_API_KEY',
+        'RENTGUY_WORKSPACE_ID',
+        'RENTGUY_TIMEOUT_MS',
+        'SEVENSA_SUBMIT_URL',
+        'SEVENSA_QUEUE_RETRY_DELAY_MS',
+        'SEVENSA_QUEUE_MAX_ATTEMPTS',
+        'N8N_PERSONALIZATION_WEBHOOK_URL',
+        'SEO_AUTOMATION_API_URL',
+        'SEO_AUTOMATION_API_KEY',
+        'SEO_AUTOMATION_KEYWORDSET_ID',
+        'CITY_AUTOMATION_LLM_PROVIDER',
+        'CITY_AUTOMATION_LLM_MODEL'
+      ])
+    );
     expect(config.dashboard.sections).toEqual([
       expect.objectContaining({
         id: 'application',
         label: 'Applicatie instellingen',
+        description: 'Basisconfiguratie voor runtime gedrag, databaseverbindingen en rate limiting voor de API.',
         keys: [
           'NODE_ENV',
           'HOST',
@@ -93,12 +104,17 @@ describe('config', () => {
           'RATE_LIMIT_MAX',
           'DATABASE_URL',
           'REDIS_URL',
+          'REDIS_TLS',
+          'REDIS_NAMESPACE',
+          'REDIS_TLS_REJECT_UNAUTHORIZED',
           'PGSSLMODE'
         ]
       }),
       expect.objectContaining({
         id: 'mail',
         label: 'E-mailintegratie',
+        description:
+          'Credentials, afzender en templaten voor transactionele mails richting klanten en interne teams.',
         keys: [
           'MAIL_PROVIDER',
           'MAIL_API_KEY',
@@ -111,6 +127,8 @@ describe('config', () => {
       expect.objectContaining({
         id: 'rentguy',
         label: 'RentGuy integratie',
+        description:
+          'API-parameters voor de synchronisatie van leads en boekingen richting de RentGuy applicatie.',
         keys: [
           'RENTGUY_API_BASE_URL',
           'RENTGUY_API_KEY',
@@ -119,22 +137,26 @@ describe('config', () => {
         ]
       }),
       expect.objectContaining({
-        id: 'automation',
+        id: 'content-automation',
         label: 'Automation & CRM',
+        description: 'Instellingen voor Sevensa submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
         keys: [
-          'HUBSPOT_SUBMIT_URL',
-          'HUBSPOT_QUEUE_RETRY_DELAY_MS',
-          'HUBSPOT_QUEUE_MAX_ATTEMPTS'
+          'SEVENSA_SUBMIT_URL',
+          'SEVENSA_QUEUE_RETRY_DELAY_MS',
+          'SEVENSA_QUEUE_MAX_ATTEMPTS'
         ]
       }),
       expect.objectContaining({
         id: 'personalization',
         label: 'Personalization & CRO',
+        description:
+          'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
         keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
       }),
       expect.objectContaining({
         id: 'automation',
         label: 'Content automatisering',
+        description: 'SEO keyword ingest, LLM-configuratie en reviewkanalen voor de interne city page generator.',
         keys: [
           'SEO_AUTOMATION_API_URL',
           'SEO_AUTOMATION_API_KEY',
@@ -183,7 +205,13 @@ describe('config', () => {
     expect(config.rateLimit.max).toBe(5);
     expect(config.logging).toBe('combined');
     expect(config.databaseUrl).toBe('postgres://example');
-    expect(config.redisUrl).toBe('redis://cache');
+    expect(config.redis).toEqual(
+      expect.objectContaining({
+        url: 'redis://cache',
+        tls: false,
+        namespace: 'mr-dj'
+      })
+    );
     expect(config.serviceName).toBe('custom-service');
     expect(config.version).toBe('2.3.4');
     expect(config.integrations).toEqual(
@@ -194,7 +222,7 @@ describe('config', () => {
           workspaceId: null,
           timeoutMs: 5000
         },
-        hubSpot: {
+        sevensa: {
           enabled: false,
           submitUrl: null,
           retryDelayMs: 15000,

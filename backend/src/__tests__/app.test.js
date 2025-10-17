@@ -84,7 +84,7 @@ describe('Mister DJ API', () => {
     expect(response.body.endpoints.integrations).toEqual(
       expect.objectContaining({
         rentGuy: '/integrations/rentguy/status',
-        hubSpot: '/integrations/hubspot/status'
+        sevensa: '/integrations/sevensa/status'
       })
     );
     expect(response.body.endpoints.personalization).toEqual(
@@ -158,7 +158,7 @@ describe('Mister DJ API', () => {
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
     expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
-    expect(response.body.hubSpotSync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
   });
 
   it('provides a curated set of fallback packages when no database is available', async () => {
@@ -227,8 +227,8 @@ describe('Mister DJ API', () => {
     });
   });
 
-  it('provides integration status for HubSpot', async () => {
-    const response = await request('GET', '/integrations/hubspot/status');
+  it('provides integration status for Sevensa', async () => {
+    const response = await request('GET', '/integrations/sevensa/status');
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({

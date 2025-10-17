@@ -1,8 +1,9 @@
-const { randomUUID } = require('crypto');
+const { randomUUID, createHash } = require('crypto');
+const { createDurableQueue } = require('../lib/durableQueue');
+const { logger } = require('../lib/logger');
 
 const DEFAULT_TIMEOUT_MS = 5000;
 
-const queue = [];
 let lastSyncSuccess = null;
 let lastSyncError = null;
 
@@ -56,36 +57,20 @@ function buildHeaders() {
   return headers;
 }
 
-function createQueueEntry(resource, payload, meta = {}) {
-  return {
-    id: randomUUID(),
-    resource,
-    payload,
-    meta,
-    attempts: 0,
-    enqueuedAt: new Date(),
-    lastAttemptAt: null,
-    lastError: null
-  };
-}
-
-async function deliver(entry) {
+async function deliver(resource, payload) {
   const baseUrl = getBaseUrl();
   if (!baseUrl) {
     throw new Error('RentGuy base URL is not configured');
   }
 
-  entry.attempts += 1;
-  entry.lastAttemptAt = new Date();
-
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), getTimeoutMs());
 
   try {
-    const response = await fetch(`${baseUrl}/${entry.resource}`, {
+    const response = await fetch(`${baseUrl}/${resource}`, {
       method: 'POST',
       headers: buildHeaders(),
-      body: JSON.stringify(entry.payload),
+      body: JSON.stringify(payload),
       signal: controller.signal
     });
 
@@ -94,55 +79,91 @@ async function deliver(entry) {
       throw new Error(`RentGuy responded with ${response.status}${text ? `: ${text}` : ''}`);
     }
 
-    entry.lastError = null;
-    lastSyncSuccess = {
-      at: new Date(),
-      resource: entry.resource,
-      attempts: entry.attempts
-    };
-
     return true;
-  } catch (error) {
-    entry.lastError = error.message;
-    lastSyncError = {
-      at: new Date(),
-      resource: entry.resource,
-      message: error.message,
-      attempts: entry.attempts
-    };
-    throw error;
   } finally {
     clearTimeout(timeout);
   }
 }
 
-function enqueue(entry) {
-  queue.push(entry);
-  return {
-    delivered: false,
-    queued: true,
-    queueSize: queue.length,
-    reason: entry.lastError ? 'delivery-failed' : 'not-configured',
-    lastError: entry.lastError
-  };
+function buildDedupeKey(resource, payload) {
+  const hash = createHash('sha256').update(`${resource}:${JSON.stringify(payload)}`).digest('hex');
+  return `${resource}:${hash}`;
 }
 
-async function sendOrQueue(resource, payload, meta) {
-  const entry = createQueueEntry(resource, payload, meta);
+const queue = createDurableQueue(
+  'rentguy-sync',
+  async (job) => {
+    const { resource, payload } = job.data;
+    const attempts = job.attemptsMade + 1;
 
+    try {
+      await deliver(resource, payload);
+      lastSyncSuccess = {
+        at: new Date(),
+        resource,
+        attempts
+      };
+      return { status: 'delivered' };
+    } catch (error) {
+      lastSyncError = {
+        at: new Date(),
+        resource,
+        message: error.message,
+        attempts
+      };
+      logger.error({ err: error, jobId: job.id, resource }, 'RentGuy delivery failed');
+      throw error;
+    }
+  },
+  {
+    concurrency: 5
+  }
+);
+
+function computeQueueSize(counts) {
+  return (counts.waiting || 0) + (counts.delayed || 0);
+}
+
+async function enqueue(resource, payload, meta = {}) {
+  const dedupeKey = meta.dedupeKey || buildDedupeKey(resource, payload);
+  await queue.addJob(
+    {
+      id: meta.id || randomUUID(),
+      resource,
+      payload,
+      meta
+    },
+    { dedupeKey }
+  );
+  const metrics = await queue.getMetrics();
+  return computeQueueSize(metrics.counts);
+}
+
+async function tryImmediateDelivery(resource, payload, meta = {}) {
   if (!isConfigured()) {
-    return enqueue(entry);
+    const queueSize = await enqueue(resource, payload, meta);
+    return { delivered: false, queued: true, reason: 'not-configured', queueSize };
   }
 
   try {
-    await deliver(entry);
-    return {
-      delivered: true,
-      queued: false,
-      queueSize: queue.length
+    await deliver(resource, payload);
+    lastSyncSuccess = {
+      at: new Date(),
+      resource,
+      attempts: 1
     };
-  } catch (_error) {
-    return enqueue(entry);
+    const metrics = await queue.getMetrics();
+    return { delivered: true, queued: false, queueSize: computeQueueSize(metrics.counts) };
+  } catch (error) {
+    lastSyncError = {
+      at: new Date(),
+      resource,
+      message: error.message,
+      attempts: 1
+    };
+    logger.warn({ err: error, resource }, 'RentGuy delivery deferred to queue');
+    const queueSize = await enqueue(resource, payload, meta);
+    return { delivered: false, queued: true, reason: 'delivery-failed', queueSize };
   }
 }
 
@@ -183,73 +204,113 @@ function mapLeadPayload(lead) {
 }
 
 async function syncBooking(booking, meta = {}) {
-  return sendOrQueue('bookings', mapBookingPayload(booking), meta);
+  return tryImmediateDelivery('bookings', mapBookingPayload(booking), meta);
 }
 
 async function syncLead(lead, meta = {}) {
-  return sendOrQueue('leads', mapLeadPayload(lead), meta);
+  return tryImmediateDelivery('leads', mapLeadPayload(lead), meta);
 }
 
 async function syncPersonalizationEvent(event, meta = {}) {
-  return sendOrQueue('personalization-events', event, meta);
+  return tryImmediateDelivery('personalization-events', event, meta);
 }
 
-async function flushQueue(limit = queue.length) {
+async function flushQueue(limit = 50) {
   const configured = isConfigured();
-
-  if (!configured || queue.length === 0) {
+  const metricsBefore = await queue.getMetrics();
+  if (!configured) {
     return {
-      configured,
+      configured: false,
       attempted: 0,
       delivered: 0,
-      remaining: queue.length
+      remaining: computeQueueSize(metricsBefore.counts)
     };
   }
 
+  const jobs = await queue.queue.getJobs(['delayed', 'waiting', 'failed'], 0, limit - 1, true);
   let attempted = 0;
-  let deliveredCount = 0;
+  let delivered = 0;
 
-  for (let index = 0; index < queue.length && attempted < limit; ) {
-    const entry = queue[index];
+  for (const job of jobs) {
     attempted += 1;
-
     try {
-      await deliver(entry);
-      queue.splice(index, 1);
-      deliveredCount += 1;
-    } catch (_error) {
-      index += 1;
+      if (job.failedReason) {
+        await job.retry();
+      } else {
+        await job.promote();
+      }
+      const result = await job.waitUntilFinished(queue.queueEvents, { timeout: 10000 }).catch(() => null);
+      if (result && result.status === 'delivered') {
+        delivered += 1;
+      }
+    } catch (error) {
+      logger.error({ err: error, jobId: job.id }, 'Failed to flush rentguy job');
+      await job.waitUntilFinished(queue.queueEvents, { timeout: 500 }).catch(() => null);
     }
   }
 
+  const metrics = await queue.getMetrics();
   return {
     configured: true,
     attempted,
-    delivered: deliveredCount,
-    remaining: queue.length
+    delivered,
+    remaining: computeQueueSize(metrics.counts)
   };
 }
 
-function getStatus() {
+async function getStatus() {
+  const configured = isConfigured();
+  const metrics = await queue.getMetrics();
+  const waitingJobs = await queue.queue.getJobs(['waiting', 'delayed'], 0, 0, true);
+  const nextJob = waitingJobs[0] || null;
+  const deadLetterCounts = await queue.deadLetterQueue.getJobCounts('waiting', 'delayed', 'failed');
+
   return {
-    configured: isConfigured(),
+    configured,
     workspaceId: getWorkspaceId(),
-    queueSize: queue.length,
+    queueSize: computeQueueSize(metrics.counts),
+    activeJobs: metrics.counts.active,
+    metrics: {
+      retryAgeP95: metrics.retryAgeP95,
+      counts: metrics.counts
+    },
+    deadLetterCount:
+      (deadLetterCounts.waiting || 0) + (deadLetterCounts.delayed || 0) + (deadLetterCounts.failed || 0),
     lastSyncSuccess,
     lastSyncError,
-    nextInQueue: queue[0]
+    nextInQueue: nextJob
       ? {
-          resource: queue[0].resource,
-          enqueuedAt: queue[0].enqueuedAt,
-          attempts: queue[0].attempts,
-          lastError: queue[0].lastError
+          resource: nextJob.data.resource,
+          enqueuedAt: new Date(nextJob.timestamp),
+          attempts: nextJob.attemptsMade,
+          dedupeKey: nextJob.id
         }
       : null
   };
 }
 
-function reset() {
-  queue.splice(0, queue.length);
+async function replayDeadLetters(limit = 20) {
+  const jobs = await queue.deadLetterQueue.getJobs(['waiting', 'delayed'], 0, limit - 1, true);
+  let replayed = 0;
+
+  for (const job of jobs) {
+    try {
+      await enqueue(job.data.data.resource, job.data.data.payload, job.data.data.meta);
+      await job.remove();
+      replayed += 1;
+    } catch (error) {
+      logger.error({ err: error, jobId: job.id }, 'Failed to replay dead-letter job');
+    }
+  }
+
+  return { replayed };
+}
+
+async function reset() {
+  await Promise.all([
+    queue.queue.drain(true),
+    queue.deadLetterQueue.drain(true)
+  ]);
   lastSyncSuccess = null;
   lastSyncError = null;
 }
@@ -259,6 +320,7 @@ module.exports = {
   syncLead,
   syncPersonalizationEvent,
   flushQueue,
+  replayDeadLetters,
   getStatus,
   reset
 };

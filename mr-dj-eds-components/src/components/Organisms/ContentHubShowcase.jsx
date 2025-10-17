@@ -71,7 +71,7 @@ const ContentHubShowcase = ({ sections = CONTENT_HUB_SECTIONS }) => {
                   <p className="mt-spacing-md text-sm text-neutral-light/80">{section.spotlight?.quote}</p>
                 </div>
                 <p className="text-xs text-neutral-light/60">
-                  Klaar voor automation: synchroniseer resources met HubSpot submit URL via het Config Dashboard en push leads naar
+                  Klaar voor automation: synchroniseer resources met Sevensa submit URL via het Config Dashboard en push leads naar
                   RentGuy voor scoring.
                 </p>
               </div>

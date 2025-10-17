@@ -7,45 +7,49 @@ const { getStatus: getRentGuyStatus } = require('../services/rentGuyService');
 
 const router = express.Router();
 
-router.get('/', (_req, res) => {
+router.get('/', async (_req, res, next) => {
   const dbStatus = db.getStatus();
   const contactStatus = getContactServiceStatus();
   const bookingStatus = getBookingServiceStatus();
-  const rentGuyStatus = getRentGuyStatus();
+  try {
+    const rentGuyStatus = await getRentGuyStatus();
 
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    service: config.serviceName,
-    version: config.version,
-    environment: config.env,
-    uptime: process.uptime(),
-    dependencies: {
-      database: {
-        configured: dbStatus.configured,
-        connected: dbStatus.connected,
-        lastError: dbStatus.lastError,
-        lastSuccessfulAt: dbStatus.lastSuccessfulAt,
-        lastFailureAt: dbStatus.lastFailureAt
-      },
-      storage: {
-        contact: {
-          strategy: contactStatus.storageStrategy,
-          fallbackQueueSize: contactStatus.fallbackQueueSize
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      service: config.serviceName,
+      version: config.version,
+      environment: config.env,
+      uptime: process.uptime(),
+      dependencies: {
+        database: {
+          configured: dbStatus.configured,
+          connected: dbStatus.connected,
+          lastError: dbStatus.lastError,
+          lastSuccessfulAt: dbStatus.lastSuccessfulAt,
+          lastFailureAt: dbStatus.lastFailureAt
         },
-        bookings: {
-          strategy: bookingStatus.storageStrategy,
-          fallbackQueueSize: bookingStatus.fallbackQueueSize
-        }
-      },
-      integrations: {
-        rentGuy: rentGuyStatus,
-        personalization: {
-          automationWebhookConfigured: Boolean(config.personalization?.automationWebhook)
+        storage: {
+          contact: {
+            strategy: contactStatus.storageStrategy,
+            fallbackQueueSize: contactStatus.fallbackQueueSize
+          },
+          bookings: {
+            strategy: bookingStatus.storageStrategy,
+            fallbackQueueSize: bookingStatus.fallbackQueueSize
+          }
+        },
+        integrations: {
+          rentGuy: rentGuyStatus,
+          personalization: {
+            automationWebhookConfigured: Boolean(config.personalization?.automationWebhook)
+          }
         }
       }
-    }
-  });
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
