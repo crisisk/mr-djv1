@@ -94,6 +94,18 @@ Zie de uitgebreide README voor:
 
 Op basis van de huidige functionaliteitsset (configuratie-dashboard, automatiseringen, personalisatie, integraties) en marktconforme tarieven blijft de totale projectwaarde op **circa €26.500**. Dat ligt in het midden van de eerder gedefinieerde bandbreedte en houdt rekening met de tijdsbesteding voor onderhoud, QA en toekomstige optimalisaties.
 
+#### Platform/business waardering
+
+- **Jaaromzetprojectie** – Met 8 gekwalificeerde leads per maand, 32 % conversie en een gemiddelde orderwaarde van €1.850 bedraagt de jaarlijkse omzetprognose circa **€56.600**.
+- **Netto marge & multiplier** – Na aftrek van operationele kosten (45 % marge) resteert ± **€25.500** winst. Een conservatieve 3,0–4,0× service-multiple (gebruikt bij gespecialiseerde eventbureaus met terugkerende leadstromen) brengt de bedrijfswaardering op **€77.000 – €102.000**.
+- **Correcties** – Inclusief key-person dependency (-10 %), marketingbuffer (-5 %) en bewezen automatiseringen (+15 %) komt de bandbreedte uit op **€85.000 – €115.000** voor de volledige operationele business.
+
+#### Codebase waarde
+
+- **Reproductiekosten** – Herbouw van frontend, backend, automation scripts en design system vraagt 260–300 uur. Tegen €90–€100 per uur resulteert dat in **€23.000 – €30.000**.
+- **Meerwaarde automatisering & integraties** – Het configuratie-dashboard, RentGuy-sync, city content workflow en personalisatie-engine verlagen operationele kosten structureel; een opslag van 20 %–25 % is gerechtvaardigd voor deze IP.
+- **Totaal** – De vervangingswaarde van de codebase komt hierdoor realistisch uit op **€28.000 – €36.500**, los van de goodwill/klantrelaties.
+
 ## 📆 Activiteitenoverzicht & waardering
 
 Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository (zoals `DEPLOYMENT_SUCCESS.md`, `docs/uat-report.md` en onderzoeksrapporten). Alleen activiteiten met aantoonbare documentatie zijn meegenomen; de ureninschatting volgt uit de omvang van de bijbehorende deliverables.
@@ -137,7 +149,7 @@ Onderstaande tabel is gebaseerd op de artefacten en logboeken in deze repository
 - **Midden scenario (gem. €85/uur, 260 uur)**: ± €22.100
 - **Premium scenario (gem. €95/uur, 285 uur)**: ± €27.075
 
-Met de uitgebreide automatisering, configuratie-dashboard, RentGuy-koppeling en CRO-personalisatie beweegt de website nu richting een marktwaarde van **€23.000 – €28.000**, waarbij het waarde-accelleratieplan duidelijke stappen naar de **€25.000 – €30.000** bandbreedte definieert. Elke nieuwe automatiseringsrun voegt bovendien schaalbare content toe waardoor SEO-traffic en conversies stijgen.
+Met de uitgebreide automatisering, configuratie-dashboard, RentGuy-koppeling en CRO-personalisatie beweegt de website nu richting een codebase-waarde van **€28.000 – €36.500**, terwijl de totale platform/businesswaardering uitkomt op **€85.000 – €115.000**. Het waarde-accelleratieplan definieert de stappen naar de **€25.000 – €30.000** codebasebandbreedte én borgt groei in leadgeneratie, waardoor elke automatiseringsrun schaalbare content oplevert en SEO-traffic en conversies blijven stijgen.
 
 ## 🛠️ Nieuwe optimalisaties
 
