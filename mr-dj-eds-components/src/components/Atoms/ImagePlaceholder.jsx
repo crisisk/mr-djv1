@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { Heart, Briefcase, PartyPopper, Music2, Headphones } from 'lucide-react';
 
 /**
  * Image Placeholder Component
@@ -14,31 +15,31 @@ import { memo } from 'react';
 const EVENT_TYPE_CONFIGS = {
   bruiloft: {
     gradient: 'from-secondary-300 via-accent-magenta-200 to-secondary-200',
-    icon: '💍',
+    Icon: Heart,
     label: 'Bruiloft Event',
     textColor: 'text-secondary-800'
   },
   corporate: {
     gradient: 'from-primary-400 via-neutral-600 to-neutral-dark',
-    icon: '🎯',
+    Icon: Briefcase,
     label: 'Corporate Event',
     textColor: 'text-neutral-light'
   },
   private: {
     gradient: 'from-accent-orange-300 via-accent-magenta-200 to-accent-purple-300',
-    icon: '🎉',
+    Icon: PartyPopper,
     label: 'Private Feest',
     textColor: 'text-neutral-dark'
   },
   festival: {
     gradient: 'from-accent-purple-400 via-accent-magenta-400 to-primary-400',
-    icon: '🎵',
+    Icon: Music2,
     label: 'Festival / Nightlife',
     textColor: 'text-neutral-light'
   },
   default: {
     gradient: 'from-neutral-300 via-neutral-200 to-neutral-100',
-    icon: '🎧',
+    Icon: Headphones,
     label: 'Mr. DJ Event',
     textColor: 'text-neutral-dark'
   }
@@ -82,10 +83,14 @@ export const ImagePlaceholder = memo(function ImagePlaceholder({
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full p-4 space-y-2">
-        {showIcon && (
-          <span className="text-6xl md:text-7xl lg:text-8xl opacity-90 animate-pulse">
-            {config.icon}
-          </span>
+        {showIcon && config.Icon && (
+          <div className="opacity-90 animate-pulse">
+            <config.Icon
+              className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24"
+              strokeWidth={1.5}
+              aria-hidden
+            />
+          </div>
         )}
         {showLabel && (
           <div className={`text-center space-y-1 ${config.textColor}`}>
@@ -157,9 +162,15 @@ export const HeroPlaceholder = memo(function HeroPlaceholder({
       {/* Center Content */}
       <div className="relative z-10 flex items-center justify-center h-full">
         <div className={`text-center space-y-4 ${config.textColor}`}>
-          <div className="text-8xl md:text-9xl animate-bounce">
-            {config.icon}
-          </div>
+          {config.Icon && (
+            <div className="flex justify-center animate-bounce">
+              <config.Icon
+                className="w-32 h-32 md:w-40 md:h-40"
+                strokeWidth={1.5}
+                aria-hidden
+              />
+            </div>
+          )}
           <div className="space-y-2">
             <h3 className="text-2xl md:text-4xl font-bold">
               {config.label} Hero Image

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Send, Loader2 } from 'lucide-react';
 
 /**
  * Lead Capture Form voor Mr-DJ website
@@ -167,6 +168,9 @@ const ContactForm = () => {
           font-size: 1.1rem;
           cursor: pointer;
           transition: background-color 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .submit-button:hover:not(:disabled) {
@@ -325,7 +329,17 @@ const ContactForm = () => {
           className="submit-button"
           disabled={status.submitting}
         >
-          {status.submitting ? '⏳ Versturen...' : '📨 Offerte Aanvragen'}
+          {status.submitting ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" aria-hidden />
+              Versturen...
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              <Send className="w-5 h-5" aria-hidden />
+              Offerte Aanvragen
+            </span>
+          )}
         </button>
 
         <p className="privacy-notice">

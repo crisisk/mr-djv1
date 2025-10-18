@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Mic2, Music2, Wallet } from 'lucide-react';
 import { Button } from '../ui/button.jsx';
 import HeroSection from '../Organisms/HeroSection.jsx';
 import PricingTables from '../Organisms/PricingTables.jsx';
@@ -16,9 +17,9 @@ import { useKeywordPersonalization } from '../../hooks/useKeywordPersonalization
 import { getWindow } from '../../lib/environment.js';
 
 const DEFAULT_FEATURES = [
-  { title: 'Live Interactie', icon: '🎤', description: 'De saxofonist beweegt zich tussen de gasten voor een onvergetelijke beleving.' },
-  { title: 'Unieke Sound', icon: '🎷', description: 'Een unieke mix van elektronische beats en organische, live-gespeelde melodieën.' },
-  { title: 'All-in Prijs', icon: '💰', description: 'Geen verborgen kosten. Alles is inbegrepen in de offerte.' },
+  { title: 'Live Interactie', Icon: Mic2, description: 'De saxofonist beweegt zich tussen de gasten voor een onvergetelijke beleving.' },
+  { title: 'Unieke Sound', Icon: Music2, description: 'Een unieke mix van elektronische beats en organische, live-gespeelde melodieën.' },
+  { title: 'All-in Prijs', Icon: Wallet, description: 'Geen verborgen kosten. Alles is inbegrepen in de offerte.' },
 ];
 
 const HERO_VARIANT_STORAGE_PREFIX = 'mr-dj-video-hero';
@@ -118,13 +119,22 @@ const DjSaxFeatures = ({ title, caption, items }) => {
           {caption && <p className="text-font-size-body text-neutral-dark/80 max-w-2xl mx-auto">{caption}</p>}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl">
-          {featureItems.map((feature, index) => (
-            <div key={`${feature.title}-${index}`} className="p-spacing-lg shadow-lg rounded-lg text-left space-y-spacing-sm">
-              <span className="text-font-size-h1 block">{feature.icon}</span>
-              <h3 className="text-font-size-h3 font-bold text-neutral-dark">{feature.title}</h3>
-              <p className="text-font-size-body text-neutral-dark/80">{feature.description}</p>
-            </div>
-          ))}
+          {featureItems.map((feature, index) => {
+            const FeatureIcon = feature.Icon;
+            return (
+              <div key={`${feature.title}-${index}`} className="p-spacing-lg shadow-lg rounded-lg text-left space-y-spacing-sm bg-white">
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-primary/10 text-primary">
+                  {FeatureIcon ? (
+                    <FeatureIcon className="w-8 h-8" strokeWidth={2} aria-hidden />
+                  ) : (
+                    <span className="text-3xl">{feature.icon}</span>
+                  )}
+                </div>
+                <h3 className="text-font-size-h3 font-bold text-neutral-dark">{feature.title}</h3>
+                <p className="text-font-size-body text-neutral-dark/80">{feature.description}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
