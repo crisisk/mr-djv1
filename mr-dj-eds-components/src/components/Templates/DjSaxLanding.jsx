@@ -8,6 +8,7 @@ import PersonaMatchShowcase from '../Organisms/PersonaMatchShowcase.jsx';
 import VideoHeroSection from '../Organisms/VideoHeroSection.jsx';
 import RoiCalculator from '../Organisms/RoiCalculator.jsx';
 import ContentHubShowcase from '../Organisms/ContentHubShowcase.jsx';
+import ContactForm from '../Organisms/ContactForm.jsx';
 import { useKeywordPersonalization } from '../../hooks/useKeywordPersonalization.js';
 import { getWindow } from '../../lib/environment.js';
 
@@ -274,6 +275,22 @@ const DjSaxLanding = () => {
       <RoiCalculator persona={personaKey} />
 
       <ContentHubShowcase />
+
+      {/* Contact Form Section */}
+      <section id="contact" className="py-spacing-3xl bg-neutral-light">
+        <div className="container mx-auto px-spacing-md">
+          <div className="max-w-4xl mx-auto text-center mb-spacing-2xl">
+            <h2 className="text-font-size-h2 font-bold text-primary mb-spacing-md">
+              Plan je Onvergetelijke Event
+            </h2>
+            <p className="text-font-size-body text-neutral-dark/80">
+              Vul onderstaand formulier in en ontvang binnen 24 uur een persoonlijke offerte op maat.
+              Geen verplichtingen, volledig vrijblijvend.
+            </p>
+          </div>
+          <ContactForm />
+        </div>
+      </section>
 
       <AvailabilityChecker personalization={{ ...leadCapture, id: personalization.id }} onEvent={logEvent} />
 
