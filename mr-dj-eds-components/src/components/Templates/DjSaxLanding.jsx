@@ -11,6 +11,7 @@ import ContentHubShowcase from '../Organisms/ContentHubShowcase.jsx';
 import ContactForm from '../Organisms/ContactForm.jsx';
 import MediaGalleries from '../Organisms/MediaGalleries.jsx';
 import StatHighlights from '../Molecules/StatHighlights.jsx';
+import TPWRatings from '../Molecules/TPWRatings.jsx';
 import { useKeywordPersonalization } from '../../hooks/useKeywordPersonalization.js';
 import { getWindow } from '../../lib/environment.js';
 
@@ -284,6 +285,15 @@ const DjSaxLanding = () => {
               }
             ]}
           />
+
+          {/* TPW Ratings Widget */}
+          <div className="mt-spacing-2xl flex justify-center">
+            <TPWRatings
+              apiKey="f709845411e230160284dd8480e37081"
+              variant="light"
+              className="max-w-3xl mx-auto"
+            />
+          </div>
         </div>
       </section>
 
