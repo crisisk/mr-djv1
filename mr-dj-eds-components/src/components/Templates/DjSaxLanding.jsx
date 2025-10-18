@@ -9,6 +9,8 @@ import VideoHeroSection from '../Organisms/VideoHeroSection.jsx';
 import RoiCalculator from '../Organisms/RoiCalculator.jsx';
 import ContentHubShowcase from '../Organisms/ContentHubShowcase.jsx';
 import ContactForm from '../Organisms/ContactForm.jsx';
+import MediaGalleries from '../Organisms/MediaGalleries.jsx';
+import StatHighlights from '../Molecules/StatHighlights.jsx';
 import { useKeywordPersonalization } from '../../hooks/useKeywordPersonalization.js';
 import { getWindow } from '../../lib/environment.js';
 
@@ -258,6 +260,33 @@ const DjSaxLanding = () => {
 
       <DjSaxFeatures title={features.title} caption={features.caption} items={features.items} />
 
+      {/* Statistics & Social Proof Section */}
+      <section className="py-spacing-3xl bg-gradient-to-b from-neutral-light to-primary/5">
+        <div className="container mx-auto px-spacing-md">
+          <StatHighlights
+            title="Bewezen Track Record"
+            subtitle="Meer dan 15 jaar ervaring in het leveren van onvergetelijke events"
+            stats={[
+              {
+                value: '2500+',
+                label: 'Events verzorgd',
+                description: 'Van intieme bruiloften tot grote corporate events met 1000+ gasten'
+              },
+              {
+                value: '9.8/10',
+                label: 'Gemiddelde score',
+                description: 'Gebaseerd op 450+ reviews via ThePerfectWedding, Google & Trustpilot'
+              },
+              {
+                value: '100%',
+                label: 'Dansgarantie',
+                description: 'Volle dansvloer of je geld terug - dat is ons belofte aan jou'
+              }
+            ]}
+          />
+        </div>
+      </section>
+
       <Testimonials segment={testimonialsSegment} />
 
       <PersonaMatchShowcase
@@ -273,6 +302,19 @@ const DjSaxLanding = () => {
       />
 
       <RoiCalculator persona={personaKey} />
+
+      {/* Media Gallery Section */}
+      <section className="py-spacing-3xl bg-neutral-dark text-neutral-light">
+        <div className="container mx-auto px-spacing-md">
+          <div className="text-center mb-spacing-2xl space-y-spacing-md">
+            <h2 className="text-font-size-h2 font-bold">Ons Portfolio</h2>
+            <p className="text-font-size-body text-neutral-light/80 max-w-2xl mx-auto">
+              Bekijk sfeerimpressies van recente events - van intieme bruiloften tot grote festivals
+            </p>
+          </div>
+          <MediaGalleries />
+        </div>
+      </section>
 
       <ContentHubShowcase />
 
