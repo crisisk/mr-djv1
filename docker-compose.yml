@@ -28,8 +28,7 @@ services:
       - "traefik.http.routers.mrdj-eds-frontend-eds.tls.certresolver=letsencrypt"
       - "traefik.http.routers.mrdj-eds-frontend-eds.service=mrdj-eds-frontend-eds"
       - "traefik.http.services.mrdj-eds-frontend-eds.loadbalancer.server.port=80"
-      - "traefik.http.routers.mrdj-eds-frontend-eds.middlewares=mrdj-eds-stripprefix"
-      - "traefik.http.middlewares.mrdj-eds-stripprefix.stripprefix.prefixes=/eds"
+      # No stripprefix middleware - let the React app handle /eds/ base path
 
   # Backend API (Node.js/Express) - Renamed to mr-dj-backend
   mr-dj-backend:
