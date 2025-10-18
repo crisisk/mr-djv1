@@ -52,7 +52,7 @@ const Navigation = () => (
               <button
                 key={link}
                 type="button"
-                className="flex w-full items-center justify-between rounded-2xl bg-neutral-light px-spacing-lg py-spacing-sm text-left text-sm font-semibold text-neutral-dark shadow-sm"
+                className="flex w-full items-center justify-between rounded-2xl bg-neutral-light px-spacing-lg py-spacing-md min-h-[44px] text-left text-sm font-semibold text-neutral-dark shadow-sm"
               >
                 {link}
                 <span className="text-xs text-primary">→</span>

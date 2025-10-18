@@ -158,6 +158,7 @@ const ContactForm = () => {
         .submit-button {
           width: 100%;
           padding: 1rem;
+          min-height: 48px;
           background: #ef4444;
           color: white;
           font-weight: 600;

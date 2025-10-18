@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { trackEvent } from '../../lib/analytics.js';
+import { ImagePlaceholder } from '../Atoms/ImagePlaceholder.jsx';
+import { Button } from '../ui/button.jsx';
 
 const testimonialsData = [
   {
@@ -174,9 +176,10 @@ const TestimonialCard = ({ testimonial, segmentId }) => (
       <p className="text-font-size-body font-bold text-primary">{testimonial.author}</p>
       <p className="text-font-size-small text-neutral-gray-500">{testimonial.source}</p>
     </div>
-    <button
-      type="button"
-      className="self-start text-sm font-semibold text-primary underline"
+    <Button
+      variant="link"
+      size="sm"
+      className="self-start p-0 h-auto min-h-[44px]"
       onClick={() =>
         trackEvent('testimonial_cta_click', {
           testimonial_id: testimonial.id,
@@ -186,21 +189,40 @@ const TestimonialCard = ({ testimonial, segmentId }) => (
       }
     >
       Bekijk media
-    </button>
+    </Button>
   </article>
 );
 
-const MediaTile = ({ label }) => (
-  <div className="rounded-3xl border border-neutral-gray-100 bg-gradient-to-br from-primary/15 to-secondary/20 p-spacing-xl text-center text-sm font-semibold text-neutral-dark shadow-md">
-    {label}
-  </div>
-);
+const MediaTile = ({ label, category = 'default' }) => {
+  // Map category names to eventType for ImagePlaceholder
+  const eventTypeMap = {
+    'bruiloft': 'bruiloft',
+    'bedrijfsfeest': 'corporate',
+    'private': 'private',
+    'corporate': 'corporate'
+  };
+
+  const eventType = eventTypeMap[category?.toLowerCase()] || 'default';
+
+  return (
+    <ImagePlaceholder
+      eventType={eventType}
+      label={label}
+      size="md"
+      aspectRatio="4/3"
+      className="shadow-md hover:shadow-xl transition-shadow duration-300"
+    />
+  );
+};
 
 const Testimonials = ({ segment }) => {
   const groupedTestimonials = useCategorisedTestimonials(segment);
   const mediaTiles = Array.isArray(segment?.mediaTiles) && segment.mediaTiles.length
     ? segment.mediaTiles
-    : testimonialsData.slice(0, 6).map((testimonial) => testimonial.media);
+    : testimonialsData.slice(0, 6).map((testimonial) => ({
+        label: testimonial.media,
+        category: testimonial.category
+      }));
 
   useEffect(() => {
     groupedTestimonials.forEach((group) => {
@@ -245,8 +267,12 @@ const Testimonials = ({ segment }) => {
               Selecteer bij elke testimonial het corresponderende beeldmateriaal zodat bezoekers de sfeer direct zien.
             </p>
             <div className="grid grid-cols-2 gap-spacing-md">
-              {mediaTiles.map((label) => (
-                <MediaTile key={label} label={label} />
+              {mediaTiles.map((tile) => (
+                <MediaTile
+                  key={typeof tile === 'string' ? tile : tile.label}
+                  label={typeof tile === 'string' ? tile : tile.label}
+                  category={typeof tile === 'object' ? tile.category : 'default'}
+                />
               ))}
             </div>
           </div>
