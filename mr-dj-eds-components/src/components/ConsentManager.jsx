@@ -1,63 +1,68 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import {
+  getInitialConsent,
+  pushConsentToDataLayer,
+  createConsentStateUpdater,
+  subscribeToComplianz
+} from '../lib/consentUtils.js';
 
-// 1. Create the Context
 const ConsentContext = createContext(null);
 
-// Helper function to get the current consent status from Complianz
-const getConsentStatus = () => {
-  if (typeof window.complianz === 'undefined') {
-    return {
-      functional: false,
-      statistics: false,
-      marketing: false,
-    };
-  }
-  return {
-    functional: window.complianz.user_preferences.functional === 'allow',
-    statistics: window.complianz.user_preferences.statistics === 'allow',
-    marketing: window.complianz.user_preferences.marketing === 'allow',
-  };
-};
-
-// 2. Create the Provider Component
-export const ConsentManager = ({ children }) => {
-  const [consent, setConsent] = useState(getConsentStatus());
+export const ConsentManager = ({ children, showControls = false }) => {
+  const [consent, setConsent] = useState(() => getInitialConsent());
+  const updateConsent = createConsentStateUpdater(setConsent);
 
   useEffect(() => {
-    // Function to update the state when Complianz fires an event
-    const handleConsentChange = () => {
-      setConsent(getConsentStatus());
-    };
-
-    // Complianz fires a custom event when consent is set or changed
-    window.addEventListener('cmplz_fire_categories', handleConsentChange);
-    
-    // Initial check in case the banner is already dismissed
-    handleConsentChange();
-
-    return () => {
-      window.removeEventListener('cmplz_fire_categories', handleConsentChange);
-    };
+    return subscribeToComplianz(setConsent);
   }, []);
 
-  // The value provided to consumers
-  const value = {
-    ...consent,
-    // Helper to check if a specific category is allowed
-    isAllowed: (category) => consent[category] || false,
-  };
+  useEffect(() => {
+    pushConsentToDataLayer(consent);
+  }, [consent]);
+
+  const value = useMemo(
+    () => ({
+      ...consent,
+      setConsent: updateConsent,
+      isAllowed: (category) => Boolean(consent[category]),
+    }),
+    [consent, updateConsent]
+  );
 
   return (
     <ConsentContext.Provider value={value}>
+      {showControls && (
+        <div className="fixed bottom-spacing-lg right-spacing-lg z-50 space-y-spacing-sm rounded-2xl border border-neutral-gray-100 bg-neutral-light/95 p-spacing-lg shadow-2xl">
+          <p className="text-font-size-small font-semibold text-neutral-dark">Consent toggles (design system)</p>
+          {[
+            ['analytics_storage', 'Analytics'],
+            ['ad_storage', 'Advertenties opslaan'],
+            ['ad_user_data', 'Advertentie-gebruiksdata'],
+            ['ad_personalization', 'Advertentie-personalisatie'],
+          ].map(([key, label]) => (
+            <label key={key} className="flex items-center justify-between gap-spacing-md text-font-size-small">
+              <span>{label}</span>
+              <input
+                type="checkbox"
+                checked={Boolean(consent[key])}
+                onChange={(event) =>
+                  updateConsent({
+                    [key]: event.target.checked,
+                  })
+                }
+              />
+            </label>
+          ))}
+        </div>
+      )}
       {children}
     </ConsentContext.Provider>
   );
 };
 
-// 3. Create a custom hook for easy consumption
 export const useConsent = () => {
   const context = useContext(ConsentContext);
-  if (context === undefined) {
+  if (context === undefined || context === null) {
     throw new Error('useConsent must be used within a ConsentManager');
   }
   return context;

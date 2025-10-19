@@ -1,71 +1,76 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import SlideLayout from '../common/SlideLayout.jsx';
+import { Button } from '../ui/button.jsx';
 
-const Documentation = () => {
-    return (
-        <div className="slide-container">
-<h1>Documentation &amp; Component Usage</h1>
-<p className="subtitle">Richtlijnen voor het gebruik van componenten, Storybook integratie en codevoorbeelden.</p>
-<div className="content-grid">
-<div>
-<div className="section-title">Component Documentatie</div>
-<div className="doc-point">
-<div className="doc-point-title">Storybook Integratie</div>
-<div className="doc-point-text">Alle componenten zijn gedocumenteerd in Storybook. Dit is de primaire bron voor het bekijken van varianten, props en live voorbeelden.</div>
-</div>
-<div className="doc-point">
-<div className="doc-point-title">Prop Tabellen</div>
-<div className="doc-point-text">Elke component heeft een duidelijke tabel met alle beschikbare properties (props), hun types en standaardwaarden.</div>
-</div>
-<div className="doc-point">
-<div className="doc-point-title">Do's &amp; Don'ts</div>
-<div className="doc-point-text">Specifieke richtlijnen over wanneer en hoe een component te gebruiken, en wat absoluut vermeden moet worden.</div>
-</div>
-<div className="platform-box">
-<div className="section-title" style="border-bottom: none; margin-bottom: 10px; color: #1A2C4B;">Developer Workflow</div>
-<ul>
-<li>Importeer componenten via de centrale library.</li>
-<li>Gebruik Design Tokens in plaats van hardcoded waarden.</li>
-<li>Voer altijd een visuele regressietest uit na updates.</li>
-</ul>
-</div>
-</div>
-<div>
-<div className="section-title">Code Voorbeeld: Button</div>
-<div className="code-example">
-<span className="comment">// React Component Usage</span>
-<span className="keyword">import</span> { Button } <span className="keyword">from</span> <span className="string">'@mrdj/eds-library'</span>;
+const docPoints = [
+  {
+    title: 'Storybook integratie',
+    description: 'Alle componenten zijn gedocumenteerd met live voorbeelden, props en best practices.',
+  },
+  {
+    title: 'Prop tabellen',
+    description: 'Consistente tabellen met type, beschrijving en standaardwaarde voor iedere variant.',
+  },
+  {
+    title: "Do's & dont's",
+    description: 'Visuele voorbeelden met aanbevolen en te vermijden toepassingen voor elk patroon.',
+  },
+];
 
-<span className="keyword">const</span> App = () =&gt; (
-  <span className="keyword">&lt;Button</span>
-    variant=<span className="string">"primary"</span>
-    size=<span className="string">"large"</span>
-    onClick={() =&gt; console.log(<span className="string">'Geboekt!'</span>)}
-  <span className="keyword">&gt;</span>
-    Boek Nu
-  <span className="keyword">&lt;/Button&gt;</span>
+const Documentation = () => (
+  <SlideLayout
+    title="Documentation & Usage"
+    subtitle="Richtlijnen voor teams om componenten correct toe te passen en te onderhouden."
+  >
+    <div className="grid gap-spacing-xl md:grid-cols-2">
+      <section className="space-y-spacing-md">
+        <h3 className="text-font-size-h3 font-semibold text-neutral-dark">Component documentatie</h3>
+        <div className="space-y-spacing-md">
+          {docPoints.map((point) => (
+            <div key={point.title} className="rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-lg shadow-md">
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-primary">{point.title}</h4>
+              <p className="text-sm text-neutral-gray-600">{point.description}</p>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-3xl border border-primary/20 bg-primary/5 p-spacing-xl shadow-lg">
+          <h4 className="text-font-size-h3 font-semibold text-neutral-dark">Developer workflow</h4>
+          <ul className="mt-spacing-sm space-y-spacing-xs text-sm text-neutral-dark">
+            <li>Importeer componenten via <code>@mrdj/eds-components</code>.</li>
+            <li>Gebruik tokens in plaats van hardcoded waarden.</li>
+            <li>Voer visuele regressietests uit na elke update.</li>
+          </ul>
+        </div>
+      </section>
+      <section className="space-y-spacing-md">
+        <h3 className="text-font-size-h3 font-semibold text-neutral-dark">Code voorbeelden</h3>
+        <div className="rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-xl shadow-md">
+          <pre className="overflow-x-auto rounded-2xl bg-neutral-dark/90 p-spacing-md text-xs text-neutral-light">
+{`import { Button } from '@mrdj/eds-components';
+import { trackEvent } from '@mrdj/eds-components/lib/analytics';
+
+const Example = () => (
+  <Button variant="default" size="lg" onClick={() => trackEvent('cta_click', { source: 'docs_example' })}>
+    Boek nu
+  </Button>
+);`}
+          </pre>
+          <p className="mt-spacing-sm text-xs text-neutral-gray-500">
+            Gebruik tokens voor spacing (<code>px-spacing-lg</code>) en kleur (<code>text-primary</code>) om consistentie te borgen.
+          </p>
+        </div>
+        <div className="rounded-3xl border border-primary/20 bg-primary/5 p-spacing-xl shadow-lg space-y-spacing-sm">
+          <h4 className="text-font-size-h3 font-semibold text-neutral-dark">Enterprise componenten</h4>
+          <p className="text-sm text-neutral-dark">
+            Stat Highlights en Persona Match Showcase ondersteunen sales & marketing en zijn opgenomen in de DJ + Sax template.
+          </p>
+          <Button size="sm" variant="secondary" className="self-start">
+            Open Storybook
+          </Button>
+        </div>
+      </section>
+    </div>
+  </SlideLayout>
 );
-                </div>
-<div className="doc-point" style="margin-top: 20px;">
-<div className="doc-point-title">Design Tokens</div>
-<div className="doc-point-text">Alle kleuren, spacing en typografie zijn gedefinieerd als tokens, waardoor ze eenvoudig in elk platform (Web, iOS, Android) kunnen worden gebruikt.</div>
-</div>
-<div className="code-example">
-<span className="comment">// Design Token Example (JSON)</span>
-<span className="keyword">"color-primary-blue"</span>: {
-  <span className="keyword">"value"</span>: <span className="string">"#00AEEF"</span>,
-  <span className="keyword">"type"</span>: <span className="string">"color"</span>
-},
-<span className="keyword">"spacing-md"</span>: {
-  <span className="keyword">"value"</span>: <span className="string">"16px"</span>,
-  <span className="keyword">"type"</span>: <span className="string">"spacing"</span>
-}
-                </div>
-</div>
-</div>
-</div>
-    );
-};
 
 export default Documentation;

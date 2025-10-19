@@ -9,7 +9,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 export default [{ ignores: ['dist'] }, {
   files: ['**/*.{js,jsx}'],
   languageOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 'latest',
     globals: globals.browser,
     parserOptions: {
       ecmaVersion: 'latest',
@@ -24,10 +24,21 @@ export default [{ ignores: ['dist'] }, {
   rules: {
     ...js.configs.recommended.rules,
     ...reactHooks.configs.recommended.rules,
-    'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^[A-Z_]' }],
+    'no-console': ['error', { allow: ['warn', 'error'] }],
+    'no-restricted-globals': [
+      'error',
+      { name: 'window', message: 'Gebruik helpers uit lib/environment in plaats van globale window.' },
+      { name: 'document', message: 'Gebruik helpers uit lib/environment in plaats van globale document.' }
+    ],
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },
     ],
+  },
+}, {
+  files: ['src/lib/environment.js'],
+  rules: {
+    'no-restricted-globals': 'off',
   },
 }, ...storybook.configs["flat/recommended"]];

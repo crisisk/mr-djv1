@@ -6,6 +6,7 @@ import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
+import { getDocument, getWindow } from "@/lib/environment.js"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
@@ -67,7 +68,10 @@ function SidebarProvider({
     }
 
     // This sets the cookie to keep the sidebar state.
-    document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+    const doc = getDocument()
+    if (doc) {
+      doc.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+    }
   }, [setOpenProp, open])
 
   // Helper to toggle the sidebar.
@@ -87,8 +91,13 @@ function SidebarProvider({
       }
     }
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    const browser = getWindow()
+    if (!browser) {
+      return undefined
+    }
+
+    browser.addEventListener("keydown", handleKeyDown)
+    return () => browser.removeEventListener("keydown", handleKeyDown);
   }, [toggleSidebar])
 
   // We add a state so that we can do data-state="expanded" or "collapsed".

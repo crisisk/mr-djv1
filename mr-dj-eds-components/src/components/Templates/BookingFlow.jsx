@@ -1,64 +1,90 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import SlideLayout from '../common/SlideLayout.jsx';
+import { Button } from '../ui/button.jsx';
+import { Input } from '../ui/input.jsx';
+import { Label } from '../ui/label.jsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.jsx';
 
-const BookingFlow = () => {
-    return (
-        <div className="slide-container">
-<h1>Templates: Booking Flow</h1>
-<p className="subtitle">Multi-step proces voor het controleren van beschikbaarheid, selecteren van pakketten en boeken</p>
-<div className="booking-flow">
-<div className="main-content">
-<div className="step-indicator">
-<div className="step completed">
-<div className="step-number">✓</div>
-<div className="step-title">Datum &amp; Locatie</div>
-</div>
-<div className="step active">
-<div className="step-number">2</div>
-<div className="step-title">Pakket Selectie</div>
-</div>
-<div className="step">
-<div className="step-number">3</div>
-<div className="step-title">Extra Opties</div>
-</div>
-<div className="step">
-<div className="step-number">4</div>
-<div className="step-title">Gegevens &amp; Betaling</div>
-</div>
-</div>
-<div className="calendar-placeholder">
-                    Beschikbaarheidskalender &amp; Locatie Input
-                </div>
-<div className="summary-box">
-<div className="summary-title">Huidige Selectie (Stap 1)</div>
-<div className="summary-item"><span>Datum:</span> <span>Zaterdag 12 Oktober 2026</span></div>
-<div className="summary-item"><span>Locatie:</span> <span>Eindhoven, Noord-Brabant</span></div>
-<div className="summary-item"><span>Type Evenement:</span> <span>Bruiloft</span></div>
-</div>
-</div>
-<div className="sidebar">
-<div className="summary-box">
-<div className="summary-title">Boekingsoverzicht</div>
-<div className="summary-item"><span>Geselecteerd Pakket:</span> <span>Zilver (Silver)</span></div>
-<div className="summary-item"><span>Basisprijs:</span> <span>€ 795,-</span></div>
-<div className="summary-item"><span>Reiskosten (Eindhoven):</span> <span>€ 0,-</span></div>
-<div className="summary-item" style="color: #FF4D4D;"><span>Korting (Vroege Vogel):</span> <span>- € 50,-</span></div>
-<div className="summary-total summary-item"><span>Totaal Prijs:</span> <span>€ 745,-</span></div>
-</div>
-<div className="summary-box">
-<div className="summary-title">Volgende Stap</div>
-<div className="button-primary">Ga Verder naar Extra Opties</div>
-</div>
-<div className="summary-box" style="border: 1px solid #00AEEF; background: #E6F9FF;">
-<div className="summary-title" style="border-bottom: 2px solid #00AEEF;">Contact &amp; Hulp</div>
-<p style="font-size: 14px;">Heeft u hulp nodig bij het boeken? Neem contact op met onze planningsexperts.</p>
-<div className="button-primary" style="background: #1A2C4B;">Bel Ons Direct</div>
-</div>
-</div>
-</div>
-</div>
-    );
-};
+const steps = [
+  {
+    title: 'Stap 1 – Datum & locatie',
+    description: 'Selecteer datum, tijdslot en locatie. Beschikbaarheid wordt realtime gevalideerd via ons dashboard.',
+  },
+  {
+    title: 'Stap 2 – Pakketkeuze',
+    description: 'Kies het pakket en eventuele add-ons zoals saxofonist of fotobooth. Prijs wordt direct bijgewerkt.',
+  },
+  {
+    title: 'Stap 3 – Bevestiging',
+    description: 'Betaal aanbetaling veilig online en ontvang een onboarding checklist voor het intakegesprek.',
+  },
+];
+
+const BookingFlow = () => (
+  <SlideLayout
+    title="Templates: Booking Flow"
+    subtitle="Multi-step funnel met realtime beschikbaarheid, prijsfeedback en conversie-optimalisaties."
+  >
+    <div className="grid gap-spacing-xl lg:grid-cols-[2fr,1fr]">
+      <section className="space-y-spacing-lg rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-xl shadow-lg">
+        <div className="grid gap-spacing-md md:grid-cols-2">
+          <div className="space-y-spacing-xs">
+            <Label htmlFor="date">Datum</Label>
+            <Input id="date" type="date" />
+          </div>
+          <div className="space-y-spacing-xs">
+            <Label htmlFor="venue">Locatie</Label>
+            <Input id="venue" placeholder="Bijv. Kasteel Maurick" />
+          </div>
+          <div className="space-y-spacing-xs">
+            <Label htmlFor="timeslot">Tijdslot</Label>
+            <Select defaultValue="19:00 - 01:00">
+              <SelectTrigger>
+                <SelectValue placeholder="Kies tijdslot" />
+              </SelectTrigger>
+              <SelectContent>
+                {['18:00 - 00:00', '19:00 - 01:00', '20:00 - 02:00'].map((slot) => (
+                  <SelectItem key={slot} value={slot}>
+                    {slot}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-spacing-xs">
+            <Label htmlFor="package">Pakket</Label>
+            <Select defaultValue="Gold">
+              <SelectTrigger>
+                <SelectValue placeholder="Kies pakket" />
+              </SelectTrigger>
+              <SelectContent>
+                {['Silver', 'Gold', 'Platinum'].map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between rounded-3xl bg-primary/5 p-spacing-md">
+          <p className="text-sm text-neutral-dark">
+            Beschikbaar. Aanbetaling van <strong>€150</strong> nodig om datum te blokkeren. Event planning start direct.
+          </p>
+          <Button size="lg">Ga naar stap 2</Button>
+        </div>
+      </section>
+      <aside className="space-y-spacing-md">
+        {steps.map((step, index) => (
+          <div key={step.title} className="rounded-3xl border border-primary/20 bg-primary/5 p-spacing-lg shadow-md">
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Stap {index + 1}</p>
+            <h3 className="text-sm font-semibold text-neutral-dark">{step.title}</h3>
+            <p className="text-sm text-neutral-gray-600">{step.description}</p>
+          </div>
+        ))}
+      </aside>
+    </div>
+  </SlideLayout>
+);
 
 export default BookingFlow;

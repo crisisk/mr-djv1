@@ -1,0 +1,469 @@
+{
+  "defaultVariantId": "default_master",
+  "variants": [
+    {
+      "id": "default_master",
+      "label": "Algemene event intent",
+      "keywords": [],
+      "intentTags": ["event", "dj", "sax"],
+      "hero": {
+        "eyebrow": "Premium DJ collectief",
+        "title": "DJ + Sax met maximale energie voor ieder event",
+        "subtitle": "Van intieme borrels tot 1000+ gasten: Mister DJ levert clubwaardige shows met live-musici, regie en 100% dansgarantie.",
+        "ctaPrimaryText": "Check beschikbaarheid",
+        "ctaSecondaryText": "Bekijk cases",
+        "badges": ["Gemiddeld 4,9/5 beoordeling", "Landelijke dekking", "Live sax & vocalists"],
+        "socialProof": "452 events uitgevoerd in 2024 met een gemiddelde klanttevredenheid van 9,6.",
+        "metrics": [
+          { "label": "Events per jaar", "value": "450+" },
+          { "label": "Gem. rating", "value": "9,6" },
+          { "label": "Gem. responstijd", "value": "<12 uur" }
+        ]
+      },
+      "features": {
+        "title": "Waarom Mister DJ werkt",
+        "items": [
+          {
+            "title": "Volledige regie",
+            "icon": "🎧",
+            "description": "Intake, draaiboek en live regie worden verzorgd door een vast projectteam."
+          },
+          {
+            "title": "Clubwaardige techniek",
+            "icon": "🎛️",
+            "description": "Line-array geluid, LED walls en lichtdesign afgestemd op locatie & doelgroep."
+          },
+          {
+            "title": "Live beleving",
+            "icon": "🎷",
+            "description": "Combineer DJ met sax, vocalist of percussion voor maximale interactie."
+          }
+        ],
+        "caption": "Basisvariant wanneer er geen specifieke zoekintentie wordt gedetecteerd."
+      },
+      "cro": {
+        "experimentId": "global-intent-v1",
+        "urgency": "Nog 4 productiedata beschikbaar in Q1 2026 – planning sluit over 6 dagen.",
+        "valueDrivers": [
+          "Gratis eventregiecall t.w.v. €195 bij aanvraag deze week",
+          "Realtime inzicht via klantdashboard (planning, draaiboek, team)",
+          "Complete AV-crew met backup-equipment in prijs inbegrepen"
+        ],
+        "guarantee": "Niet tevreden na intake? We matchen kosteloos een partner uit het RentGuy netwerk."
+      },
+      "testimonials": {
+        "headline": "Social proof & media",
+        "subheadline": "Mix van bruiloften, corporate events en private parties waar Mister DJ het verschil maakte.",
+        "highlightCategory": "bruiloft",
+        "testimonialIds": [
+          "bruiloft-eindhoven-2025",
+          "corporate-eindhoven-2024",
+          "private-breda-2023"
+        ],
+        "mediaTiles": ["Aftermovie 2025", "Awardshow visuals", "Silent disco"]
+      },
+      "pricing": {
+        "headline": "Pakketten voor elke eventvorm",
+        "subheadline": "Combineer basispakketten met uitbreidingen – realtime ROI-tracking via dashboard.",
+        "highlightPackage": "Zilver",
+        "ctaOverrides": {
+          "Brons": "Plan kennismaking",
+          "Zilver": "Start intakecall",
+          "Goud": "Boek premium show"
+        },
+        "guaranteeCopy": "Elke aanvraag ontvangt binnen 24 uur een voorstel met draaiboek en AV-plan.",
+        "valueEmphasis": ["Landelijke crew", "Live muzikanten optioneel", "Integratie met RentGuy"]
+      },
+      "personas": {
+        "title": "Persona-match & journeys",
+        "subtitle": "Koppel elke aanvraag direct aan het juiste draaiboek en artiestenteam.",
+        "items": [],
+        "stats": []
+      },
+      "leadCapture": {
+        "formHeadline": "Laat ons checken of jullie datum vrij is",
+        "formCopy": "We reageren binnen 12 uur met voorstel en planning.",
+        "successMessage": "Bedankt! Het team neemt binnen 12 uur contact op.",
+        "defaultMessage": "Vertel ons over locatie, aantal gasten en gewenste artiesten of uitbreidingen.",
+        "eventTypeOptions": [
+          "Bruiloft",
+          "Bedrijfsfeest",
+          "Private event",
+          "Festival"
+        ],
+        "packageOptions": [
+          "Brons",
+          "Zilver",
+          "Goud"
+        ],
+        "defaultEventType": "Bruiloft",
+        "defaultPackageId": "Zilver"
+      }
+    },
+    {
+      "id": "romantic_wedding",
+      "label": "Romantische bruiloft intent",
+      "keywords": [
+        "bruiloft dj",
+        "wedding dj",
+        "dj bruiloft",
+        "ceremonie muziek",
+        "trouwfeest dj",
+        "bruidsfeest dj",
+        "dj sax bruiloft"
+      ],
+      "intentTags": ["wedding", "bruiloft", "ceremonie"],
+      "hero": {
+        "eyebrow": "Bruiloft DJ + Sax",
+        "title": "Alles voor jullie soundtrack: ceremonie, borrel én knalfeest",
+        "subtitle": "Van geloften tot afterparty – wij regelen de perfecte mix met live sax, vocalisten en tijdlijnregie.",
+        "ctaPrimaryText": "Plan trouwgesprek",
+        "ctaSecondaryText": "Download draaiboek",
+        "badges": ["120+ bruiloften per jaar", "Gem. beoordeling 9,7", "Live sax inbegrepen"],
+        "socialProof": "93% van de bruidsparen boekt na de intake direct het Zilver of Goud pakket.",
+        "metrics": [
+          { "label": "Bruiloften 2024", "value": "128" },
+          { "label": "Dansgarantie", "value": "100%" },
+          { "label": "Ceremonie audio", "value": "inbegrepen" }
+        ]
+      },
+      "features": {
+        "title": "Waarom bruidsparen Mister DJ kiezen",
+        "items": [
+          {
+            "title": "Ceremonie tot afterparty",
+            "icon": "💍",
+            "description": "Intake, muziekplanner en live cues voor elke highlight – inclusief speech coaching."
+          },
+          {
+            "title": "Live sax & vocalist",
+            "icon": "🎷",
+            "description": "Goosebump momenten tijdens entree en openingsdans met geprogrammeerde lichtshows."
+          },
+          {
+            "title": "Tijdlijn en draaiboek",
+            "icon": "🕒",
+            "description": "Wedding producer begeleidt leveranciers en bewaakt de planning tot de laatste dans."
+          }
+        ],
+        "caption": "Variant geactiveerd door zoekwoorden en campagnes met bruiloftsintentie."
+      },
+      "cro": {
+        "experimentId": "wedding-cro-variant-a",
+        "urgency": "Top 3 zaterdagdata van 2025 zijn bijna vol – boek voor 30 januari voor sax-upgrade.",
+        "valueDrivers": [
+          "Gratis ceremonie audio-set t.w.v. €195 bij boeking deze maand",
+          "Toegang tot de Bruiloft Spotify-planner en draaiboeksjablonen",
+          "Persoonlijke stylist voor licht en decor als add-on"
+        ],
+        "guarantee": "Dansgarantie: niet tevreden na de openingsdans? Gratis extra uur DJ + sax."
+      },
+      "testimonials": {
+        "headline": "Echte bruidsparen over Mister DJ",
+        "subheadline": "High-end bruiloften in Brabant, Limburg en Randstad met live sax & vocalist.",
+        "highlightCategory": "bruiloft",
+        "testimonialIds": [
+          "bruiloft-eindhoven-2025",
+          "bruiloft-tilburg-2024",
+          "bruiloft-maastricht-2025"
+        ],
+        "mediaTiles": ["Ceremonie DomusDela", "Openingsdans sparkulars", "Bruiloft Maastricht"]
+      },
+      "pricing": {
+        "headline": "Bruiloft pakketten",
+        "subheadline": "Inclusief intake, draaiboek, 100% dansgarantie en live sax upgrade.",
+        "highlightPackage": "Zilver",
+        "ctaOverrides": {
+          "Brons": "Vraag trouwbrochure aan",
+          "Zilver": "Reserveer trouwdatum",
+          "Goud": "Plan premium stylingcall"
+        },
+        "guaranteeCopy": "Binnen 48 uur een bruiloftsvoorstel met ceremonie-, borrel- en feestset.",
+        "valueEmphasis": ["Sax of vocalist inbegrepen", "Ceremonie audio mogelijk", "Aftermovie add-on"]
+      },
+      "personas": {
+        "title": "Bruiloft journeys",
+        "subtitle": "Customer journeys voor intiem, destination en festival weddings.",
+        "items": [
+          {
+            "name": "Intimate Storytellers",
+            "eventType": "Destination wedding",
+            "matchScore": "98%",
+            "summary": "Storytelling ceremonie met live muziek en gepersonaliseerde mash-ups.",
+            "topTracks": ["John Legend - All of Me", "Ben Rector - Love Like This"],
+            "reasons": [
+              "Voorbereide cue tracks voor geloften",
+              "Multi-camera audio opname voor videograaf",
+              "Sax intermezzo tijdens sunset sessie"
+            ]
+          }
+        ],
+        "stats": [
+          { "label": "Bruiloft intake naar boeking", "value": "87%", "description": "Gemeten over 2024" }
+        ]
+      },
+      "leadCapture": {
+        "formHeadline": "Plan jullie trouw-intake",
+        "formCopy": "We delen draaiboeksjabloon, Spotify-planner en sample timeline.",
+        "successMessage": "Jullie trouwspecialist neemt vandaag nog contact op.",
+        "defaultMessage": "Beschrijf ceremonie, locatie, gewenste live artiesten en eventuele draaiboekwensen.",
+        "eventTypeOptions": [
+          "Bruiloft",
+          "Ceremonie + feest",
+          "Destination wedding"
+        ],
+        "packageOptions": [
+          "Brons",
+          "Zilver",
+          "Goud"
+        ],
+        "defaultEventType": "Bruiloft",
+        "defaultPackageId": "Zilver"
+      }
+    },
+    {
+      "id": "corporate_energy",
+      "label": "Corporate & awardshow intent",
+      "keywords": [
+        "bedrijfsfeest dj",
+        "corporate dj",
+        "event dj bedrijf",
+        "awardshow muziek",
+        "business event dj",
+        "dj voor congres",
+        "hybride event dj"
+      ],
+      "intentTags": ["corporate", "business", "event"],
+      "hero": {
+        "eyebrow": "Corporate show control",
+        "title": "Van keynote tot afterparty – één regieteam, nul stress",
+        "subtitle": "Showcaller, DJ, MC en AV-crew zorgen voor strakke cues, merkactivaties en een volle dansvloer.",
+        "ctaPrimaryText": "Plan productiecall",
+        "ctaSecondaryText": "Download tech sheet",
+        "badges": ["NPS 9,4", "Preferred supplier High Tech Campus", "Hybride & livestream ready"],
+        "socialProof": "500+ medewerkers op de dansvloer bij Heineken, Philips en Booking.com.",
+        "metrics": [
+          { "label": "Corporate shows", "value": "160" },
+          { "label": "Gem. NPS", "value": "+48" },
+          { "label": "Response", "value": "<4 uur" }
+        ]
+      },
+      "features": {
+        "title": "Waarom marketingteams Mister DJ kiezen",
+        "items": [
+          {
+            "title": "Brand activatie",
+            "icon": "🚀",
+            "description": "Custom visuals, MC scripts en countdowns afgestemd op merkidentiteit."
+          },
+          {
+            "title": "Showcontrol",
+            "icon": "🎚️",
+            "description": "Showcaller en stage manager regisseren cues, speeches en awardblokken."
+          },
+          {
+            "title": "Data & rapportage",
+            "icon": "📊",
+            "description": "Live KPI-tracking (bezoekers, engagement) en rapportage naar marketing dashboard."
+          }
+        ],
+        "caption": "Geoptimaliseerd voor B2B campagnes, congressen en awardshows."
+      },
+      "cro": {
+        "experimentId": "corp-intent-v2",
+        "urgency": "Q2 producties boeken snel vol – secure je datum en crew in 48 uur.",
+        "valueDrivers": [
+          "Gratis run-of-show review met showcaller",
+          "Event analytics dashboard gekoppeld aan n8n en RentGuy",
+          "Dedicated MC/host inbegrepen bij premium pakketten"
+        ],
+        "guarantee": "Failover crew en backup-equipment standaard beschikbaar voor mission-critical events."
+      },
+      "testimonials": {
+        "headline": "Succesvolle corporate cases",
+        "subheadline": "Van awardshows tot product launches met internationale gasten.",
+        "highlightCategory": "bedrijfsfeest",
+        "testimonialIds": [
+          "corporate-eindhoven-2024",
+          "corporate-denbosch-2025",
+          "corporate-amsterdam-2025"
+        ],
+        "mediaTiles": ["Awardshow countdown", "Brand visuals", "Hybride streaming"]
+      },
+      "pricing": {
+        "headline": "Corporate pakketten",
+        "subheadline": "Inclusief showcaller, MC en KPI-rapportage.",
+        "highlightPackage": "Goud",
+        "ctaOverrides": {
+          "Brons": "Vraag dagvoorstel",
+          "Zilver": "Plan merkactivatie-call",
+          "Goud": "Reserveer full service team"
+        },
+        "guaranteeCopy": "Volledige pre-production checklist + backup crew binnen 48 uur.",
+        "valueEmphasis": ["Showcaller inbegrepen", "Brand visuals", "Event analytics"]
+      },
+      "personas": {
+        "title": "Journeys voor marketing & HR",
+        "subtitle": "Van KPI-briefing tot employee-engagement analyse.",
+        "items": [
+          {
+            "name": "Marketing Lead",
+            "eventType": "Product launch",
+            "matchScore": "95%",
+            "summary": "Crossmediale lancering met livestream, social content en aftermovie.",
+            "topTracks": ["Calvin Harris - Miracle", "Purple Disco Machine - Substitution"],
+            "reasons": [
+              "Realtime sign-off op visuals",
+              "KPI-dashboard gekoppeld aan n8n",
+              "Brand activatie via interactieve quiz"
+            ]
+          }
+        ],
+        "stats": [
+          { "label": "Repeat business", "value": "82%", "description": "Marketing & HR klanten 2024" }
+        ]
+      },
+      "leadCapture": {
+        "formHeadline": "Plan een productiecall",
+        "formCopy": "We leveren binnen 24 uur draaiboek + budgetindicatie.",
+        "successMessage": "Het productie team neemt direct contact op.",
+        "defaultMessage": "Omschrijf merkdoelstellingen, locatie, gewenste activaties en bezoekersaantallen.",
+        "eventTypeOptions": [
+          "Bedrijfsfeest",
+          "Awardshow",
+          "Product launch",
+          "Congres/Evenement"
+        ],
+        "packageOptions": [
+          "Brons",
+          "Zilver",
+          "Goud"
+        ],
+        "defaultEventType": "Bedrijfsfeest",
+        "defaultPackageId": "Goud"
+      }
+    },
+    {
+      "id": "luxury_private",
+      "label": "High-end private events",
+      "keywords": [
+        "private party dj",
+        "verjaardag dj",
+        "jubileum dj",
+        "huisfeest dj",
+        "luxury party dj",
+        "tuinfeest dj",
+        "private event dj"
+      ],
+      "intentTags": ["private", "jubileum", "verjaardag"],
+      "hero": {
+        "eyebrow": "Private experiences",
+        "title": "Boutique party met clublevel sound en spectaculaire effecten",
+        "subtitle": "Van 30e verjaardag tot exclusief tuinfeest – inclusief silent disco, CO₂ jets en premium cocktailset.",
+        "ctaPrimaryText": "Stel je line-up samen",
+        "ctaSecondaryText": "Bekijk aftermovie",
+        "badges": ["Discreet & NDA-ready", "Silent disco beschikbaar", "Custom visuals"],
+        "socialProof": "96% van de private hosts boekt ons opnieuw binnen 18 maanden.",
+        "metrics": [
+          { "label": "Private events", "value": "140" },
+          { "label": "Gem. herboekingen", "value": "76%" },
+          { "label": "Opbouwtijd", "value": "<90 min" }
+        ]
+      },
+      "features": {
+        "title": "Waarom high-end hosts Mister DJ kiezen",
+        "items": [
+          {
+            "title": "Signature mix",
+            "icon": "🎚️",
+            "description": "Live mash-ups op basis van jouw favoriete stages en Spotify-lijsten."
+          },
+          {
+            "title": "Spectaculaire effecten",
+            "icon": "✨",
+            "description": "Sparkulars, CO₂ jets, confetti en 360° photobooth plug-and-play."
+          },
+          {
+            "title": "Discrete productie",
+            "icon": "🛡️",
+            "description": "Crew arriveert met stil transport, NDA en kledingcode naar wens."
+          }
+        ],
+        "caption": "Geactiveerd door zoekwoorden rond privéfeesten, verjaardagen en exclusieve events."
+      },
+      "cro": {
+        "experimentId": "private-intent-v1",
+        "urgency": "Nog 2 premium weekendslots in mei en juni vrij – reserveer nu voor gratis CO₂ upgrade.",
+        "valueDrivers": [
+          "Gratis moodboard en lichtdesign",
+          "Silent disco set inbegrepen bij boeking voor 31 maart",
+          "Aftermovie crew beschikbaar als add-on"
+        ],
+        "guarantee": "Discretie en NDA standaard opgenomen in het contract."
+      },
+      "testimonials": {
+        "headline": "Private hosts aan het woord",
+        "subheadline": "Huiskamertransformaties, tuinfestivals en jubileums met clubwaardige vibe.",
+        "highlightCategory": "private",
+        "testimonialIds": [
+          "private-veldhoven-2024",
+          "private-breda-2023",
+          "corporate-tilburg-2023"
+        ],
+        "mediaTiles": ["Silent disco", "CO₂ jets", "Aftermovie"]
+      },
+      "pricing": {
+        "headline": "Private event pakketten",
+        "subheadline": "Premium gear, discrete crew en 24/7 concierge service.",
+        "highlightPackage": "Goud",
+        "ctaOverrides": {
+          "Brons": "Stel basis samen",
+          "Zilver": "Upgrade met live act",
+          "Goud": "Plan luxe conceptcall"
+        },
+        "guaranteeCopy": "Concierge staat 24/7 standby – inclusief styling en hospitality advies.",
+        "valueEmphasis": ["Silent disco set", "Premium cocktail DJ", "Concierge service"]
+      },
+      "personas": {
+        "title": "Private party journeys",
+        "subtitle": "Van intieme diners tot 300 gasten in de tuin.",
+        "items": [
+          {
+            "name": "Luxury Host",
+            "eventType": "Tuinfeest",
+            "matchScore": "94%",
+            "summary": "Signature cocktails, DJ booth in maatwerk en live artiesten.",
+            "topTracks": ["Purple Disco Machine - In the Dark", "Fred again.. - Jungle"],
+            "reasons": [
+              "Custom booth met branding",
+              "CO₂ jets en sparkulars inbegrepen",
+              "Aftermovie crew gereed binnen 48 uur"
+            ]
+          }
+        ],
+        "stats": [
+          { "label": "Gem. baromzet uplift", "value": "+32%", "description": "Door crowd programming" }
+        ]
+      },
+      "leadCapture": {
+        "formHeadline": "Creëer jullie boutique party",
+        "formCopy": "Binnen 12 uur een conceptvoorstel met moodboard.",
+        "successMessage": "Je krijgt een WhatsApp-intake met onze creative director.",
+        "defaultMessage": "Vertel ons over thema, gastenlijst, locatie en gewenste live acts of effects.",
+        "eventTypeOptions": [
+          "Private event",
+          "Verjaardag",
+          "Jubileum",
+          "Tuinfeest"
+        ],
+        "packageOptions": [
+          "Brons",
+          "Zilver",
+          "Goud"
+        ],
+        "defaultEventType": "Private event",
+        "defaultPackageId": "Brons"
+      }
+    }
+  ]
+}

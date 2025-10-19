@@ -1,40 +1,22 @@
 import React from 'react';
-// De styling voor deze componenten is gedefinieerd in de globale CSS of de App.css.
-// De inline <style> blokken van de originele HTML zijn verwijderd.
+import SlideLayout from '../common/SlideLayout.jsx';
 
-const CoverPage = () => {
-    return (
-        <div className="slide-container">
-<!-- Decorative shapes -->
-<div className="shape shape-1"></div>
-<div className="shape shape-2"></div>
-<div className="shape shape-3"></div>
-<!-- Left: Logo -->
-<div className="logo-section">
-<div className="logo-container">
-<img alt="Mr. DJ Logo" src="mr_dj_logo.png"/>
-</div>
-</div>
-<!-- Right: Title -->
-<div className="title-section">
-<h1>
-<span className="highlight">Enterprise</span><br/>
-                Design System
-            </h1>
-<h2>Component Library &amp; Design Tokens</h2>
-<p className="subtitle">
-                Een complete, schaalbare design system voor consistente en hoogwaardige gebruikerservaringen across alle Mr. DJ platforms.
-            </p>
-<div className="meta-info">
-<div className="version">v1.0.0</div>
-<div className="component-count">
-<span>50+</span>
-                    Componenten
-                </div>
-</div>
-</div>
-</div>
-    );
-};
+const CoverPage = () => (
+  <SlideLayout
+    title="Mister DJ Enterprise Design System"
+    subtitle="Brand guidelines, component library en launch playbook voor high-converting experiences."
+    variant="brand"
+    align="center"
+  >
+    <div className="flex flex-col items-center gap-spacing-lg">
+      <div className="flex size-24 items-center justify-center rounded-full bg-primary text-4xl font-extrabold text-neutral-dark shadow-lg">
+        DJ
+      </div>
+      <p className="text-font-size-body text-neutral-light/80 max-w-2xl">
+        Eén centrale bron met tokens, componenten en documentatie zodat design, marketing en development synchroon werken.
+      </p>
+    </div>
+  </SlideLayout>
+);
 
 export default CoverPage;
