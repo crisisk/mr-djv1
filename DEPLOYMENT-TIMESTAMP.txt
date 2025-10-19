@@ -1,0 +1,104 @@
+================================================================================
+MR. DJ FRONTEND DEPLOYMENT TIMESTAMP
+================================================================================
+
+Deployment Date & Time
+----------------------
+UTC:          2025-10-19 11:45:51 UTC
+Local Time:   2025-10-19 13:45:51 CET (Europe/Amsterdam)
+
+Build Information
+-----------------
+Build Started:    2025-10-19 11:45:19 UTC
+Build Completed:  2025-10-19 11:45:22 UTC
+Build Duration:   2.89 seconds
+Build Tool:       Vite v6.4.0
+Build Location:   /opt/mr-dj/mr-dj-eds-components
+
+Deployment Details
+------------------
+Deployed To:      Docker Container (mr-dj-eds-frontend)
+Container ID:     f5161544a191
+Deployment Path:  /usr/share/nginx/html/
+Distribution Size: 2.9 MB
+Web Server:       nginx/1.29.2
+
+Production URLs
+---------------
+Primary URL:      https://mr-dj.sevensa.nl
+Backend API:      https://mr-dj.sevensa.nl/api/
+Health Check:     https://mr-dj.sevensa.nl/api/health
+
+Features Deployed
+-----------------
+✓ Google Tag Manager (GTM-NST23HJX)
+✓ Google Analytics 4 (G-TXJLD3H2C8)
+✓ Google Consent Mode v2
+✓ Schema.org Structured Data (Dynamic)
+✓ Updated Favicons & App Icons
+✓ SEO Meta Tags & Open Graph
+✓ Code-Split Bundles
+✓ Gzip Compression
+✓ Security Headers
+
+Status
+------
+Build Status:        SUCCESS
+Deployment Status:   SUCCESS
+Site Availability:   ONLINE (HTTP 200)
+Backend API:         HEALTHY
+Nginx Config:        VALID
+
+Verification
+------------
+Last Verified:    2025-10-19 11:46:26 UTC
+HTTP Status:      200 OK
+Response Time:    < 1 second
+GTM Status:       Active
+GA4 Status:       Active
+dataLayer:        Initialized
+Backend:          Connected
+
+Deployed By
+-----------
+Deployment Tool:  Docker CLI
+Automation:       Claude Code Assistant
+Build Command:    npm run build
+Deploy Command:   docker cp + nginx reload
+
+Files Deployed
+--------------
+- index.html (4.91 kB)
+- assets/*.js (21 JavaScript bundles)
+- assets/*.css (2 CSS bundles)
+- images/* (logos, icons, portfolio)
+- favicon.ico (15.4 kB)
+- manifest.json (PWA config)
+
+Next Actions
+------------
+1. Monitor GA4 real-time reports
+2. Test contact form submissions
+3. Verify Schema.org with Google Rich Results Test
+4. Run Lighthouse performance audit
+5. Test mobile responsiveness
+6. Verify cookie consent functionality
+
+Rollback Information
+--------------------
+Previous Build:   Available in /opt/mr-dj/mr-dj-eds-components/dist/
+Git Branch:       main
+Backup Location:  Docker image mr-dj-eds-frontend (previous version)
+
+Notes
+-----
+- All lint warnings are non-critical and don't affect production
+- Schema.org is dynamically injected by React (expected for SPA)
+- Build completed successfully with code splitting enabled
+- Nginx reload completed without errors
+- Container health check passed
+
+================================================================================
+End of Deployment Timestamp
+Report: /opt/mr-dj/BUILD-REPORT.md
+================================================================================
