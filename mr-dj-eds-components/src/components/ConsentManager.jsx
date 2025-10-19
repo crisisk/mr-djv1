@@ -62,16 +62,3 @@ export const useConsent = () => {
   }
   return context;
 };
-
-// 4. Update the GCM v2 status when consent changes
-// This is crucial for Google Tag Manager to work correctly
-useEffect(() => {
-    if (typeof window.dataLayer !== 'undefined') {
-        window.dataLayer.push('consent', 'update', {
-            'ad_storage': consent.marketing ? 'granted' : 'denied',
-            'analytics_storage': consent.statistics ? 'granted' : 'denied',
-            'ad_user_data': consent.marketing ? 'granted' : 'denied',
-            'ad_personalization': consent.marketing ? 'granted' : 'denied',
-        });
-    }
-}, [consent]);

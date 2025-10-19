@@ -63,19 +63,19 @@ const CookieConsent = () => {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 bg-neutral-dark text-neutral-light p-spacing-lg shadow-2xl z-50 border-t-4 border-primary"
+      className="fixed bottom-0 left-0 right-0 bg-[#1A2C4B] text-white p-6 shadow-2xl z-50 border-t-4 border-primary"
       role="dialog"
       aria-label="Cookie consent"
       aria-describedby="cookie-consent-description"
     >
       <div className="container mx-auto max-w-6xl">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-spacing-md">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           {/* Text content */}
           <div className="flex-1">
-            <h3 className="text-font-size-h4 font-bold mb-spacing-sm text-secondary">
+            <h3 className="text-font-size-h4 font-bold mb-2 text-secondary">
               Deze website gebruikt cookies
             </h3>
-            <p id="cookie-consent-description" className="text-font-size-body text-neutral-light opacity-90">
+            <p id="cookie-consent-description" className="text-base text-white opacity-90">
               Wij gebruiken cookies om uw ervaring te verbeteren en om onze website te analyseren.
               Door op "Accepteren" te klikken, gaat u akkoord met het gebruik van alle cookies.
               U kunt ook kiezen om cookies te weigeren.
@@ -92,12 +92,12 @@ const CookieConsent = () => {
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-spacing-md flex-shrink-0">
+          <div className="flex gap-4 flex-shrink-0">
             <Button
               variant="ghost"
               size="medium"
               onClick={handleDecline}
-              className="border border-neutral-light text-neutral-light hover:bg-neutral-light hover:text-neutral-dark"
+              className="border border-neutral-light text-white hover:bg-white hover:text-[#1A2C4B]"
             >
               Weigeren
             </Button>

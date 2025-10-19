@@ -1,0 +1,425 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                    MR. DJ - RENTGUY INTEGRATION ARCHITECTURE                  ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════════════════
+                              CURRENT STATE (AS-IS)
+═══════════════════════════════════════════════════════════════════════════════
+
+                                Internet Users
+                                      │
+                                      ▼
+                            ┌─────────────────┐
+                            │  Traefik Proxy  │
+                            │  Port 80/443    │
+                            │  SSL/TLS/HTTPS  │
+                            └────────┬────────┘
+                                     │
+                   ┌─────────────────┼─────────────────┐
+                   │                 │                 │
+                   ▼                 ▼                 ▼
+         ┌──────────────────┐  ┌──────────┐   ┌──────────┐
+         │  Marketing Site  │  │   NOT    │   │   NOT    │
+         │                  │  │ DEPLOYED │   │ DEPLOYED │
+         │ mr-dj.sevensa.nl │  │          │   │          │
+         │                  │  │Onboarding│   │          │
+         │  Status: ✅ LIVE │  │  Portal  │   │          │
+         │  Network: web    │  │          │   │          │
+         └────────┬─────────┘  │mr-dj.    │   │          │
+                  │            │rentguy.nl│   │          │
+         ┌────────▼─────────┐  │          │   │          │
+         │  Backend API     │  │Status: ❌│   │          │
+         │  Node.js/Express │  │Network:-│   │          │
+         │                  │  └──────────┘   └──────────┘
+         │ Endpoints:       │
+         │ - GET  /health   │        ╔════════════════════╗
+         │ - GET  /bookings │        ║  KEY FINDINGS:     ║
+         │ - POST /contact  │        ║                    ║
+         │ - GET  /packages │        ║  1. Two separate   ║
+         └────────┬─────────┘        ║     systems        ║
+                  │                  ║  2. No integration ║
+         ┌────────▼─────────┐        ║  3. No shared data ║
+         │   PostgreSQL     │        ║  4. No auth flow   ║
+         │   Database       │        ║  5. Portal built   ║
+         │                  │        ║     but not        ║
+         │ Tables:          │        ║     deployed       ║
+         │ - bookings       │        ╚════════════════════╝
+         │ - contacts       │
+         │ - packages       │
+         │ - reviews        │
+         └──────────────────┘
+                  │
+         ┌────────▼─────────┐
+         │   Redis Cache    │
+         │   Port 6379      │
+         │                  │
+         │ Used for:        │
+         │ - Sessions       │
+         │ - Cache          │
+         └──────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                          PROPOSED STATE (TO-BE)
+═══════════════════════════════════════════════════════════════════════════════
+
+                                Internet Users
+                                      │
+                                      ▼
+                            ┌─────────────────┐
+                            │  Traefik Proxy  │
+                            │  Port 80/443    │
+                            │  SSL/TLS/HTTPS  │
+                            └────────┬────────┘
+                                     │
+                   ┌─────────────────┼─────────────────┐
+                   │                 │                 │
+                   ▼                 ▼                 ▼
+         ┌──────────────────┐  ┌──────────────┐  ┌──────────────┐
+         │  Marketing Site  │  │  Onboarding  │  │   RentGuy    │
+         │                  │  │    Portal    │  │  Main System │
+         │ mr-dj.sevensa.nl │  │              │  │              │
+         │                  │  │ mr-dj.       │  │ rentguy.     │
+         │  React SPA       │  │ rentguy.nl   │  │ sevensa.nl   │
+         │  Vite Build      │  │              │  │              │
+         │  Nginx           │  │ React + Vite │  │ (Future)     │
+         │                  │◄─┤ 10 Steps     │  │              │
+         │  110+ SEO Pages  │ ▲│ Wizard       │  │              │
+         │  Local Targeting │ │└──────┬───────┘  └──────────────┘
+         └────────┬─────────┘ │       │
+                  │           │       │
+                  │     ┌─────┴───────┴──────┐
+                  │     │  Integration Flow: │
+                  │     │  1. Token Auth     │
+                  │     │  2. Prefill Data   │
+                  │     │  3. Redirect       │
+                  │     └────────────────────┘
+                  │
+         ┌────────▼──────────────────┐
+         │      Backend API          │
+         │    Node.js/Express        │
+         │                           │
+         │ Endpoints:                │
+         │ ┌───────────────────────┐ │
+         │ │ Existing:             │ │
+         │ │ - GET  /health        │ │
+         │ │ - GET  /bookings      │ │
+         │ │ - POST /contact       │ │
+         │ │ - GET  /packages      │ │
+         │ │                       │ │
+         │ │ NEW Integration APIs: │ │
+         │ │ ✨ POST /bookings     │ │
+         │ │    → Generate token   │ │
+         │ │    → Store in Redis   │ │
+         │ │    → Return URL       │ │
+         │ │                       │ │
+         │ │ ✨ GET /onboarding/   │ │
+         │ │    prefill?token=xxx  │ │
+         │ │    → Fetch from Redis │ │
+         │ │    → Return data      │ │
+         │ └───────────────────────┘ │
+         └────────┬──────────────────┘
+                  │
+         ┌────────▼─────────┐
+         │   PostgreSQL     │
+         │   Database       │
+         │                  │
+         │ Tables:          │
+         │ - bookings       │
+         │   ├─ id          │
+         │   ├─ name        │
+         │   ├─ email       │
+         │   ├─ phone       │
+         │   ├─ event_type  │
+         │   └─ status      │
+         │                  │
+         │ - contacts       │
+         │ - packages       │
+         │ - reviews        │
+         └──────────────────┘
+                  │
+         ┌────────▼─────────┐
+         │   Redis Cache    │
+         │   Port 6379      │
+         │                  │
+         │ ✨ NEW Usage:    │
+         │ - Onboarding     │
+         │   tokens         │
+         │   (24h TTL)      │
+         │                  │
+         │ - Session mgmt   │
+         │ - Cache          │
+         │                  │
+         │ Key Pattern:     │
+         │ onboarding:      │
+         │   {token-hash}   │
+         └──────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                              USER JOURNEY FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          STEP-BY-STEP USER FLOW                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+STEP 1: Marketing Site Visit
+┌──────────────────────┐
+│   User visits        │
+│ mr-dj.sevensa.nl     │
+│                      │
+│ → Browses services   │
+│ → Views packages     │
+│ → Reads testimonials │
+└──────────┬───────────┘
+           │
+           ▼
+STEP 2: Booking Request
+┌──────────────────────┐
+│  User fills form:    │
+│  ┌────────────────┐  │
+│  │ Name           │  │
+│  │ Email          │  │
+│  │ Phone          │  │
+│  │ Event Type     │  │
+│  │ Event Date     │  │
+│  │ Message        │  │
+│  └────────────────┘  │
+│                      │
+│  [Submit Booking] ─┐ │
+└────────────────────┼─┘
+                     │
+                     ▼
+STEP 3: Backend Processing
+┌─────────────────────────────────┐
+│  Backend API receives POST:     │
+│                                  │
+│  1. Save booking to PostgreSQL  │
+│  2. Generate secure token       │
+│     token = crypto.random(32)   │
+│  3. Store token in Redis        │
+│     Key: "onboarding:{token}"   │
+│     TTL: 24 hours               │
+│  4. Return response with URL    │
+└────────────┬────────────────────┘
+             │
+             ▼
+STEP 4: Response & Redirect
+┌─────────────────────────────────┐
+│  Response:                       │
+│  {                              │
+│    "success": true,             │
+│    "bookingId": 123,            │
+│    "onboardingUrl":             │
+│    "https://mr-dj.rentguy.nl/   │
+│     onboarding?token=abc123..." │
+│  }                              │
+│                                  │
+│  UI shows success + button:     │
+│  ┌────────────────────────────┐ │
+│  │ ✅ Booking Confirmed!      │ │
+│  │                            │ │
+│  │ Complete your setup:       │ │
+│  │ [Continue to Onboarding →]│ │
+│  └────────────────────────────┘ │
+└────────────┬────────────────────┘
+             │
+             ▼
+STEP 5: Onboarding Portal Entry
+┌─────────────────────────────────┐
+│  User clicks → Redirects to:    │
+│  mr-dj.rentguy.nl/onboarding    │
+│    ?token=abc123...             │
+│                                  │
+│  Portal detects token in URL    │
+│  → Calls prefill API            │
+└────────────┬────────────────────┘
+             │
+             ▼
+STEP 6: Prefill Data Fetch
+┌─────────────────────────────────┐
+│  GET /api/onboarding/prefill    │
+│    ?token=abc123...             │
+│                                  │
+│  Backend:                       │
+│  1. Fetch from Redis            │
+│  2. Validate token              │
+│  3. Return booking data         │
+│                                  │
+│  Response:                      │
+│  {                              │
+│    "businessName": "John Doe",  │
+│    "email": "john@example.com", │
+│    "phone": "+31612345678"      │
+│  }                              │
+└────────────┬────────────────────┘
+             │
+             ▼
+STEP 7: Wizard Pre-filled
+┌─────────────────────────────────┐
+│  Onboarding Wizard loads:       │
+│                                  │
+│  Step 2: Business Info          │
+│  ┌────────────────────────────┐ │
+│  │ Business Name: John Doe ✓  │ │
+│  │ Email: john@example.com ✓  │ │
+│  │ Phone: +31612345678 ✓      │ │
+│  │ [Pre-filled - Please verify]│ │
+│  └────────────────────────────┘ │
+│                                  │
+│  User verifies/edits data       │
+└────────────┬────────────────────┘
+             │
+             ▼
+STEP 8: Complete Wizard (10 Steps)
+┌─────────────────────────────────┐
+│  1. ✅ Welcome                   │
+│  2. ✅ Business Info (prefilled) │
+│  3. ⏺ Equipment Selection       │
+│  4. ⏺ Package Configuration     │
+│  5. ⏺ Pricing Setup             │
+│  6. ⏺ Payment Setup             │
+│  7. ⏺ Crew Management           │
+│  8. ⏺ Delivery Setup            │
+│  9. ⏺ Testing & Validation      │
+│  10.⏺ Completion                │
+└────────────┬────────────────────┘
+             │
+             ▼
+STEP 9: Account Activation
+┌─────────────────────────────────┐
+│  ✅ Onboarding Complete!         │
+│                                  │
+│  → Account activated            │
+│  → Email confirmation sent      │
+│  → Dashboard access granted     │
+│  → RentGuy Enterprise ready     │
+└─────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           DATA FLOW DIAGRAM
+═══════════════════════════════════════════════════════════════════════════════
+
+┌──────────┐                    ┌──────────┐                  ┌──────────┐
+│  User    │                    │ Backend  │                  │  Redis   │
+│ Browser  │                    │   API    │                  │  Cache   │
+└────┬─────┘                    └────┬─────┘                  └────┬─────┘
+     │                               │                              │
+     │  POST /bookings               │                              │
+     ├──────────────────────────────►│                              │
+     │  (name, email, phone, etc.)   │                              │
+     │                               │                              │
+     │                               │  1. Save to PostgreSQL       │
+     │                               ├─────────────────────┐        │
+     │                               │                     │        │
+     │                               │◄────────────────────┘        │
+     │                               │                              │
+     │                               │  2. Generate token           │
+     │                               ├─────────────┐                │
+     │                               │             │                │
+     │                               │◄────────────┘                │
+     │                               │                              │
+     │                               │  3. Store token + data       │
+     │                               ├─────────────────────────────►│
+     │                               │  SET onboarding:{token}      │
+     │                               │  EX 86400                    │
+     │                               │                              │
+     │  200 OK                       │                              │
+     │  { onboardingUrl: "..." }     │                              │
+     │◄──────────────────────────────┤                              │
+     │                               │                              │
+     │  User clicks link             │                              │
+     │  → Navigate to portal         │                              │
+     │                               │                              │
+     │  GET /onboarding/prefill      │                              │
+     │    ?token=abc123              │                              │
+     ├──────────────────────────────►│                              │
+     │                               │                              │
+     │                               │  4. Fetch token data         │
+     │                               ├─────────────────────────────►│
+     │                               │  GET onboarding:{token}      │
+     │                               │                              │
+     │                               │  Return booking data         │
+     │                               │◄─────────────────────────────┤
+     │                               │                              │
+     │  200 OK                       │                              │
+     │  { businessName: "..." }      │                              │
+     │◄──────────────────────────────┤                              │
+     │                               │                              │
+     │  5. Pre-fill form fields      │                              │
+     │                               │                              │
+     │  6. User completes wizard     │                              │
+     │                               │                              │
+     │  POST /onboarding/complete    │                              │
+     ├──────────────────────────────►│                              │
+     │                               │                              │
+     │                               │  7. Activate account         │
+     │                               │                              │
+     │                               │  8. Delete token (optional)  │
+     │                               ├─────────────────────────────►│
+     │                               │  DEL onboarding:{token}      │
+     │                               │                              │
+     │  200 OK                       │                              │
+     │  { success: true }            │                              │
+     │◄──────────────────────────────┤                              │
+     │                               │                              │
+     │  9. Show success page         │                              │
+     │                               │                              │
+     └───────────────────────────────┴──────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                         NETWORK TOPOLOGY
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Docker Host                                       │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │                        Network: web (172.19.0.0/16)                   │ │
+│  │                                                                       │ │
+│  │   ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  │ │
+│  │   │  mr-dj-backend   │  │ mr-dj-postgres   │  │   mr-dj-redis    │  │ │
+│  │   │  172.19.0.4      │  │  172.19.0.2      │  │   172.19.0.3     │  │ │
+│  │   │  Port: 3000      │  │  Port: 5432      │  │   Port: 6379     │  │ │
+│  │   └──────────────────┘  └──────────────────┘  └──────────────────┘  │ │
+│  │                                                                       │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐ │
+│  │                      Network: traefik (external)                      │ │
+│  │                                                                       │ │
+│  │   ┌────────────────────┐                                             │ │
+│  │   │  mr-dj-onboarding  │  ← TO BE DEPLOYED                          │ │
+│  │   │  (Not running)     │                                             │ │
+│  │   │  Port: 80          │                                             │ │
+│  │   └────────────────────┘                                             │ │
+│  │                                                                       │ │
+│  └───────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│  ┌─────────────────────┐                                                   │
+│  │  Traefik Container  │                                                   │
+│  │  Connected to:      │                                                   │
+│  │  - web network      │                                                   │
+│  │  - traefik network  │                                                   │
+│  │                     │                                                   │
+│  │  Routes:            │                                                   │
+│  │  ✅ mr-dj.sevensa.nl     → mr-dj-eds-frontend (web)                    │
+│  │  ✅ mr-dj.sevensa.nl/api → mr-dj-backend (web)                         │
+│  │  ⏳ mr-dj.rentguy.nl     → mr-dj-onboarding (traefik) - NOT DEPLOYED  │
+│  └─────────────────────┘                                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Legend:
+  ✅ = Live/Working
+  ❌ = Not Deployed
+  ⏳ = Pending Deployment
+  ✨ = New/To Be Implemented
+  ⏺ = Not Started/Future Step
+
+═══════════════════════════════════════════════════════════════════════════════

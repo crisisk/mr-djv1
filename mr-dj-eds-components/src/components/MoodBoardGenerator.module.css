@@ -1,0 +1,90 @@
+/* components/MoodBoardGenerator.module.css */
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.eventSelect {
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  width: 200px;
+}
+
+.schemesContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.scheme {
+  display: flex;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.scheme:hover {
+  transform: scale(1.02);
+}
+
+.scheme.selected {
+  box-shadow: 0 0 0 3px #000;
+}
+
+.colorBox {
+  flex: 1;
+}
+
+.selectedColors {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.colorList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.colorItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.colorPreview {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.copyButton {
+  padding: 0.5rem 1rem;
+  background: #000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.copyButton:hover {
+  background: #333;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .scheme {
+    height: 80px;
+  }
+}

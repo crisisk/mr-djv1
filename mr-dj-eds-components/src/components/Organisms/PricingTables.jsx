@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '../Atoms/Buttons.jsx';
+import { trackPricingCTA, getUserVariant } from '../../utils/trackConversion';
 
 // Data structure for the three packages
 const packages = [
@@ -51,41 +52,52 @@ const PricingCard = ({ pkg }) => {
 
   // Use token-based classes
   const cardClasses = isFeatured
-    ? "bg-neutral-dark text-neutral-light shadow-2xl transform scale-105"
-    : "bg-neutral-light text-neutral-dark shadow-lg";
+    ? "bg-[#1A2C4B] text-white shadow-2xl transform scale-105"
+    : "bg-white text-[#1A2C4B] shadow-lg";
 
   const headerClasses = isFeatured
     ? "text-secondary border-b border-secondary/50"
-    : "text-primary border-b border-neutral-gray-100";
+    : "text-primary border-b border-gray-100";
 
   const buttonVariant = isFeatured ? "secondary" : "primary";
 
+  // Handle CTA click with tracking
+  const handleCTAClick = () => {
+    const variant = getUserVariant();
+    trackPricingCTA(variant, name, price);
+  };
+
   return (
-    <div className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}>
+    <div className={`relative flex flex-col p-8 rounded-lg transition duration-300 ${cardClasses}`}>
       {isFeatured && (
-        <div className="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
+        <div className="absolute top-0 right-0 bg-secondary text-[#1A2C4B] text-sm font-bold px-4 py-1 rounded-tr-lg rounded-bl-lg">
           Populair
         </div>
       )}
-      <div className={`pb-spacing-md mb-spacing-md ${headerClasses}`}>
-        <h3 className="text-font-size-h3 font-bold">{name}</h3>
-        <p className="text-font-size-small opacity-80">{subtitle}</p>
+      <div className={`pb-4 mb-4 ${headerClasses}`}>
+        <h3 className="text-2xl font-bold">{name}</h3>
+        <p className="text-sm opacity-80">{subtitle}</p>
       </div>
-      <div className="flex items-baseline mb-spacing-lg">
-        <span className="text-font-size-h1 font-extrabold">{price}</span>
-        <span className="text-font-size-body ml-spacing-xs">/ event</span>
+      <div className="flex items-baseline mb-6">
+        <span className="text-5xl font-extrabold">{price}</span>
+        <span className="text-base ml-1">/ event</span>
       </div>
-      <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
+      <ul className="flex-grow space-y-2 mb-8">
         {features.map((feature, index) => (
-          <li key={index} className="flex items-start text-font-size-body">
-            <svg className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <li key={index} className="flex items-start text-base">
+            <svg className={`w-5 h-5 mr-2 ${isFeatured ? 'text-secondary' : 'text-primary'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
             </svg>
             {feature}
           </li>
         ))}
       </ul>
-      <Button variant={buttonVariant} size="lg" className="w-full">
+      <Button
+        variant={buttonVariant}
+        size="lg"
+        className="w-full"
+        onClick={handleCTAClick}
+      >
         {buttonText}
       </Button>
     </div>
@@ -94,12 +106,12 @@ const PricingCard = ({ pkg }) => {
 
 const PricingTables = () => {
   return (
-    <section className="py-spacing-3xl bg-neutral-gray-100">
-      <div className="container mx-auto px-spacing-md">
-        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">
+    <section className="py-16 bg-gray-100">
+      <div className="container mx-auto px-4">
+        <h2 className="text-4xl text-center text-[#1A2C4B] mb-12 font-extrabold">
           Onze Pakketten
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
           {packages.map((pkg, index) => (
             <PricingCard key={index} pkg={pkg} />
           ))}

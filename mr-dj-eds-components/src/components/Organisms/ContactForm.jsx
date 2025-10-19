@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { submitContactForm } from '../../services/api';
 import Button from '../Atoms/Buttons';
+import { trackFormSubmission } from '../../utils/trackConversion';
 
 /**
  * ContactForm Component
@@ -113,6 +114,19 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
       // Success
       setSubmitSuccess(true);
+
+      // Track conversion with enhanced GA4 tracking
+      trackFormSubmission(variant, formData.eventType, 'contact');
+
+      // Legacy GTM tracking (keeping for backwards compatibility)
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'contact_form_submit',
+          form_variant: variant,
+          event_type: formData.eventType,
+        });
+      }
+
       setFormData({
         name: '',
         email: '',
@@ -121,15 +135,6 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
         eventType: initialEventType,
         eventDate: '',
       });
-
-      // Track with GTM
-      if (window.dataLayer) {
-        window.dataLayer.push({
-          event: 'contact_form_submit',
-          form_variant: variant,
-          event_type: formData.eventType,
-        });
-      }
 
       // Auto-hide success message after 5 seconds
       setTimeout(() => setSubmitSuccess(false), 5000);
@@ -144,10 +149,10 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
   return (
     <div className="contact-form bg-white p-8 rounded-lg shadow-lg">
-      <h2 className="text-3xl font-bold text-neutral-dark mb-2">
+      <h2 className="text-3xl font-bold text-[#1A2C4B] mb-2">
         {variant === 'B' ? 'Vraag Direct een Offerte Aan' : 'Neem Contact Op'}
       </h2>
-      <p className="text-neutral-gray-500 mb-6">
+      <p className="text-gray-500 mb-6">
         Vul het formulier in en we nemen binnen 24 uur contact met je op.
       </p>
 
@@ -170,7 +175,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-neutral-dark mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-[#1A2C4B] mb-1">
             Naam <span className="text-red-500">*</span>
           </label>
           <input
@@ -189,7 +194,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-neutral-dark mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-[#1A2C4B] mb-1">
             Email <span className="text-red-500">*</span>
           </label>
           <input
@@ -208,7 +213,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
         {/* Phone */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-neutral-dark mb-1">
+          <label htmlFor="phone" className="block text-sm font-medium text-[#1A2C4B] mb-1">
             Telefoonnummer
           </label>
           <input
@@ -227,7 +232,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
         {/* Event Type */}
         <div>
-          <label htmlFor="eventType" className="block text-sm font-medium text-neutral-dark mb-1">
+          <label htmlFor="eventType" className="block text-sm font-medium text-[#1A2C4B] mb-1">
             Type Evenement <span className="text-red-500">*</span>
           </label>
           <select
@@ -252,7 +257,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
         {/* Event Date */}
         <div>
-          <label htmlFor="eventDate" className="block text-sm font-medium text-neutral-dark mb-1">
+          <label htmlFor="eventDate" className="block text-sm font-medium text-[#1A2C4B] mb-1">
             Gewenste Datum
           </label>
           <input
@@ -268,7 +273,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
         {/* Message */}
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-neutral-dark mb-1">
+          <label htmlFor="message" className="block text-sm font-medium text-[#1A2C4B] mb-1">
             Bericht <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -299,7 +304,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
         </div>
 
         {/* Privacy Notice */}
-        <p className="text-xs text-neutral-gray-500 mt-4">
+        <p className="text-xs text-gray-500 mt-4">
           Door dit formulier te versturen ga je akkoord met ons{' '}
           <a href="/privacy" className="text-primary-500 hover:underline">
             privacybeleid

@@ -6,10 +6,10 @@ import React from 'react';
  */
 const AboutUs = () => {
   return (
-    <section className="py-spacing-3xl bg-neutral-light" id="over-ons">
-      <div className="container mx-auto px-spacing-md max-w-5xl">
-        <div className="text-center mb-spacing-2xl">
-          <h2 className="text-font-size-h2 font-extrabold text-neutral-dark mb-spacing-md">
+    <section className="py-16 bg-white" id="over-ons">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-extrabold text-[#1A2C4B] mb-4">
             Over Mr. DJ
           </h2>
           <p className="text-font-size-h4 text-primary font-medium">
@@ -17,86 +17,93 @@ const AboutUs = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-spacing-2xl items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left: Story */}
-          <div className="space-y-spacing-lg">
-            <h3 className="text-font-size-h3 font-bold text-neutral-dark">
+          <div className="space-y-6">
+            <h3 className="text-2xl font-bold text-[#1A2C4B]">
               Ons Verhaal
             </h3>
-            <p className="text-font-size-body text-neutral-dark leading-relaxed">
+            <p className="text-base text-[#1A2C4B] leading-relaxed">
               Sinds 2010 maken wij van elk feest een onvergetelijk evenement.
               Wat begon als een passie voor muziek en entertainment is uitgegroeid
               tot één van de meest vertrouwde DJ-services in Noord-Brabant en Limburg.
             </p>
-            <p className="text-font-size-body text-neutral-dark leading-relaxed">
+            <p className="text-base text-[#1A2C4B] leading-relaxed">
               Onze unieke combinatie van een professionele DJ en live saxofonist
               zorgt voor een elektrische sfeer die uw gasten nooit zullen vergeten.
-              Met meer dan <strong>500 succesvolle evenementen</strong> en een
+              Met meer dan <strong>2500 geslaagde feesten</strong> verzorgd en een
               gemiddelde waardering van <strong>4.9/5</strong> zijn wij dé partner
               voor uw bruiloft, bedrijfsfeest of privé-evenement.
             </p>
-            <div className="flex gap-spacing-xl pt-spacing-md">
+            <p className="text-base text-[#1A2C4B] leading-relaxed">
+              Of het nu gaat om een intieme bruiloft voor 50 gasten of een spetterende
+              zakelijke gala voor 500 personen, wij zorgen altijd voor de perfecte
+              muzikale ondersteuning. Onze ervaring met diverse locaties in het zuiden
+              en ons uitgebreide repertoire garanderen een feest waar iedereen over
+              napraat.
+            </p>
+            <div className="flex gap-8 pt-4">
               <div className="text-center">
-                <div className="text-font-size-h1 font-extrabold text-primary">15+</div>
-                <div className="text-font-size-small text-neutral-dark">Jaar Ervaring</div>
+                <div className="text-5xl font-extrabold text-primary">15+</div>
+                <div className="text-sm text-[#1A2C4B]">Jaar Ervaring</div>
               </div>
               <div className="text-center">
-                <div className="text-font-size-h1 font-extrabold text-primary">500+</div>
-                <div className="text-font-size-small text-neutral-dark">Succesvolle Events</div>
+                <div className="text-5xl font-extrabold text-primary">2500+</div>
+                <div className="text-sm text-[#1A2C4B]">Geslaagde Feesten</div>
               </div>
               <div className="text-center">
-                <div className="text-font-size-h1 font-extrabold text-primary">4.9</div>
-                <div className="text-font-size-small text-neutral-dark">Gemiddelde Score</div>
+                <div className="text-5xl font-extrabold text-primary">4.9</div>
+                <div className="text-sm text-[#1A2C4B]">Gemiddelde Score</div>
               </div>
             </div>
           </div>
 
           {/* Right: Mission & Values */}
-          <div className="space-y-spacing-lg bg-neutral-gray-100 p-spacing-xl rounded-lg shadow-lg">
-            <h3 className="text-font-size-h3 font-bold text-neutral-dark">
+          <div className="space-y-6 bg-gray-100 p-8 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-bold text-[#1A2C4B]">
               Onze Missie
             </h3>
-            <p className="text-font-size-body text-neutral-dark leading-relaxed">
+            <p className="text-base text-[#1A2C4B] leading-relaxed">
               Wij geloven dat muziek de kracht heeft om mensen samen te brengen
               en magische momenten te creëren. Onze missie is om uw visie tot
               leven te brengen met perfecte muziek, professionele uitvoering en
               persoonlijke aandacht.
             </p>
 
-            <div className="space-y-spacing-md mt-spacing-lg">
+            <div className="space-y-4 mt-6">
               <h4 className="text-font-size-h4 font-bold text-primary">
                 Wat Ons Onderscheidt
               </h4>
-              <ul className="space-y-spacing-sm">
+              <ul className="space-y-2">
                 <li className="flex items-start">
-                  <svg className="w-6 h-6 mr-spacing-sm text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-font-size-body text-neutral-dark">
+                  <span className="text-base text-[#1A2C4B]">
                     <strong>Live Saxofonist</strong> - Unieke combinatie van DJ + live muziek
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="w-6 h-6 mr-spacing-sm text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-font-size-body text-neutral-dark">
+                  <span className="text-base text-[#1A2C4B]">
                     <strong>Persoonlijke Aanpak</strong> - Elk evenement is uniek
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="w-6 h-6 mr-spacing-sm text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-font-size-body text-neutral-dark">
+                  <span className="text-base text-[#1A2C4B]">
                     <strong>100% Dansgarantie</strong> - Volle dansvloer of geld terug
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="w-6 h-6 mr-spacing-sm text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-font-size-body text-neutral-dark">
+                  <span className="text-base text-[#1A2C4B]">
                     <strong>Professionele Apparatuur</strong> - Topkwaliteit geluid en licht
                   </span>
                 </li>
@@ -106,13 +113,13 @@ const AboutUs = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-spacing-2xl">
-          <p className="text-font-size-h4 text-neutral-dark mb-spacing-md">
+        <div className="text-center mt-12">
+          <p className="text-font-size-h4 text-[#1A2C4B] mb-4">
             Klaar om uw feest onvergetelijk te maken?
           </p>
           <a
             href="tel:+31408422594"
-            className="inline-block bg-primary text-neutral-light px-spacing-2xl py-spacing-lg rounded-lg text-font-size-h4 font-bold hover:bg-primary-600 transition shadow-lg"
+            className="inline-block bg-primary text-white px-12 py-6 rounded-lg text-font-size-h4 font-bold hover:bg-primary-600 transition shadow-lg"
           >
             Bel +31 (0) 40 842 2594
           </a>

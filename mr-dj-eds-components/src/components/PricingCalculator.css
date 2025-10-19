@@ -1,0 +1,70 @@
+/* PricingCalculator.css */
+.pricing-calculator {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.calculator-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group input[type="range"] {
+  width: 100%;
+}
+
+.extras-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.extra-item {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+}
+
+.extra-item.selected {
+  background-color: #e8f4ff;
+  border-color: #0066cc;
+}
+
+.total-section {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+}
+
+.total-amount {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0066cc;
+}
+
+@media (max-width: 768px) {
+  .pricing-calculator {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .extras-grid {
+    grid-template-columns: 1fr;
+  }
+}

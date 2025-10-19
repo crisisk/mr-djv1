@@ -1,0 +1,70 @@
+/* Hero.module.css */
+.heroContainer {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.videoWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.videoBackground {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.cta {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.cta:hover {
+  background: #ff3333;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .videoBackground {
+    /* Optional: show static image instead on mobile */
+    display: none;
+  }
+  
+  .heroContainer {
+    background: url('/images/dj-poster.jpg') center center/cover;
+  }
+}

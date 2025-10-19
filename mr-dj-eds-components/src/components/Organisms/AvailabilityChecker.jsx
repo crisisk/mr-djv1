@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import Button from '../Atoms/Buttons.jsx';
+import { trackAvailabilityCheck, getUserVariant } from '../../utils/trackConversion';
 
 // HubSpot Form Submission Logic (Placeholder)
 const submitToHubSpot = async (formData) => {
@@ -66,6 +67,10 @@ const AvailabilityChecker = () => {
     const result = await submitToHubSpot(formData);
 
     if (result.success) {
+      // Track conversion
+      const variant = getUserVariant();
+      trackAvailabilityCheck(variant, formData.event_date);
+
       setStatus({ type: 'success', message: 'Beschikbaarheid gecontroleerd! We nemen contact op via e-mail.' });
     } else {
       setStatus({ type: 'error', message: result.message });
@@ -75,16 +80,16 @@ const AvailabilityChecker = () => {
   const statusClasses = status ? (status.type === 'success' ? 'bg-semantic-success' : 'bg-semantic-error') : 'hidden';
 
   return (
-    <section className="py-spacing-3xl bg-neutral-light">
-      <div className="container mx-auto px-spacing-md max-w-lg shadow-xl rounded-lg p-spacing-2xl">
-        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-lg font-extrabold">
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4 max-w-lg shadow-xl rounded-lg p-12">
+        <h2 className="text-4xl text-center text-[#1A2C4B] mb-6 font-extrabold">
           Controleer Beschikbaarheid
         </h2>
-        <p className="text-center text-neutral-dark mb-spacing-xl">
+        <p className="text-center text-[#1A2C4B] mb-8">
           Kies uw gewenste datum en wij controleren direct of Mr. DJ beschikbaar is.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-spacing-xl">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Date Picker */}
           <div className="flex justify-center">
             <DayPicker
@@ -92,7 +97,7 @@ const AvailabilityChecker = () => {
               selected={selectedDate}
               onSelect={setSelectedDate}
               modifiersClassNames={{
-                selected: 'bg-primary text-neutral-light rounded-full',
+                selected: 'bg-primary text-white rounded-full',
                 today: 'border border-primary rounded-full',
               }}
               styles={{
@@ -104,7 +109,7 @@ const AvailabilityChecker = () => {
 
           {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-font-size-body font-medium text-neutral-dark mb-spacing-sm">
+            <label htmlFor="email" className="block text-base font-medium text-[#1A2C4B] mb-2">
               Uw E-mailadres
             </label>
             <input
@@ -112,7 +117,7 @@ const AvailabilityChecker = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-spacing-md border border-neutral-gray-500 rounded-md focus:ring-primary focus:border-primary"
+              className="w-full p-4 border border-neutral-gray-500 rounded-md focus:ring-primary focus:border-primary"
               placeholder="uw.naam@voorbeeld.nl"
               required
             />
@@ -120,7 +125,7 @@ const AvailabilityChecker = () => {
 
           {/* Status Message */}
           {status && (
-            <div className={`p-spacing-md rounded-md text-neutral-light text-center ${statusClasses}`}>
+            <div className={`p-4 rounded-md text-white text-center ${statusClasses}`}>
               {status.message}
             </div>
           )}

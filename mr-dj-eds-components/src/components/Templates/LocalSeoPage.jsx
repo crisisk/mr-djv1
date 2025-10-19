@@ -85,19 +85,19 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
                 ctaPrimaryText="Check Beschikbaarheid"
                 ctaSecondaryText="Vraag Offerte Aan"
                 backgroundClass="bg-primary"
-                titleColor="text-neutral-light"
-                subtitleColor="text-neutral-light"
+                titleColor="text-white"
+                subtitleColor="text-white"
             />
 
             {/* 2. Local Venues Section */}
-            <section className="py-spacing-2xl bg-neutral-light">
-                <div className="container mx-auto px-spacing-md text-center">
-                    <h2 className="text-font-size-h2 font-bold text-neutral-dark mb-spacing-lg">
+            <section className="py-12 bg-white">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-4xl font-bold text-[#1A2C4B] mb-6">
                         Bekend met de beste locaties in {city} en {province}
                     </h2>
-                    <div className="flex justify-center space-x-spacing-lg">
+                    <div className="flex justify-center space-x-6">
                         {localVenues.map((venue, index) => (
-                            <span key={index} className="bg-neutral-gray-100 text-neutral-dark px-spacing-md py-spacing-sm rounded-full text-font-size-body shadow-sm">
+                            <span key={index} className="bg-gray-100 text-[#1A2C4B] px-4 py-2 rounded-full text-base shadow-sm">
                                 {venue}
                             </span>
                         ))}
@@ -106,9 +106,9 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
             </section>
 
             {/* 3. Localized Testimonials */}
-            <section className="py-spacing-3xl bg-neutral-gray-100">
-                <div className="container mx-auto px-spacing-md">
-                    <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-lg font-extrabold">
+            <section className="py-16 bg-gray-100">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-4xl text-center text-[#1A2C4B] mb-6 font-extrabold">
                         Wat klanten in {city} en {province} zeggen
                     </h2>
                     {/* Testimonials component is reused, but content should be filtered/localized in a real app */}
@@ -120,12 +120,12 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 	            {pricingSection}
 	
 	            {/* 5. Internal Linking Section (T10: SEO Fine-tune) */}
-	            <section className="py-spacing-2xl bg-neutral-light">
-	                <div className="container mx-auto px-spacing-md text-center">
-	                    <h2 className="text-font-size-h3 font-bold text-neutral-dark mb-spacing-lg">
+	            <section className="py-12 bg-white">
+	                <div className="container mx-auto px-4 text-center">
+	                    <h2 className="text-2xl font-bold text-[#1A2C4B] mb-6">
 	                        Ontdek Onze DJ Services in de Regio
 	                    </h2>
-	                    <div className="flex flex-wrap justify-center gap-spacing-md">
+	                    <div className="flex flex-wrap justify-center gap-4">
 	                        {/* Placeholder for dynamic internal links to other cities/pages */}
 	                        <a href="/dj-in-tilburg" className="text-primary-500 hover:text-primary-700 underline">DJ in Tilburg</a>
 	                        <a href="/dj-in-breda" className="text-primary-500 hover:text-primary-700 underline">DJ in Breda</a>
@@ -142,8 +142,8 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 	            </section>
 
 	            {/* 6. Contact Form Section */}
-	            <section className="py-spacing-3xl bg-neutral-light">
-	                <div className="container mx-auto px-spacing-md max-w-3xl">
+	            <section className="py-16 bg-white">
+	                <div className="container mx-auto px-4 max-w-3xl">
 	                    <ContactForm
 	                        variant={variant}
 	                        eventType={data.slug.startsWith('bruiloft-dj-') ? 'bruiloft' : ''}
@@ -152,15 +152,15 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 	            </section>
 
 	            {/* 7. Footer CTA - Localized */}
-	            <div className="bg-neutral-dark text-neutral-light py-spacing-2xl text-center">
-	                <h3 className="text-font-size-h2 font-bold mb-spacing-md">
+	            <div className="bg-[#1A2C4B] text-white py-12 text-center">
+	                <h3 className="text-4xl font-bold mb-4">
 	                    {/* T12: A/B Test - Variant B uses a different CTA text */}
 	                    {variant === 'B' ?
 	                        `Vraag vandaag nog een gratis offerte aan in ${city}!` :
 	                        `Klaar voor een onvergetelijk feest in ${city} of ${province}?`
 	                    }
 	                </h3>
-	                <p className="text-neutral-light mb-spacing-md">
+	                <p className="text-white mb-4">
 	                    Bel ons direct op <a href="tel:+31408422594" className="font-bold underline hover:text-secondary">+31 (0) 40 8422594</a>
 	                </p>
 	            </div>

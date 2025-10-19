@@ -1,0 +1,6 @@
+// src/config/retargeting.js
+export const RETARGETING_CONFIG = {
+  META_PIXEL_ID: 'YOUR_META_PIXEL_ID',
+  GOOGLE_TAG_ID: 'YOUR_GOOGLE_TAG_ID',
+  LINKEDIN_PIXEL_ID: 'YOUR_LINKEDIN_PIXEL_ID'
+};
