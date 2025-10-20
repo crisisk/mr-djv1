@@ -28,6 +28,17 @@ describe('config', () => {
     expect(config.rateLimit).toEqual({ windowMs: 15 * 60 * 1000, max: 100 });
     expect(config.logging).toBe('dev');
     expect(config.databaseUrl).toBeUndefined();
+    expect(config.mail).toEqual({
+      provider: null,
+      apiKey: null,
+      from: null,
+      replyTo: null,
+      stream: null,
+      templates: {
+        contact: {},
+        booking: {}
+      }
+    });
     expect(config.serviceName).toBe('mr-dj-backend');
     expect(config.version).toBe('1.0.0');
     expect(config.integrations).toEqual(
@@ -214,7 +225,14 @@ describe('config', () => {
       ALERT_QUEUE_WARNING_RETRY_AGE_MS: '120000',
       ALERT_QUEUE_CRITICAL_RETRY_AGE_MS: '240000',
       ALERT_QUEUE_RECOVERY_RETRY_AGE_MS: '60000',
-      ALERT_QUEUE_DEAD_LETTER_WARNING: '2'
+      ALERT_QUEUE_DEAD_LETTER_WARNING: '2',
+      MAIL_PROVIDER: 'postmark',
+      MAIL_API_KEY: 'pm-key',
+      MAIL_FROM_ADDRESS: 'Mister DJ <noreply@misterdj.nl>',
+      MAIL_REPLY_TO: 'crew@misterdj.nl',
+      MAIL_STREAM: 'transactional',
+      MAIL_TEMPLATES_CONTACT: 'confirmation:tmpl-contact,internal:tmpl-internal',
+      MAIL_TEMPLATES_BOOKING: 'customer:tmpl-booking'
     };
 
     const config = loadConfig();
@@ -234,6 +252,22 @@ describe('config', () => {
         namespace: 'mr-dj'
       })
     );
+    expect(config.mail).toEqual({
+      provider: 'postmark',
+      apiKey: 'pm-key',
+      from: 'Mister DJ <noreply@misterdj.nl>',
+      replyTo: 'crew@misterdj.nl',
+      stream: 'transactional',
+      templates: {
+        contact: {
+          confirmation: 'tmpl-contact',
+          internal: 'tmpl-internal'
+        },
+        booking: {
+          customer: 'tmpl-booking'
+        }
+      }
+    });
     expect(config.serviceName).toBe('custom-service');
     expect(config.version).toBe('2.3.4');
     expect(config.integrations).toEqual(

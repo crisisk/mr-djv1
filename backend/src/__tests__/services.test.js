@@ -236,6 +236,7 @@ describe('bookingService', () => {
   afterEach(() => {
     jest.clearAllMocks();
     bookingService.resetInMemoryStore();
+    packageService.resetCache();
   });
 
   it('creates bookings via the database when available', async () => {
@@ -262,12 +263,24 @@ describe('bookingService', () => {
       packageId: 'silver'
     });
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       id: 'booking-id',
       status: 'pending',
       createdAt,
       persisted: true,
-      rentGuySync: { delivered: true, queued: false, queueSize: 0 }
+      rentGuySync: { delivered: true, queued: false, queueSize: 0 },
+      mailDelivery: expect.objectContaining({
+        delivered: false,
+        queued: false,
+        skipped: true,
+        reason: 'mail-not-configured'
+      }),
+      personalization: {
+        variantId: null,
+        matchType: 'default',
+        keywords: [],
+        city: null
+      }
     });
     expect(rentGuyService.syncBooking).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -293,6 +306,9 @@ describe('bookingService', () => {
 
     expect(created.persisted).toBe(false);
     expect(created.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
+    expect(created.mailDelivery).toEqual(
+      expect.objectContaining({ skipped: true, reason: 'mail-not-configured' })
+    );
 
     const result = await bookingService.getRecentBookings(5);
     expect(result.persisted).toBe(false);

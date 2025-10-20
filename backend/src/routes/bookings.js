@@ -47,7 +47,12 @@ router.post('/', bookingValidations, async (req, res, next) => {
       eventType: req.body.eventType,
       eventDate: req.body.eventDate,
       message: req.body.message,
-      packageId: req.body.packageId
+      packageId: req.body.packageId,
+      personalization: typeof req.body.personalization === 'object' ? req.body.personalization : undefined,
+      personalizationContext:
+        typeof req.body.personalizationContext === 'object'
+          ? req.body.personalizationContext
+          : undefined
     });
 
     res.status(201).json({
@@ -56,7 +61,9 @@ router.post('/', bookingValidations, async (req, res, next) => {
       bookingId: booking.id,
       status: booking.status,
       persisted: booking.persisted,
-      rentGuySync: booking.rentGuySync
+      rentGuySync: booking.rentGuySync,
+      mailDelivery: booking.mailDelivery,
+      personalization: booking.personalization
     });
   } catch (error) {
     next(error);
