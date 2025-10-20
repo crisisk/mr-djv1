@@ -1,12 +1,16 @@
 [build]
   # Build command - we're using static HTML so just copy files
   command = "echo 'Building Mr. DJ website...' && ls -la frontend/public"
-  
+
   # Publish directory - where the static files are
   publish = "frontend/public"
-  
+
   # Functions directory (for serverless functions if needed later)
   functions = "backend/functions"
+
+[[build.cache]]
+  # Cache dependencies to speed up subsequent builds
+  path = "node_modules"
 
 [build.environment]
   # Node version
@@ -52,9 +56,12 @@
 # Plugin configuration
 [[plugins]]
   package = "@netlify/plugin-lighthouse"
-  
+
   [plugins.inputs]
     output_path = "reports/lighthouse.html"
+
+  [[plugins.inputs.budgets]]
+    path = "lighthouse-budgets.json"
 
 # Enable Netlify Forms
 [build.processing]
