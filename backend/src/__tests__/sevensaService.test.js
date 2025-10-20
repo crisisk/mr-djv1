@@ -1,9 +1,22 @@
+const { buildRequiredEnv } = require('../testUtils/env');
+
 const ORIGINAL_ENV = { ...process.env };
+const BASE_ENV = buildRequiredEnv();
 const ORIGINAL_FETCH = global.fetch;
+
+function buildEnv(overrides = {}) {
+  const next = { ...BASE_ENV, ...overrides };
+  Object.keys(next).forEach((key) => {
+    if (next[key] === undefined) {
+      delete next[key];
+    }
+  });
+  return next;
+}
 
 async function loadService(env = {}) {
   jest.resetModules();
-  process.env = { ...ORIGINAL_ENV, ...env };
+  process.env = buildEnv(env);
   const service = require('../services/sevensaService');
   await service.reset();
   return service;
@@ -19,17 +32,10 @@ describe('sevensaService', () => {
     }
   });
 
-  it('queues submissions when no submit URL is configured', async () => {
-    const sevensaService = await loadService({ SEVENSA_SUBMIT_URL: '' });
-
-    const result = await sevensaService.submitLead({
-      id: 'lead-1',
-      email: 'lead@example.com',
-      firstName: 'Lead'
-    });
-
-    expect(result).toMatchObject({ queued: true, reason: 'not-configured' });
-    await expect(sevensaService.getStatus()).resolves.toMatchObject({ configured: false, queueSize: 1 });
+  it('fails fast when Sevensa webhook is missing', async () => {
+    await expect(loadService({ SEVENSA_SUBMIT_URL: undefined })).rejects.toThrow(
+      'Missing required environment variable "SEVENSA_SUBMIT_URL" for Sevensa lead automation (SEVENSA_SUBMIT_URL).'
+    );
   });
 
   it('delivers submissions when configured', async () => {

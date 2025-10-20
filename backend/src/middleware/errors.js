@@ -1,4 +1,5 @@
 const config = require('../config');
+const { logger } = require('../lib/logger');
 
 function notFoundHandler(req, res) {
   res.status(404).json({
@@ -8,18 +9,24 @@ function notFoundHandler(req, res) {
 }
 
 function logError(err, req) {
-  const context = `${req.method} ${req.originalUrl}`;
-
   if (config.env === 'test') {
     return;
   }
 
-  if ((err.status || err.statusCode || 500) >= 500) {
-    console.error(`[errorHandler] ${context} ->`, err);
+  const statusCode = err.status || err.statusCode || 500;
+  const requestLogger = logger.child({
+    middleware: 'errorHandler',
+    method: req.method,
+    path: req.originalUrl,
+    statusCode
+  });
+
+  if (statusCode >= 500) {
+    requestLogger.error('Unhandled server error', { err });
     return;
   }
 
-  console.warn(`[errorHandler] ${context} -> ${err.message}`);
+  requestLogger.warn('Client error handled', { err });
 }
 
 // eslint-disable-next-line no-unused-vars
