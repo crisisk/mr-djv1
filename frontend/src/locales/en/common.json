@@ -1,0 +1,46 @@
+{
+  "app": {
+    "title": "Vite + React",
+    "counterLabel": "count is {{count}}",
+    "editPrompt": "Edit <code>src/App.tsx</code> and save to test HMR",
+    "docsPrompt": "Click on the Vite and React logos to learn more",
+    "viteLogoAlt": "Vite logo",
+    "reactLogoAlt": "React logo"
+  },
+  "hero": {
+    "title": "High-Energy Music for Unforgettable Events",
+    "subtitle": "Book our DJ and saxophonist duo to keep the dance floor full all night long.",
+    "ctaPrimaryText": "Book Now",
+    "ctaSecondaryText": "Learn More"
+  },
+  "testimonials": {
+    "title": "What Clients Say",
+    "items": [
+      {
+        "quote": "The DJ and saxophonist duo was the highlight of our wedding. The atmosphere was unforgettable!",
+        "author": "John & Mary",
+        "source": "Wedding, Amsterdam",
+        "rating": 5
+      },
+      {
+        "quote": "Professional, energetic, and they knew exactly how to keep the crowd engaged. Perfect for any corporate event.",
+        "author": "Susan van Dijk",
+        "source": "Corporate Party, Utrecht",
+        "rating": 5
+      },
+      {
+        "quote": "The music was perfectly tailored to our guests. The saxophonist took it to the next level!",
+        "author": "Mark de Vries",
+        "source": "Birthday Celebration, Eindhoven",
+        "rating": 5
+      }
+    ]
+  },
+  "language": {
+    "label": "Language",
+    "options": {
+      "en": "English",
+      "nl": "Dutch"
+    }
+  }
+}

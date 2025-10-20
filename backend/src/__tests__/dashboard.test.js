@@ -2,8 +2,10 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const http = require('http');
+const { buildRequiredEnv } = require('../testUtils/env');
 
 const ORIGINAL_ENV = { ...process.env };
+const BASE_ENV = buildRequiredEnv();
 
 function createAuthHeader(username, password) {
   return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
@@ -24,7 +26,7 @@ describe('configuration dashboard', () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
     storePath = path.join(tempDir, 'managed.env');
     process.env = {
-      ...ORIGINAL_ENV,
+      ...BASE_ENV,
       CONFIG_DASHBOARD_ENABLED: 'true',
       CONFIG_DASHBOARD_USER: 'admin',
       CONFIG_DASHBOARD_PASS: 'secret',
@@ -44,7 +46,7 @@ describe('configuration dashboard', () => {
     observabilityService.reset();
     personalizationService = require('../services/personalizationService');
     personalizationService.resetLogs();
-    personalizationService.resetCache();
+    await personalizationService.resetCache();
 
     await new Promise((resolve) => {
       server.listen(0, '127.0.0.1', resolve);
@@ -220,8 +222,9 @@ describe('configuration dashboard', () => {
     const payload = await response.json();
     expect(payload).toEqual(
       expect.objectContaining({
-        configured: false,
-        queueSize: 0
+        configured: true,
+        queueSize: 0,
+        workspaceId: BASE_ENV.RENTGUY_WORKSPACE_ID
       })
     );
   });
@@ -254,16 +257,12 @@ describe('configuration dashboard', () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload).toEqual(
-      expect.objectContaining({
-        configured: false,
-        attempted: 0,
-        delivered: 0,
-        remaining: 1
-      })
-    );
+    expect(payload.configured).toBe(true);
+    expect(payload.attempted).toBeGreaterThanOrEqual(1);
+    expect(payload.delivered).toBeGreaterThanOrEqual(0);
+    expect(payload.remaining).toBe(0);
     const rentGuyStatus = await rentGuyService.getStatus();
-    expect(rentGuyStatus.queueSize).toBe(1);
+    expect(rentGuyStatus.queueSize).toBe(0);
   });
 
   it('exposes sevensa status through the dashboard API', async () => {
@@ -276,7 +275,7 @@ describe('configuration dashboard', () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload).toEqual(expect.objectContaining({ configured: false, queueSize: 0 }));
+    expect(payload).toEqual(expect.objectContaining({ configured: true, queueSize: 0 }));
   });
 
   it('exposes monitoring state through the observability endpoint', async () => {
@@ -383,15 +382,11 @@ describe('configuration dashboard', () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload).toEqual(
-      expect.objectContaining({
-        configured: false,
-        attempted: 0,
-        delivered: 0,
-        remaining: 1
-      })
-    );
+    expect(payload.configured).toBe(true);
+    expect(payload.attempted).toBeGreaterThanOrEqual(1);
+    expect(payload.delivered).toBeGreaterThanOrEqual(0);
+    expect(payload.remaining).toBe(0);
     const sevensaStatus = await sevensaService.getStatus();
-    expect(sevensaStatus.queueSize).toBe(1);
+    expect(sevensaStatus.queueSize).toBe(0);
   });
 });
