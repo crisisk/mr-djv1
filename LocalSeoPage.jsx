@@ -1,8 +1,8 @@
 import React from 'react';
-import HeroSection from '../Organisms/HeroSection.jsx';
-import PricingTables from '../Organisms/PricingTables.jsx';
-import Testimonials from '../Organisms/Testimonials.jsx';
-import Button from '../Atoms/Buttons.jsx';
+import HeroSection from './HeroSection.jsx';
+import PricingTables from './PricingTables.jsx';
+import Testimonials from './Testimonials.jsx';
+import Button from './Buttons.jsx';
 
 // Placeholder for dynamic content
 const localData = {
