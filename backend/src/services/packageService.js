@@ -3,6 +3,17 @@ const path = require('path');
 const db = require('../lib/db');
 const cache = require('../lib/cache');
 
+/**
+ * @typedef {Object} Package
+ * @property {string} id
+ * @property {string} name
+ * @property {number} price
+ * @property {string|null} duration
+ * @property {string} description
+ * @property {string[]} features
+ * @property {boolean} [popular]
+ */
+
 const fallbackPackages = [
   {
     id: 'bronze',
@@ -59,6 +70,12 @@ const CACHE_KEY = 'packages-service';
 const CACHE_TTL = 5 * 60 * 1000;
 const CONTENT_PACKAGES_DIR = path.join(__dirname, '../../..', 'content', 'pakketten');
 
+/**
+ * Normalizes rows returned by Postgres into package objects.
+ *
+ * @param {{ rows: Array<{ id: string, name: string, price: number|string, duration: string|null, description: string, features: string[]|null, popular: boolean|null }> }|null} result
+ * @returns {Package[]|null}
+ */
 function mapDatabasePackages(result) {
   if (!result) return null;
   return result.rows.map((row) => ({
@@ -76,9 +93,16 @@ function mapDatabasePackages(result) {
   }));
 }
 
+/**
+ * Resolves packages from content, the database or the static fallback.
+ *
+ * @param {Object} [options]
+ * @param {boolean} [options.forceRefresh]
+ * @returns {Promise<{ packages: Array<Package>, source: string, cacheStatus: string }>}
+ */
 async function getPackages({ forceRefresh = false } = {}) {
   if (!forceRefresh) {
-    const cached = cache.get(CACHE_KEY);
+    const cached = await cache.get(CACHE_KEY);
     if (cached) {
       return { ...cached, cacheStatus: 'hit' };
     }
@@ -146,15 +170,24 @@ async function getPackages({ forceRefresh = false } = {}) {
     }
   }
 
-  cache.set(CACHE_KEY, response, CACHE_TTL);
+  await cache.set(CACHE_KEY, response, CACHE_TTL);
   return { ...response, cacheStatus: 'refreshed' };
 }
 
-function resetCache() {
-  cache.del(CACHE_KEY);
+async function resetCache() {
+  await cache.del(CACHE_KEY);
+}
+
+function ping() {
+  return {
+    ok: true,
+    cacheWarm: Boolean(cache.get(CACHE_KEY)),
+    databaseConfigured: db.isConfigured()
+  };
 }
 
 module.exports = {
   getPackages,
-  resetCache
+  resetCache,
+  ping
 };

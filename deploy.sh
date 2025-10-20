@@ -88,6 +88,10 @@ docker-compose up -d
 echo "Waiting for services to start..."
 sleep 10
 
+# Ensure database migrations are up to date
+echo "Running database migrations..."
+docker-compose exec -T mr-dj-backend npm run migrate
+
 # Check container status
 echo "Container Status:"
 docker-compose ps
@@ -109,6 +113,7 @@ ENDSSH
 
 echo "✅ Deployment script completed!"
 echo "🌐 Check your website at: https://staging.sevensa.nl/eds"
+echo "📊 Post-deploy: Import docs/observability/grafana.json into Grafana via Dashboards → New → Import."
 
 # Cleanup local tar
 rm -f "$ROOT_DIR/$PACKAGE_NAME"

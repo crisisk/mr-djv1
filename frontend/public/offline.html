@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline fallback | Mister DJ</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #fff;
+            font-family: "Poppins", Arial, sans-serif;
+            text-align: center;
+            padding: 2rem;
+        }
+        main {
+            max-width: 32rem;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .button {
+            display: inline-block;
+            padding: 0.85rem 1.75rem;
+            border-radius: 9999px;
+            background-color: #38bdf8;
+            color: #0f172a;
+            font-weight: 600;
+        }
+        .button:hover {
+            background-color: #0ea5e9;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Je bent offline</h1>
+        <p>
+            Geen zorgen, Mister DJ houdt het feest draaiende. Zodra je verbinding weer beschikbaar is
+            kun je terugkeren naar de site. Heb je ons nu nodig? Gebruik een van de onderstaande opties.
+        </p>
+        <div class="actions">
+            <a class="button" href="/">Terug naar de homepage</a>
+            <a href="tel:+31408422594">Bel direct: +31 (0) 40 842 2594</a>
+            <a href="mailto:info@mr-dj.nl">Mail ons: info@mr-dj.nl</a>
+        </div>
+    </main>
+</body>
+</html>
