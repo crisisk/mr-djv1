@@ -2,6 +2,7 @@ import React from 'react';
 import SlideLayout from '../common/SlideLayout.jsx';
 import { Button } from '../ui/button.jsx';
 import { trackEvent } from '../../lib/analytics.js';
+import { Icon } from '../../icons/index.jsx';
 
 const primaryStats = [
   { label: 'Events', value: '2500+' },
@@ -20,7 +21,8 @@ const HeroSections = () => (
       <section className="grid gap-spacing-xl rounded-3xl border border-neutral-gray-100 bg-neutral-dark/95 p-spacing-xl text-neutral-light shadow-xl md:grid-cols-2">
         <div className="space-y-spacing-md">
           <span className="inline-flex items-center gap-spacing-xs rounded-full bg-secondary/20 px-spacing-md py-spacing-xs text-xs font-semibold uppercase tracking-wide text-secondary">
-            ✨ 100% Dansgarantie
+            <Icon name="icon-sparkles" size={16} aria-label="Dansgarantie" />
+            100% Dansgarantie
           </span>
           <h3 className="text-font-size-h1 font-extrabold leading-tight">
             Jouw feest, <span className="text-secondary">onvergetelijk</span> gemaakt
@@ -69,9 +71,7 @@ const HeroSections = () => (
       <section className="grid gap-spacing-xl rounded-3xl border border-neutral-gray-100 bg-neutral-light/90 p-spacing-xl shadow-lg md:grid-cols-[2fr,1fr]">
         <div className="space-y-spacing-md">
           <div className="flex items-center gap-spacing-sm text-primary">
-            <span role="img" aria-label="locatie">
-              📍
-            </span>
+            <Icon name="icon-location" size={24} aria-label="locatie" />
             <span className="text-sm font-semibold uppercase tracking-wide">Eindhoven</span>
           </div>
           <h3 className="text-font-size-h2 font-bold text-neutral-dark">Bruiloft DJ Eindhoven</h3>
@@ -112,7 +112,9 @@ const HeroSections = () => (
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-spacing-md rounded-3xl border border-neutral-gray-100 bg-neutral-light p-spacing-xl text-center shadow-inner">
-          <div className="flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary text-3xl">📅</div>
+          <div className="flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Icon name="icon-calendar" size={48} />
+          </div>
           <p className="text-sm font-semibold text-neutral-dark">Check beschikbaarheid</p>
           <p className="text-xs text-neutral-gray-500">We bevestigen binnen 24 uur.</p>
         </div>
