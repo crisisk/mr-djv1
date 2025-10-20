@@ -288,6 +288,48 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, loca
     return JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
   }, [breadcrumbs]);
 
+  const serviceSchema = useMemo(() => {
+    if (!hasData) {
+      return null;
+    }
+
+    const schema = generateServiceSchema({
+      serviceName: isBruiloftPage ? `Bruiloft DJ Service ${city}` : `DJ Service ${city}`,
+      description: seoDescription,
+      serviceType: isBruiloftPage ? 'Wedding Entertainment' : 'Event Entertainment',
+    });
+
+    if (schema?.offers?.priceSpecification) {
+      const price = isBruiloftPage ? '1295' : '995';
+      const label = isBruiloftPage
+        ? 'Bruiloft DJ pakketten vanaf €1.295'
+        : 'DJ pakketten vanaf €995';
+
+      schema.offers.priceSpecification.price = price;
+      schema.offers.priceSpecification.description = label;
+    }
+
+    return JSON.stringify(schema);
+  }, [city, hasData, isBruiloftPage, seoDescription]);
+
+  const breadcrumbSchema = useMemo(
+    () => JSON.stringify(generateBreadcrumbSchema(breadcrumbs)),
+    [breadcrumbs],
+  );
+
+  const webPageSchema = useMemo(
+    () =>
+      JSON.stringify(
+        generateWebPageSchema({
+          title: seoTitle,
+          description: seoDescription,
+          url: canonicalUrl,
+          breadcrumbs,
+        }),
+      ),
+    [breadcrumbs, canonicalUrl, seoDescription, seoTitle],
+  );
+
   if (!hasData) {
     return <div className="p-10 text-center text-red-500">Geen lokale SEO data gevonden.</div>;
   }
@@ -300,6 +342,9 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, loca
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <link rel="canonical" href={canonicalUrl} />
+        <script type="application/ld+json">{webPageSchema}</script>
+        <script type="application/ld+json">{breadcrumbSchema}</script>
+        {serviceSchema && <script type="application/ld+json">{serviceSchema}</script>}
         {localBusinessSchema && <script type="application/ld+json">{localBusinessSchema}</script>}
         {eventSchema && <script type="application/ld+json">{eventSchema}</script>}
         {breadcrumbSchema && <script type="application/ld+json">{breadcrumbSchema}</script>}
