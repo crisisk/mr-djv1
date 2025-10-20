@@ -26,7 +26,7 @@ describe('rateLimiter middleware', () => {
   let rateLimiter;
   let loggerMocks;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetModules();
     jest.useFakeTimers();
     loggerMocks = setupLoggerMock();
@@ -36,46 +36,40 @@ describe('rateLimiter middleware', () => {
     rateLimiter = require('../middleware/rateLimiter');
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
+  afterEach(async () => {
+    if (server) {
+      await new Promise((resolve, reject) => {
+        server.close((error) => (error ? reject(error) : resolve()));
+      });
+      server = null;
+    }
+
+    delete process.env.RATE_LIMIT_WINDOW_MS;
+    delete process.env.RATE_LIMIT_MAX;
     jest.resetModules();
-    jest.clearAllMocks();
   });
 
-  function createRequest(ip = '127.0.0.1') {
-    return { ip };
+  async function getTest() {
+    const response = await fetch(`${baseUrl}/test`);
+    const body = await response.json();
+    return { status: response.status, body };
   }
 
-  function createResponse() {
-    return {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
-    };
-  }
+  it('allows requests within the configured window', async () => {
+    const first = await getTest();
+    const second = await getTest();
 
-  it('allows requests within the configured window', () => {
-    const req = createRequest();
-    const res = createResponse();
-    const next = jest.fn();
-
-    rateLimiter(req, res, next);
-    rateLimiter(req, res, next);
-
-    expect(next).toHaveBeenCalledTimes(2);
-    expect(res.status).not.toHaveBeenCalled();
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
   });
 
-  it('blocks requests that exceed the limit and recovers after the window', () => {
-    const req = createRequest('10.0.0.1');
-    const res = createResponse();
-    const next = jest.fn();
+  it('blocks requests that exceed the limit and recovers after the window', async () => {
+    await getTest();
+    await getTest();
+    const limited = await getTest();
 
-    rateLimiter(req, res, next);
-    rateLimiter(req, res, next);
-    rateLimiter(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(429);
-    expect(res.json).toHaveBeenCalledWith({
+    expect(limited.status).toBe(429);
+    expect(limited.body).toEqual({
       error: 'Too many requests',
       retryAfter: expect.any(Number)
     });
@@ -87,13 +81,10 @@ describe('rateLimiter middleware', () => {
       expect.objectContaining({ retryAfterSeconds: expect.any(Number) })
     );
 
-    jest.advanceTimersByTime(150);
-    res.status.mockClear();
-    res.json.mockClear();
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
-    rateLimiter(req, res, next);
-    expect(res.status).not.toHaveBeenCalled();
-    expect(next).toHaveBeenCalledTimes(3);
+    const afterReset = await getTest();
+    expect(afterReset.status).toBe(200);
   });
 });
 
