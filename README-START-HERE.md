@@ -123,6 +123,8 @@ Document your configuration with 23 screenshots.
 - [ ] Screenshot tool
 - [ ] 5 hours of uninterrupted time
 - [ ] Internet connection
+- [ ] Node.js **20 LTS** (20.11 or newer) for optional verification scripts and local container exports (`node -v`)
+- [ ] npm **10.x** (bundled with Node 20) to ensure consistent dependency installs (`npm -v`)
 
 ---
 
