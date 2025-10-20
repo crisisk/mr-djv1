@@ -18,7 +18,40 @@ const openApiDocument = YAML.load(path.join(__dirname, 'docs', 'openapi.yaml'));
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
-app.use(helmet());
+const helmetConfig = (() => {
+  const directives = helmet.contentSecurityPolicy.getDefaultDirectives();
+  const netlifySources = [
+    'https://*.netlify.app',
+    'https://*.netlify.com',
+    'https://netlify.app',
+    'https://app.netlify.com',
+    'https://api.netlify.com'
+  ];
+  const connectSrc = new Set(["'self'", ...netlifySources]);
+
+  if (Array.isArray(config.cors.origin)) {
+    for (const origin of config.cors.origin) {
+      if (origin && origin !== '*') {
+        connectSrc.add(origin);
+      }
+    }
+  } else if (typeof config.cors.origin === 'string' && config.cors.origin && config.cors.origin !== '*') {
+    connectSrc.add(config.cors.origin);
+  }
+
+  return {
+    contentSecurityPolicy: {
+      directives: {
+        ...directives,
+        'default-src': ["'self'"],
+        'connect-src': Array.from(connectSrc),
+        'frame-ancestors': ["'self'", 'https://app.netlify.com', 'https://*.netlify.app']
+      }
+    }
+  };
+})();
+
+app.use(helmet(helmetConfig));
 app.use(cors({
   origin: config.cors.origin,
   credentials: config.cors.credentials
