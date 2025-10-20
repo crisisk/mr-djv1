@@ -1,4 +1,5 @@
 import React from 'react';
+import CallToAction from './frontend/src/components/shared/CallToAction.tsx';
 
 const testimonialsData = [
     {
@@ -57,6 +58,21 @@ const Testimonials = () => {
                         <TestimonialCard key={index} testimonial={testimonial} />
                     ))}
                 </div>
+                <CallToAction
+                    className="mt-spacing-2xl"
+                    eyebrow="Plan uw feest"
+                    title="Ook een onvergetelijk evenement?"
+                    description="Neem vandaag nog contact op en wij zorgen voor muziek, sfeer en begeleiding op maat."
+                    align="center"
+                    primaryButton={{
+                        label: 'Check Beschikbaarheid',
+                        variant: 'secondary',
+                    }}
+                    secondaryButton={{
+                        label: 'Vraag Offerte Aan',
+                        variant: 'outline',
+                    }}
+                />
             </div>
         </section>
     );

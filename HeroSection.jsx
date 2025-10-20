@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from './Buttons.jsx';
+import CallToAction from './frontend/src/components/shared/CallToAction.tsx';
 
 const HeroSection = ({
   title,
@@ -20,16 +20,23 @@ const HeroSection = ({
         <p className={`text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto ${subtitleColor}`}>
           {subtitle}
         </p>
-        <div className="flex justify-center space-x-spacing-md">
-          <Button variant="secondary" size="lg">
-            {ctaPrimaryText}
-          </Button>
-          {ctaSecondaryText && (
-            <Button variant="outline" size="lg">
-              {ctaSecondaryText}
-            </Button>
-          )}
-        </div>
+        <CallToAction
+          className="mt-spacing-lg"
+          align="center"
+          stackOnMobile
+          primaryButton={{
+            label: ctaPrimaryText,
+            variant: 'secondary',
+          }}
+          secondaryButton={
+            ctaSecondaryText
+              ? {
+                  label: ctaSecondaryText,
+                  variant: 'outlineLight',
+                }
+              : undefined
+          }
+        />
         {children}
       </div>
     </div>
