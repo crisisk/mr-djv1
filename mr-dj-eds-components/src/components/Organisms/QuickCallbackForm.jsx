@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { submitCallbackRequest } from '../../services/api.js';
-import { trackFormSubmission, getUserVariant } from '../../utils/trackConversion.js';
 import { getWindow } from '../../lib/environment.js';
 import { useHCaptchaWidget } from '../../hooks/useHCaptchaWidget.js';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY;
 
@@ -31,24 +31,28 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     };
   }, []);
 
-  const validateForm = () => {
-    const errors = {};
-    const trimmedName = formData.name.trim();
-    const trimmedPhone = formData.phone.trim();
+  const normalizeFormData = (data) => ({
+    name: data.name.trim(),
+    phone: data.phone.replace(/\s+/g, ' ').trim(),
+    eventType: data.eventType,
+  });
 
-    if (!trimmedName) {
+  const validateForm = (data) => {
+    const errors = {};
+
+    if (!data.name) {
       errors.name = 'Naam is verplicht';
-    } else if (trimmedName.length < 2) {
+    } else if (data.name.length < 2) {
       errors.name = 'Naam moet minimaal 2 tekens bevatten';
     }
 
-    if (!trimmedPhone) {
+    if (!data.phone) {
       errors.phone = 'Telefoonnummer is verplicht';
-    } else if (!/^[0-9+\s()-]{6,}$/.test(trimmedPhone)) {
+    } else if (!/^[0-9+\s()-]{6,}$/.test(data.phone)) {
       errors.phone = 'Voer een geldig telefoonnummer in';
     }
 
-    if (!formData.eventType) {
+    if (!data.eventType) {
       errors.eventType = 'Kies een type feest';
     }
 
@@ -75,7 +79,9 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     event.preventDefault();
     setSubmitError(null);
 
-    if (!validateForm()) {
+    const normalizedFormData = normalizeFormData(formData);
+
+    if (!validateForm(normalizedFormData)) {
       return;
     }
 
@@ -86,20 +92,26 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     setIsSubmitting(true);
 
-    const trimmedName = formData.name.trim();
-    const normalizedPhone = formData.phone.replace(/\s+/g, ' ').trim();
     const payload = {
-      name: trimmedName,
-      phone: normalizedPhone,
-      eventType: formData.eventType,
+      ...normalizedFormData,
       hCaptchaToken: captcha.token || undefined,
     };
 
     try {
-      const abVariant = getUserVariant() || variant;
       const response = await submitCallbackRequest(payload);
+      let abVariant = variant;
 
-      trackFormSubmission(abVariant, payload.eventType || '', 'callback');
+      try {
+        const { getUserVariant, trackFormSubmission } = await loadTrackConversion();
+        if (typeof getUserVariant === 'function') {
+          abVariant = getUserVariant() || variant;
+        }
+        if (typeof trackFormSubmission === 'function') {
+          trackFormSubmission(abVariant, payload.eventType || '', 'callback');
+        }
+      } catch (trackingError) {
+        console.error('Failed to load tracking utilities for quick callback submission', trackingError);
+      }
 
       const browser = getWindow();
       if (browser) {
@@ -188,6 +200,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             placeholder="Bijv. Jan Jansen"
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
             minLength={2}
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.name)}
             aria-describedby={fieldErrors.name ? 'callback-name-error' : undefined}
           />
@@ -210,6 +224,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             onChange={handleChange}
             placeholder="06 12 34 56 78"
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.phone)}
             aria-describedby={fieldErrors.phone ? 'callback-phone-error' : undefined}
           />
@@ -230,6 +246,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             value={formData.eventType}
             onChange={handleChange}
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark bg-white"
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.eventType)}
             aria-describedby={fieldErrors.eventType ? 'callback-event-type-error' : undefined}
           >
@@ -264,18 +282,18 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         <button
           type="submit"
           disabled={isSubmitting || (HCAPTCHA_SITE_KEY ? !captcha.isReady : false)}
-          className="w-full bg-primary text-white p-4 md:p-5 rounded-lg font-bold text-lg hover:bg-primary-dark transition-colors duration-300 disabled:bg-neutral-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+          className="w-full bg-[var(--color-primary-blue)] text-white p-4 md:p-5 rounded-lg font-bold text-lg hover:bg-[#00487A] transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-[#66A6D9] focus:ring-offset-2 focus:ring-offset-white disabled:bg-neutral-gray-500 disabled:text-white disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <IconBase className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path
                   className="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
-              </svg>
+              </IconBase>
               Versturen...
             </span>
           ) : (

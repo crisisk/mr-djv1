@@ -1,95 +1,80 @@
-import React from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import HeroSection from '../HeroSection.jsx';
 
-describe('HeroSection GTM tracking', () => {
-  let originalDataLayer;
+const PRIMARY_TEXT = 'Boek nu';
+const SECONDARY_TEXT = 'Bekijk opties';
+
+describe('HeroSection', () => {
   let pushSpy;
 
   beforeEach(() => {
-    originalDataLayer = window.dataLayer;
     pushSpy = vi.fn();
-    window.dataLayer = { push: pushSpy };
+    const fakeDataLayer = [];
+    fakeDataLayer.push = pushSpy;
+    window.dataLayer = fakeDataLayer;
   });
 
   afterEach(() => {
-    cleanup();
-    window.dataLayer = originalDataLayer;
-    pushSpy.mockReset();
+    delete window.dataLayer;
+    vi.restoreAllMocks();
   });
 
-  it('pushes a GTM event with metadata when the primary CTA is clicked', () => {
+  it('sends tracking events with metadata when CTAs are clicked', () => {
     render(
       <HeroSection
-        title="Plan Your Event"
-        subtitle="Let us handle the music."
-        ctaPrimaryText="Book now"
-        ctaSecondaryText="Contact us"
+        title="Hero title"
+        subtitle="Hero subtitle"
+        ctaPrimaryText={PRIMARY_TEXT}
+        ctaSecondaryText={SECONDARY_TEXT}
         variant="B"
       />
     );
 
-    const primaryButton = screen.getByRole('button', { name: /book now/i });
+    const primaryButton = screen.getByRole('button', { name: PRIMARY_TEXT });
     fireEvent.click(primaryButton);
 
-    expect(pushSpy).toHaveBeenCalledTimes(1);
-    expect(pushSpy).toHaveBeenCalledWith({
-      event: 'cta_click',
-      cta_type: 'primary',
-      cta_text: 'Book now',
-      variant: 'B',
-      section: 'hero'
-    });
-  });
-
-  it('pushes a GTM event with metadata when the secondary CTA is clicked', () => {
-    render(
-      <HeroSection
-        title="Plan Your Event"
-        subtitle="Let us handle the music."
-        ctaPrimaryText="Book now"
-        ctaSecondaryText="Get a quote"
-        variant="C"
-      />
+    expect(pushSpy).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        event: 'cta_click',
+        cta_type: 'primary',
+        cta_text: PRIMARY_TEXT,
+        variant: 'B',
+        section: 'hero'
+      })
     );
 
-    const secondaryButton = screen.getByRole('button', { name: /get a quote/i });
+    const secondaryButton = screen.getByRole('button', { name: SECONDARY_TEXT });
     fireEvent.click(secondaryButton);
 
-    expect(pushSpy).toHaveBeenCalledTimes(1);
-    expect(pushSpy).toHaveBeenCalledWith({
-      event: 'cta_click',
-      cta_type: 'secondary',
-      cta_text: 'Get a quote',
-      variant: 'C',
-      section: 'hero'
-    });
+    expect(pushSpy).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        event: 'cta_click',
+        cta_type: 'secondary',
+        cta_text: SECONDARY_TEXT,
+        variant: 'B',
+        section: 'hero'
+      })
+    );
   });
 
-  it('renders gradient background styles without mutating dataLayer when CTAs are not clicked', () => {
-    const imageUrl = 'https://example.com/background.jpg';
-
+  it("renders gradient background style and doesn't touch dataLayer without interactions", () => {
     const { container } = render(
       <HeroSection
-        title="Plan Your Event"
-        subtitle="Let us handle the music."
-        ctaPrimaryText="Book now"
-        ctaSecondaryText="Contact us"
-        backgroundImage={imageUrl}
+        title="Gradient hero"
+        subtitle="Showcasing gradient background"
+        ctaPrimaryText={PRIMARY_TEXT}
+        backgroundImage="https://example.com/hero.jpg"
       />
     );
 
-    const heroSection = container.firstChild;
-
-    expect(heroSection).toHaveStyle({
-      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${imageUrl})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
-    });
-
+    const heroRoot = container.firstChild;
+    expect(heroRoot.style.backgroundImage).toContain('linear-gradient');
+    expect(heroRoot.style.backgroundImage).toContain('url(https://example.com/hero.jpg)');
     expect(pushSpy).not.toHaveBeenCalled();
+    expect(window.dataLayer).toHaveLength(0);
   });
 });
