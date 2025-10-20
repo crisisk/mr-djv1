@@ -17,13 +17,29 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, loca
   const hasData = Boolean(data);
   const city = hasData ? data.city : '';
   const province = hasData ? data.province : '';
-  const localUSP = hasData ? data.localUSP : '';
-  const localReviews = hasData ? data.localReviews : '';
-  const localVenues = hasData ? data.localVenues : [];
-  const seoTitle = hasData ? data.seoTitle : 'Mister DJ - Lokale DJ';
-  const seoDescription = hasData
-    ? data.seoDescription
-    : 'Mr. DJ verzorgt feesten door heel Nederland met 100% dansgarantie.';
+  const localUSP = useMemo(
+    () => (hasData ? resolveLocalizedValue(data.localUSP, locale) : ''),
+    [data, hasData, locale],
+  );
+  const localReviews = useMemo(
+    () => (hasData ? resolveLocalizedValue(data.localReviews, locale) : ''),
+    [data, hasData, locale],
+  );
+  const localVenues = useMemo(
+    () => (hasData ? resolveLocalizedList(data.localVenues, locale) : []),
+    [data, hasData, locale],
+  );
+  const seoTitle = useMemo(
+    () => (hasData ? resolveLocalizedValue(data.seoTitle, locale) : 'Mister DJ - Lokale DJ'),
+    [data, hasData, locale],
+  );
+  const seoDescription = useMemo(
+    () =>
+      hasData
+        ? resolveLocalizedValue(data.seoDescription, locale)
+        : 'Mr. DJ verzorgt feesten door heel Nederland met 100% dansgarantie.',
+    [data, hasData, locale],
+  );
   const slug = hasData ? data.slug : '';
   const isBruiloftPage = hasData && slug.startsWith('bruiloft-dj-');
   const counterpartSlug = isBruiloftPage ? slug.replace('bruiloft-dj-', '') : `bruiloft-dj-${slug}`;

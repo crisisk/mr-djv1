@@ -120,3 +120,19 @@ export const getLocalSeoDataBySlug = (slug) => {
     return localSeoData.find((data) => data.slug === slug);
 };
 
+export const getLocalizedLocalSeoDataBySlug = (slug, locale = DEFAULT_LOCALE) => {
+    const entry = getLocalSeoDataBySlug(slug);
+    if (!entry) {
+        return undefined;
+    }
+
+    return {
+        ...entry,
+        localUSP: resolveLocalizedValue(entry.localUSP, locale),
+        localReviews: resolveLocalizedValue(entry.localReviews, locale),
+        localVenues: resolveLocalizedList(entry.localVenues, locale),
+        seoTitle: resolveLocalizedValue(entry.seoTitle, locale),
+        seoDescription: resolveLocalizedValue(entry.seoDescription, locale),
+    };
+};
+
