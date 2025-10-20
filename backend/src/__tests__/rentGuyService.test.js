@@ -1,8 +1,22 @@
+const { buildRequiredEnv } = require('../testUtils/env');
+
 const ORIGINAL_ENV = { ...process.env };
+const BASE_ENV = buildRequiredEnv();
 const ORIGINAL_FETCH = global.fetch;
 
-function loadService() {
+function buildEnv(overrides = {}) {
+  const next = { ...BASE_ENV, ...overrides };
+  Object.keys(next).forEach((key) => {
+    if (next[key] === undefined) {
+      delete next[key];
+    }
+  });
+  return next;
+}
+
+function loadService(overrides = {}) {
   jest.resetModules();
+  process.env = buildEnv(overrides);
   return require('../services/rentGuyService');
 }
 
@@ -16,40 +30,23 @@ describe('rentGuyService', () => {
     }
   });
 
-  it('queues leads when the integration is not configured', async () => {
-    delete process.env.RENTGUY_API_BASE_URL;
-    delete process.env.RENTGUY_API_KEY;
-    const rentGuyService = loadService();
-    await rentGuyService.reset();
-
-    const result = await rentGuyService.syncLead({
-      id: 'lead-1',
-      status: 'new',
-      eventType: 'Bruiloft',
-      eventDate: '2024-10-01',
-      packageId: 'gold',
-      name: 'Alice',
-      email: 'alice@example.com',
-      phone: '0612345678',
-      message: 'Hoi',
-      persisted: false
-    });
-
-    expect(result).toMatchObject({ delivered: false, queued: true, reason: 'not-configured' });
-    await expect(rentGuyService.getStatus()).resolves.toMatchObject({ configured: false, queueSize: 1 });
+  it('fails fast when RentGuy credentials are missing', () => {
+    expect(() => loadService({ RENTGUY_API_BASE_URL: undefined, RENTGUY_API_KEY: undefined })).toThrow(
+      'Missing required environment variable "RENTGUY_API_BASE_URL" for RentGuy integration (RENTGUY_API_BASE_URL and RENTGUY_API_KEY).'
+    );
   });
 
   it('sends bookings to RentGuy when configured', async () => {
-    process.env.RENTGUY_API_BASE_URL = 'https://rentguy.test/api';
-    process.env.RENTGUY_API_KEY = 'secret';
-    process.env.RENTGUY_WORKSPACE_ID = 'workspace-1';
-
     const fetchMock = jest
       .fn()
       .mockResolvedValue({ ok: true, status: 201, text: () => Promise.resolve('') });
     global.fetch = fetchMock;
 
-    const rentGuyService = loadService();
+    const rentGuyService = loadService({
+      RENTGUY_API_BASE_URL: 'https://rentguy.test/api',
+      RENTGUY_API_KEY: 'secret',
+      RENTGUY_WORKSPACE_ID: 'workspace-1'
+    });
     await rentGuyService.reset();
 
     const result = await rentGuyService.syncBooking({
@@ -85,16 +82,16 @@ describe('rentGuyService', () => {
   });
 
   it('retries queued events via flushQueue', async () => {
-    process.env.RENTGUY_API_BASE_URL = 'https://rentguy.test/api';
-    process.env.RENTGUY_API_KEY = 'secret';
-
     const fetchMock = jest
       .fn()
       .mockResolvedValueOnce({ ok: false, status: 500, text: () => Promise.resolve('oops') })
       .mockResolvedValueOnce({ ok: true, status: 200, text: () => Promise.resolve('') });
     global.fetch = fetchMock;
 
-    const rentGuyService = loadService();
+    const rentGuyService = loadService({
+      RENTGUY_API_BASE_URL: 'https://rentguy.test/api',
+      RENTGUY_API_KEY: 'secret'
+    });
     await rentGuyService.reset();
 
     const syncResult = await rentGuyService.syncLead({
@@ -129,13 +126,13 @@ describe('rentGuyService', () => {
   });
 
   it('sends personalization events to the dedicated endpoint', async () => {
-    process.env.RENTGUY_API_BASE_URL = 'https://rentguy.test/api';
-    process.env.RENTGUY_API_KEY = 'secret';
-
     const fetchMock = jest.fn().mockResolvedValue({ ok: true, status: 202, text: () => Promise.resolve('') });
     global.fetch = fetchMock;
 
-    const rentGuyService = loadService();
+    const rentGuyService = loadService({
+      RENTGUY_API_BASE_URL: 'https://rentguy.test/api',
+      RENTGUY_API_KEY: 'secret'
+    });
     await rentGuyService.reset();
 
     const result = await rentGuyService.syncPersonalizationEvent(

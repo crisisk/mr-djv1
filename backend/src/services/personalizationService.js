@@ -2,7 +2,106 @@ const fs = require('fs/promises');
 const path = require('path');
 const cache = require('../lib/cache');
 const config = require('../config');
+const { createDurableQueue } = require('../lib/durableQueue');
+const db = require('../lib/db');
+const { logger } = require('../lib/logger');
 const rentGuyService = require('./rentGuyService');
+
+/**
+ * @typedef {Object} PersonalizationVariant
+ * @property {string} id
+ * @property {string} label
+ * @property {Array<string>} [keywords]
+ * @property {Array<string>} [intentTags]
+ * @property {Array<string>} [keywordsNormalized]
+ * @property {Array<string>} [intentTagsNormalized]
+ * @property {string} [labelNormalized]
+ * @property {Object} [hero]
+ * @property {Object} [cro]
+ * @property {Object} [features]
+ * @property {Object} [testimonials]
+ * @property {Object} [pricing]
+ * @property {Object} [leadCapture]
+ * @property {Object} [automation]
+ */
+
+/**
+ * @typedef {Object} PersonalizationConfig
+ * @property {Array<PersonalizationVariant>} variants
+ * @property {PersonalizationVariant|null} defaultVariant
+ * @property {string|null} defaultVariantId
+ */
+
+/**
+ * @typedef {Object} CityEntry
+ * @property {string} slug
+ * @property {string} city
+ * @property {string} intro
+ * @property {Array<Object>} [cases]
+ * @property {Array<string>} [venues]
+ * @property {Array<Object>} [faqs]
+ * @property {string} [normalizedCity]
+ * @property {Set.<string>} [tokens]
+ */
+
+/**
+ * @typedef {Object} PersonalizationContext
+ * @property {Array<string>} [keywords]
+ * @property {string} [keyword]
+ * @property {string} [utmTerm]
+ * @property {string} [search]
+ * @property {string} [query]
+ * @property {string} [personaHint]
+ * @property {Array<string>} [additionalHints]
+ * @property {string} [landing]
+ * @property {string} [utmCampaign]
+ * @property {string} [utmSource]
+ * @property {string} [referrer]
+ */
+
+/**
+ * @typedef {Object} VariantSelectionMeta
+ * @property {string} variantId
+ * @property {string} matchType
+ * @property {Array<string>} matchedKeywords
+ * @property {Array<string>} keywordInput
+ * @property {Array<string>} normalizedKeywords
+ * @property {boolean} automationTriggered
+ * @property {string|null} experimentId
+ * @property {string|null} city
+ */
+
+/**
+ * @typedef {Object} VariantSelection
+ * @property {PersonalizationVariant} variant
+ * @property {VariantSelectionMeta} meta
+ */
+
+/**
+ * @typedef {Object} PersonalizationEvent
+ * @property {string} id
+ * @property {string} type
+ * @property {string} variantId
+ * @property {string|null} keyword
+ * @property {Object<string, *>} payload
+ * @property {Object<string, *>} context
+ * @property {string} createdAt
+ * @property {boolean} automationTriggered
+ */
+
+/**
+ * @typedef {Object} ExposureLogEntry
+ * @property {string} id
+ * @property {string} variantId
+ * @property {string} matchType
+ * @property {Array<string>} matchedKeywords
+ * @property {Array<string>} keywordInput
+ * @property {string|null} landing
+ * @property {string|null} utmCampaign
+ * @property {string|null} utmSource
+ * @property {string|null} city
+ * @property {string} createdAt
+ */
 
 const VARIANT_CACHE_KEY = 'personalization:variants';
 const VARIANT_CACHE_TTL = 5 * 60 * 1000;
@@ -14,6 +113,27 @@ const citiesFilePath = path.join(__dirname, '../../..', 'content', 'local-seo', 
 
 const exposureLog = [];
 const eventLog = [];
+const automationRetryStore = new Map();
+
+const automationQueue = createDurableQueue(
+  'personalization-automation-webhook',
+  async (job) => {
+    const { payload, retryId } = job.data;
+    const attempts = job.attemptsMade + 1;
+
+    try {
+      await deliverAutomationWebhook(payload);
+      await markAutomationRetrySuccess(retryId, attempts);
+      return { status: 'delivered' };
+    } catch (error) {
+      await markAutomationRetryFailure(retryId, attempts, error);
+      throw error;
+    }
+  },
+  {
+    concurrency: 3
+  }
+);
 
 function createId(prefix) {
   return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -48,9 +168,15 @@ function cloneVariant(variant) {
   return JSON.parse(JSON.stringify(variant));
 }
 
+/**
+ * Loads personalization variant definitions from disk (with caching).
+ *
+ * @param {boolean} [force=false]
+ * @returns {Promise<PersonalizationConfig>}
+ */
 async function loadVariantsConfig(force = false) {
   if (!force) {
-    const cached = cache.get(VARIANT_CACHE_KEY);
+    const cached = await cache.get(VARIANT_CACHE_KEY);
     if (cached) {
       return cached;
     }
@@ -78,13 +204,19 @@ async function loadVariantsConfig(force = false) {
     defaultVariantId: defaultVariant ? defaultVariant.id : null
   };
 
-  cache.set(VARIANT_CACHE_KEY, configObject, VARIANT_CACHE_TTL);
+  await cache.set(VARIANT_CACHE_KEY, configObject, VARIANT_CACHE_TTL);
   return configObject;
 }
 
+/**
+ * Loads known city entries to support location-based personalization.
+ *
+ * @param {boolean} [force=false]
+ * @returns {Promise<Array<CityEntry>>}
+ */
 async function loadCities(force = false) {
   if (!force) {
-    const cached = cache.get(CITY_CACHE_KEY);
+    const cached = await cache.get(CITY_CACHE_KEY);
     if (cached) {
       return cached;
     }
@@ -115,7 +247,7 @@ async function loadCities(force = false) {
     };
   });
 
-  cache.set(CITY_CACHE_KEY, cities, VARIANT_CACHE_TTL);
+  await cache.set(CITY_CACHE_KEY, cities, VARIANT_CACHE_TTL);
   return cities;
 }
 
@@ -431,29 +563,168 @@ async function matchCityVariant(keywordData, baseVariant) {
   return null;
 }
 
+function clonePayload(payload) {
+  if (payload === undefined) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(JSON.stringify(payload));
+  } catch (error) {
+    logger.warn({ err: error }, 'Failed to clone automation payload for retry state');
+    return payload;
+  }
+}
+
+function createAutomationRetryEntry(payload, errorMessage = null) {
+  const createdAt = new Date().toISOString();
+  return {
+    id: createId('auto_retry'),
+    status: 'queued',
+    attempts: 0,
+    payload: clonePayload(payload),
+    lastError: errorMessage,
+    createdAt,
+    updatedAt: createdAt,
+    deliveredAt: null
+  };
+}
+
+async function persistAutomationRetryEntry(entry) {
+  const snapshot = {
+    ...entry,
+    payload: clonePayload(entry.payload)
+  };
+  automationRetryStore.set(entry.id, snapshot);
+
+  if (typeof db?.isConfigured === 'function' && db.isConfigured()) {
+    try {
+      await db.runQuery(
+        `INSERT INTO personalization_automation_retries
+          (id, status, attempts, payload, last_error, created_at, updated_at, delivered_at)
+        VALUES ($1, $2, $3, $4::jsonb, $5, $6, $7, $8)
+        ON CONFLICT (id) DO UPDATE SET
+          status = EXCLUDED.status,
+          attempts = EXCLUDED.attempts,
+          payload = EXCLUDED.payload,
+          last_error = EXCLUDED.last_error,
+          updated_at = EXCLUDED.updated_at,
+          delivered_at = EXCLUDED.delivered_at`,
+        [
+          entry.id,
+          entry.status,
+          entry.attempts,
+          JSON.stringify(entry.payload ?? null),
+          entry.lastError || null,
+          entry.createdAt,
+          entry.updatedAt,
+          entry.deliveredAt
+        ]
+      );
+    } catch (error) {
+      logger.warn({ err: error, retryId: entry.id }, 'Failed to persist automation retry state');
+    }
+  }
+}
+
+async function markAutomationRetrySuccess(retryId, attempts) {
+  if (!retryId) {
+    return;
+  }
+
+  const entry = automationRetryStore.get(retryId);
+  if (!entry) {
+    return;
+  }
+
+  const updatedAt = new Date().toISOString();
+  const deliveredEntry = {
+    ...entry,
+    status: 'delivered',
+    attempts,
+    lastError: null,
+    updatedAt,
+    deliveredAt: updatedAt
+  };
+  await persistAutomationRetryEntry(deliveredEntry);
+}
+
+async function markAutomationRetryFailure(retryId, attempts, error) {
+  if (!retryId) {
+    return;
+  }
+
+  const existing = automationRetryStore.get(retryId) || createAutomationRetryEntry({}, error?.message);
+  const updatedEntry = {
+    ...existing,
+    attempts,
+    status: 'retrying',
+    lastError: error?.message || existing.lastError || 'unknown-error',
+    updatedAt: new Date().toISOString()
+  };
+  await persistAutomationRetryEntry(updatedEntry);
+}
+
+async function deliverAutomationWebhook(payload) {
+  const webhookUrl = config.personalization?.automationWebhook;
+  if (!webhookUrl) {
+    throw new Error('Automation webhook is not configured');
+  }
+
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    let text = '';
+    try {
+      text = await response.text();
+    } catch (error) {
+      text = error.message;
+    }
+    throw new Error(`n8n webhook returned ${response.status}${text ? `: ${text}` : ''}`);
+  }
+}
+
+async function queueAutomationRetry(payload, errorMessage) {
+  const entry = createAutomationRetryEntry(payload, errorMessage);
+  await persistAutomationRetryEntry(entry);
+  await automationQueue.addJob(
+    {
+      payload: clonePayload(payload),
+      retryId: entry.id
+    },
+    {
+      backoff: { type: 'exponential', delay: 5000 },
+      attempts: 5
+    }
+  );
+  return entry;
+}
+
 async function notifyAutomation(payload) {
   const deliveries = [];
   const webhookUrl = config.personalization?.automationWebhook;
 
   if (webhookUrl) {
     deliveries.push(
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-        .then((response) => {
-          if (!response.ok) {
-            console.error('[personalizationService] n8n webhook returned', response.status);
-            return false;
-          }
-
-          return true;
-        })
-        .catch((error) => {
+      deliverAutomationWebhook(payload)
+        .then(() => true)
+        .catch(async (error) => {
           console.error('[personalizationService] Failed to trigger n8n webhook:', error.message);
+          try {
+            const entry = await queueAutomationRetry(payload, error.message);
+            console.warn('[personalizationService] Queued automation webhook retry', entry.id);
+          } catch (queueError) {
+            console.error(
+              '[personalizationService] Failed to persist automation webhook retry:',
+              queueError.message
+            );
+          }
           return false;
         })
     );
@@ -473,6 +744,12 @@ async function notifyAutomation(payload) {
   return results.some(Boolean);
 }
 
+/**
+ * Selects the best-fit personalization variant for an incoming request.
+ *
+ * @param {PersonalizationContext} [context]
+ * @returns {Promise<VariantSelection>}
+ */
 async function getVariantForRequest(context = {}) {
   const configObject = await loadVariantsConfig();
   const keywordData = extractKeywordData(context);
@@ -543,6 +820,17 @@ async function getVariantForRequest(context = {}) {
   };
 }
 
+/**
+ * Records engagement events for analytics and triggers downstream automations.
+ *
+ * @param {Object} params
+ * @param {string} params.type
+ * @param {string} params.variantId
+ * @param {string|null} [params.keyword]
+ * @param {Object<string, *>} [params.payload]
+ * @param {Object<string, *>} [params.context]
+ * @returns {Promise<PersonalizationEvent>}
+ */
 async function recordEvent({ type, variantId, keyword, payload = {}, context = {} }) {
   const entry = {
     id: createId('evt'),
@@ -569,22 +857,45 @@ async function recordEvent({ type, variantId, keyword, payload = {}, context = {
   return entry;
 }
 
+/**
+ * Returns a snapshot of the in-memory exposure log.
+ *
+ * @returns {Array<ExposureLogEntry>}
+ */
 function getExposureLog() {
   return [...exposureLog];
 }
 
+/**
+ * Returns a snapshot of the in-memory event log.
+ *
+ * @returns {Array<PersonalizationEvent>}
+ */
 function getEventLog() {
   return [...eventLog];
 }
 
+/**
+ * Clears the exposure and event logs.
+ *
+ * @returns {void}
+ */
 function resetLogs() {
   exposureLog.splice(0, exposureLog.length);
   eventLog.splice(0, eventLog.length);
 }
 
-function resetCache() {
-  cache.del(VARIANT_CACHE_KEY);
-  cache.del(CITY_CACHE_KEY);
+async function resetCache() {
+  await Promise.all([cache.del(VARIANT_CACHE_KEY), cache.del(CITY_CACHE_KEY)]);
+}
+
+function ping() {
+  return {
+    ok: true,
+    automationWebhookConfigured: Boolean(config.personalization?.automationWebhook),
+    rentGuyConfigured: Boolean(config.integrations?.rentGuy?.enabled),
+    variantsCached: Boolean(cache.get(VARIANT_CACHE_KEY))
+  };
 }
 
 module.exports = {
@@ -592,8 +903,12 @@ module.exports = {
   recordEvent,
   getExposureLog,
   getEventLog,
+  getAutomationRetryState,
+  flushAutomationQueue,
+  resetAutomationQueue,
   resetLogs,
   resetCache,
   loadVariantsConfig,
-  loadCities
+  loadCities,
+  ping
 };

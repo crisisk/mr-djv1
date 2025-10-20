@@ -4,6 +4,7 @@ const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
 const observabilityService = require('../services/observabilityService');
+const { logger } = require('../lib/logger');
 
 const router = express.Router();
 
@@ -450,6 +451,48 @@ function renderPage() {
       let performanceStatusControls = null;
       let variantAnalyticsControls = null;
 
+      function reportError(context, error) {
+        try {
+          const payload = {
+            context,
+            message: error && error.message ? error.message : String(error)
+          };
+
+          if (error && typeof error === 'object') {
+            if (error.name) {
+              payload.name = error.name;
+            }
+            if (error.stack) {
+              payload.stack = error.stack;
+            }
+            if (error.details) {
+              payload.details = error.details;
+            }
+          }
+
+          fetch('./log', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin',
+            keepalive: true,
+            body: JSON.stringify(payload)
+          }).catch(() => {});
+        } catch (_loggingError) {
+          // ignore logging failures
+        }
+      }
+
+      function withErrorLogging(context, callback) {
+        return (error) => {
+          reportError(context, error);
+          if (typeof callback === 'function') {
+            callback(error);
+          }
+        };
+      }
+
       const FIELD_METADATA = {
         RENTGUY_API_BASE_URL: {
           placeholder: 'https://api.rentguy.app/v1',
@@ -680,9 +723,9 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Status verversen';
         refreshButton.addEventListener('click', () => {
-          refreshRentGuyStatus(true).catch((error) => {
-            console.error(error);
-          });
+          refreshRentGuyStatus(true).catch(
+            withErrorLogging('rentguy:status:manual-refresh')
+          );
         });
         actions.appendChild(refreshButton);
 
@@ -692,9 +735,7 @@ function renderPage() {
         flushButton.textContent = 'Queue flushen';
         flushButton.disabled = true;
         flushButton.addEventListener('click', () => {
-          flushRentGuyQueue().catch((error) => {
-            console.error(error);
-          });
+          flushRentGuyQueue().catch(withErrorLogging('rentguy:queue:flush-click'));
         });
         actions.appendChild(flushButton);
 
@@ -768,9 +809,9 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Status verversen';
         refreshButton.addEventListener('click', () => {
-          refreshSevensaStatus(true).catch((error) => {
-            console.error(error);
-          });
+          refreshSevensaStatus(true).catch(
+            withErrorLogging('sevensa:status:manual-refresh')
+          );
         });
         actions.appendChild(refreshButton);
 
@@ -780,9 +821,7 @@ function renderPage() {
         flushButton.textContent = 'Queue flushen';
         flushButton.disabled = true;
         flushButton.addEventListener('click', () => {
-          flushSevensaQueue().catch((error) => {
-            console.error(error);
-          });
+          flushSevensaQueue().catch(withErrorLogging('sevensa:queue:flush-click'));
         });
         actions.appendChild(flushButton);
 
@@ -878,9 +917,9 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Monitoring verversen';
         refreshButton.addEventListener('click', () => {
-          refreshPerformanceStatus(true).catch((error) => {
-            console.error(error);
-          });
+          refreshPerformanceStatus(true).catch(
+            withErrorLogging('performance:status:manual-refresh')
+          );
         });
         actions.appendChild(refreshButton);
 
@@ -889,9 +928,9 @@ function renderPage() {
         runButton.className = 'secondary';
         runButton.textContent = 'Audit starten';
         runButton.addEventListener('click', () => {
-          triggerPerformanceRun().catch((error) => {
-            console.error(error);
-          });
+          triggerPerformanceRun().catch(
+            withErrorLogging('performance:run:trigger')
+          );
         });
         actions.appendChild(runButton);
 
@@ -1059,7 +1098,7 @@ function renderPage() {
             showToast('Monitoringstatus bijgewerkt');
           }
         } catch (error) {
-          console.error(error);
+          reportError('performance:status:refresh', error);
           showToast(error.message || 'Monitoring niet beschikbaar');
         } finally {
           delete performanceStatusControls.card.dataset.loading;
@@ -1105,7 +1144,7 @@ function renderPage() {
           await new Promise((resolve) => setTimeout(resolve, 75));
           await refreshPerformanceStatus();
         } catch (error) {
-          console.error(error);
+          reportError('performance:run:schedule', error);
           showToast(error.message || 'Audit plannen mislukt');
         } finally {
           performanceStatusControls.runButton.disabled = false;
@@ -1163,9 +1202,9 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Analytics verversen';
         refreshButton.addEventListener('click', () => {
-          refreshVariantAnalytics(true).catch((error) => {
-            console.error(error);
-          });
+          refreshVariantAnalytics(true).catch(
+            withErrorLogging('variant-analytics:status:manual-refresh')
+          );
         });
         actions.appendChild(refreshButton);
 
@@ -1303,7 +1342,7 @@ function renderPage() {
             showToast('Variant analytics bijgewerkt');
           }
         } catch (error) {
-          console.error(error);
+          reportError('variant-analytics:status:refresh', error);
           showToast(error.message || 'Variant analytics niet beschikbaar');
         } finally {
           delete variantAnalyticsControls.card.dataset.loading;
@@ -1420,7 +1459,7 @@ function renderPage() {
             showToast('RentGuy status bijgewerkt');
           }
         } catch (error) {
-          console.error(error);
+          reportError('rentguy:status:refresh', error);
           showToast(error.message || 'RentGuy status niet beschikbaar');
         } finally {
           delete rentGuyStatusControls.card.dataset.loading;
@@ -1450,7 +1489,7 @@ function renderPage() {
             showToast('Sevensa status bijgewerkt');
           }
         } catch (error) {
-          console.error(error);
+          reportError('sevensa:status:refresh', error);
           sevensaStatusControls.resultMessage.textContent = error.message || 'Sevensa status niet beschikbaar';
           showToast(error.message || 'Sevensa status niet beschikbaar');
         } finally {
@@ -1500,13 +1539,13 @@ function renderPage() {
           showToast('Sevensa queue flush uitgevoerd');
           await refreshSevensaStatus();
         } catch (error) {
-          console.error(error);
+          reportError('sevensa:queue:flush', error);
           sevensaStatusControls.resultMessage.textContent = error.message || 'Flush mislukt';
           showToast(error.message || 'Sevensa flush mislukt');
           try {
             await refreshSevensaStatus();
           } catch (refreshError) {
-            console.error(refreshError);
+            reportError('sevensa:status:refresh-after-flush', refreshError);
           }
         } finally {
           delete sevensaStatusControls.card.dataset.loading;
@@ -1554,13 +1593,13 @@ function renderPage() {
           showToast('RentGuy queue flush uitgevoerd');
           await refreshRentGuyStatus();
         } catch (error) {
-          console.error(error);
+          reportError('rentguy:queue:flush', error);
           rentGuyStatusControls.resultMessage.textContent = error.message || 'Flush mislukt';
           showToast(error.message || 'Flush mislukt');
           try {
             await refreshRentGuyStatus();
           } catch (refreshError) {
-            console.error(refreshError);
+            reportError('rentguy:status:refresh-after-flush', refreshError);
           }
         }
       }
@@ -1651,27 +1690,23 @@ function renderPage() {
         }
 
         if (rentGuyStatusControls) {
-          refreshRentGuyStatus().catch((error) => {
-            console.error(error);
-          });
+          refreshRentGuyStatus().catch(withErrorLogging('rentguy:status:initial-load'));
         }
 
         if (sevensaStatusControls) {
-          refreshSevensaStatus().catch((error) => {
-            console.error(error);
-          });
+          refreshSevensaStatus().catch(withErrorLogging('sevensa:status:initial-load'));
         }
 
         if (performanceStatusControls) {
-          refreshPerformanceStatus().catch((error) => {
-            console.error(error);
-          });
+          refreshPerformanceStatus().catch(
+            withErrorLogging('performance:status:initial-load')
+          );
         }
 
         if (variantAnalyticsControls) {
-          refreshVariantAnalytics().catch((error) => {
-            console.error(error);
-          });
+          refreshVariantAnalytics().catch(
+            withErrorLogging('variant-analytics:status:initial-load')
+          );
         }
       }
 
@@ -1735,13 +1770,13 @@ function renderPage() {
           await loadState();
           showToast('Configuratie opgeslagen');
         } catch (error) {
-          console.error(error);
+          reportError('dashboard:form:submit', error);
           showToast(error.message || 'Er ging iets mis');
         }
       });
 
       loadState().catch((error) => {
-        console.error(error);
+        reportError('dashboard:state:initial-load', error);
         showToast('Kon dashboard gegevens niet laden');
       });
     </script>
@@ -1852,6 +1887,26 @@ router.get('/api/observability/variants', async (_req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+router.post('/log', (req, res) => {
+  const { context, message, stack, name, details } = req.body || {};
+  const logContext = {
+    route: 'dashboard',
+    source: 'dashboard-client',
+    context: context || 'unknown',
+    client: {
+      name: name || undefined,
+      stack: stack || undefined,
+      details: details || undefined
+    },
+    ip: req.ip,
+    userAgent: req.headers['user-agent'] || undefined
+  };
+
+  const logMessage = message || 'Dashboard client reported an error';
+  logger.error(logMessage, logContext);
+  res.status(204).end();
 });
 
 module.exports = router;

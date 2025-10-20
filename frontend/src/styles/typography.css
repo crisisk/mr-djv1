@@ -1,0 +1,103 @@
+/* Base typography scale and utility classes */
+:root {
+  --font-family-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: 'Roboto Mono', 'SFMono-Regular', ui-monospace, 'Cascadia Mono',
+    'Source Code Pro', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --font-size-100: 0.75rem; /* 12px */
+  --font-size-200: 0.875rem; /* 14px */
+  --font-size-300: 1rem; /* 16px */
+  --font-size-400: 1.125rem; /* 18px */
+  --font-size-500: 1.25rem; /* 20px */
+  --font-size-600: 1.5rem; /* 24px */
+  --font-size-700: 1.875rem; /* 30px */
+  --font-size-800: 2.25rem; /* 36px */
+  --font-size-900: 3rem; /* 48px */
+  --font-size-1000: clamp(3rem, 6vw + 1rem, 4.5rem); /* fluid display */
+
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-loose: 0.02em;
+}
+
+.typography-base {
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary, #1f2933);
+}
+
+.typography-display {
+  font-size: var(--font-size-1000);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.typography-headline {
+  font-size: var(--font-size-800);
+  line-height: var(--line-height-snug);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.typography-title {
+  font-size: var(--font-size-700);
+  line-height: var(--line-height-snug);
+  font-weight: var(--font-weight-semibold);
+}
+
+.typography-subtitle {
+  font-size: var(--font-size-500);
+  line-height: var(--line-height-normal);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary, #52606d);
+}
+
+.typography-body-large {
+  font-size: var(--font-size-400);
+  line-height: var(--line-height-relaxed);
+  font-weight: var(--font-weight-regular);
+}
+
+.typography-body {
+  font-size: var(--font-size-300);
+  line-height: var(--line-height-relaxed);
+  font-weight: var(--font-weight-regular);
+}
+
+.typography-caption {
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-normal);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-loose);
+  text-transform: uppercase;
+}
+
+.typography-code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-normal);
+  background: rgba(31, 41, 51, 0.08);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+.typography-strong {
+  font-weight: var(--font-weight-semibold);
+}
+
+.typography-emphasis {
+  font-style: italic;
+}
