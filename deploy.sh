@@ -113,6 +113,7 @@ ENDSSH
 
 echo "✅ Deployment script completed!"
 echo "🌐 Check your website at: https://staging.sevensa.nl/eds"
+echo "📊 Post-deploy: Import docs/observability/grafana.json into Grafana via Dashboards → New → Import."
 
 # Cleanup local tar
 rm -f "$ROOT_DIR/$PACKAGE_NAME"

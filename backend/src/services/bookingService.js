@@ -4,9 +4,117 @@ const rentGuyService = require('./rentGuyService');
 
 const inMemoryBookings = new Map();
 
+const DEFAULT_TIMEZONE = 'Europe/Amsterdam';
+
+function zonedDateTimeToUtc({ year, month, day, hour = 0, minute = 0, second = 0 }, timeZone) {
+  const baseline = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  const parts = formatter.formatToParts(baseline).filter((part) => part.type !== 'literal');
+  const partMap = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const zonedUtc = Date.UTC(
+    Number(partMap.year),
+    Number(partMap.month) - 1,
+    Number(partMap.day),
+    Number(partMap.hour),
+    Number(partMap.minute),
+    Number(partMap.second)
+  );
+  const offset = zonedUtc - baseline.getTime();
+  return new Date(baseline.getTime() - offset);
+}
+
+function parseZonedDate(value, timeZone = DEFAULT_TIMEZONE) {
+  if (!value) {
+    return null;
+  }
+
+  if (value instanceof Date) {
+    return new Date(value.getTime());
+  }
+
+  if (typeof value === 'number') {
+    return new Date(value);
+  }
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const isoTimezoneMatch = /([zZ]|[+\-]\d{2}:?\d{2})$/.test(trimmed);
+  if (isoTimezoneMatch) {
+    const direct = new Date(trimmed);
+    return Number.isNaN(direct.getTime()) ? null : direct;
+  }
+
+  const partsMatch = trimmed.match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?$/
+  );
+  if (!partsMatch) {
+    const fallback = new Date(trimmed);
+    return Number.isNaN(fallback.getTime()) ? null : fallback;
+  }
+
+  const [, year, month, day, hour = '00', minute = '00', second = '00'] = partsMatch;
+  return zonedDateTimeToUtc(
+    {
+      year: Number(year),
+      month: Number(month),
+      day: Number(day),
+      hour: Number(hour),
+      minute: Number(minute),
+      second: Number(second)
+    },
+    timeZone
+  );
+}
+
+function normalizeEventDate(input, defaultTimeZone = DEFAULT_TIMEZONE) {
+  if (!input) {
+    return { start: null, end: null, timeZone: defaultTimeZone };
+  }
+
+  if (typeof input === 'string' || input instanceof Date || typeof input === 'number') {
+    return {
+      start: parseZonedDate(input, defaultTimeZone),
+      end: null,
+      timeZone: defaultTimeZone
+    };
+  }
+
+  if (typeof input === 'object') {
+    const timeZone = input.timezone || input.timeZone || defaultTimeZone;
+    const startSource = input.start ?? input.date ?? input.from ?? null;
+    const endSource = input.end ?? input.until ?? input.to ?? null;
+    return {
+      start: parseZonedDate(startSource, timeZone),
+      end: parseZonedDate(endSource, timeZone),
+      timeZone
+    };
+  }
+
+  return { start: null, end: null, timeZone: defaultTimeZone };
+}
+
 async function createBooking(payload) {
   const timestamp = new Date();
   let result;
+
+  const normalizedEventDate = normalizeEventDate(payload.eventDate);
+  const eventDateForStorage = normalizedEventDate.start;
 
   if (db.isConfigured()) {
     try {
@@ -19,7 +127,7 @@ async function createBooking(payload) {
           payload.email,
           payload.phone,
           payload.eventType,
-          payload.eventDate ? new Date(payload.eventDate) : null,
+          eventDateForStorage,
           payload.message,
           payload.packageId || null,
           timestamp
@@ -36,7 +144,9 @@ async function createBooking(payload) {
         email: payload.email,
         phone: payload.phone,
         eventType: payload.eventType,
-        eventDate: payload.eventDate ? new Date(payload.eventDate) : null,
+        eventDate: eventDateForStorage,
+        eventEndDate: normalizedEventDate.end,
+        eventTimeZone: normalizedEventDate.timeZone,
         packageId: payload.packageId || null,
         message: payload.message || null
       };
@@ -56,7 +166,9 @@ async function createBooking(payload) {
       email: payload.email,
       phone: payload.phone,
       eventType: payload.eventType,
-      eventDate: payload.eventDate ? new Date(payload.eventDate) : null,
+      eventDate: eventDateForStorage,
+      eventEndDate: normalizedEventDate.end,
+      eventTimeZone: normalizedEventDate.timeZone,
       packageId: payload.packageId || null,
       message: payload.message || null
     };
@@ -76,6 +188,8 @@ async function createBooking(payload) {
       phone: result.phone,
       eventType: result.eventType,
       eventDate: result.eventDate,
+      eventEndDate: result.eventEndDate,
+      eventTimeZone: result.eventTimeZone,
       packageId: result.packageId,
       message: result.message
     },
@@ -89,6 +203,9 @@ async function createBooking(payload) {
     status: result.status,
     createdAt: result.createdAt,
     persisted: result.persisted,
+    eventDate: result.eventDate,
+    eventEndDate: result.eventEndDate,
+    eventTimeZone: result.eventTimeZone,
     rentGuySync
   };
 }

@@ -6,9 +6,9 @@ const {
 } = require('../services/personalizationService');
 
 describe('personalizationService', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     resetLogs();
-    resetCache();
+    await resetCache();
   });
 
   it('returns the default variant when no keywords are supplied', async () => {

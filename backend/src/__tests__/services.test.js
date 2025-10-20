@@ -262,11 +262,14 @@ describe('bookingService', () => {
       packageId: 'silver'
     });
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       id: 'booking-id',
       status: 'pending',
       createdAt,
       persisted: true,
+      eventDate: expect.any(Date),
+      eventEndDate: null,
+      eventTimeZone: 'Europe/Amsterdam',
       rentGuySync: { delivered: true, queued: false, queueSize: 0 }
     });
     expect(rentGuyService.syncBooking).toHaveBeenCalledWith(
@@ -277,6 +280,77 @@ describe('bookingService', () => {
       }),
       { source: 'booking-flow' }
     );
+  });
+
+  it('normalizes same-day event times using the provided timezone', async () => {
+    const createdAt = new Date('2024-05-01T12:00:00Z');
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 'same-day',
+          status: 'pending',
+          created_at: createdAt
+        }
+      ]
+    });
+    rentGuyService.syncBooking.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
+
+    await bookingService.createBooking({
+      name: 'Timezone Tester',
+      email: 'tz@example.com',
+      phone: '0612345678',
+      eventType: 'Test',
+      eventDate: {
+        start: '2024-07-10T18:00',
+        end: '2024-07-10T23:00',
+        timezone: 'Europe/Amsterdam'
+      }
+    });
+
+    const params = db.runQuery.mock.calls[0][1];
+    expect(params[4]).toBeInstanceOf(Date);
+    expect(params[4].toISOString()).toBe('2024-07-10T16:00:00.000Z');
+
+    const syncPayload = rentGuyService.syncBooking.mock.calls[0][0];
+    expect(syncPayload.eventDate.toISOString()).toBe('2024-07-10T16:00:00.000Z');
+    expect(syncPayload.eventEndDate.toISOString()).toBe('2024-07-10T21:00:00.000Z');
+    expect(syncPayload.eventTimeZone).toBe('Europe/Amsterdam');
+  });
+
+  it('normalizes overnight events that span into the next day', async () => {
+    const createdAt = new Date('2024-05-02T12:00:00Z');
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 'overnight',
+          status: 'pending',
+          created_at: createdAt
+        }
+      ]
+    });
+    rentGuyService.syncBooking.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
+
+    await bookingService.createBooking({
+      name: 'Overnight Event',
+      email: 'overnight@example.com',
+      phone: '0612345678',
+      eventType: 'Nightlife',
+      eventDate: {
+        start: '2024-08-15T20:00',
+        end: '2024-08-16T02:00',
+        timezone: 'Europe/Amsterdam'
+      }
+    });
+
+    const params = db.runQuery.mock.calls[0][1];
+    expect(params[4]).toBeInstanceOf(Date);
+    expect(params[4].toISOString()).toBe('2024-08-15T18:00:00.000Z');
+
+    const syncPayload = rentGuyService.syncBooking.mock.calls[0][0];
+    expect(syncPayload.eventDate.toISOString()).toBe('2024-08-15T18:00:00.000Z');
+    expect(syncPayload.eventEndDate.toISOString()).toBe('2024-08-16T00:00:00.000Z');
   });
 
   it('returns in-memory bookings when the database is unavailable', async () => {
@@ -347,10 +421,9 @@ describe('bookingService', () => {
 });
 
 describe('catalog services', () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
-    packageService.resetCache();
-    reviewService.resetCache();
+    await Promise.all([packageService.resetCache(), reviewService.resetCache()]);
   });
 
   it('returns database backed packages when available', async () => {
