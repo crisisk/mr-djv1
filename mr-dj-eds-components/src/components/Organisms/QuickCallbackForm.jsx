@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { submitCallbackRequest } from '../../services/api';
 import { trackFormSubmission } from '../../utils/trackConversion';
-import { submitCallbackRequest } from '../../services/api';
 
 /**
  * QuickCallbackForm - Simplified callback request form
@@ -17,6 +16,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,34 +24,80 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       ...prev,
       [name]: value
     }));
+
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        [name]: null,
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    if (!formData.name.trim()) {
+      errors.name = 'Vul je naam in';
+    }
+
+    if (!formData.phone.trim()) {
+      errors.phone = 'Vul je telefoonnummer in';
+    } else if (!/^[0-9\s()+-]{10,15}$/.test(formData.phone.trim())) {
+      errors.phone = 'Gebruik een geldig telefoonnummer';
+    }
+
+    if (!formData.eventType) {
+      errors.eventType = 'Selecteer het type feest';
+    }
+
+    setFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setErrorMessage('Controleer de gemarkeerde velden.');
+      return false;
+    }
+
+    setErrorMessage('');
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitError(null);
-    setIsSubmitting(true);
     setErrorMessage('');
 
-    try {
-      // Track form submission
-      trackFormSubmission(variant, formData.eventType, 'callback');
+    if (!validateForm()) {
+      return;
+    }
 
-      // Push to GTM dataLayer
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        ...formData,
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+      };
+
+      await submitCallbackRequest(payload);
+
+      // Track form submission only after successful request
+      trackFormSubmission(variant, payload.eventType, 'callback');
+
       if (typeof window !== 'undefined') {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
-          event_type: formData.eventType,
+          event_type: payload.eventType,
           form_type: 'callback',
         });
       }
 
-      await submitCallbackRequest(formData);
       setIsSubmitted(true);
       // Reset form after 3 seconds
       setTimeout(() => {
         setFormData({ name: '', phone: '', eventType: '' });
+        setFieldErrors({});
         setIsSubmitted(false);
       }, 3000);
     } catch (error) {
@@ -85,10 +131,10 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         Vul je gegevens in en wij bellen je vandaag nog!
       </p>
 
-      {submitError && (
+      {errorMessage && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-spacing-md" role="alert" aria-live="assertive">
           <strong className="font-semibold block mb-1">Oops!</strong>
-          <span>{submitError}</span>
+          <span>{errorMessage}</span>
         </div>
       )}
 
@@ -105,10 +151,15 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             value={formData.name}
             onChange={handleChange}
             placeholder="Bijv. Jan Jansen"
-            className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
+            className={`w-full p-3 md:p-4 rounded-lg border-2 focus:outline-none text-neutral-dark placeholder-neutral-gray-500 ${
+              fieldErrors.name ? 'border-red-500 focus:border-red-500' : 'border-neutral-gray-100 focus:border-primary'
+            }`}
             required
             minLength={2}
           />
+          {fieldErrors.name && (
+            <p className="text-sm text-red-600 mt-1">{fieldErrors.name}</p>
+          )}
         </div>
 
         {/* Phone Field */}
@@ -123,10 +174,15 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             value={formData.phone}
             onChange={handleChange}
             placeholder="06 12 34 56 78"
-            pattern="[0-9\s\-\+\(\)]{10,15}"
-            className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
+            pattern="[0-9\s()+-]{10,15}"
+            className={`w-full p-3 md:p-4 rounded-lg border-2 focus:outline-none text-neutral-dark placeholder-neutral-gray-500 ${
+              fieldErrors.phone ? 'border-red-500 focus:border-red-500' : 'border-neutral-gray-100 focus:border-primary'
+            }`}
             required
           />
+          {fieldErrors.phone && (
+            <p className="text-sm text-red-600 mt-1">{fieldErrors.phone}</p>
+          )}
         </div>
 
         {/* Event Type Field */}
@@ -139,7 +195,9 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             name="eventType"
             value={formData.eventType}
             onChange={handleChange}
-            className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark bg-white"
+            className={`w-full p-3 md:p-4 rounded-lg border-2 focus:outline-none text-neutral-dark bg-white ${
+              fieldErrors.eventType ? 'border-red-500 focus:border-red-500' : 'border-neutral-gray-100 focus:border-primary'
+            }`}
             required
           >
             <option value="">Kies een optie</option>
@@ -150,6 +208,9 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             <option value="carnaval">Carnaval</option>
             <option value="anders">Anders</option>
           </select>
+          {fieldErrors.eventType && (
+            <p className="text-sm text-red-600 mt-1">{fieldErrors.eventType}</p>
+          )}
         </div>
 
         {/* Submit Button */}
@@ -175,12 +236,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         <p className="text-xs text-neutral-dark text-center mt-4">
           We respecteren je privacy en bellen alleen tijdens kantooruren (9:00-18:00)
         </p>
-
-        {errorMessage && (
-          <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-3 text-center">
-            {errorMessage} <a href="tel:+31408422594" className="font-semibold underline">Bel ons direct</a>
-          </p>
-        )}
       </form>
     </div>
   );
