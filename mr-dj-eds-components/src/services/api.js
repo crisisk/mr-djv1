@@ -13,12 +13,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 async function fetchAPI(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
 
+  const headers = new Headers(options.headers || {});
+  if (options.body && !(options.body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+
   const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
     ...options,
+    headers,
   };
 
   try {
@@ -26,31 +28,27 @@ async function fetchAPI(endpoint, options = {}) {
     let rawBody = '';
     let data = null;
 
+    let parsedBody = null;
     if (response.status !== 204) {
-      rawBody = await response.text();
-
+      const rawBody = await response.text();
       if (rawBody) {
         try {
-          data = JSON.parse(rawBody);
+          parsedBody = JSON.parse(rawBody);
         } catch {
-          data = rawBody;
+          parsedBody = rawBody;
         }
       }
     }
 
-    // Check for HTTP errors
     if (!response.ok) {
       const message =
-        data && typeof data === 'object'
-          ? data.message || data.error
-          : rawBody || `HTTP Error: ${response.status}`;
-
-      throw new Error(message || `HTTP Error: ${response.status}`);
+        (parsedBody && typeof parsedBody === 'object' && (parsedBody.message || parsedBody.error)) ||
+        `HTTP Error: ${response.status}`;
+      throw new Error(message);
     }
 
-    return data;
+    return parsedBody;
   } catch (error) {
-    // Network errors or JSON parse errors
     if (error instanceof TypeError) {
       throw new Error('Netwerkfout: Kan geen verbinding maken met de server');
     }
@@ -70,7 +68,7 @@ async function fetchAPI(endpoint, options = {}) {
  * @param {string} formData.message - Bericht
  * @param {string} formData.eventType - Type evenement (bruiloft, bedrijfsfeest, etc.)
  * @param {string} formData.eventDate - Gewenste datum (YYYY-MM-DD)
- * @returns {Promise<Object>} API response
+ * @returns {Promise<Object|null>} API response
  */
 export async function submitContactForm(formData) {
   return fetchAPI('/contact', {
@@ -82,7 +80,7 @@ export async function submitContactForm(formData) {
 /**
  * Submit quick callback request
  * @param {Object} formData - Callback form data
- * @returns {Promise<Object>} API response
+ * @returns {Promise<Object|null>} API response
  */
 export async function submitCallbackRequest(formData) {
   return fetchAPI('/callback-request', {
@@ -97,12 +95,12 @@ export async function submitCallbackRequest(formData) {
  */
 export async function getPackages() {
   const response = await fetchAPI('/packages');
-  return response.packages;
+  return response?.packages ?? [];
 }
 
 /**
  * Check API health
- * @returns {Promise<Object>} Health status
+ * @returns {Promise<Object|null>} Health status
  */
 export async function checkHealth() {
   return fetchAPI('/health');
@@ -111,7 +109,7 @@ export async function checkHealth() {
 /**
  * Submit booking request
  * @param {Object} bookingData - Booking request data
- * @returns {Promise<Object>} API response
+ * @returns {Promise<Object|null>} API response
  */
 export async function submitBooking(bookingData) {
   return fetchAPI('/bookings', {

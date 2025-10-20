@@ -60,9 +60,17 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       errors.email = 'Ongeldig emailadres';
     }
 
-    // Phone validation (optional but format check if provided)
-    if (formData.phone && !/^[\d\s\-\+\(\)]{10,}$/.test(formData.phone)) {
-      errors.phone = 'Ongeldig telefoonnummer';
+    // Phone validation (backend requires a phone number with minimum length)
+    const trimmedPhone = formData.phone.trim();
+    if (!trimmedPhone) {
+      errors.phone = 'Telefoonnummer is verplicht';
+    } else {
+      const digitsOnly = trimmedPhone.replace(/\D/g, '');
+      if (digitsOnly.length < 6) {
+        errors.phone = 'Telefoonnummer moet minimaal 6 cijfers bevatten';
+      } else if (!/^[\d\s\-+()]+$/.test(trimmedPhone)) {
+        errors.phone = 'Ongeldig telefoonnummer';
+      }
     }
 
     // Message validation
@@ -239,12 +247,20 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
+            required
+            minLength={6}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
               fieldErrors.phone ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="+31 6 12345678"
+            aria-invalid={Boolean(fieldErrors.phone)}
+            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
           />
-          {fieldErrors.phone && <p className="text-red-500 text-sm mt-1">{fieldErrors.phone}</p>}
+          {fieldErrors.phone && (
+            <p id="phone-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.phone}
+            </p>
+          )}
         </div>
 
         {/* Event Type */}
