@@ -6,7 +6,8 @@ describe('in-memory cache helper', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    cache.clear();
+    jest.useRealTimers();
   });
 
   it('stores and retrieves values with default TTL', async () => {
@@ -38,5 +39,22 @@ describe('in-memory cache helper', () => {
 
     await cache.clear();
     await expect(cache.get('two')).resolves.toBeUndefined();
+  });
+
+  it('wraps factories with remember to prevent duplicate work', async () => {
+    const factory = jest.fn().mockResolvedValue('computed');
+
+    const first = await cache.remember('remembered', 250, factory);
+    const second = await cache.remember('remembered', 250, factory);
+
+    expect(first).toEqual({ value: 'computed', fresh: true });
+    expect(second).toEqual({ value: 'computed', fresh: false });
+    expect(factory).toHaveBeenCalledTimes(1);
+
+    jest.advanceTimersByTime(300);
+
+    const third = await cache.remember('remembered', 250, factory);
+    expect(third).toEqual({ value: 'computed', fresh: true });
+    expect(factory).toHaveBeenCalledTimes(2);
   });
 });

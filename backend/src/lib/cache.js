@@ -27,7 +27,17 @@ function getFromMemory(key) {
     return undefined;
   }
 
-  return entry.value;
+  return ttlMs / 1000;
+}
+
+function set(key, value, ttlMs = 0) {
+  const ttlSeconds = ttlMsToSeconds(ttlMs);
+  cache.set(key, value, ttlSeconds);
+  return value;
+}
+
+function get(key) {
+  return cache.get(key);
 }
 
 async function set(key, value, ttlMs = 300000) {
@@ -108,5 +118,6 @@ module.exports = {
   set,
   get,
   del,
-  clear
+  clear,
+  remember
 };
