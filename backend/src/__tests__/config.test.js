@@ -36,17 +36,27 @@ describe('config', () => {
           enabled: false,
           baseUrl: null,
           workspaceId: null,
-          timeoutMs: 5000
+          timeoutMs: 5000,
+          webhookSecrets: []
         },
         sevensa: {
           enabled: false,
           submitUrl: null,
           retryDelayMs: 15000,
           maxAttempts: 5
+        },
+        hcaptcha: {
+          enabled: false,
+          siteKey: null,
+          secretKey: null,
+          verifyUrl: 'https://hcaptcha.com/siteverify'
         }
       })
     );
-    expect(config.personalization).toEqual({ automationWebhook: null });
+    expect(config.personalization).toEqual({
+      automationWebhook: null,
+      incomingWebhookSecrets: []
+    });
     expect(config.alerts).toEqual({
       webhooks: [],
       throttleMs: 2 * 60 * 1000,
@@ -86,14 +96,19 @@ describe('config', () => {
         'MAIL_REPLY_TO',
         'MAIL_TEMPLATES_CONTACT',
         'MAIL_TEMPLATES_BOOKING',
+        'HCAPTCHA_SITE_KEY',
+        'HCAPTCHA_SECRET_KEY',
+        'HCAPTCHA_VERIFY_URL',
         'RENTGUY_API_BASE_URL',
         'RENTGUY_API_KEY',
         'RENTGUY_WORKSPACE_ID',
         'RENTGUY_TIMEOUT_MS',
+        'RENTGUY_WEBHOOK_SECRETS',
         'SEVENSA_SUBMIT_URL',
         'SEVENSA_QUEUE_RETRY_DELAY_MS',
         'SEVENSA_QUEUE_MAX_ATTEMPTS',
         'N8N_PERSONALIZATION_WEBHOOK_URL',
+        'PERSONALIZATION_WEBHOOK_SECRETS',
         'SEO_AUTOMATION_API_URL',
         'SEO_AUTOMATION_API_KEY',
         'SEO_AUTOMATION_KEYWORDSET_ID',
@@ -138,6 +153,12 @@ describe('config', () => {
         ]
       }),
       expect.objectContaining({
+        id: 'security',
+        label: 'Beveiliging',
+        description: 'Instellingen voor hCaptcha-validatie van formulieren en spam-preventie.',
+        keys: ['HCAPTCHA_SITE_KEY', 'HCAPTCHA_SECRET_KEY', 'HCAPTCHA_VERIFY_URL']
+      }),
+      expect.objectContaining({
         id: 'rentguy',
         label: 'RentGuy integratie',
         description:
@@ -146,7 +167,8 @@ describe('config', () => {
           'RENTGUY_API_BASE_URL',
           'RENTGUY_API_KEY',
           'RENTGUY_WORKSPACE_ID',
-          'RENTGUY_TIMEOUT_MS'
+          'RENTGUY_TIMEOUT_MS',
+          'RENTGUY_WEBHOOK_SECRETS'
         ]
       }),
       expect.objectContaining({
@@ -164,7 +186,7 @@ describe('config', () => {
         label: 'Personalization & CRO',
         description:
           'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
-        keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
+        keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'PERSONALIZATION_WEBHOOK_SECRETS']
       }),
       expect.objectContaining({
         id: 'automation',
@@ -242,13 +264,20 @@ describe('config', () => {
           enabled: false,
           baseUrl: null,
           workspaceId: null,
-          timeoutMs: 5000
+          timeoutMs: 5000,
+          webhookSecrets: []
         },
         sevensa: {
           enabled: false,
           submitUrl: null,
           retryDelayMs: 15000,
           maxAttempts: 5
+        },
+        hcaptcha: {
+          enabled: false,
+          siteKey: null,
+          secretKey: null,
+          verifyUrl: 'https://hcaptcha.com/siteverify'
         }
       })
     );
@@ -288,13 +317,15 @@ describe('config', () => {
     const config = loadConfig();
 
     expect(config.personalization).toEqual({
-      automationWebhook: 'https://n8n.test/webhook/personalization'
+      automationWebhook: 'https://n8n.test/webhook/personalization',
+      incomingWebhookSecrets: []
     });
     const personalizationSection = config.dashboard.sections.find(
       (section) => section.id === 'personalization'
     );
     expect(personalizationSection).toBeDefined();
     expect(personalizationSection.keys).toContain('N8N_PERSONALIZATION_WEBHOOK_URL');
+    expect(personalizationSection.keys).toContain('PERSONALIZATION_WEBHOOK_SECRETS');
   });
 
   it('supports wildcard CORS configuration', () => {
