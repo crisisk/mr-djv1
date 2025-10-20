@@ -15,8 +15,10 @@ import {
   generateOrganizationSchema,
   generateServiceSchema,
   generateBreadcrumbSchema,
-  generateWebPageSchema
+  generateWebPageSchema,
+  generateReviewSchema,
 } from '../../utils/schemaOrg.js';
+import { testimonials } from '../../data/testimonials.js';
 
 
 
@@ -123,6 +125,14 @@ const DjSaxLanding = ({ variant = 'A' }) => {
     url: 'https://mr-dj.sevensa.nl/',
     breadcrumbs
   });
+  const reviewSchemas = testimonials.map((testimonial) =>
+    generateReviewSchema({
+      reviewBody: testimonial.reviewBody,
+      author: testimonial.author,
+      ratingValue: testimonial.rating,
+      datePublished: testimonial.datePublished,
+    })
+  );
 
   return (
     <div className="DjSaxLanding">
@@ -143,6 +153,11 @@ const DjSaxLanding = ({ variant = 'A' }) => {
         <script type="application/ld+json">
           {JSON.stringify(webPageSchema)}
         </script>
+        {reviewSchemas.map((schema, index) => (
+          <script key={`review-schema-${index}`} type="application/ld+json">
+            {JSON.stringify(schema)}
+          </script>
+        ))}
       </Helmet>
 
       {/* Header with Logo and Navigation */}

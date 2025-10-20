@@ -8,6 +8,8 @@ import { useHeroImage } from '../../hooks/useReplicateImage.js';
 import { localSeoData, getLocalSeoDataBySlug } from '../../data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from '../../data/local_seo_bruiloft_data.js';
 import { getWindow } from '../../lib/environment.js';
+import { testimonials } from '../../data/testimonials.js';
+import { generateReviewSchema } from '../../utils/schemaOrg.js';
 
 const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) => {
   const hasData = Boolean(data);
@@ -78,6 +80,17 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 
     return mapped;
   }, [city, counterpartSlug, generalSlug, hasCounterpart, hasData, isBruiloftPage, province, slug]);
+
+  const reviewSchemas = testimonials.map((testimonial) =>
+    JSON.stringify(
+      generateReviewSchema({
+        reviewBody: testimonial.reviewBody,
+        author: testimonial.author,
+        ratingValue: testimonial.rating,
+        datePublished: testimonial.datePublished,
+      })
+    )
+  );
 
   const localBusinessSchema = useMemo(() => {
     if (!hasData) {
@@ -162,6 +175,11 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
         <link rel="canonical" href={canonicalUrl} />
         {localBusinessSchema && <script type="application/ld+json">{localBusinessSchema}</script>}
         {eventSchema && <script type="application/ld+json">{eventSchema}</script>}
+        {reviewSchemas.map((schema, index) => (
+          <script key={`review-schema-${index}`} type="application/ld+json">
+            {schema}
+          </script>
+        ))}
       </Helmet>
 
       <HeroSection
