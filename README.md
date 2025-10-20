@@ -164,6 +164,7 @@ Met de uitgebreide automatisering, configuratie-dashboard, RentGuy-koppeling en 
 - **Interne automatisering documentatie**: [`docs/internal-city-automation.md`](docs/internal-city-automation.md) beschrijft architectuur, configuratie en monitoring van de workflow zonder n8n.
 - [Mailintegratie onderzoek](docs/mail-integration-report.md)
 - [Performance, SEO & klantfit onderzoek](docs/performance-seo-research.md)
+- **Type definitions** – up-to-date service signatures vind je in [`backend/types/types.d.ts`](backend/types/types.d.ts), gegenereerd met tsd-jsdoc.
 
 ## 📈 QA & KPI resources (16 oktober update)
 

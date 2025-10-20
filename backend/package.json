@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest"
+    "test": "jest",
+    "types": "jsdoc -r src/services -t node_modules/tsd-jsdoc/dist -d types"
   },
   "keywords": [
     "dj",
@@ -39,7 +40,18 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",
-    "pino-pretty": "^10.3.1"
+    "pino-pretty": "^10.3.1",
+    "tsd-jsdoc": "^2.5.0"
+  },
+  "tsd-jsdoc": {
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "ES2020"
+    },
+    "inputFiles": [
+      "src/services/*.js"
+    ],
+    "outDir": "./types"
   },
   "jest": {
     "testEnvironment": "node"

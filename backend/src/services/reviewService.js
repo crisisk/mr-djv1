@@ -1,6 +1,16 @@
 const db = require('../lib/db');
 const cache = require('../lib/cache');
 
+/**
+ * @typedef {Object} Review
+ * @property {string} id
+ * @property {string} name
+ * @property {string} eventType
+ * @property {number} rating
+ * @property {string} reviewText
+ * @property {string} [createdAt]
+ */
+
 const fallbackReviews = [
   {
     id: 'sarah-tom',
@@ -31,6 +41,14 @@ const fallbackReviews = [
 const CACHE_KEY = 'reviews-service';
 const CACHE_TTL = 5 * 60 * 1000;
 
+/**
+ * Retrieves approved reviews with caching and fallback data.
+ *
+ * @param {number} [limit=12]
+ * @param {Object} [options]
+ * @param {boolean} [options.forceRefresh]
+ * @returns {Promise<{ reviews: Array<Review>, source: string, cacheStatus: string }>}
+ */
 async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
   if (!forceRefresh) {
     const cached = cache.get(CACHE_KEY);
@@ -70,6 +88,11 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
   return { ...response, cacheStatus: 'refreshed' };
 }
 
+/**
+ * Clears the review cache to force a refresh on next call.
+ *
+ * @returns {void}
+ */
 function resetCache() {
   cache.del(CACHE_KEY);
 }

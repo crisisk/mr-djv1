@@ -2,8 +2,57 @@ const { randomUUID } = require('crypto');
 const db = require('../lib/db');
 const rentGuyService = require('./rentGuyService');
 
+/**
+ * @typedef {Object} BookingPayload
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} eventType
+ * @property {string|Date|null} [eventDate]
+ * @property {string|null} [packageId]
+ * @property {string|null} [message]
+ */
+
+/**
+ * @typedef {Object} RentGuySyncResult
+ * @property {boolean} delivered
+ * @property {boolean} queued
+ * @property {number} [queueSize]
+ * @property {string} [reason]
+ */
+
+/**
+ * @typedef {Object} BookingRecord
+ * @property {string} id
+ * @property {string} status
+ * @property {Date} createdAt
+ * @property {boolean} persisted
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} eventType
+ * @property {Date|null} eventDate
+ * @property {string|null} packageId
+ * @property {string|null} message
+ */
+
+/**
+ * @typedef {Object} CreateBookingResult
+ * @property {string} id
+ * @property {string} status
+ * @property {Date} createdAt
+ * @property {boolean} persisted
+ * @property {RentGuySyncResult} rentGuySync
+ */
+
 const inMemoryBookings = new Map();
 
+/**
+ * Persists a booking in Postgres when available and mirrors it to RentGuy.
+ *
+ * @param {BookingPayload} payload
+ * @returns {Promise<CreateBookingResult>}
+ */
 async function createBooking(payload) {
   const timestamp = new Date();
   let result;
@@ -93,6 +142,12 @@ async function createBooking(payload) {
   };
 }
 
+/**
+ * Fetches the most recent bookings, falling back to the in-memory store.
+ *
+ * @param {number} [limit=10]
+ * @returns {Promise<{persisted: boolean, bookings: Array<BookingRecord>}>}
+ */
 async function getRecentBookings(limit = 10) {
   if (db.isConfigured()) {
     try {
@@ -136,10 +191,25 @@ async function getRecentBookings(limit = 10) {
   };
 }
 
+/**
+ * Clears the in-memory booking cache (used in tests).
+ *
+ * @returns {void}
+ */
 function resetInMemoryStore() {
   inMemoryBookings.clear();
 }
 
+/**
+ * Provides diagnostics about the current booking persistence strategy.
+ *
+ * @returns {{
+ *   databaseConnected: boolean,
+ *   storageStrategy: 'postgres'|'in-memory',
+ *   fallbackQueueSize: number,
+ *   lastError: string|null
+ * }}
+ */
 function getBookingServiceStatus() {
   const dbStatus = db.getStatus();
 

@@ -3,6 +3,40 @@ const config = require('../config');
 const { createDurableQueue } = require('../lib/durableQueue');
 const { logger } = require('../lib/logger');
 
+/**
+ * @typedef {Object} SevensaDeliveryMeta
+ * @property {string} [id]
+ * @property {string} [dedupeKey]
+ */
+
+/**
+ * @typedef {Object} SevensaDeliveryResult
+ * @property {boolean} delivered
+ * @property {boolean} queued
+ * @property {number} queueSize
+ * @property {string} [reason]
+ * @property {string} [lastError]
+ */
+
+/**
+ * @typedef {Object} SevensaLead
+ * @property {string} id
+ * @property {string} [firstName]
+ * @property {string} [lastName]
+ * @property {string} [email]
+ * @property {string} [phone]
+ * @property {string} [company]
+ * @property {string} [message]
+ * @property {string} [eventDate]
+ * @property {string} [eventType]
+ * @property {string|number} [budget]
+ * @property {string} [pageUri]
+ * @property {string} [pageName]
+ * @property {string} [source]
+ * @property {boolean} [persisted]
+ * @property {Array<Object>|null} [legalConsentOptions]
+ */
+
 const DEFAULT_RETRY_DELAY_MS = 15000;
 const DEFAULT_MAX_ATTEMPTS = 5;
 
@@ -93,6 +127,13 @@ function computeQueueSize(counts) {
   return (counts.waiting || 0) + (counts.delayed || 0);
 }
 
+/**
+ * Adds a payload to the durable queue, deduplicating when possible.
+ *
+ * @param {Object<string, *>} payload
+ * @param {SevensaDeliveryMeta} [meta]
+ * @returns {Promise<number>} queue size after enqueueing
+ */
 async function enqueue(payload, meta = {}) {
   const dedupeKey = meta.dedupeKey || buildDedupeKey(payload);
   await queue.addJob(
@@ -111,6 +152,13 @@ async function enqueue(payload, meta = {}) {
   return computeQueueSize(metrics.counts);
 }
 
+/**
+ * Attempts to deliver immediately and falls back to the queue when unavailable.
+ *
+ * @param {Object<string, *>} payload
+ * @param {SevensaDeliveryMeta} [meta]
+ * @returns {Promise<SevensaDeliveryResult>}
+ */
 async function tryImmediateDelivery(payload, meta = {}) {
   if (!isConfigured()) {
     const queueSize = await enqueue(payload, meta);
@@ -139,6 +187,12 @@ async function tryImmediateDelivery(payload, meta = {}) {
   }
 }
 
+/**
+ * Converts a lead object into the Sevensa webhook payload structure.
+ *
+ * @param {SevensaLead} lead
+ * @returns {{ fields: Array<{ name: string, value: string }>, context: { pageUri: string|null, pageName: string|null }, legalConsentOptions: Array<Object>|null }}
+ */
 function mapLeadToPayload(lead) {
   const fields = Object.entries({
     firstname: lead.firstName,
@@ -166,11 +220,24 @@ function mapLeadToPayload(lead) {
   };
 }
 
+/**
+ * Sends a lead to Sevensa, queueing if the webhook fails.
+ *
+ * @param {SevensaLead} lead
+ * @param {SevensaDeliveryMeta} [meta]
+ * @returns {Promise<SevensaDeliveryResult>}
+ */
 async function submitLead(lead, meta = {}) {
   const payload = mapLeadToPayload(lead);
   return tryImmediateDelivery(payload, meta);
 }
 
+/**
+ * Drains queued Sevensa jobs by retrying them immediately.
+ *
+ * @param {number} [limit=50]
+ * @returns {Promise<{ configured: boolean, attempted: number, delivered: number, remaining: number }>}
+ */
 async function flushQueue(limit = 50) {
   const configured = isConfigured();
   const metricsBefore = await queue.getMetrics();
@@ -214,6 +281,11 @@ async function flushQueue(limit = 50) {
   };
 }
 
+/**
+ * Returns integration metrics and pending queue information.
+ *
+ * @returns {Promise<{ configured: boolean, queueSize: number, activeJobs: number, metrics: { retryAgeP95: number, counts: Object<string, number> }, deadLetterCount: number, lastSubmitSuccess: *, lastSubmitError: *, nextInQueue: { enqueuedAt: Date, attempts: number, dedupeKey: string }|null }>}
+ */
 async function getStatus() {
   const configured = isConfigured();
   const metrics = await queue.getMetrics();
@@ -243,6 +315,12 @@ async function getStatus() {
   };
 }
 
+/**
+ * Moves dead-lettered jobs back to the primary queue for another attempt.
+ *
+ * @param {number} [limit=20]
+ * @returns {Promise<{ replayed: number }>}
+ */
 async function replayDeadLetters(limit = 20) {
   const jobs = await queue.deadLetterQueue.getJobs(['waiting', 'delayed'], 0, limit - 1, true);
   let replayed = 0;
@@ -260,6 +338,11 @@ async function replayDeadLetters(limit = 20) {
   return { replayed };
 }
 
+/**
+ * Empties all queues and resets diagnostics (for tests).
+ *
+ * @returns {Promise<void>}
+ */
 async function reset() {
   await Promise.all([
     queue.queue.drain(true),
