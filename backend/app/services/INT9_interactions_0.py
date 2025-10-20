@@ -20,13 +20,33 @@ interface WhatsAppMessage {
 export class WhatsAppService {
   private client: AxiosInstance;
   private logger: Logger;
+  private whatsappAccessToken: string;
+  private whatsappPhoneNumberId: string;
 
   constructor() {
     this.logger = new Logger('WhatsAppService');
+    this.whatsappAccessToken = process.env.WHATSAPP_ACCESS_TOKEN || '';
+    this.whatsappPhoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID || '';
+
+    const missingCredentials: string[] = [];
+    if (!this.whatsappAccessToken) {
+      missingCredentials.push('WHATSAPP_ACCESS_TOKEN');
+    }
+    if (!this.whatsappPhoneNumberId) {
+      missingCredentials.push('WHATSAPP_PHONE_NUMBER_ID');
+    }
+
+    if (missingCredentials.length > 0) {
+      throw new Error(
+        `Missing required WhatsApp environment variables: ${missingCredentials.join(', ')}.` +
+        ' Please configure these credentials before using WhatsApp integrations.'
+      );
+    }
+
     this.client = axios.create({
       baseURL: 'https://graph.facebook.com/v17.0',
       headers: {
-        'Authorization': `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+        'Authorization': `Bearer ${this.whatsappAccessToken}`,
         'Content-Type': 'application/json',
       }
     });
@@ -58,7 +78,7 @@ export class WhatsAppService {
       };
 
       const response = await this.client.post(
-        `/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+        `/${this.whatsappPhoneNumberId}/messages`,
         message
       );
 
@@ -85,7 +105,7 @@ export class WhatsAppService {
       };
 
       const response = await this.client.post(
-        `/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+        `/${this.whatsappPhoneNumberId}/messages`,
         message
       );
 

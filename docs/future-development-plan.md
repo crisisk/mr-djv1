@@ -51,6 +51,7 @@ _Laatst bijgewerkt: 2025-10-18_
 - Persona-events naar GA4 (`frontend/public/assets/js/modules/analytics.js`) voor cohort analyses.
 - Consent gating voor personalisatie (ConsentManager.jsx) => compliant remarketing.
 - Config dashboard (`docs/go-live-checklist.md`, `backend/src/routes/dashboard.js`) voor snelle experiment deployment.
+- Alle personalisatiefeatures subscriben op `useConsent` voordat marketing-assets (bv. GTM tags, audience scripts) laden om blockers direct te tonen en marketing pas na toestemming te activeren.
 
 ## 4. RentGuy integratie & automatiseringskoppelingen
 
