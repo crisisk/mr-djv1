@@ -11,28 +11,32 @@ const integrationsRouter = require('./integrations');
 const personalizationRouter = require('./personalization');
 const dashboardRouter = require('./dashboard');
 const metricsRouter = require('./metrics');
+const supportRouter = require('./support');
 const featureFlags = require('../lib/featureFlags');
 
 const router = express.Router();
 
-router.get('/', (_req, res) => {
-  const endpoints = {
-    health: '/health',
-    contact: '/contact',
-    callbackRequest: '/callback-request',
-    bookings: '/bookings',
-    packages: '/packages',
-    reviews: '/reviews',
-    integrations: {
-      rentGuy: '/integrations/rentguy/status',
-      sevensa: '/integrations/sevensa/status',
-      crmExport: '/integrations/crm/export'
-    },
-    metrics: '/metrics/queues',
-    personalization: {
-      keyword: '/personalization/keyword',
-      events: '/personalization/events'
-    }
+router.get('/', async (_req, res, next) => {
+  try {
+    const endpoints = {
+      health: '/health',
+      support: '/support',
+      contact: '/contact',
+      callbackRequest: '/callback-request',
+      bookings: '/bookings',
+      packages: '/packages',
+      reviews: '/reviews',
+      integrations: {
+        rentGuy: '/integrations/rentguy/status',
+        sevensa: '/integrations/sevensa/status',
+        crmExport: '/integrations/crm/export'
+      },
+      metrics: '/metrics/queues',
+      personalization: {
+        keyword: '/personalization/keyword',
+        events: '/personalization/events'
+      }
+    };
 
     if (config.dashboard.enabled) {
       endpoints.dashboard = '/dashboard';
@@ -52,6 +56,7 @@ router.get('/', (_req, res) => {
 });
 
 router.use('/health', healthRouter);
+router.use('/support', supportRouter);
 router.use('/packages', packagesRouter);
 router.use('/contact', rateLimiter, contactRouter);
 router.use('/callback-request', rateLimiter, callbackRequestsRouter);
