@@ -4,6 +4,46 @@ const CACHE_KEYS = {
   reviews: 'misterdj.reviews.v2',
 };
 
+const REVIEW_CATEGORY_ALIASES = {
+  bruiloft: 'bruiloft',
+  wedding: 'bruiloft',
+  bedrijfsfeest: 'bedrijfsfeest',
+  corporate: 'bedrijfsfeest',
+  business: 'bedrijfsfeest',
+  private: 'private',
+  verjaardag: 'private',
+  jubileum: 'private',
+};
+
+const REVIEW_FILTER_EVENT_MAP = {
+  all: { persona: null, category: 'all' },
+  bruiloft: {
+    persona: 'bruiloft',
+    category: 'bruiloft',
+    event_type: 'bruiloft',
+    recommended_package: 'Zilver Pakket',
+  },
+  bedrijfsfeest: {
+    persona: 'bedrijfsfeest',
+    category: 'bedrijfsfeest',
+    event_type: 'bedrijfsfeest',
+    recommended_package: 'Goud Pakket',
+  },
+  private: {
+    persona: 'private',
+    category: 'private',
+    event_type: 'private event',
+    recommended_package: 'Brons Pakket',
+  },
+};
+
+const reviewState = {
+  analytics: null,
+  all: [],
+  activeCategory: 'all',
+  loaded: false,
+};
+
 const safeStorage = (() => {
   try {
     const testKey = '__misterdj_test__';
@@ -158,6 +198,126 @@ const ensureReviewModerationStyles = () => {
   document.head.appendChild(style);
 };
 
+const toCategorySlug = (value = '') => value.toString().trim().toLowerCase();
+
+const normalizeCategoryValue = (value = '') => {
+  const slug = toCategorySlug(value);
+  if (!slug) return null;
+
+  if (REVIEW_CATEGORY_ALIASES[slug]) {
+    return REVIEW_CATEGORY_ALIASES[slug];
+  }
+
+  const fallbackEntry = Object.entries(REVIEW_CATEGORY_ALIASES).find(([keyword]) => slug.includes(keyword));
+  return fallbackEntry ? fallbackEntry[1] : null;
+};
+
+const hydrateReview = (review) => {
+  if (!review || typeof review !== 'object') return null;
+
+  const eventType = review.eventType || review.event_type || '';
+  const category = normalizeCategoryValue(review.category) || normalizeCategoryValue(eventType);
+  const reviewText = review.reviewText || review.text || review.quote || '';
+  const name = review.name || review.author || '';
+  const rating = typeof review.rating === 'number' ? review.rating : Number.parseFloat(review.rating) || 5;
+  const moderationState =
+    review.moderationState ||
+    review.moderation_state ||
+    (typeof review.approved === 'boolean' ? (review.approved ? 'approved' : 'pending') : undefined) ||
+    'approved';
+
+  return {
+    ...review,
+    id: review.id || null,
+    name: name || 'Onbekende klant',
+    eventType,
+    reviewText,
+    rating,
+    category: category || null,
+    moderationState,
+  };
+};
+
+const normaliseReviews = (reviews = []) => reviews.map(hydrateReview).filter(Boolean);
+
+const updateFilterControls = () => {
+  const buttons = document.querySelectorAll('[data-review-filter]');
+  if (!buttons.length) return;
+
+  buttons.forEach((button) => {
+    const filter = button.dataset.reviewFilter || 'all';
+    const isActive = filter === reviewState.activeCategory;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+};
+
+const applyReviewFilter = () => {
+  if (!reviewState.loaded) return;
+
+  const { activeCategory, all } = reviewState;
+  const filtered =
+    activeCategory === 'all' ? all : all.filter((review) => review.category === activeCategory);
+
+  renderReviews(filtered, reviewState.analytics);
+};
+
+const setActiveReviewCategory = (category) => {
+  const normalised = category === 'all' ? 'all' : normalizeCategoryValue(category) || 'all';
+  if (reviewState.activeCategory !== normalised) {
+    reviewState.activeCategory = normalised;
+  }
+  updateFilterControls();
+  applyReviewFilter();
+};
+
+const setupReviewFilterControls = () => {
+  const buttons = document.querySelectorAll('[data-review-filter]');
+  if (!buttons.length) return;
+
+  buttons.forEach((button) => {
+    if (button.dataset.reviewFilterBound === 'true') return;
+    button.dataset.reviewFilterBound = 'true';
+
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      const filter = button.dataset.reviewFilter || 'all';
+      const template = REVIEW_FILTER_EVENT_MAP[filter] || { persona: null, category: filter };
+      const detail = { ...template };
+      document.dispatchEvent(
+        new CustomEvent('persona:change', {
+          detail,
+        })
+      );
+    });
+  });
+
+  updateFilterControls();
+};
+
+const setReviews = (reviews = []) => {
+  reviewState.all = normaliseReviews(reviews);
+  reviewState.loaded = true;
+  applyReviewFilter();
+  return reviewState.all;
+};
+
+const handlePersonaContext = (detail = {}) => {
+  if (detail && detail.category === 'all') {
+    setActiveReviewCategory('all');
+    return;
+  }
+
+  const category =
+    normalizeCategoryValue(detail?.category) ||
+    normalizeCategoryValue(detail?.persona) ||
+    normalizeCategoryValue(detail?.event_type);
+
+  if (category) {
+    setActiveReviewCategory(category);
+  }
+};
+
 const renderReviews = (reviews, analytics) => {
   const container = document.getElementById('reviews-container');
   if (!container) return;
@@ -243,17 +403,23 @@ export const initReviewSection = async (analytics) => {
   const container = document.getElementById('reviews-container');
   if (!container) return;
 
+  reviewState.analytics = analytics || null;
+  reviewState.loaded = false;
+  reviewState.all = [];
+
+  setupReviewFilterControls();
+
   const cached = readCache(CACHE_KEYS.reviews);
   if (cached) {
-    renderReviews(cached, analytics);
+    setReviews(cached);
   }
 
   try {
     const apiData = await fetchJson('/api/reviews');
     const reviews = Array.isArray(apiData.reviews) && apiData.reviews.length ? apiData.reviews : null;
     if (reviews) {
-      renderReviews(reviews, analytics);
-      writeCache(CACHE_KEYS.reviews, reviews);
+      const normalised = setReviews(reviews);
+      writeCache(CACHE_KEYS.reviews, normalised);
       return;
     }
   } catch (error) {
@@ -268,16 +434,19 @@ export const initReviewSection = async (analytics) => {
       eventType: `${review.eventType} ${review.eventDate || ''}`.trim(),
       rating: review.rating,
       reviewText: review.quote,
+      category: review.category,
       moderationState: review.moderationState || 'approved',
     }));
-    renderReviews(formatted, analytics);
-    writeCache(CACHE_KEYS.reviews, formatted);
+    const normalised = setReviews(formatted);
+    writeCache(CACHE_KEYS.reviews, normalised);
   } catch (error) {
     console.error('Kon statische reviews niet laden.', error);
-    renderReviews([], analytics);
+    setReviews([]);
   }
 };
 
 document.addEventListener('persona:change', (event) => {
-  highlightRecommendedPackage(event.detail?.recommended_package);
+  const detail = event.detail || {};
+  highlightRecommendedPackage(detail.recommended_package);
+  handlePersonaContext(detail);
 });
