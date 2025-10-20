@@ -24,57 +24,29 @@ const HeroSection = ({
   const statsGroupLabelId = useId()
 
   return (
-    <div className={`${backgroundClass} py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}>
-      <div className="container mx-auto text-center">
-        <h1 className={`text-font-size-h1 font-extrabold ${titleColor} mb-spacing-md`}>
+    <div
+      className={`${backgroundClass} hero-motion py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}
+    >
+      <div className="container mx-auto text-center hero-motion__inner">
+        <h1 className={`text-font-size-h1 font-extrabold ${titleColor} mb-spacing-md hero-motion__headline`}>
           {resolvedTitle}
         </h1>
-        <p className={`text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto ${subtitleColor}`}>
+        <p
+          className={`text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto ${subtitleColor} hero-motion__subtitle`}
+        >
           {resolvedSubtitle}
         </p>
-        <div
-          className="flex flex-col items-center justify-center space-y-spacing-sm lg:flex-row lg:space-y-0 lg:space-x-spacing-md"
-          role="group"
-          aria-labelledby={ctaGroupLabelId}
-          aria-describedby={ctaGroupDescriptionId}
-        >
-          <span id={ctaGroupLabelId} className="sr-only">
-            Call-to-action knoppen
-          </span>
-          <span id={ctaGroupDescriptionId} className="sr-only">
-            Kies een actie om direct met Mister DJ in contact te komen.
-          </span>
-          <Button
-            variant="secondary"
-            size="lg"
-            aria-label={`Primaire actie: ${resolvedPrimaryCta}`}
-            aria-describedby={ctaGroupDescriptionId}
-          >
+        <div className="flex justify-center space-x-spacing-md hero-motion__ctaGroup">
+          <Button variant="secondary" size="lg" className="hero-motion__cta">
             {resolvedPrimaryCta}
           </Button>
           {resolvedSecondaryCta && (
-            <Button
-              variant="outline"
-              size="lg"
-              aria-label={`Secundaire actie: ${resolvedSecondaryCta}`}
-              aria-describedby={ctaGroupDescriptionId}
-            >
+            <Button variant="outline" size="lg" className="hero-motion__cta hero-motion__cta--secondary">
               {resolvedSecondaryCta}
             </Button>
           )}
         </div>
-        {children && (
-          <div
-            className="mt-spacing-xl flex flex-col items-center space-y-spacing-md lg:mt-spacing-2xl lg:flex-row lg:justify-center lg:space-y-0 lg:space-x-spacing-xl"
-            role="group"
-            aria-labelledby={statsGroupLabelId}
-          >
-            <span id={statsGroupLabelId} className="sr-only">
-              Belangrijke statistieken over Mister DJ
-            </span>
-            {children}
-          </div>
-        )}
+        {children && <div className="hero-motion__statsSlot">{children}</div>}
       </div>
     </div>
   )
