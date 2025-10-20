@@ -76,14 +76,7 @@ function mapDatabasePackages(result) {
   }));
 }
 
-async function getPackages({ forceRefresh = false } = {}) {
-  if (!forceRefresh) {
-    const cached = cache.get(CACHE_KEY);
-    if (cached) {
-      return { ...cached, cacheStatus: 'hit' };
-    }
-  }
-
+async function loadPackagesFromSources() {
   let response = {
     packages: fallbackPackages,
     source: 'static'
@@ -146,8 +139,17 @@ async function getPackages({ forceRefresh = false } = {}) {
     }
   }
 
-  cache.set(CACHE_KEY, response, CACHE_TTL);
-  return { ...response, cacheStatus: 'refreshed' };
+  return response;
+}
+
+async function getPackages({ forceRefresh = false } = {}) {
+  if (forceRefresh) {
+    cache.del(CACHE_KEY);
+  }
+
+  const { value, fresh } = await cache.remember(CACHE_KEY, CACHE_TTL, loadPackagesFromSources);
+
+  return { ...value, cacheStatus: fresh ? 'refreshed' : 'hit' };
 }
 
 function resetCache() {

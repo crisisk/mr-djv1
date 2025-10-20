@@ -1,33 +1,56 @@
-const store = new Map();
+const NodeCache = require('node-cache');
 
-function set(key, value, ttlMs = 300000) {
-  const expiresAt = ttlMs > 0 ? Date.now() + ttlMs : null;
-  store.set(key, { value, expiresAt });
+const cache = new NodeCache({
+  stdTTL: 0,
+  checkperiod: 60,
+  useClones: false
+});
+
+function ttlMsToSeconds(ttlMs) {
+  if (!Number.isFinite(ttlMs) || ttlMs <= 0) {
+    return 0;
+  }
+
+  return ttlMs / 1000;
+}
+
+function set(key, value, ttlMs = 0) {
+  const ttlSeconds = ttlMsToSeconds(ttlMs);
+  cache.set(key, value, ttlSeconds);
+  return value;
 }
 
 function get(key) {
-  const entry = store.get(key);
-  if (!entry) return undefined;
-
-  if (entry.expiresAt && entry.expiresAt < Date.now()) {
-    store.delete(key);
-    return undefined;
-  }
-
-  return entry.value;
+  return cache.get(key);
 }
 
 function del(key) {
-  store.delete(key);
+  cache.del(key);
 }
 
 function clear() {
-  store.clear();
+  cache.flushAll();
+}
+
+async function remember(key, ttlMs, factory) {
+  if (typeof factory !== 'function') {
+    throw new TypeError('factory must be a function');
+  }
+
+  const existing = get(key);
+  if (existing !== undefined) {
+    return { value: existing, fresh: false };
+  }
+
+  const value = await factory();
+  set(key, value, ttlMs);
+  return { value, fresh: true };
 }
 
 module.exports = {
   set,
   get,
   del,
-  clear
+  clear,
+  remember
 };
