@@ -1,6 +1,7 @@
 const fs = require('fs/promises');
 const path = require('path');
 const { spawn } = require('child_process');
+const { Mutex } = require('async-mutex');
 const { runQuery } = require('../lib/db');
 
 const DEFAULT_THEME_KEYWORDS = [
@@ -53,6 +54,7 @@ function resolveContext(overrides = {}) {
     reviewFilePath: path.join(repoRoot, 'docs', 'city-content-review.md'),
     reportFilePath: path.join(repoRoot, 'docs', 'city-content-automation-report.md'),
     citiesFilePath: path.join(repoRoot, 'content', 'local-seo', 'cities.json'),
+    cityContentDirPath: path.join(repoRoot, 'content', 'cities'),
     generatorScriptPath: path.join(repoRoot, 'scripts', 'generate-city-pages.mjs'),
     limit: 5
   };
@@ -442,7 +444,32 @@ async function upsertCityContent(entries, contextOverrides = {}) {
   const parsed = JSON.parse(file);
   const map = new Map(parsed.map((city) => [city.slug, city]));
 
-  entries.forEach((entry) => {
+  const ensureSlug = (entry) => {
+    if (entry.slug && /^dj-[a-z0-9-]+$/.test(entry.slug)) {
+      return entry.slug;
+    }
+
+    const fallback = slugifyCity(entry.city || entry.slug || '');
+    if (fallback) {
+      return fallback;
+    }
+
+    throw new Error(`Invalid slug for city content entry: ${JSON.stringify(entry)}`);
+  };
+
+  const sanitized = entries.map((entry) => {
+    const slug = ensureSlug(entry);
+    return {
+      slug,
+      city: entry.city,
+      intro: entry.intro,
+      cases: entry.cases,
+      venues: entry.venues,
+      faqs: entry.faqs
+    };
+  });
+
+  sanitized.forEach((entry) => {
     map.set(entry.slug, {
       slug: entry.slug,
       city: entry.city,
@@ -455,6 +482,18 @@ async function upsertCityContent(entries, contextOverrides = {}) {
 
   const updated = Array.from(map.values());
   await context.fs.writeFile(context.citiesFilePath, `${JSON.stringify(updated, null, 2)}\n`, 'utf8');
+
+  try {
+    await context.fs.mkdir(context.cityContentDirPath, { recursive: true });
+    await Promise.all(
+      sanitized.map(async (entry) => {
+        const filePath = path.join(context.cityContentDirPath, `${entry.slug}.json`);
+        await context.fs.writeFile(filePath, `${JSON.stringify(entry, null, 2)}\n`, 'utf8');
+      })
+    );
+  } catch (error) {
+    console.warn('[automation] Failed to write city content files:', error.message);
+  }
 
   return { updated: entries.length };
 }
@@ -549,72 +588,76 @@ async function runStaticGenerator(contextOverrides = {}) {
   });
 }
 
+const workflowMutex = new Mutex();
+
 async function runWorkflow(options = {}) {
-  const { limit = 5, dryRun, contextOverrides = {} } = options;
-  const context = resolveContext({ ...contextOverrides });
+  return workflowMutex.runExclusive(async () => {
+    const { limit = 5, dryRun, contextOverrides = {} } = options;
+    const context = resolveContext({ ...contextOverrides });
 
-  if (typeof dryRun === 'boolean') {
-    context.dryRun = dryRun;
-  }
-
-  context.limit = limit;
-
-  const { keywords } = await fetchKeywordSet(context);
-  const filtered = filterKeywords(keywords, context).slice(0, context.limit);
-  const slugs = filtered.map((entry) => entry.slug).filter(Boolean);
-  const existing = await lookupExistingSlugs(slugs, context);
-
-  const approved = [];
-  const flagged = [];
-  let skipped = 0;
-
-  for (const entry of filtered) {
-    if (existing.has(entry.slug)) {
-      skipped += 1;
-      continue;
+    if (typeof dryRun === 'boolean') {
+      context.dryRun = dryRun;
     }
 
-    const content = await generateCityContent(entry, context);
-    const qc = qualityCheck(content, context);
+    context.limit = limit;
 
-    if (qc.passed) {
-      approved.push({ ...entry, content });
-    } else {
-      flagged.push({ ...entry, content, issues: qc.issues });
+    const { keywords } = await fetchKeywordSet(context);
+    const filtered = filterKeywords(keywords, context).slice(0, context.limit);
+    const slugs = filtered.map((entry) => entry.slug).filter(Boolean);
+    const existing = await lookupExistingSlugs(slugs, context);
+
+    const approved = [];
+    const flagged = [];
+    let skipped = 0;
+
+    for (const entry of filtered) {
+      if (existing.has(entry.slug)) {
+        skipped += 1;
+        continue;
+      }
+
+      const content = await generateCityContent(entry, context);
+      const qc = qualityCheck(content, context);
+
+      if (qc.passed) {
+        approved.push({ ...entry, content });
+      } else {
+        flagged.push({ ...entry, content, issues: qc.issues });
+      }
     }
-  }
 
-  if (approved.length && !context.dryRun) {
-    await upsertCityContent(
-      approved.map((entry) => ({
-        slug: entry.content.slug,
-        city: entry.content.city,
-        intro: entry.content.intro,
-        cases: entry.content.cases,
-        venues: entry.content.venues,
-        faqs: entry.content.faqs
-      })),
-      context
-    );
-  }
+    if (approved.length && !context.dryRun) {
+      await upsertCityContent(
+        approved.map((entry) => ({
+          slug: entry.content.slug,
+          city: entry.content.city,
+          intro: entry.content.intro,
+          cases: entry.content.cases,
+          venues: entry.content.venues,
+          faqs: entry.content.faqs
+        })),
+        context
+      );
+    }
 
-  await appendReviewQueue(flagged, context);
+    await appendReviewQueue(flagged, context);
 
-  let generatorResult = null;
-  if (approved.length && !context.dryRun) {
-    generatorResult = await runStaticGenerator(context);
-  }
+    let generatorResult = null;
+    if (approved.length && !context.dryRun) {
+      generatorResult = await runStaticGenerator(context);
+    }
 
-  const summary = {
-    processed: filtered.length,
-    approved,
-    flagged,
-    skipped,
-    generator: generatorResult
-  };
+    const summary = {
+      processed: filtered.length,
+      approved,
+      flagged,
+      skipped,
+      generator: generatorResult
+    };
 
-  await writeReport(summary, context);
-  return summary;
+    await writeReport(summary, context);
+    return summary;
+  });
 }
 
 module.exports = {
