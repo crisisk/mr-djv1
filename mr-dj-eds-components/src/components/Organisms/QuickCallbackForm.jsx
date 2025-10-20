@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { submitCallbackRequest } from '../../services/api.js';
-import { trackFormSubmission } from '../../utils/trackConversion';
+import { trackFormSubmission, getUserVariant } from '../../utils/trackConversion';
 import { getWindow } from '../../lib/environment.js';
 
 /**
@@ -115,24 +115,32 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     };
 
     try {
+      const abVariant = getUserVariant() || variant;
+      const payload = {
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        eventType: formData.eventType || null,
+      };
+
       await submitCallbackRequest(payload);
 
       // Track successful submission
-      trackFormSubmission(variant, payload.eventType, 'callback');
+      trackFormSubmission(abVariant, payload.eventType || '', 'callback');
 
       const browser = getWindow();
       if (browser) {
         browser.dataLayer = browser.dataLayer || [];
         browser.dataLayer.push({
           event: 'quick_callback_submit',
-          form_variant: variant,
-          event_type: formData.eventType,
+          form_variant: abVariant,
+          event_type: payload.eventType || '',
           form_type: 'callback',
         });
       }
 
       setFieldErrors({});
       setIsSubmitted(true);
+      setSubmitError(null);
       // Reset form after 3 seconds
       if (successResetTimeoutRef.current) {
         clearTimeout(successResetTimeoutRef.current);
