@@ -1,5 +1,10 @@
-import tokens from './lib/design-tokens.json';
-import { getDocument, getWindow } from './lib/environment.js';
+import tokens from './theme/tokens.js';
+import { getDocument } from './lib/environment.js';
+
+const toKebabCase = (value) => value
+  .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+  .replace(/\s+/g, '-')
+  .toLowerCase();
 
 const flattenTokens = (object, prefix = []) => {
   return Object.entries(object).reduce((acc, [key, value]) => {
@@ -7,17 +12,15 @@ const flattenTokens = (object, prefix = []) => {
       return acc;
     }
 
-    if (value && typeof value === 'object' && !('value' in value)) {
-      return { ...acc, ...flattenTokens(value, [...prefix, key]) };
+    const nextPrefix = [...prefix, toKebabCase(key)];
+
+    if (value && typeof value === 'object') {
+      return { ...acc, ...flattenTokens(value, nextPrefix) };
     }
 
-    if (value && typeof value === 'object' && 'value' in value) {
-      const variableName = ['--', ...prefix, key]
-        .join('-')
-        .replace(/\s+/g, '-')
-        .toLowerCase();
-
-      acc[variableName] = value.value;
+    if (typeof value === 'string' || typeof value === 'number') {
+      const variableName = ['--', ...nextPrefix].join('-');
+      acc[variableName] = value;
       return acc;
     }
 
