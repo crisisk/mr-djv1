@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const config = require('../config');
 const { saveContact } = require('../services/contactService');
+const contactSchema = require('../lib/validation/contactSchema');
 
 const router = express.Router();
 const requireCaptchaToken = config.integrations?.hcaptcha?.enabled;
@@ -32,7 +33,7 @@ router.post('/', validations, async (req, res, next) => {
     return res.status(422).json({
       error: 'Validatie mislukt',
       details: errors.array().map((err) => ({
-        field: err.param,
+        field: err.path || err.param,
         message: err.msg
       }))
     });
@@ -57,7 +58,7 @@ router.post('/', validations, async (req, res, next) => {
 
     const eventDateIso = contactRecord.eventDate
       ? new Date(contactRecord.eventDate).toISOString()
-      : req.body.eventDate || null;
+      : payload.eventDate || null;
 
     res.status(201).json({
       success: true,
@@ -65,9 +66,9 @@ router.post('/', validations, async (req, res, next) => {
       contactId: contactRecord.id,
       status: contactRecord.status,
       persisted: contactRecord.persisted,
-      eventType: contactRecord.eventType || req.body.eventType,
+      eventType: contactRecord.eventType || payload.eventType,
       eventDate: eventDateIso,
-      requestedPackage: contactRecord.packageId || req.body.packageId || null,
+      requestedPackage: contactRecord.packageId || payload.packageId || null,
       submittedAt: contactRecord.createdAt,
       rentGuySync: contactRecord.rentGuySync,
       sevensaSync: contactRecord.sevensaSync
