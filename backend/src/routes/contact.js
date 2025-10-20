@@ -58,21 +58,30 @@ router.post('/', validations, async (req, res, next) => {
 
     const eventDateIso = contactRecord.eventDate
       ? new Date(contactRecord.eventDate).toISOString()
-      : payload.eventDate || null;
+      : req.body.eventDate || null;
 
-    res.status(201).json({
+    const responsePayload = {
       success: true,
       message: 'Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.',
       contactId: contactRecord.id,
       status: contactRecord.status,
       persisted: contactRecord.persisted,
-      eventType: contactRecord.eventType || payload.eventType,
+      queued: contactRecord.queued,
+      storageStrategy: contactRecord.storageStrategy,
+      eventType: contactRecord.eventType || req.body.eventType,
       eventDate: eventDateIso,
-      requestedPackage: contactRecord.packageId || payload.packageId || null,
+      requestedPackage: contactRecord.packageId || req.body.packageId || null,
       submittedAt: contactRecord.createdAt,
       rentGuySync: contactRecord.rentGuySync,
       sevensaSync: contactRecord.sevensaSync
-    });
+    };
+
+    if (contactRecord.queued) {
+      responsePayload.message =
+        'Je bericht is ontvangen en tijdelijk in wachtrij geplaatst totdat onze database weer beschikbaar is.';
+    }
+
+    res.status(contactRecord.queued ? 202 : 201).json(responsePayload);
   } catch (error) {
     next(error);
   }

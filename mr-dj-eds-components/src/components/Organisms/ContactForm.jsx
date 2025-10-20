@@ -30,6 +30,10 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [queuedSubmission, setQueuedSubmission] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(
+    'Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op.'
+  );
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const successTimeoutRef = useRef(null);
@@ -121,6 +125,8 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
     // Reset states
     setSubmitError(null);
     setSubmitSuccess(false);
+    setQueuedSubmission(false);
+    setSuccessMessage('Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op.');
 
     // Validate
     if (!validateForm()) {
@@ -136,13 +142,23 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
     setIsSubmitting(true);
 
     try {
-      await submitContactForm({
+      const response = await submitContactForm({
         ...formData,
         hCaptchaToken: captcha.token || undefined,
       });
 
       // Success
       setSubmitSuccess(true);
+      setQueuedSubmission(Boolean(response?.queued));
+      if (response?.message) {
+        setSuccessMessage(response.message);
+      } else if (response?.queued) {
+        setSuccessMessage(
+          'Je bericht is ontvangen en staat tijdelijk in de wachtrij. Neem gerust contact op als je binnen 24 uur niets hoort.'
+        );
+      } else {
+        setSuccessMessage('Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op.');
+      }
 
       // Track conversion with enhanced GA4 tracking
       trackFormSubmission(variant, formData.eventType, 'contact');
@@ -168,7 +184,10 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       captcha.setError('');
 
       // Auto-hide success message after 5 seconds
-      successTimeoutRef.current = setTimeout(() => setSubmitSuccess(false), 5000);
+      successTimeoutRef.current = setTimeout(() => {
+        setSubmitSuccess(false);
+        setQueuedSubmission(false);
+      }, 5000);
     } catch (error) {
       // Error handling
       setSubmitError(error.message || 'Er is een fout opgetreden. Probeer het later opnieuw.');
@@ -194,12 +213,21 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       {/* Success Message */}
       {submitSuccess && (
         <div
-          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"
+          className={`border px-4 py-3 rounded mb-4 ${
+            queuedSubmission
+              ? 'bg-yellow-100 border-yellow-400 text-yellow-800'
+              : 'bg-green-100 border-green-400 text-green-700'
+          }`}
           role="status"
           aria-live="polite"
         >
           <strong>Succesvol verzonden!</strong>
-          <p>Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op.</p>
+          <p>{successMessage}</p>
+          {queuedSubmission && (
+            <p className="mt-2 text-sm">
+              Heb je een dringende vraag? Bel ons direct zodat we je sneller kunnen helpen.
+            </p>
+          )}
         </div>
       )}
 

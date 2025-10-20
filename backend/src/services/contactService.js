@@ -1,6 +1,7 @@
 const { randomUUID } = require('crypto');
 const db = require('../lib/db');
 const config = require('../config');
+const { logger } = require('../lib/logger');
 const rentGuyService = require('./rentGuyService');
 const sevensaService = require('./sevensaService');
 
@@ -65,6 +66,18 @@ const sevensaService = require('./sevensaService');
  */
 
 const inMemoryContacts = new Map();
+const queueMetrics = {
+  totalEnqueued: 0,
+  totalFlushed: 0,
+  lastEnqueuedAt: null,
+  lastFlushAttemptAt: null,
+  lastFlushSuccessAt: null,
+  lastFlushError: null,
+  lastFlushCount: 0,
+  consecutiveFailures: 0,
+  lastFlushDurationMs: null
+};
+let flushInProgress = false;
 const HCAPTCHA_DEFAULT_VERIFY_URL = 'https://hcaptcha.com/siteverify';
 
 function getCaptchaSettings() {
@@ -214,7 +227,13 @@ async function saveContact(payload, options = {}) {
         message: payload.message || null
       };
     } catch (error) {
-      console.error('[contactService] Database insert failed:', error.message);
+      logger.error(
+        {
+          event: 'contact.database.insert-error',
+          err: error
+        },
+        'Database insert failed for contact submission'
+      );
     }
   }
 
@@ -224,6 +243,8 @@ async function saveContact(payload, options = {}) {
       id,
       status: 'pending',
       createdAt: timestamp,
+      queuedAt: timestamp,
+      queueReason: db.isConfigured() ? 'insert-failed' : 'database-not-configured',
       persisted: false,
       eventType: payload.eventType || null,
       eventDate,
@@ -239,7 +260,23 @@ async function saveContact(payload, options = {}) {
       ...record
     });
 
-    result = record;
+    queueMetrics.totalEnqueued += 1;
+    queueMetrics.lastEnqueuedAt = timestamp;
+    logger.warn(
+      {
+        event: 'contact.queue.enqueue',
+        contactId: id,
+        queueSize: inMemoryContacts.size,
+        reason: record.queueReason
+      },
+      'Database unavailable, contact stored in in-memory queue'
+    );
+
+    result = {
+      ...record,
+      queued: true,
+      storageStrategy: 'in-memory'
+    };
   }
 
   const rentGuySync = await rentGuyService.syncLead(
@@ -294,7 +331,177 @@ async function saveContact(payload, options = {}) {
   return {
     ...result,
     rentGuySync,
-    sevensaSync
+    sevensaSync,
+    queued: Boolean(result.queued),
+    storageStrategy: result.storageStrategy || 'postgres'
+  };
+}
+
+async function persistQueuedContact(record) {
+  const queryResult = await db.runQuery(
+    `INSERT INTO contacts (name, email, phone, message, event_type, event_date, package_id, status, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, 'new', $8)
+     RETURNING id, status, created_at AS "createdAt", event_type AS "eventType", event_date AS "eventDate", package_id AS "packageId"`,
+    [
+      record.name,
+      record.email,
+      record.phone,
+      record.message,
+      record.eventType || null,
+      record.eventDate,
+      record.packageId || null,
+      record.createdAt
+    ]
+  );
+
+  return queryResult?.rows?.[0];
+}
+
+function serializeDate(value) {
+  if (!value) {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+async function flushQueuedContacts({ force = false } = {}) {
+  if (flushInProgress) {
+    return { flushed: 0, queueSize: inMemoryContacts.size, inProgress: true };
+  }
+
+  if (!inMemoryContacts.size) {
+    return { flushed: 0, queueSize: 0 };
+  }
+
+  if (!db.isConfigured()) {
+    queueMetrics.lastFlushAttemptAt = new Date();
+    queueMetrics.lastFlushError = 'database-not-configured';
+    logger.debug(
+      {
+        event: 'contact.queue.flush-skipped',
+        reason: 'database-not-configured',
+        queueSize: inMemoryContacts.size
+      },
+      'Skipping contact queue flush; database not configured'
+    );
+    return { flushed: 0, queueSize: inMemoryContacts.size, skipped: true, reason: 'database-not-configured' };
+  }
+
+  const status = typeof db.getStatus === 'function' ? db.getStatus() : { connected: true };
+  if (!status.connected && !force) {
+    queueMetrics.lastFlushAttemptAt = new Date();
+    queueMetrics.lastFlushError = status.lastError || 'database-offline';
+    logger.debug(
+      {
+        event: 'contact.queue.flush-skipped',
+        reason: queueMetrics.lastFlushError,
+        queueSize: inMemoryContacts.size
+      },
+      'Skipping contact queue flush; database offline'
+    );
+    return {
+      flushed: 0,
+      queueSize: inMemoryContacts.size,
+      skipped: true,
+      reason: queueMetrics.lastFlushError
+    };
+  }
+
+  const startedAt = Date.now();
+  let flushed = 0;
+  flushInProgress = true;
+  queueMetrics.lastFlushAttemptAt = new Date();
+
+  try {
+    const entries = Array.from(inMemoryContacts.values()).sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+
+    for (const entry of entries) {
+      try {
+        await persistQueuedContact(entry);
+        inMemoryContacts.delete(entry.id);
+        flushed += 1;
+      } catch (error) {
+        queueMetrics.lastFlushError = error.message;
+        queueMetrics.consecutiveFailures += 1;
+        logger.error(
+          {
+            event: 'contact.queue.flush-error',
+            contactId: entry.id,
+            queueSize: inMemoryContacts.size,
+            err: error
+          },
+          'Failed to persist queued contact'
+        );
+        return {
+          flushed,
+          queueSize: inMemoryContacts.size,
+          error: error.message
+        };
+      }
+    }
+
+    queueMetrics.totalFlushed += flushed;
+    queueMetrics.lastFlushSuccessAt = new Date();
+    queueMetrics.lastFlushError = null;
+    queueMetrics.consecutiveFailures = 0;
+    queueMetrics.lastFlushCount = flushed;
+    queueMetrics.lastFlushDurationMs = Date.now() - startedAt;
+
+    if (flushed > 0) {
+      logger.info(
+        {
+          event: 'contact.queue.flush-complete',
+          flushed,
+          queueSize: inMemoryContacts.size,
+          durationMs: queueMetrics.lastFlushDurationMs
+        },
+        'Persisted queued contacts to the database'
+      );
+    }
+
+    return { flushed, queueSize: inMemoryContacts.size };
+  } finally {
+    flushInProgress = false;
+  }
+}
+
+function getFallbackQueueSnapshot(limit = 50) {
+  const items = Array.from(inMemoryContacts.values())
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    .slice(0, limit)
+    .map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      email: entry.email,
+      phone: entry.phone,
+      eventType: entry.eventType,
+      packageId: entry.packageId,
+      queuedAt: serializeDate(entry.queuedAt || entry.createdAt),
+      queueReason: entry.queueReason || null
+    }));
+
+  return {
+    queueSize: inMemoryContacts.size,
+    items,
+    metrics: {
+      ...queueMetrics,
+      lastEnqueuedAt: serializeDate(queueMetrics.lastEnqueuedAt),
+      lastFlushAttemptAt: serializeDate(queueMetrics.lastFlushAttemptAt),
+      lastFlushSuccessAt: serializeDate(queueMetrics.lastFlushSuccessAt)
+    }
+  };
+}
+
+function getQueueMetrics() {
+  return {
+    ...queueMetrics,
+    lastEnqueuedAt: serializeDate(queueMetrics.lastEnqueuedAt),
+    lastFlushAttemptAt: serializeDate(queueMetrics.lastFlushAttemptAt),
+    lastFlushSuccessAt: serializeDate(queueMetrics.lastFlushSuccessAt)
   };
 }
 
@@ -314,7 +521,8 @@ function getContactServiceStatus() {
     databaseConnected: status.connected,
     storageStrategy: status.connected ? 'postgres' : 'in-memory',
     fallbackQueueSize: inMemoryContacts.size,
-    lastError: status.lastError
+    lastError: status.lastError,
+    queueMetrics: getQueueMetrics()
   };
 }
 
@@ -330,11 +538,24 @@ function ping() {
 
 function resetInMemoryStore() {
   inMemoryContacts.clear();
+  queueMetrics.totalEnqueued = 0;
+  queueMetrics.totalFlushed = 0;
+  queueMetrics.lastEnqueuedAt = null;
+  queueMetrics.lastFlushAttemptAt = null;
+  queueMetrics.lastFlushSuccessAt = null;
+  queueMetrics.lastFlushError = null;
+  queueMetrics.lastFlushCount = 0;
+  queueMetrics.consecutiveFailures = 0;
+  queueMetrics.lastFlushDurationMs = null;
+  flushInProgress = false;
 }
 
 module.exports = {
   saveContact,
   getContactServiceStatus,
   resetInMemoryStore,
-  ping
+  ping,
+  flushQueuedContacts,
+  getFallbackQueueSnapshot,
+  getQueueMetrics
 };

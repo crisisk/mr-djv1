@@ -15,24 +15,29 @@ const featureFlags = require('../lib/featureFlags');
 
 const router = express.Router();
 
-router.get('/', (_req, res) => {
-  const endpoints = {
-    health: '/health',
-    contact: '/contact',
-    callbackRequest: '/callback-request',
-    bookings: '/bookings',
-    packages: '/packages',
-    reviews: '/reviews',
-    integrations: {
-      rentGuy: '/integrations/rentguy/status',
-      sevensa: '/integrations/sevensa/status',
-      crmExport: '/integrations/crm/export'
-    },
-    metrics: '/metrics/queues',
-    personalization: {
-      keyword: '/personalization/keyword',
-      events: '/personalization/events'
-    }
+router.get('/', async (_req, res, next) => {
+  try {
+    const endpoints = {
+      health: '/health',
+      contact: '/contact',
+      callbackRequest: '/callback-request',
+      bookings: '/bookings',
+      packages: '/packages',
+      reviews: '/reviews',
+      integrations: {
+        rentGuy: '/integrations/rentguy/status',
+        sevensa: '/integrations/sevensa/status',
+        crmExport: '/integrations/crm/export'
+      },
+      metrics: {
+        queues: '/metrics/queues',
+        contactBacklog: '/metrics/contact-backlog'
+      },
+      personalization: {
+        keyword: '/personalization/keyword',
+        events: '/personalization/events'
+      }
+    };
 
     if (config.dashboard.enabled) {
       endpoints.dashboard = '/dashboard';

@@ -373,6 +373,8 @@ declare type SaveContactResult = {
     status: string;
     createdAt: Date;
     persisted: boolean;
+    queued: boolean;
+    storageStrategy: 'postgres' | 'in-memory';
     eventType: string | null;
     eventDate: Date | null;
     packageId: string | null;
@@ -392,7 +394,39 @@ declare function normalizeEventDate(value: string | Date | null | undefined): Da
 /**
  * Stores a contact form submission and synchronizes it with external systems.
  */
-declare function saveContact(payload: ContactPayload): Promise<SaveContactResult>;
+declare function saveContact(
+  payload: ContactPayload,
+  options?: { captchaToken?: string; remoteIp?: string }
+): Promise<SaveContactResult>;
+
+declare function flushQueuedContacts(options?: { force?: boolean }): Promise<{ flushed: number; queueSize: number }>;
+
+declare function getFallbackQueueSnapshot(limit?: number): {
+  queueSize: number;
+  items: Array<{
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    eventType: string | null;
+    packageId: string | null;
+    queuedAt: string | null;
+    queueReason: string | null;
+  }>;
+  metrics: ReturnType<typeof getQueueMetrics>;
+};
+
+declare function getQueueMetrics(): {
+  totalEnqueued: number;
+  totalFlushed: number;
+  lastEnqueuedAt: string | null;
+  lastFlushAttemptAt: string | null;
+  lastFlushSuccessAt: string | null;
+  lastFlushError: string | null;
+  lastFlushCount: number;
+  consecutiveFailures: number;
+  lastFlushDurationMs: number | null;
+};
 
 /**
  * Summarizes the contact service health and storage strategy.
