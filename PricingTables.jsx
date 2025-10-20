@@ -24,15 +24,19 @@ const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
       data-active-city={activeCitySlug || undefined}
     >
       {isFeatured && (
-        <div className="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
+        <div
+          className="absolute top-0 right-0 rounded-tr-lg rounded-bl-lg bg-secondary px-spacing-md py-spacing-xs text-font-size-small font-bold text-neutral-dark"
+          role="status"
+          aria-label="Populair pakket"
+        >
           Populair
         </div>
       )}
-      <div className={`pb-spacing-md mb-spacing-md ${headerClasses}`}>
+      <div className={`mb-spacing-lg pb-spacing-md md:mb-spacing-xl ${headerClasses}`}>
         <h3 className="text-font-size-h3 font-bold">{name}</h3>
         <p className="text-font-size-small opacity-80">{subtitle}</p>
       </div>
-      <div className="flex flex-col gap-spacing-xs mb-spacing-lg">
+      <div className="mb-spacing-xl flex flex-col gap-spacing-sm">
         <div className="flex items-baseline">
           <span className="text-font-size-h1 font-extrabold">{pricingDetails.amount}</span>
           <span className="text-font-size-body ml-spacing-xs">{pricingDetails.suffix}</span>
@@ -52,10 +56,18 @@ const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
           </div>
         )}
       </div>
-      <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
+      <ul className="mb-spacing-xl flex-grow space-y-spacing-sm md:space-y-spacing-md">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start text-font-size-body">
-            <svg className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              className={`mr-spacing-sm h-5 w-5 ${isFeatured ? 'text-secondary' : 'text-primary'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              focusable="false"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
             </svg>
             {feature}
@@ -103,18 +115,18 @@ const PricingTables = ({ citySlug, localSeo }) => {
   const activeCitySlug = resolvedLocalSeo?.slug;
 
   return (
-    <section className="py-spacing-3xl bg-neutral-gray-100">
-      <div className="container mx-auto px-spacing-md">
-        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">
+    <section className="bg-neutral-gray-100 py-spacing-3xl lg:py-spacing-4xl xl:py-spacing-5xl">
+      <div className="container mx-auto px-spacing-md sm:px-spacing-lg lg:px-spacing-xl xl:px-spacing-2xl">
+        <h2 className="mb-spacing-2xl text-center text-font-size-h2 font-extrabold text-neutral-dark md:mb-spacing-3xl">
           Onze Pakketten
         </h2>
-        <div className="flex flex-col items-center mb-spacing-2xl" role="group" aria-label="Kies facturering">
-          <div className="inline-flex rounded-full bg-neutral-light p-spacing-xs shadow">
+        <div className="mb-spacing-2xl flex flex-col items-center md:mb-spacing-3xl" role="group" aria-label="Kies facturering">
+          <div className="inline-flex rounded-full bg-neutral-light p-spacing-xs shadow md:p-spacing-sm">
             <button
               type="button"
               onClick={selectEvent}
               aria-pressed={isEvent}
-              className={`px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary ${
+              className={`rounded-full px-spacing-md py-spacing-sm text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-light sm:px-spacing-lg md:py-spacing-md ${
                 isEvent
                   ? 'bg-primary text-neutral-light'
                   : 'bg-transparent text-neutral-dark hover:bg-neutral-gray-200'
@@ -126,7 +138,7 @@ const PricingTables = ({ citySlug, localSeo }) => {
               type="button"
               onClick={selectMonthly}
               aria-pressed={isMonthly}
-              className={`px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary ${
+              className={`rounded-full px-spacing-md py-spacing-sm text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-light sm:px-spacing-lg md:py-spacing-md ${
                 isMonthly
                   ? 'bg-primary text-neutral-light'
                   : 'bg-transparent text-neutral-dark hover:bg-neutral-gray-200'

@@ -22,12 +22,13 @@
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .slide-container {
-            width: 1280px;
+            width: 100%;
+            max-width: 1280px;
             min-height: 720px;
             background: #FFFFFF;
-            padding: 30px 40px;
+            padding: 32px 48px;
             display: flex;
             flex-direction: column;
         }
@@ -47,8 +48,8 @@
         
         .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 24px;
             flex: 1;
         }
         
@@ -56,7 +57,7 @@
             background: white;
             border: 2px solid #E5E5E5;
             border-radius: 16px;
-            padding: 28px 24px;
+            padding: 32px 28px;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -141,11 +142,11 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
             border-radius: 12px;
             font-size: 24px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
@@ -210,14 +211,20 @@
         
         .cta-button {
             width: 100%;
-            padding: 12px 20px;
-            border-radius: 10px;
+            min-height: 48px;
+            padding: 14px 24px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
             text-align: center;
+        }
+
+        .cta-button:focus-visible {
+            outline: 3px solid #0088CC;
+            outline-offset: 3px;
         }
         
         .cta-primary {
@@ -225,7 +232,8 @@
             color: white;
         }
         
-        .cta-primary:hover {
+        .cta-primary:hover,
+        .cta-primary:focus-visible {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 174, 239, 0.4);
         }
@@ -235,8 +243,9 @@
             color: #1A2C4B;
             border-color: #E5E5E5;
         }
-        
-        .cta-secondary:hover {
+
+        .cta-secondary:hover,
+        .cta-secondary:focus-visible {
             border-color: #00AEEF;
             background: #F8FCFF;
         }
@@ -247,6 +256,60 @@
             font-size: 12px;
             color: #999;
             font-style: italic;
+        }
+        @media (max-width: 1200px) {
+            .slide-container {
+                padding: 28px 32px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                padding: 16px;
+            }
+
+            .slide-container {
+                min-height: auto;
+                padding: 24px 28px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 34px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+            }
+
+            .pricing-card {
+                padding: 28px 24px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            .slide-container {
+                padding: 20px 16px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .pricing-card {
+                padding: 24px 20px;
+            }
         }
     </style>
 </head>
@@ -259,7 +322,7 @@
         <div class="pricing-grid">
             <!-- Bronze Package -->
             <div class="pricing-card bronze">
-                <div class="tier-badge">🥉</div>
+                <div class="tier-badge" role="img" aria-label="Bronzen pakket badge">🥉</div>
                 <h3 class="tier-name">Brons Pakket</h3>
                 <p class="tier-description">Perfect voor kleinere feesten en intieme bijeenkomsten</p>
 
@@ -300,7 +363,7 @@
 
             <!-- Silver Package - Featured -->
             <div class="pricing-card silver">
-                <div class="tier-badge">🥈</div>
+                <div class="tier-badge" role="img" aria-label="Zilveren pakket badge">🥈</div>
                 <h3 class="tier-name">Zilver Pakket</h3>
                 <p class="tier-description">De complete ervaring voor onvergetelijke feesten</p>
 
@@ -349,7 +412,7 @@
 
             <!-- Gold Package -->
             <div class="pricing-card gold">
-                <div class="tier-badge">🥇</div>
+                <div class="tier-badge" role="img" aria-label="Gouden pakket badge">🥇</div>
                 <h3 class="tier-name">Goud Pakket</h3>
                 <p class="tier-description">De ultieme all-inclusive entertainment ervaring</p>
 
