@@ -62,17 +62,17 @@ const FALLBACK_PERSONALIZATION = {
     items: [
       {
         title: 'Volledige regie',
-        icon: '🎧',
+        icon: 'icon-headphones',
         description: 'Intake, draaiboek en live regie worden verzorgd door een vast projectteam.'
       },
       {
         title: 'Clubwaardige techniek',
-        icon: '🎛️',
+        icon: 'icon-dj-booth',
         description: 'Line-array geluid, LED walls en lichtdesign afgestemd op locatie & doelgroep.'
       },
       {
         title: 'Live beleving',
-        icon: '🎷',
+        icon: 'icon-sax',
         description: 'Combineer DJ met sax, vocalist of percussion voor maximale interactie.'
       }
     ],

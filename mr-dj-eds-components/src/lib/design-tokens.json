@@ -18,7 +18,7 @@
       "dark": {
         "value": "#1A2C4B",
         "type": "color",
-        "description": "Dark Blue for text and backgrounds"
+        "description": "Dark blue for text and backgrounds"
       },
       "light": {
         "value": "#FFFFFF",
@@ -26,40 +26,168 @@
         "description": "White"
       },
       "gray": {
-        "100": { "value": "#F3F4F6", "type": "color" },
-        "500": { "value": "#6B7280", "type": "color" }
+        "100": {
+          "value": "#F3F4F6",
+          "type": "color"
+        },
+        "500": {
+          "value": "#6B7280",
+          "type": "color"
+        }
       }
     },
     "semantic": {
-      "success": { "value": "#4CAF50", "type": "color" },
-      "error": { "value": "#FF4D4D", "type": "color" },
-      "warning": { "value": "#FFC107", "type": "color" }
-    }
-  },
-  "font": {
-    "family": {
-      "primary": {
-        "value": "Montserrat, sans-serif",
-        "type": "fontFamily"
+      "success": {
+        "value": "#4CAF50",
+        "type": "color"
+      },
+      "error": {
+        "value": "#FF4D4D",
+        "type": "color"
+      },
+      "warning": {
+        "value": "#FFC107",
+        "type": "color"
       }
-    },
-    "size": {
-      "h1": { "value": "48px", "type": "fontSize" },
-      "h2": { "value": "36px", "type": "fontSize" },
-      "h3": { "value": "24px", "type": "fontSize" },
-      "body": { "value": "16px", "type": "fontSize" },
-      "small": { "value": "14px", "type": "fontSize" }
     }
   },
   "spacing": {
-    "unit": { "value": "8px", "type": "spacing" },
-    "xs": { "value": "4px", "type": "spacing" },
-    "sm": { "value": "8px", "type": "spacing" },
-    "md": { "value": "16px", "type": "spacing" },
-    "lg": { "value": "24px", "type": "spacing" },
-    "xl": { "value": "32px", "type": "spacing" },
-    "2xl": { "value": "48px", "type": "spacing" },
-    "3xl": { "value": "64px", "type": "spacing" }
+    "unit": {
+      "value": "8px",
+      "type": "spacing"
+    },
+    "xs": {
+      "value": "4px",
+      "type": "spacing"
+    },
+    "sm": {
+      "value": "8px",
+      "type": "spacing"
+    },
+    "md": {
+      "value": "16px",
+      "type": "spacing"
+    },
+    "lg": {
+      "value": "24px",
+      "type": "spacing"
+    },
+    "xl": {
+      "value": "32px",
+      "type": "spacing"
+    },
+    "2xl": {
+      "value": "48px",
+      "type": "spacing"
+    },
+    "3xl": {
+      "value": "64px",
+      "type": "spacing"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": {
+        "value": "'Montserrat', sans-serif",
+        "type": "fontFamily"
+      },
+      "heading": {
+        "value": "'Montserrat', sans-serif",
+        "type": "fontFamily"
+      }
+    },
+    "fontWeight": {
+      "regular": {
+        "value": 400,
+        "type": "fontWeight"
+      },
+      "medium": {
+        "value": 500,
+        "type": "fontWeight"
+      },
+      "semibold": {
+        "value": 600,
+        "type": "fontWeight"
+      },
+      "bold": {
+        "value": 700,
+        "type": "fontWeight"
+      },
+      "extrabold": {
+        "value": 800,
+        "type": "fontWeight"
+      },
+      "black": {
+        "value": 900,
+        "type": "fontWeight"
+      }
+    },
+    "lineHeight": {
+      "tight": {
+        "value": "110%",
+        "type": "lineHeight"
+      },
+      "snug": {
+        "value": "120%",
+        "type": "lineHeight"
+      },
+      "normal": {
+        "value": "150%",
+        "type": "lineHeight"
+      },
+      "relaxed": {
+        "value": "160%",
+        "type": "lineHeight"
+      }
+    },
+    "scale": {
+      "h1": {
+        "fontSize": "48px",
+        "fontWeight": 900,
+        "lineHeight": "110%"
+      },
+      "h2": {
+        "fontSize": "36px",
+        "fontWeight": 800,
+        "lineHeight": "120%"
+      },
+      "h3": {
+        "fontSize": "28px",
+        "fontWeight": 800,
+        "lineHeight": "120%"
+      },
+      "h4": {
+        "fontSize": "20px",
+        "fontWeight": 700,
+        "lineHeight": "150%"
+      },
+      "h5": {
+        "fontSize": "16px",
+        "fontWeight": 700,
+        "lineHeight": "150%"
+      },
+      "bodyLarge": {
+        "fontSize": "18px",
+        "fontWeight": 400,
+        "lineHeight": "160%"
+      },
+      "body": {
+        "fontSize": "16px",
+        "fontWeight": 400,
+        "lineHeight": "160%"
+      },
+      "small": {
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "lineHeight": "150%"
+      },
+      "caption": {
+        "fontSize": "12px",
+        "fontWeight": 600,
+        "lineHeight": "140%",
+        "letterSpacing": "0.02em",
+        "textTransform": "uppercase"
+      }
+    }
   }
 }
-

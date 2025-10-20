@@ -1,0 +1,22 @@
+[
+  {
+    "key": "personalization",
+    "defaultState": true,
+    "description": "Enable personalization keyword APIs and CRO event ingestion endpoints."
+  },
+  {
+    "key": "rentguy-integration",
+    "defaultState": true,
+    "description": "Toggle RentGuy CRM integration, queue monitoring and webhook handling."
+  },
+  {
+    "key": "sevensa-integration",
+    "defaultState": true,
+    "description": "Control Sevensa lead automation submission and retry processing."
+  },
+  {
+    "key": "telemetry",
+    "defaultState": true,
+    "description": "Enable OpenTelemetry instrumentation and OTLP exporters."
+  }
+]

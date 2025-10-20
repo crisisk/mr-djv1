@@ -5,10 +5,12 @@ const { startTelemetry, shutdownTelemetry } = require('./lib/telemetry');
 const { migrateToLatest } = require('./lib/migrations');
 const { closeAllQueues } = require('./lib/durableQueue');
 const { closeAllRedisConnections } = require('./lib/redis');
+const { startContactQueueWorker, stopContactQueueWorker } = require('./workers/contactQueueWorker');
 
 async function bootstrap() {
   await startTelemetry();
   await migrateToLatest();
+  startContactQueueWorker();
 
   return new Promise((resolve) => {
     const httpServer = app.listen(config.port, config.host, () => {
@@ -27,6 +29,9 @@ async function shutdown(server) {
         resolve();
       });
     }),
+    (async () => {
+      stopContactQueueWorker();
+    })(),
     closeAllQueues(),
     closeAllRedisConnections(),
     shutdownTelemetry()
