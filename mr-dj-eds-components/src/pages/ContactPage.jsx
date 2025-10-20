@@ -4,6 +4,7 @@ import Header from '../components/Molecules/Header.jsx';
 import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
+import BookingWidget from '../components/Organisms/BookingWidget.jsx';
 
 const ContactPage = () => {
   return (
@@ -117,6 +118,21 @@ const ContactPage = () => {
               </p>
             </div>
             <ContactForm variant="A" />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-4xl font-bold text-[#1A2C4B] mb-4">Plan direct een kennismaking</h2>
+              <p className="text-gray-700 text-lg">
+                Gebruik onze realtime boekingskalender om een intake of videocall te plannen. Je ziet meteen
+                de actuele beschikbaarheid van Mister DJ.
+              </p>
+            </div>
+            <BookingWidget />
           </div>
         </div>
       </section>
