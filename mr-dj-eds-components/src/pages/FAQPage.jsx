@@ -139,6 +139,30 @@ const FAQPage = () => {
     }
   ];
 
+  const metaTitle = 'Veelgestelde Vragen | FAQ | Mr. DJ';
+  const metaDescription =
+    'Veelgestelde vragen over DJ huren, prijzen, pakketten en praktische zaken. Vind snel antwoord op je vraag!';
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'FAQ', url: '/faq' }
+  ];
+  const faqSchemaData = generateFAQSchema(
+    faqs.flatMap(category =>
+      category.questions.map(faq => ({
+        question: faq.q,
+        answer: faq.a
+      }))
+    )
+  );
+  const breadcrumbSchemaData = generateBreadcrumbSchema(breadcrumbs);
+  const webPageSchemaData = generateWebPageSchema({
+    title: metaTitle,
+    description: metaDescription,
+    url: '/faq',
+    breadcrumbs
+  });
+  const structuredData = [webPageSchemaData, breadcrumbSchemaData, faqSchemaData];
+
   return (
     <div className="FAQPage">
       <Helmet>
