@@ -6,7 +6,9 @@ const packagesRouter = require('./packages');
 const contactRouter = require('./contact');
 const callbackRequestsRouter = require('./callbackRequests');
 const bookingsRouter = require('./bookings');
+const bookingStepsRouter = require('./bookingSteps');
 const reviewsRouter = require('./reviews');
+const feedbackRouter = require('./feedback');
 const integrationsRouter = require('./integrations');
 const personalizationRouter = require('./personalization');
 const dashboardRouter = require('./dashboard');
@@ -24,15 +26,13 @@ router.get('/', async (_req, res, next) => {
       bookings: '/bookings',
       packages: '/packages',
       reviews: '/reviews',
+      feedback: '/feedback',
       integrations: {
         rentGuy: '/integrations/rentguy/status',
         sevensa: '/integrations/sevensa/status',
         crmExport: '/integrations/crm/export'
       },
-      metrics: {
-        queues: '/metrics/queues',
-        contactBacklog: '/metrics/contact-backlog'
-      },
+      metrics: '/metrics/queues',
       personalization: {
         keyword: '/personalization/keyword',
         events: '/personalization/events'
@@ -61,7 +61,9 @@ router.use('/packages', packagesRouter);
 router.use('/contact', rateLimiter, contactRouter);
 router.use('/callback-request', rateLimiter, callbackRequestsRouter);
 router.use('/bookings', rateLimiter, bookingsRouter);
+router.use('/booking-steps', rateLimiter, bookingStepsRouter);
 router.use('/reviews', reviewsRouter);
+router.use('/feedback', rateLimiter, feedbackRouter);
 router.use('/integrations', integrationsRouter);
 router.use('/personalization', featureFlags.guard('personalization'), personalizationRouter);
 router.use('/metrics', metricsRouter);

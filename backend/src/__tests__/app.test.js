@@ -264,14 +264,14 @@ describe('Mister DJ API', () => {
       status: 'pending',
       eventType: 'Bruiloft',
       requestedPackage: 'gold',
-      queued: true,
-      storageStrategy: 'in-memory'
+      processingStatus: 'queued'
     });
     expect(response.body.contactId).toBeDefined();
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
     expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
     expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.partnerIncidents).toEqual(expect.arrayContaining(['rentguy', 'sevensa']));
   });
 
   it('exposes the contact backlog snapshot for administrators', async () => {

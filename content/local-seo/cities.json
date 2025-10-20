@@ -2,214 +2,1223 @@
   {
     "slug": "dj-eindhoven",
     "city": "Eindhoven",
-    "intro": "De lichtstad waar Mister DJ jaarlijks meer dan 120 events draait. Van DOMUSDELA tot Het Ketelhuis: wij kennen de akoestiek en logistiek van elke zaal.",
+    "intro": {
+      "translations": {
+        "nl": "De lichtstad waar Mister DJ jaarlijks meer dan 120 events draait. Van DOMUSDELA tot Het Ketelhuis: wij kennen de akoestiek en logistiek van elke zaal.",
+        "en": "De lichtstad waar Mister DJ jaarlijks meer dan 120 events draait. Van DOMUSDELA tot Het Ketelhuis: wij kennen de akoestiek en logistiek van elke zaal."
+      }
+    },
     "cases": [
-      { "title": "Bruiloft DOMUSDELA", "result": "96% dansvloerbezetting", "venue": "DOMUSDELA" },
-      { "title": "Philips Health corporate", "result": "NPS +48", "venue": "High Tech Campus" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Bruiloft DOMUSDELA",
+            "en": "Bruiloft DOMUSDELA"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "96% dansvloerbezetting",
+            "en": "96% dansvloerbezetting"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "DOMUSDELA",
+            "en": "DOMUSDELA"
+          }
+        }
+      },
+      {
+        "title": {
+          "translations": {
+            "nl": "Philips Health corporate",
+            "en": "Philips Health corporate"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "NPS +48",
+            "en": "NPS +48"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "High Tech Campus",
+            "en": "High Tech Campus"
+          }
+        }
+      }
     ],
-    "venues": ["DOMUSDELA", "Het Ketelhuis", "Evoluon", "Kazerne"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "DOMUSDELA",
+          "Het Ketelhuis",
+          "Evoluon",
+          "Kazerne"
+        ],
+        "en": [
+          "DOMUSDELA",
+          "Het Ketelhuis",
+          "Evoluon",
+          "Kazerne"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Werken jullie samen met lokale leveranciers?", "answer": "Ja, we hebben partners voor styling, photobooths en live-acts in Eindhoven." },
-      { "question": "Hoe zit het met geluidslimieten?", "answer": "We stemmen vooraf af met de locatie en nemen een dB-meter mee." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Werken jullie samen met lokale leveranciers?",
+            "en": "Werken jullie samen met lokale leveranciers?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, we hebben partners voor styling, photobooths en live-acts in Eindhoven.",
+            "en": "Ja, we hebben partners voor styling, photobooths en live-acts in Eindhoven."
+          }
+        }
+      },
+      {
+        "question": {
+          "translations": {
+            "nl": "Hoe zit het met geluidslimieten?",
+            "en": "Hoe zit het met geluidslimieten?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "We stemmen vooraf af met de locatie en nemen een dB-meter mee.",
+            "en": "We stemmen vooraf af met de locatie en nemen een dB-meter mee."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-tilburg",
     "city": "Tilburg",
-    "intro": "Van Spoorzone tot Piushaven: Tilburg vraagt om een mix van urban en Brabantse gezelligheid. Mister DJ faciliteert beide.",
+    "intro": {
+      "translations": {
+        "nl": "Van Spoorzone tot Piushaven: Tilburg vraagt om een mix van urban en Brabantse gezelligheid. Mister DJ faciliteert beide.",
+        "en": "Van Spoorzone tot Piushaven: Tilburg vraagt om een mix van urban en Brabantse gezelligheid. Mister DJ faciliteert beide."
+      }
+    },
     "cases": [
-      { "title": "Spoorzone bedrijfsfeest", "result": "500 gasten op de dansvloer", "venue": "Spoorzone" },
-      { "title": "Intieme bruiloft Piushaven", "result": "Playlist op maat + sax", "venue": "Piushaven" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Spoorzone bedrijfsfeest",
+            "en": "Spoorzone bedrijfsfeest"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "500 gasten op de dansvloer",
+            "en": "500 gasten op de dansvloer"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Spoorzone",
+            "en": "Spoorzone"
+          }
+        }
+      },
+      {
+        "title": {
+          "translations": {
+            "nl": "Intieme bruiloft Piushaven",
+            "en": "Intieme bruiloft Piushaven"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Playlist op maat + sax",
+            "en": "Playlist op maat + sax"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Piushaven",
+            "en": "Piushaven"
+          }
+        }
+      }
     ],
-    "venues": ["Spoorzone", "Koepelhal", "Piushaven", "Poppodium 013"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Spoorzone",
+          "Koepelhal",
+          "Piushaven",
+          "Poppodium 013"
+        ],
+        "en": [
+          "Spoorzone",
+          "Koepelhal",
+          "Piushaven",
+          "Poppodium 013"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie live-muziek toevoegen?", "answer": "Ja, sax, vocalist of percussionist kunnen in Tilburg eenvoudig worden bijgeboekt." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie live-muziek toevoegen?",
+            "en": "Kunnen jullie live-muziek toevoegen?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, sax, vocalist of percussionist kunnen in Tilburg eenvoudig worden bijgeboekt.",
+            "en": "Ja, sax, vocalist of percussionist kunnen in Tilburg eenvoudig worden bijgeboekt."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-den-bosch",
     "city": "'s-Hertogenbosch",
-    "intro": "Bourgondisch, historisch en vaak monumentaal. Onze crew kent de logistieke routes van de binnenstad en kelders van de Korte Putstraat.",
+    "intro": {
+      "translations": {
+        "nl": "Bourgondisch, historisch en vaak monumentaal. Onze crew kent de logistieke routes van de binnenstad en kelders van de Korte Putstraat.",
+        "en": "Bourgondisch, historisch en vaak monumentaal. Onze crew kent de logistieke routes van de binnenstad en kelders van de Korte Putstraat."
+      }
+    },
     "cases": [
-      { "title": "Kasteel Maurick bruiloft", "result": "Live sax + vocalist", "venue": "Kasteel Maurick" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Kasteel Maurick bruiloft",
+            "en": "Kasteel Maurick bruiloft"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Live sax + vocalist",
+            "en": "Live sax + vocalist"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Kasteel Maurick",
+            "en": "Kasteel Maurick"
+          }
+        }
+      }
     ],
-    "venues": ["Kasteel Maurick", "Orangerie", "Theater aan de Parade"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Kasteel Maurick",
+          "Orangerie",
+          "Theater aan de Parade"
+        ],
+        "en": [
+          "Kasteel Maurick",
+          "Orangerie",
+          "Theater aan de Parade"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Hoe regelen jullie parkeer- en laadmogelijkheden?", "answer": "We plannen een site-visit en reserveren laadplekken vooraf." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Hoe regelen jullie parkeer- en laadmogelijkheden?",
+            "en": "Hoe regelen jullie parkeer- en laadmogelijkheden?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "We plannen een site-visit en reserveren laadplekken vooraf.",
+            "en": "We plannen een site-visit en reserveren laadplekken vooraf."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-breda",
     "city": "Breda",
-    "intro": "Van Chassé Theater tot Landgoed Wolfslaar: Breda vraagt om een premium aanpak met oog voor hospitality.",
+    "intro": {
+      "translations": {
+        "nl": "Van Chassé Theater tot Landgoed Wolfslaar: Breda vraagt om een premium aanpak met oog voor hospitality.",
+        "en": "Van Chassé Theater tot Landgoed Wolfslaar: Breda vraagt om een premium aanpak met oog voor hospitality."
+      }
+    },
     "cases": [
-      { "title": "Landgoed Wolfslaar bruiloft", "result": "Sparkular + band", "venue": "Landgoed Wolfslaar" },
-      { "title": "Corporate gala Chassé", "result": "Stage design + MC", "venue": "Chassé Theater" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Landgoed Wolfslaar bruiloft",
+            "en": "Landgoed Wolfslaar bruiloft"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Sparkular + band",
+            "en": "Sparkular + band"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Landgoed Wolfslaar",
+            "en": "Landgoed Wolfslaar"
+          }
+        }
+      },
+      {
+        "title": {
+          "translations": {
+            "nl": "Corporate gala Chassé",
+            "en": "Corporate gala Chassé"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Stage design + MC",
+            "en": "Stage design + MC"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Chassé Theater",
+            "en": "Chassé Theater"
+          }
+        }
+      }
     ],
-    "venues": ["Landgoed Wolfslaar", "Chassé Theater", "Grote Kerk"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Landgoed Wolfslaar",
+          "Chassé Theater",
+          "Grote Kerk"
+        ],
+        "en": [
+          "Landgoed Wolfslaar",
+          "Chassé Theater",
+          "Grote Kerk"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie branding toevoegen?", "answer": "Ja, denk aan LED-booth, gobos en geprinte backdrops." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie branding toevoegen?",
+            "en": "Kunnen jullie branding toevoegen?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, denk aan LED-booth, gobos en geprinte backdrops.",
+            "en": "Ja, denk aan LED-booth, gobos en geprinte backdrops."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-venlo",
     "city": "Venlo",
-    "intro": "Cross-border events met Duitse gasten vragen om een tweetalige host en brede muziekselectie.",
+    "intro": {
+      "translations": {
+        "nl": "Cross-border events met Duitse gasten vragen om een tweetalige host en brede muziekselectie.",
+        "en": "Cross-border events met Duitse gasten vragen om een tweetalige host en brede muziekselectie."
+      }
+    },
     "cases": [
-      { "title": "Seacon Logistics jubileum", "result": "Tweetalige MC + aftermovie", "venue": "Seacon HQ" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Seacon Logistics jubileum",
+            "en": "Seacon Logistics jubileum"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Tweetalige MC + aftermovie",
+            "en": "Tweetalige MC + aftermovie"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Seacon HQ",
+            "en": "Seacon HQ"
+          }
+        }
+      }
     ],
-    "venues": ["Nedinsco", "De Maaspoort", "Seacon HQ"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Nedinsco",
+          "De Maaspoort",
+          "Seacon HQ"
+        ],
+        "en": [
+          "Nedinsco",
+          "De Maaspoort",
+          "Seacon HQ"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie Duits of Engels presenteren?", "answer": "Ja, meerdere hosts spreken vloeiend Engels en Duits." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie Duits of Engels presenteren?",
+            "en": "Kunnen jullie Duits of Engels presenteren?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, meerdere hosts spreken vloeiend Engels en Duits.",
+            "en": "Ja, meerdere hosts spreken vloeiend Engels en Duits."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-maastricht",
     "city": "Maastricht",
-    "intro": "Historische locaties zoals Château Neercanne of Rebelle vragen om nauwkeurige logistiek en akoestiekplanning.",
+    "intro": {
+      "translations": {
+        "nl": "Historische locaties zoals Château Neercanne of Rebelle vragen om nauwkeurige logistiek en akoestiekplanning.",
+        "en": "Historische locaties zoals Château Neercanne of Rebelle vragen om nauwkeurige logistiek en akoestiekplanning."
+      }
+    },
     "cases": [
-      { "title": "Château Neercanne huwelijk", "result": "Ceremonie + sax + DJ", "venue": "Château Neercanne" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Château Neercanne huwelijk",
+            "en": "Château Neercanne huwelijk"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Ceremonie + sax + DJ",
+            "en": "Ceremonie + sax + DJ"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Château Neercanne",
+            "en": "Château Neercanne"
+          }
+        }
+      }
     ],
-    "venues": ["Château Neercanne", "Rebelle", "MECC"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Château Neercanne",
+          "Rebelle",
+          "MECC"
+        ],
+        "en": [
+          "Château Neercanne",
+          "Rebelle",
+          "MECC"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Hoe gaan jullie om met monumentale locaties?", "answer": "We gebruiken beschermende vloerplaten en discrete kabelroutes." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Hoe gaan jullie om met monumentale locaties?",
+            "en": "Hoe gaan jullie om met monumentale locaties?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "We gebruiken beschermende vloerplaten en discrete kabelroutes.",
+            "en": "We gebruiken beschermende vloerplaten en discrete kabelroutes."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-rotterdam",
     "city": "Rotterdam",
-    "intro": "Skyline events met internationale gasten vragen om clubwaardige lichtsets en snelle change-overs.",
+    "intro": {
+      "translations": {
+        "nl": "Skyline events met internationale gasten vragen om clubwaardige lichtsets en snelle change-overs.",
+        "en": "Skyline events met internationale gasten vragen om clubwaardige lichtsets en snelle change-overs."
+      }
+    },
     "cases": [
-      { "title": "De Rotterdam corporate", "result": "CO₂ jets + live visuals", "venue": "De Rotterdam" },
-      { "title": "Bruiloft Onderzeebootloods", "result": "Multiculturele set", "venue": "Onderzeebootloods" }
+      {
+        "title": {
+          "translations": {
+            "nl": "De Rotterdam corporate",
+            "en": "De Rotterdam corporate"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "CO₂ jets + live visuals",
+            "en": "CO₂ jets + live visuals"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "De Rotterdam",
+            "en": "De Rotterdam"
+          }
+        }
+      },
+      {
+        "title": {
+          "translations": {
+            "nl": "Bruiloft Onderzeebootloods",
+            "en": "Bruiloft Onderzeebootloods"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Multiculturele set",
+            "en": "Multiculturele set"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Onderzeebootloods",
+            "en": "Onderzeebootloods"
+          }
+        }
+      }
     ],
-    "venues": ["De Rotterdam", "Onderzeebootloods", "LP2"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "De Rotterdam",
+          "Onderzeebootloods",
+          "LP2"
+        ],
+        "en": [
+          "De Rotterdam",
+          "Onderzeebootloods",
+          "LP2"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie samenwerken met externe AV-partners?", "answer": "Ja, we koppelen naadloos met bestaande AV-leveranciers." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie samenwerken met externe AV-partners?",
+            "en": "Kunnen jullie samenwerken met externe AV-partners?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, we koppelen naadloos met bestaande AV-leveranciers.",
+            "en": "Ja, we koppelen naadloos met bestaande AV-leveranciers."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-amsterdam",
     "city": "Amsterdam",
-    "intro": "Van industriële Westerunie tot boutique hotel The Hoxton: Amsterdam vraagt flexibiliteit en internationale playlists.",
+    "intro": {
+      "translations": {
+        "nl": "Van industriële Westerunie tot boutique hotel The Hoxton: Amsterdam vraagt flexibiliteit en internationale playlists.",
+        "en": "Van industriële Westerunie tot boutique hotel The Hoxton: Amsterdam vraagt flexibiliteit en internationale playlists."
+      }
+    },
     "cases": [
-      { "title": "Booking.com global meetup", "result": "Hybride streaming + MC", "venue": "Westerunie" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Booking.com global meetup",
+            "en": "Booking.com global meetup"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Hybride streaming + MC",
+            "en": "Hybride streaming + MC"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Westerunie",
+            "en": "Westerunie"
+          }
+        }
+      }
     ],
-    "venues": ["Westerunie", "Hotel Arena", "The Hoxton"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Westerunie",
+          "Hotel Arena",
+          "The Hoxton"
+        ],
+        "en": [
+          "Westerunie",
+          "Hotel Arena",
+          "The Hoxton"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie playlists vooraf delen?", "answer": "Ja, via onze online muziekplanner delen we previews met stakeholders." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie playlists vooraf delen?",
+            "en": "Kunnen jullie playlists vooraf delen?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, via onze online muziekplanner delen we previews met stakeholders.",
+            "en": "Ja, via onze online muziekplanner delen we previews met stakeholders."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-utrecht",
     "city": "Utrecht",
-    "intro": "Centraal gelegen events waar bereikbaarheid en tijdsloten cruciaal zijn. Wij plannen buffer in voor laad- en lostijd.",
+    "intro": {
+      "translations": {
+        "nl": "Centraal gelegen events waar bereikbaarheid en tijdsloten cruciaal zijn. Wij plannen buffer in voor laad- en lostijd.",
+        "en": "Centraal gelegen events waar bereikbaarheid en tijdsloten cruciaal zijn. Wij plannen buffer in voor laad- en lostijd."
+      }
+    },
     "cases": [
-      { "title": "TivoliVredenburg congres", "result": "Panel + feest in één dag", "venue": "TivoliVredenburg" }
+      {
+        "title": {
+          "translations": {
+            "nl": "TivoliVredenburg congres",
+            "en": "TivoliVredenburg congres"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Panel + feest in één dag",
+            "en": "Panel + feest in één dag"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "TivoliVredenburg",
+            "en": "TivoliVredenburg"
+          }
+        }
+      }
     ],
-    "venues": ["TivoliVredenburg", "Kasteel de Haar", "Werkspoorkathedraal"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "TivoliVredenburg",
+          "Kasteel de Haar",
+          "Werkspoorkathedraal"
+        ],
+        "en": [
+          "TivoliVredenburg",
+          "Kasteel de Haar",
+          "Werkspoorkathedraal"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie dagdelen combineren?", "answer": "Ja, ceremonie, borrel en feest worden door één team verzorgd." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie dagdelen combineren?",
+            "en": "Kunnen jullie dagdelen combineren?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, ceremonie, borrel en feest worden door één team verzorgd.",
+            "en": "Ja, ceremonie, borrel en feest worden door één team verzorgd."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-nijmegen",
     "city": "Nijmegen",
-    "intro": "Studentenstad gecombineerd met historische locaties: wij mixen nostalgie met moderne hits.",
+    "intro": {
+      "translations": {
+        "nl": "Studentenstad gecombineerd met historische locaties: wij mixen nostalgie met moderne hits.",
+        "en": "Studentenstad gecombineerd met historische locaties: wij mixen nostalgie met moderne hits."
+      }
+    },
     "cases": [
-      { "title": "Radboud alumni event", "result": "Spotify requests + live mashups", "venue": "Radboud Universiteit" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Radboud alumni event",
+            "en": "Radboud alumni event"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Spotify requests + live mashups",
+            "en": "Spotify requests + live mashups"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Radboud Universiteit",
+            "en": "Radboud Universiteit"
+          }
+        }
+      }
     ],
-    "venues": ["Concertgebouw De Vereeniging", "Landgoed Brakkesteyn"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Concertgebouw De Vereeniging",
+          "Landgoed Brakkesteyn"
+        ],
+        "en": [
+          "Concertgebouw De Vereeniging",
+          "Landgoed Brakkesteyn"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen gasten verzoekjes indienen?", "answer": "Ja, zowel vooraf als via QR-codes tijdens het event." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen gasten verzoekjes indienen?",
+            "en": "Kunnen gasten verzoekjes indienen?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, zowel vooraf als via QR-codes tijdens het event.",
+            "en": "Ja, zowel vooraf als via QR-codes tijdens het event."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-weert",
     "city": "Weert",
-    "intro": "Limburgse gastvrijheid met veel buitenlocaties. We nemen altijd back-up tent en stroomvoorziening mee.",
+    "intro": {
+      "translations": {
+        "nl": "Limburgse gastvrijheid met veel buitenlocaties. We nemen altijd back-up tent en stroomvoorziening mee.",
+        "en": "Limburgse gastvrijheid met veel buitenlocaties. We nemen altijd back-up tent en stroomvoorziening mee."
+      }
+    },
     "cases": [
-      { "title": "Tuinbruiloft Hushoven", "result": "Silent disco nacht", "venue": "Privé locatie" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Tuinbruiloft Hushoven",
+            "en": "Tuinbruiloft Hushoven"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Silent disco nacht",
+            "en": "Silent disco nacht"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Privé locatie",
+            "en": "Privé locatie"
+          }
+        }
+      }
     ],
-    "venues": ["Kasteelhoeve de Grote Hegge", "Brasserie-Hotel Antje van de Statie"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Kasteelhoeve de Grote Hegge",
+          "Brasserie-Hotel Antje van de Statie"
+        ],
+        "en": [
+          "Kasteelhoeve de Grote Hegge",
+          "Brasserie-Hotel Antje van de Statie"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie buiten draaien?", "answer": "Ja, met weerbestendige set-ups en stille aggregaten." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie buiten draaien?",
+            "en": "Kunnen jullie buiten draaien?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, met weerbestendige set-ups en stille aggregaten.",
+            "en": "Ja, met weerbestendige set-ups en stille aggregaten."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-maastricht",
     "city": "Maastricht",
-    "intro": "Van het Vrijthof tot Château Neercanne: Maastricht vraagt om meertalige hosts en elegante audio styling.",
+    "intro": {
+      "translations": {
+        "nl": "Van het Vrijthof tot Château Neercanne: Maastricht vraagt om meertalige hosts en elegante audio styling.",
+        "en": "Van het Vrijthof tot Château Neercanne: Maastricht vraagt om meertalige hosts en elegante audio styling."
+      }
+    },
     "cases": [
-      { "title": "Château Neercanne gala", "result": "String intro + club finale", "venue": "Château Neercanne" },
-      { "title": "TEFAF afterparty", "result": "Internationaal guest mix", "venue": "MECC" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Château Neercanne gala",
+            "en": "Château Neercanne gala"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "String intro + club finale",
+            "en": "String intro + club finale"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Château Neercanne",
+            "en": "Château Neercanne"
+          }
+        }
+      },
+      {
+        "title": {
+          "translations": {
+            "nl": "TEFAF afterparty",
+            "en": "TEFAF afterparty"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Internationaal guest mix",
+            "en": "Internationaal guest mix"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "MECC",
+            "en": "MECC"
+          }
+        }
+      }
     ],
-    "venues": ["Château Neercanne", "MECC", "Sint Janskerk"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Château Neercanne",
+          "MECC",
+          "Sint Janskerk"
+        ],
+        "en": [
+          "Château Neercanne",
+          "MECC",
+          "Sint Janskerk"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Ondersteunen jullie meertalige ceremonies?", "answer": "Ja, ons MC-team spreekt Nederlands, Engels en Duits." },
-      { "question": "Hoe gaan jullie om met monumentale locaties?", "answer": "We gebruiken discrete line arrays en gedempte flightcases om schade te voorkomen." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Ondersteunen jullie meertalige ceremonies?",
+            "en": "Ondersteunen jullie meertalige ceremonies?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, ons MC-team spreekt Nederlands, Engels en Duits.",
+            "en": "Ja, ons MC-team spreekt Nederlands, Engels en Duits."
+          }
+        }
+      },
+      {
+        "question": {
+          "translations": {
+            "nl": "Hoe gaan jullie om met monumentale locaties?",
+            "en": "Hoe gaan jullie om met monumentale locaties?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "We gebruiken discrete line arrays en gedempte flightcases om schade te voorkomen.",
+            "en": "We gebruiken discrete line arrays en gedempte flightcases om schade te voorkomen."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-venlo",
     "city": "Venlo",
-    "intro": "Logistieke hotspot met veel internationale bedrijven: we combineren corporate formats met Limburgse sfeer.",
+    "intro": {
+      "translations": {
+        "nl": "Logistieke hotspot met veel internationale bedrijven: we combineren corporate formats met Limburgse sfeer.",
+        "en": "Logistieke hotspot met veel internationale bedrijven: we combineren corporate formats met Limburgse sfeer."
+      }
+    },
     "cases": [
-      { "title": "Floriade closing party", "result": "Duitse en Nederlandse sets", "venue": "Floriade terrein" },
-      { "title": "Cimpress corporate", "result": "Realtime requests app", "venue": "Brightlands Campus" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Floriade closing party",
+            "en": "Floriade closing party"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Duitse en Nederlandse sets",
+            "en": "Duitse en Nederlandse sets"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Floriade terrein",
+            "en": "Floriade terrein"
+          }
+        }
+      },
+      {
+        "title": {
+          "translations": {
+            "nl": "Cimpress corporate",
+            "en": "Cimpress corporate"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Realtime requests app",
+            "en": "Realtime requests app"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Brightlands Campus",
+            "en": "Brightlands Campus"
+          }
+        }
+      }
     ],
-    "venues": ["Brightlands Campus", "Domani Venlo", "Parkhotel Horst"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Brightlands Campus",
+          "Domani Venlo",
+          "Parkhotel Horst"
+        ],
+        "en": [
+          "Brightlands Campus",
+          "Domani Venlo",
+          "Parkhotel Horst"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie vroeg opbouwen?", "answer": "Ja, onze crew plant nachtelijke opbouw zodat logistiek niet hindert." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie vroeg opbouwen?",
+            "en": "Kunnen jullie vroeg opbouwen?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, onze crew plant nachtelijke opbouw zodat logistiek niet hindert.",
+            "en": "Ja, onze crew plant nachtelijke opbouw zodat logistiek niet hindert."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-roermond",
     "city": "Roermond",
-    "intro": "Designer Outlet, Kasteelhoeve en waterlocaties vragen om flexibele timecodes en outdoor audio.",
+    "intro": {
+      "translations": {
+        "nl": "Designer Outlet, Kasteelhoeve en waterlocaties vragen om flexibele timecodes en outdoor audio.",
+        "en": "Designer Outlet, Kasteelhoeve en waterlocaties vragen om flexibele timecodes en outdoor audio."
+      }
+    },
     "cases": [
-      { "title": "Designer Outlet summer nights", "result": "+22% verblijftijd", "venue": "Designer Outlet Roermond" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Designer Outlet summer nights",
+            "en": "Designer Outlet summer nights"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "+22% verblijftijd",
+            "en": "+22% verblijftijd"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Designer Outlet Roermond",
+            "en": "Designer Outlet Roermond"
+          }
+        }
+      }
     ],
-    "venues": ["Designer Outlet Roermond", "Kasteelhoeve de Grote Hegge", "ECI Cultuurfabriek"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Designer Outlet Roermond",
+          "Kasteelhoeve de Grote Hegge",
+          "ECI Cultuurfabriek"
+        ],
+        "en": [
+          "Designer Outlet Roermond",
+          "Kasteelhoeve de Grote Hegge",
+          "ECI Cultuurfabriek"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Leveren jullie branding?", "answer": "Ja, wij verzorgen branded DJ-booths en LED visuals voor outlet events." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Leveren jullie branding?",
+            "en": "Leveren jullie branding?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, wij verzorgen branded DJ-booths en LED visuals voor outlet events.",
+            "en": "Ja, wij verzorgen branded DJ-booths en LED visuals voor outlet events."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-hilversum",
     "city": "Hilversum",
-    "intro": "Mediastad events vragen om snelle cues en broadcast-kwaliteit audio. Mister DJ werkt vaak samen met TV-crews.",
+    "intro": {
+      "translations": {
+        "nl": "Mediastad events vragen om snelle cues en broadcast-kwaliteit audio. Mister DJ werkt vaak samen met TV-crews.",
+        "en": "Mediastad events vragen om snelle cues en broadcast-kwaliteit audio. Mister DJ werkt vaak samen met TV-crews."
+      }
+    },
     "cases": [
-      { "title": "AVROTROS media borrel", "result": "Live-stream mix + DJ", "venue": "Mediapark" }
+      {
+        "title": {
+          "translations": {
+            "nl": "AVROTROS media borrel",
+            "en": "AVROTROS media borrel"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Live-stream mix + DJ",
+            "en": "Live-stream mix + DJ"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Mediapark",
+            "en": "Mediapark"
+          }
+        }
+      }
     ],
-    "venues": ["Mediapark", "Gooiland", "Spant!"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Mediapark",
+          "Gooiland",
+          "Spant!"
+        ],
+        "en": [
+          "Mediapark",
+          "Gooiland",
+          "Spant!"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie timecode leveren?", "answer": "Ja, wij leveren LTC/MTC voor broadcast syncing." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie timecode leveren?",
+            "en": "Kunnen jullie timecode leveren?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, wij leveren LTC/MTC voor broadcast syncing.",
+            "en": "Ja, wij leveren LTC/MTC voor broadcast syncing."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-zwolle",
     "city": "Zwolle",
-    "intro": "Hanzestad events combineren historische zalen met moderne bedrijven. We stemmen licht en geluid af op de Sassenpoort en IJsselhallen.",
+    "intro": {
+      "translations": {
+        "nl": "Hanzestad events combineren historische zalen met moderne bedrijven. We stemmen licht en geluid af op de Sassenpoort en IJsselhallen.",
+        "en": "Hanzestad events combineren historische zalen met moderne bedrijven. We stemmen licht en geluid af op de Sassenpoort en IJsselhallen."
+      }
+    },
     "cases": [
-      { "title": "Hedon bedrijfsfeest", "result": "Live band + DJ mash-up", "venue": "Hedon" },
-      { "title": "Windesheim introductie", "result": "6 area silent disco", "venue": "IJsselhallen" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Hedon bedrijfsfeest",
+            "en": "Hedon bedrijfsfeest"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Live band + DJ mash-up",
+            "en": "Live band + DJ mash-up"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Hedon",
+            "en": "Hedon"
+          }
+        }
+      },
+      {
+        "title": {
+          "translations": {
+            "nl": "Windesheim introductie",
+            "en": "Windesheim introductie"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "6 area silent disco",
+            "en": "6 area silent disco"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "IJsselhallen",
+            "en": "IJsselhallen"
+          }
+        }
+      }
     ],
-    "venues": ["Hedon", "IJsselhallen", "Sassenpoort"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Hedon",
+          "IJsselhallen",
+          "Sassenpoort"
+        ],
+        "en": [
+          "Hedon",
+          "IJsselhallen",
+          "Sassenpoort"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Kunnen jullie samenwerken met lokale bands?", "answer": "Ja, wij leveren hybride sets en stemmen cues af met bandleaders." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Kunnen jullie samenwerken met lokale bands?",
+            "en": "Kunnen jullie samenwerken met lokale bands?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "Ja, wij leveren hybride sets en stemmen cues af met bandleaders.",
+            "en": "Ja, wij leveren hybride sets en stemmen cues af met bandleaders."
+          }
+        }
+      }
     ]
   },
   {
     "slug": "dj-deventer",
     "city": "Deventer",
-    "intro": "Evenementen op de IJsselkade en in de Lebuïnuskerk vragen om uitgekiende akoestiek en crowd management.",
+    "intro": {
+      "translations": {
+        "nl": "Evenementen op de IJsselkade en in de Lebuïnuskerk vragen om uitgekiende akoestiek en crowd management.",
+        "en": "Evenementen op de IJsselkade en in de Lebuïnuskerk vragen om uitgekiende akoestiek en crowd management."
+      }
+    },
     "cases": [
-      { "title": "Deventer Business Fair", "result": "Live lead scoring via app", "venue": "Boreel Kazerne" }
+      {
+        "title": {
+          "translations": {
+            "nl": "Deventer Business Fair",
+            "en": "Deventer Business Fair"
+          }
+        },
+        "result": {
+          "translations": {
+            "nl": "Live lead scoring via app",
+            "en": "Live lead scoring via app"
+          }
+        },
+        "venue": {
+          "translations": {
+            "nl": "Boreel Kazerne",
+            "en": "Boreel Kazerne"
+          }
+        }
+      }
     ],
-    "venues": ["Boreel Kazerne", "Lebuïnuskerk", "IJsselhotel"],
+    "venues": {
+      "translations": {
+        "nl": [
+          "Boreel Kazerne",
+          "Lebuïnuskerk",
+          "IJsselhotel"
+        ],
+        "en": [
+          "Boreel Kazerne",
+          "Lebuïnuskerk",
+          "IJsselhotel"
+        ]
+      }
+    },
     "faqs": [
-      { "question": "Hoe houden jullie rekening met geluidsnormen aan de IJssel?", "answer": "We meten realtime dB en schakelen naar cardioïde subs bij strenge norm." }
+      {
+        "question": {
+          "translations": {
+            "nl": "Hoe houden jullie rekening met geluidsnormen aan de IJssel?",
+            "en": "Hoe houden jullie rekening met geluidsnormen aan de IJssel?"
+          }
+        },
+        "answer": {
+          "translations": {
+            "nl": "We meten realtime dB en schakelen naar cardioïde subs bij strenge norm.",
+            "en": "We meten realtime dB en schakelen naar cardioïde subs bij strenge norm."
+          }
+        }
+      }
     ]
   }
 ]

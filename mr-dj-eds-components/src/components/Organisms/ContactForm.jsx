@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { submitContactForm } from '../../services/api';
 import Button from '../Atoms/Buttons';
-import { trackFormSubmission } from '../../utils/trackConversion';
 import { useHCaptchaWidget } from '../../hooks/useHCaptchaWidget.js';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY;
 
@@ -93,6 +93,19 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       errors.eventType = 'Selecteer een type evenement';
     }
 
+    // Event date validation (optional, but must be in the future when provided)
+    if (formData.eventDate) {
+      const selectedDate = new Date(`${formData.eventDate}T00:00:00`);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (Number.isNaN(selectedDate.getTime())) {
+        errors.eventDate = 'Ongeldige datum';
+      } else if (selectedDate < today) {
+        errors.eventDate = 'Datum moet in de toekomst liggen';
+      }
+    }
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -109,10 +122,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
     // Clear field error when user starts typing
     if (fieldErrors[name]) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        [name]: null,
-      }));
+      setFieldErrors((prev) => {
+        const updatedErrors = { ...prev };
+        delete updatedErrors[name];
+        return updatedErrors;
+      });
     }
   };
 
@@ -161,7 +175,14 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       }
 
       // Track conversion with enhanced GA4 tracking
-      trackFormSubmission(variant, formData.eventType, 'contact');
+      try {
+        const { trackFormSubmission } = await loadTrackConversion();
+        if (typeof trackFormSubmission === 'function') {
+          trackFormSubmission(variant, formData.eventType, 'contact');
+        }
+      } catch (trackingError) {
+        console.error('Failed to load tracking utilities for contact form submission', trackingError);
+      }
 
       // Legacy GTM tracking (keeping for backwards compatibility)
       if (typeof window !== 'undefined' && window.dataLayer) {
@@ -201,26 +222,122 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
     }
   };
 
+  const formContainerStyle = {
+    backgroundColor: colors.neutral.light,
+    padding: spacing.xl,
+    borderRadius: '0.75rem',
+    boxShadow: '0 20px 45px rgba(26, 44, 75, 0.15)',
+  };
+
+  const headingStyle = {
+    fontSize: typography.fontSize.h2,
+    fontFamily: typography.fontFamily.heading,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.neutral.dark,
+    marginBottom: spacing.sm,
+  };
+
+  const introStyle = {
+    color: colors.neutral.gray500,
+    marginBottom: spacing.lg,
+    fontSize: typography.fontSize.body,
+    fontFamily: typography.fontFamily.primary,
+    lineHeight: typography.lineHeight.normal,
+  };
+
+  const statusBaseStyle = {
+    padding: spacing.md,
+    borderRadius: '0.75rem',
+    marginBottom: spacing.md,
+    fontFamily: typography.fontFamily.primary,
+    lineHeight: typography.lineHeight.normal,
+  };
+
+  const successStyle = {
+    ...statusBaseStyle,
+    backgroundColor: withAlpha(colors.semantic.success, 0.12),
+    border: `1px solid ${withAlpha(colors.semantic.success, 0.4)}`,
+    color: colors.semantic.success,
+  };
+
+  const errorStyle = {
+    ...statusBaseStyle,
+    backgroundColor: withAlpha(colors.semantic.error, 0.12),
+    border: `1px solid ${withAlpha(colors.semantic.error, 0.4)}`,
+    color: colors.semantic.error,
+  };
+
+  const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.md,
+  };
+
+  const labelStyle = {
+    fontSize: typography.fontSize.small,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.neutral.dark,
+    marginBottom: spacing.xs,
+    fontFamily: typography.fontFamily.primary,
+  };
+
+  const requiredMarkStyle = {
+    color: colors.semantic.error,
+    marginLeft: '4px',
+  };
+
+  const helperTextStyle = {
+    color: colors.semantic.error,
+    fontSize: typography.fontSize.small,
+    marginTop: spacing.xs,
+    fontFamily: typography.fontFamily.primary,
+  };
+
+  const getInputStyle = (hasError) => ({
+    width: '100%',
+    paddingInline: spacing.md,
+    paddingBlock: spacing.sm,
+    borderRadius: '0.75rem',
+    border: `1px solid ${hasError ? colors.semantic.error : colors.neutral.gray300}`,
+    fontSize: typography.fontSize.body,
+    fontFamily: typography.fontFamily.primary,
+    color: colors.neutral.dark,
+    backgroundColor: colors.neutral.light,
+    outlineColor: colors.primary.main,
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+  });
+
+  const textareaStyle = {
+    ...getInputStyle(Boolean(fieldErrors.message)),
+    resize: 'none',
+    minHeight: '144px',
+  };
+
+  const privacyStyle = {
+    fontSize: typography.fontSize.small,
+    color: colors.neutral.gray500,
+    marginTop: spacing.md,
+    lineHeight: typography.lineHeight.normal,
+    fontFamily: typography.fontFamily.primary,
+  };
+
+  const privacyLinkStyle = {
+    color: colors.primary.main,
+    fontWeight: typography.fontWeight.bold,
+  };
+
   return (
-    <div className="contact-form bg-white p-8 rounded-lg shadow-lg">
-      <h2 className="text-3xl font-bold text-[#1A2C4B] mb-2">
+    <div style={formContainerStyle}>
+      <h2 style={headingStyle}>
         {variant === 'B' ? 'Vraag Direct een Offerte Aan' : 'Neem Contact Op'}
       </h2>
-      <p className="text-gray-500 mb-6">
+      <p style={introStyle}>
         Vul het formulier in en we nemen binnen 24 uur contact met je op.
       </p>
 
       {/* Success Message */}
       {submitSuccess && (
-        <div
-          className={`border px-4 py-3 rounded mb-4 ${
-            queuedSubmission
-              ? 'bg-yellow-100 border-yellow-400 text-yellow-800'
-              : 'bg-green-100 border-green-400 text-green-700'
-          }`}
-          role="status"
-          aria-live="polite"
-        >
+        <div style={successStyle} role="status" aria-live="polite">
           <strong>Succesvol verzonden!</strong>
           <p>{successMessage}</p>
           {queuedSubmission && (
@@ -233,21 +350,18 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
       {/* Error Message */}
       {submitError && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
-          role="alert"
-          aria-live="assertive"
-        >
+        <div style={errorStyle} role="alert" aria-live="assertive">
           <strong>Fout bij verzenden</strong>
           <p>{submitError}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} style={formStyle}>
         {/* Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-[#1A2C4B] mb-1">
-            Naam <span className="text-red-500">*</span>
+          <label htmlFor="name" style={labelStyle}>
+            Naam
+            <span style={requiredMarkStyle}>*</span>
           </label>
           <input
             type="text"
@@ -255,18 +369,20 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
-              fieldErrors.name ? 'border-red-500' : 'border-neutral-gray-300'
-            }`}
+            style={getInputStyle(Boolean(fieldErrors.name))}
+            className="focus:outline-none"
             placeholder="Jouw naam"
+            aria-invalid={Boolean(fieldErrors.name)}
+            aria-describedby={fieldErrors.name ? 'name-error' : undefined}
           />
-          {fieldErrors.name && <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>}
+          {fieldErrors.name && <p style={helperTextStyle}>{fieldErrors.name}</p>}
         </div>
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-[#1A2C4B] mb-1">
-            Email <span className="text-red-500">*</span>
+          <label htmlFor="email" style={labelStyle}>
+            Email
+            <span style={requiredMarkStyle}>*</span>
           </label>
           <input
             type="email"
@@ -274,18 +390,20 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
-              fieldErrors.email ? 'border-red-500' : 'border-neutral-gray-300'
-            }`}
+            style={getInputStyle(Boolean(fieldErrors.email))}
+            className="focus:outline-none"
             placeholder="jouw@email.nl"
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
           />
-          {fieldErrors.email && <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>}
+          {fieldErrors.email && <p style={helperTextStyle}>{fieldErrors.email}</p>}
         </div>
 
         {/* Phone */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-[#1A2C4B] mb-1">
+          <label htmlFor="phone" style={labelStyle}>
             Telefoonnummer
+            <span style={requiredMarkStyle}>*</span>
           </label>
           <input
             type="tel"
@@ -295,15 +413,15 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             onChange={handleChange}
             required
             minLength={6}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
-              fieldErrors.phone ? 'border-red-500' : 'border-neutral-gray-300'
-            }`}
+            style={getInputStyle(Boolean(fieldErrors.phone))}
+            className="focus:outline-none"
             placeholder="+31 6 12345678"
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.phone)}
-            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+            aria-describedby={fieldErrors.phone ? 'contact-phone-error' : undefined}
           />
           {fieldErrors.phone && (
-            <p id="phone-error" className="text-red-500 text-sm mt-1">
+            <p id="phone-error" style={helperTextStyle}>
               {fieldErrors.phone}
             </p>
           )}
@@ -311,17 +429,17 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
         {/* Event Type */}
         <div>
-          <label htmlFor="eventType" className="block text-sm font-medium text-[#1A2C4B] mb-1">
-            Type Evenement <span className="text-red-500">*</span>
+          <label htmlFor="eventType" style={labelStyle}>
+            Type Evenement
+            <span style={requiredMarkStyle}>*</span>
           </label>
           <select
             id="eventType"
             name="eventType"
             value={formData.eventType}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
-              fieldErrors.eventType ? 'border-red-500' : 'border-neutral-gray-300'
-            }`}
+            style={getInputStyle(Boolean(fieldErrors.eventType))}
+            className="focus:outline-none"
           >
             <option value="">Selecteer type evenement</option>
             <option value="bruiloft">Bruiloft</option>
@@ -331,12 +449,12 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             <option value="feest">Algemeen Feest</option>
             <option value="anders">Anders</option>
           </select>
-          {fieldErrors.eventType && <p className="text-red-500 text-sm mt-1">{fieldErrors.eventType}</p>}
+          {fieldErrors.eventType && <p style={helperTextStyle}>{fieldErrors.eventType}</p>}
         </div>
 
         {/* Event Date */}
         <div>
-          <label htmlFor="eventDate" className="block text-sm font-medium text-[#1A2C4B] mb-1">
+          <label htmlFor="eventDate" style={labelStyle}>
             Gewenste Datum
           </label>
           <input
@@ -346,14 +464,21 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             value={formData.eventDate}
             onChange={handleChange}
             min={new Date().toISOString().split('T')[0]}
-            className="w-full px-4 py-2 border border-neutral-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
+            style={getInputStyle(false)}
+            className="focus:outline-none"
           />
+          {fieldErrors.eventDate && (
+            <p id="eventDate-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.eventDate}
+            </p>
+          )}
         </div>
 
         {/* Message */}
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-[#1A2C4B] mb-1">
-            Bericht <span className="text-red-500">*</span>
+          <label htmlFor="message" style={labelStyle}>
+            Bericht
+            <span style={requiredMarkStyle}>*</span>
           </label>
           <textarea
             id="message"
@@ -361,12 +486,13 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             value={formData.message}
             onChange={handleChange}
             rows="4"
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none resize-none ${
-              fieldErrors.message ? 'border-red-500' : 'border-neutral-gray-300'
-            }`}
+            style={textareaStyle}
+            className="focus:outline-none"
             placeholder="Vertel ons meer over jouw evenement..."
+            aria-invalid={Boolean(fieldErrors.message)}
+            aria-describedby={fieldErrors.message ? 'message-error' : undefined}
           />
-          {fieldErrors.message && <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>}
+          {fieldErrors.message && <p style={helperTextStyle}>{fieldErrors.message}</p>}
         </div>
 
         {HCAPTCHA_SITE_KEY && (
@@ -387,7 +513,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
         )}
 
         {/* Submit Button */}
-        <div className="pt-2">
+        <div style={{ paddingTop: spacing.sm }}>
           <Button
             type="submit"
             variant="primary"
@@ -400,9 +526,9 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
         </div>
 
         {/* Privacy Notice */}
-        <p className="text-xs text-gray-500 mt-4">
+        <p style={privacyStyle}>
           Door dit formulier te versturen ga je akkoord met ons{' '}
-          <a href="/privacy-policy" className="text-primary-500 hover:underline">
+          <a href="/privacy-policy" style={privacyLinkStyle}>
             privacybeleid
           </a>
           . We gebruiken je gegevens alleen om contact met je op te nemen over je evenement.

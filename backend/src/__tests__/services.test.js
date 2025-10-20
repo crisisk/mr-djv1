@@ -51,6 +51,7 @@ jest.mock('../services/sevensaService', () => ({
 }));
 
 const db = require('../lib/db');
+const cache = require('../lib/cache');
 const config = require('../config');
 const contactService = require('../services/contactService');
 const callbackRequestService = require('../services/callbackRequestService');
@@ -129,7 +130,10 @@ describe('contactService', () => {
         name: 'Test',
         email: 'test@example.com'
       }),
-      { source: 'contact-form' }
+      expect.objectContaining({
+        source: 'contact-form',
+        attemptId: expect.any(String)
+      })
     );
     expect(sevensaService.submitLead).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -137,7 +141,10 @@ describe('contactService', () => {
         email: 'test@example.com',
         eventType: 'Bruiloft'
       }),
-      { source: 'contact-form' }
+      expect.objectContaining({
+        source: 'contact-form',
+        attemptId: expect.any(String)
+      })
     );
   });
 
@@ -721,6 +728,123 @@ describe('catalog services', () => {
     const cached = await reviewService.getApprovedReviews(1);
     expect(cached.cacheStatus).toBe('hit');
     expect(db.runQuery).not.toHaveBeenCalled();
+  });
+
+  it('returns an empty pending list when the database is not configured', async () => {
+    db.isConfigured.mockReturnValue(false);
+    const pending = await reviewService.getPendingReviews();
+    expect(pending).toEqual([]);
+  });
+
+  it('loads pending testimonials from the database', async () => {
+    const createdAt = new Date('2024-05-10T12:00:00Z');
+    db.runQuery.mockClear();
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 42,
+          name: 'Pending Person',
+          eventType: 'Bruiloft',
+          city: 'Eindhoven',
+          rating: 4,
+          reviewText: 'Fantastisch feest!',
+          createdAt,
+          approved: false
+        }
+      ]
+    });
+
+    const pending = await reviewService.getPendingReviews();
+    expect(pending).toEqual([
+      {
+        id: 42,
+        name: 'Pending Person',
+        eventType: 'Bruiloft',
+        city: 'Eindhoven',
+        rating: 4,
+        reviewText: 'Fantastisch feest!',
+        createdAt,
+        moderationState: 'pending'
+      }
+    ]);
+  });
+
+  it('approves a testimonial and clears the cache', async () => {
+    const createdAt = new Date('2024-05-01T08:30:00Z');
+    db.runQuery.mockClear();
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockResolvedValueOnce({
+      rowCount: 1,
+      rows: [
+        {
+          id: 7,
+          name: 'Pending Person',
+          eventType: 'Corporate',
+          city: 'Tilburg',
+          rating: 5,
+          reviewText: 'Geweldig team!',
+          createdAt,
+          approved: true
+        }
+      ]
+    });
+
+    const cacheDelSpy = jest.spyOn(cache, 'del').mockResolvedValue();
+
+    const result = await reviewService.approveReview(7);
+    expect(db.runQuery).toHaveBeenCalledWith(expect.stringContaining('UPDATE reviews'), [7]);
+    expect(cacheDelSpy).toHaveBeenCalledWith('reviews-service');
+    expect(result).toEqual({
+      id: 7,
+      name: 'Pending Person',
+      eventType: 'Corporate',
+      city: 'Tilburg',
+      rating: 5,
+      reviewText: 'Geweldig team!',
+      createdAt,
+      moderationState: 'approved'
+    });
+
+    cacheDelSpy.mockRestore();
+  });
+
+  it('rejects a testimonial and clears the cache', async () => {
+    const createdAt = new Date('2024-05-02T09:15:00Z');
+    db.runQuery.mockClear();
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockResolvedValueOnce({
+      rowCount: 1,
+      rows: [
+        {
+          id: 8,
+          name: 'Weiger Test',
+          eventType: 'Jubileum',
+          city: 'Breda',
+          rating: 3,
+          reviewText: 'Niet helemaal tevreden.',
+          createdAt
+        }
+      ]
+    });
+
+    const cacheDelSpy = jest.spyOn(cache, 'del').mockResolvedValue();
+
+    const result = await reviewService.rejectReview(8);
+    expect(db.runQuery).toHaveBeenCalledWith(expect.stringContaining('DELETE FROM reviews'), [8]);
+    expect(cacheDelSpy).toHaveBeenCalledWith('reviews-service');
+    expect(result).toEqual({
+      id: 8,
+      name: 'Weiger Test',
+      eventType: 'Jubileum',
+      city: 'Breda',
+      rating: 3,
+      reviewText: 'Niet helemaal tevreden.',
+      createdAt,
+      moderationState: 'rejected'
+    });
+
+    cacheDelSpy.mockRestore();
   });
 });
 afterAll(() => {
