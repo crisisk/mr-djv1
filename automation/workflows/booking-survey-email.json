@@ -1,0 +1,121 @@
+{
+  "name": "Booking Survey Email Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "booking/survey",
+        "responseMode": "onReceived",
+        "responseData": {
+          "responseFormat": "json",
+          "responseBody": "={\"ok\":true}"
+        },
+        "options": {
+          "rawBody": false,
+          "binaryData": false
+        }
+      },
+      "id": "Booking Confirmation Webhook",
+      "name": "Booking Confirmation Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 280],
+      "webhookId": "booking-survey-confirmation"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json[\"sync\"]?.rentGuy?.delivered}}",
+              "value2": true
+            },
+            {
+              "value1": "={{$json[\"sync\"]?.sevensa?.delivered}}",
+              "value2": true
+            }
+          ],
+          "combineOperation": "any"
+        }
+      },
+      "id": "Delivery Check",
+      "name": "Delivery Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 280]
+    },
+    {
+      "parameters": {
+        "functionCode": "const survey = $json.survey || {};\nconst contact = $json.contact || {};\nconst responseUrl = survey.responseUrl || '';\nconst displayName = contact.name || survey.name || contact.email;\nconst eventType = contact.eventType || 'jouw event';\nconst eventDate = contact.eventDate ? new Date(contact.eventDate).toLocaleDateString('nl-NL') : null;\n\nconst intro = eventDate\n  ? `We hopen dat ${eventType.toLowerCase()} op ${eventDate} geslaagd was!`\n  : `We hopen dat ${eventType.toLowerCase()} onvergetelijk was!`;\n\nitems[0].json = {\n  email: survey.email || contact.email,\n  name: displayName,\n  eventType,\n  responseUrl,\n  intro\n};\nreturn items;"
+      },
+      "id": "Compose Payload",
+      "name": "Compose Payload",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [690, 140]
+    },
+    {
+      "parameters": {
+        "url": "https://api.postmarkapp.com/email/withTemplate",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Postmark-Server-Token": "={{$env.POSTMARK_SERVER_TOKEN}}"
+          }
+        },
+        "bodyParametersJson": "={\"TemplateAlias\":\"post-event-survey\",\"To\":\"{{$json.email}}\",\"TemplateModel\":{\"contactName\":\"{{$json.name}}\",\"intro\":\"{{$json.intro}}\",\"eventType\":\"{{$json.eventType}}\",\"surveyLink\":\"{{$json.responseUrl}}\",\"companyName\":\"Mister DJ\"}}"
+      },
+      "id": "Send Survey Email",
+      "name": "Send Survey Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [960, 140]
+    }
+  ],
+  "connections": {
+    "Booking Confirmation Webhook": {
+      "main": [
+        [
+          {
+            "node": "Delivery Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delivery Check": {
+      "main": [
+        [
+          {
+            "node": "Compose Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Compose Payload": {
+      "main": [
+        [
+          {
+            "node": "Send Survey Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Amsterdam"
+  },
+  "meta": {
+    "instanceId": "mr-dj-backend"
+  }
+}
