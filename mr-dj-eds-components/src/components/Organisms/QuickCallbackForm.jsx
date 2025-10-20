@@ -190,6 +190,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             placeholder="Bijv. Jan Jansen"
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
             minLength={2}
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.name)}
             aria-describedby={fieldErrors.name ? 'callback-name-error' : undefined}
           />
@@ -212,6 +214,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             onChange={handleChange}
             placeholder="06 12 34 56 78"
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.phone)}
             aria-describedby={fieldErrors.phone ? 'callback-phone-error' : undefined}
           />
@@ -232,6 +236,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             value={formData.eventType}
             onChange={handleChange}
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark bg-white"
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.eventType)}
             aria-describedby={fieldErrors.eventType ? 'callback-event-type-error' : undefined}
           >
