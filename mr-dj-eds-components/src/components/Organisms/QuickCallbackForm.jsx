@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { submitCallbackRequest } from '../../services/api';
 import { trackFormSubmission } from '../../utils/trackConversion';
 import { submitCallbackRequest } from '../../services/api';
 
@@ -27,6 +28,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError(null);
     setIsSubmitting(true);
     setErrorMessage('');
 
@@ -83,7 +85,14 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         Vul je gegevens in en wij bellen je vandaag nog!
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {submitError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-spacing-md" role="alert" aria-live="assertive">
+          <strong className="font-semibold block mb-1">Oops!</strong>
+          <span>{submitError}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {/* Name Field */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-neutral-dark mb-1">

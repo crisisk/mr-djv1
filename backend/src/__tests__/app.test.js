@@ -176,6 +176,13 @@ describe('Mister DJ API', () => {
     });
   });
 
+  it('rejects invalid callback requests', async () => {
+    const response = await request('POST', '/callback-request', {});
+
+    expect(response.status).toBe(422);
+    expect(response.body).toMatchObject({ error: 'Validatie mislukt' });
+  });
+
   it('returns a helpful error when the JSON payload cannot be parsed', async () => {
     const response = await request('POST', '/contact', '{"name": "Test"', {
       'Content-Type': 'application/json'
@@ -209,6 +216,25 @@ describe('Mister DJ API', () => {
     expect(response.body.contactId).toBeDefined();
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
+    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
+  });
+
+  it('accepts callback requests and queues integrations when no DB is configured', async () => {
+    const response = await request('POST', '/callback-request', {
+      name: 'Bel mij terug',
+      phone: '0612345678',
+      eventType: 'bedrijfsfeest'
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      success: true,
+      persisted: false,
+      status: 'pending',
+      eventType: 'bedrijfsfeest'
+    });
+    expect(response.body.callbackId).toBeDefined();
     expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
     expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
   });

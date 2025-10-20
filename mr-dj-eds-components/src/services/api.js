@@ -61,6 +61,18 @@ export async function submitContactForm(formData) {
 }
 
 /**
+ * Submit quick callback request
+ * @param {Object} formData - Callback form data
+ * @returns {Promise<Object>} API response
+ */
+export async function submitCallbackRequest(formData) {
+  return fetchAPI('/callback-request', {
+    method: 'POST',
+    body: JSON.stringify(formData),
+  });
+}
+
+/**
  * Get all packages
  * @returns {Promise<Array>} Array of package objects
  */
@@ -103,6 +115,7 @@ export async function submitCallbackRequest(callbackData) {
 
 export default {
   submitContactForm,
+  submitCallbackRequest,
   getPackages,
   checkHealth,
   submitBooking,
