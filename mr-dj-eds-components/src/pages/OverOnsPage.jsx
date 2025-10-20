@@ -6,6 +6,9 @@ import HeroSection from '../components/Organisms/HeroSection.jsx';
 import { Icon } from '../icons/index.jsx';
 
 const OverOnsPage = () => {
+  const breadcrumbs = createSimpleBreadcrumbs('Over Ons', '/over-ons');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+
   return (
     <div className="OverOnsPage">
       <Helmet>
@@ -14,6 +17,7 @@ const OverOnsPage = () => {
           name="description"
           content="Leer Mr. DJ kennen - professionele DJ service met jarenlange ervaring in bruiloften, bedrijfsfeesten en party's door heel Nederland."
         />
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />

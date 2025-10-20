@@ -12,6 +12,9 @@ const FeestDJPage = ({ variant = 'A' }) => {
   const ctaPrimaryText = variant === 'B' ? 'Boek Nu' : 'Bekijk Video';
   const ctaSecondaryText = variant === 'B' ? 'Check Beschikbaarheid' : 'Vraag Prijs Aan';
 
+  const breadcrumbs = createServiceBreadcrumbs('Feest DJ', '/feest-dj');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+
   return (
     <div className="FeestDJPage">
       <Helmet>
@@ -42,6 +45,7 @@ const FeestDJPage = ({ variant = 'A' }) => {
             }
           `}
         </script>
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />

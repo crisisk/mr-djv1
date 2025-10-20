@@ -13,6 +13,9 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
   const ctaPrimaryText = variant === 'B' ? 'Boek Nu' : 'Bekijk Video';
   const ctaSecondaryText = variant === 'B' ? 'Check Beschikbaarheid' : 'Vraag Prijs Aan';
 
+  const breadcrumbs = createServiceBreadcrumbs('Bruiloft DJ', '/bruiloft-dj');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+
   return (
     <div className="BruiloftDJPage">
       <Helmet>
@@ -43,6 +46,7 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
             }
           `}
         </script>
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />

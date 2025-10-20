@@ -8,6 +8,8 @@ import { useHeroImage } from '../../hooks/useReplicateImage.js';
 import { localSeoData, getLocalSeoDataBySlug } from '../../data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from '../../data/local_seo_bruiloft_data.js';
 import { getWindow } from '../../lib/environment.js';
+import { generateBreadcrumbSchema } from '../../utils/schemaOrg.js';
+import { createLocalSeoBreadcrumbs } from '../../utils/breadcrumbs.js';
 
 const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) => {
   const hasData = Boolean(data);
@@ -148,6 +150,26 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
     });
   }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, origin, province]);
 
+  const breadcrumbs = useMemo(() => {
+    if (!hasData) {
+      return [];
+    }
+
+    return createLocalSeoBreadcrumbs({
+      city,
+      slug,
+      isBruiloft: isBruiloftPage,
+    });
+  }, [city, hasData, isBruiloftPage, slug]);
+
+  const breadcrumbSchema = useMemo(() => {
+    if (!breadcrumbs.length) {
+      return null;
+    }
+
+    return JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+  }, [breadcrumbs]);
+
   if (!hasData) {
     return <div className="p-10 text-center text-red-500">Geen lokale SEO data gevonden.</div>;
   }
@@ -162,6 +184,7 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
         <link rel="canonical" href={canonicalUrl} />
         {localBusinessSchema && <script type="application/ld+json">{localBusinessSchema}</script>}
         {eventSchema && <script type="application/ld+json">{eventSchema}</script>}
+        {breadcrumbSchema && <script type="application/ld+json">{breadcrumbSchema}</script>}
       </Helmet>
 
       <HeroSection
