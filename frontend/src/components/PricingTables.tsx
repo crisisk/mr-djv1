@@ -1,4 +1,5 @@
 import { Button } from './Button';
+import { CheckIcon } from '../icons';
 
 export interface PricingFeatureSet {
   name: string;
@@ -81,15 +82,10 @@ function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
       <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
         {features.map((feature) => (
           <li key={feature} className="flex items-start text-font-size-body">
-            <svg
-              className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
+            <CheckIcon
+              className={`mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`}
+              aria-hidden="true"
+            />
             {feature}
           </li>
         ))}
