@@ -435,7 +435,8 @@ describe('catalog services', () => {
           eventType: 'Event',
           rating: 5,
           reviewText: 'Great!',
-          createdAt: new Date('2024-04-01T10:00:00Z')
+          createdAt: new Date('2024-04-01T10:00:00Z'),
+          approved: true
         }
       ]
     });
@@ -449,7 +450,8 @@ describe('catalog services', () => {
           eventType: 'Event',
           rating: 5,
           reviewText: 'Great!',
-          createdAt: new Date('2024-04-01T10:00:00Z')
+          createdAt: new Date('2024-04-01T10:00:00Z'),
+          moderationState: 'approved'
         }
       ],
       source: 'database',
@@ -479,7 +481,8 @@ describe('catalog services', () => {
           eventType: 'Event',
           rating: 5,
           reviewText: 'Great!',
-          createdAt: new Date('2024-04-01T10:00:00Z')
+          createdAt: new Date('2024-04-01T10:00:00Z'),
+          approved: true
         }
       ]
     });
