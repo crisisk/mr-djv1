@@ -1,14 +1,30 @@
-const NodeCache = require('node-cache');
+const config = require('../config');
+const { getSharedRedisClient } = require('./redis');
 
-const cache = new NodeCache({
-  stdTTL: 0,
-  checkperiod: 60,
-  useClones: false
-});
+const memoryStore = new Map();
 
-function ttlMsToSeconds(ttlMs) {
-  if (!Number.isFinite(ttlMs) || ttlMs <= 0) {
-    return 0;
+function getNamespace() {
+  return config.redis?.namespace || 'mr-dj';
+}
+
+function buildKey(key) {
+  return `${getNamespace()}:cache:${key}`;
+}
+
+function storeInMemory(key, value, ttlMs) {
+  const expiresAt = ttlMs > 0 ? Date.now() + ttlMs : null;
+  memoryStore.set(key, { value, expiresAt });
+}
+
+function getFromMemory(key) {
+  const entry = memoryStore.get(key);
+  if (!entry) {
+    return undefined;
+  }
+
+  if (entry.expiresAt && entry.expiresAt < Date.now()) {
+    memoryStore.delete(key);
+    return undefined;
   }
 
   return ttlMs / 1000;
@@ -24,27 +40,78 @@ function get(key) {
   return cache.get(key);
 }
 
-function del(key) {
-  cache.del(key);
-}
-
-function clear() {
-  cache.flushAll();
-}
-
-async function remember(key, ttlMs, factory) {
-  if (typeof factory !== 'function') {
-    throw new TypeError('factory must be a function');
+async function set(key, value, ttlMs = 300000) {
+  const client = await getSharedRedisClient();
+  if (client) {
+    const namespacedKey = buildKey(key);
+    const payload = JSON.stringify(value);
+    try {
+      if (ttlMs > 0) {
+        await client.set(namespacedKey, payload, 'PX', ttlMs);
+      } else {
+        await client.set(namespacedKey, payload);
+      }
+      return;
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('[cache] Failed to store value in Redis', error);
+      }
+    }
   }
 
-  const existing = get(key);
-  if (existing !== undefined) {
-    return { value: existing, fresh: false };
+  storeInMemory(key, value, ttlMs);
+}
+
+async function get(key) {
+  const client = await getSharedRedisClient();
+  if (client) {
+    try {
+      const payload = await client.get(buildKey(key));
+      if (payload == null) {
+        return undefined;
+      }
+      return JSON.parse(payload);
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('[cache] Failed to read value from Redis', error);
+      }
+    }
   }
 
-  const value = await factory();
-  set(key, value, ttlMs);
-  return { value, fresh: true };
+  return getFromMemory(key);
+}
+
+async function del(key) {
+  const client = await getSharedRedisClient();
+  if (client) {
+    try {
+      await client.del(buildKey(key));
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('[cache] Failed to delete value from Redis', error);
+      }
+    }
+  }
+
+  memoryStore.delete(key);
+}
+
+async function clear() {
+  const client = await getSharedRedisClient();
+  if (client) {
+    try {
+      const keys = await client.keys(buildKey('*'));
+      if (keys.length) {
+        await client.del(...keys);
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('[cache] Failed to clear Redis cache', error);
+      }
+    }
+  }
+
+  memoryStore.clear();
 }
 
 module.exports = {

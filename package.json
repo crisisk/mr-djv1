@@ -1,0 +1,8 @@
+{
+  "name": "mr-djv1",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:e2e": "cypress run --spec tests/e2e/booking-flow.cy.ts"
+  }
+}

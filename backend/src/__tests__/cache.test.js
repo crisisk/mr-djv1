@@ -1,9 +1,8 @@
 const cache = require('../lib/cache');
 
 describe('in-memory cache helper', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    cache.clear();
+  beforeEach(async () => {
+    await cache.clear();
   });
 
   afterEach(() => {
@@ -11,32 +10,35 @@ describe('in-memory cache helper', () => {
     jest.useRealTimers();
   });
 
-  it('stores and retrieves values with default TTL', () => {
-    cache.set('foo', 'bar');
+  it('stores and retrieves values with default TTL', async () => {
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1_000);
+    await cache.set('foo', 'bar');
 
-    jest.advanceTimersByTime(500);
-    expect(cache.get('foo')).toBe('bar');
+    nowSpy.mockReturnValue(1_500);
+    await expect(cache.get('foo')).resolves.toBe('bar');
   });
 
-  it('evicts values once the TTL expires', () => {
-    cache.set('temp', 'value', 500);
+  it('evicts values once the TTL expires', async () => {
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(10_000);
+    await cache.set('temp', 'value', 500);
 
-    jest.advanceTimersByTime(400);
-    expect(cache.get('temp')).toBe('value');
+    nowSpy.mockReturnValue(10_400);
+    await expect(cache.get('temp')).resolves.toBe('value');
 
-    jest.advanceTimersByTime(200);
-    expect(cache.get('temp')).toBeUndefined();
+    nowSpy.mockReturnValue(10_600);
+    await expect(cache.get('temp')).resolves.toBeUndefined();
   });
 
-  it('supports explicit deletion and clearing', () => {
-    cache.set('one', 1, 0);
-    cache.set('two', 2);
+  it('supports explicit deletion and clearing', async () => {
+    jest.spyOn(Date, 'now').mockReturnValue(0);
+    await cache.set('one', 1, 0);
+    await cache.set('two', 2);
 
-    cache.del('one');
-    expect(cache.get('one')).toBeUndefined();
+    await cache.del('one');
+    await expect(cache.get('one')).resolves.toBeUndefined();
 
-    cache.clear();
-    expect(cache.get('two')).toBeUndefined();
+    await cache.clear();
+    await expect(cache.get('two')).resolves.toBeUndefined();
   });
 
   it('wraps factories with remember to prevent duplicate work', async () => {

@@ -24,6 +24,12 @@ Netlify bouwt en deploy automatisch!
 
 Je krijgt een URL zoals: `https://mr-dj-abc123.netlify.app`
 
+### Stap 3b: Snellere vervolgbuilds met caching
+- De `netlify.toml` cachet nu automatisch de `node_modules` directory.
+- Eerste build: blijft ~1-2 minuten (download + caching van dependencies).
+- Vervolgbuilds: besparen gemiddeld 20-30 seconden omdat npm install wordt overgeslagen.
+- Resultaat: snellere previews en minder build-minuten verbruik.
+
 ### Stap 4: Enable Netlify Identity
 1. Ga naar Site settings → Identity
 2. Klik "Enable Identity"
@@ -81,6 +87,12 @@ Je krijgt een URL zoals: `https://mr-dj-abc123.netlify.app`
 - **Accessibility:** 90-95
 - **Best Practices:** 95-100
 - **SEO:** 90-95
+
+### Lighthouse Performance Budgets
+- `@netlify/plugin-lighthouse` bewaakt nu resource- en timing-budgets.
+- Budgets: scripts ≤ 180 KB, totale pagina ≤ 500 KB, interactief ≤ 4s, FCP ≤ 2s.
+- Deploys falen pas na review, maar logs tonen direct waar overschrijdingen plaatsvinden.
+- Bewaakt regressies automatisch voor `/` en kan worden uitgebreid voor andere routes.
 
 ### Netlify Analytics (Optioneel, €9/mnd)
 - Real-time visitor stats
@@ -140,7 +152,16 @@ Alleen betalen als:
 ✅ **CMS Included:** Netlify Identity + Git Gateway  
 ✅ **Rollback:** Easy rollback to previous version  
 ✅ **Preview:** Deploy previews for every PR  
-✅ **Forms:** Netlify Forms included (100/mnd free)  
+✅ **Forms:** Netlify Forms included (100/mnd free)
 
 **Perfect voor Mr. DJ!** 🚀
+
+---
+
+## 🌐 Offline & Form Fallbacks
+
+- **Contactformulier fallback:** Het formulier in `frontend/public/index.html` is geconfigureerd met `data-netlify="true"` en een verborgen `form-name`. Wanneer JavaScript of de app-shell faalt, vangt Netlify het formulier automatisch op en stuurt inzendingen naar de Forms-inbox.
+- **Spam-bescherming:** Een honeypot-veld (`netlify-honeypot="bot-field"`) blokkeert eenvoudige bots zonder extra scripts.
+- **Offline pagina:** `frontend/public/offline.html` levert een statische fallback zodra de service worker detecteert dat er geen netwerk is. De pagina bevat directe links om te bellen/mailen en een knop terug naar de homepage zodra de verbinding herstelt.
+- **Tip:** Voeg in `netlify.toml` een redirect toe van `/*` naar `/offline.html` met status `200` binnen de offline-caching rules van je service worker als je de fallback in de PWA-flow wilt opnemen.
 
