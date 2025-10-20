@@ -61,12 +61,12 @@ describe('Mister DJ API', () => {
     server.close(done);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     resetContactStore();
     resetCallbackStore();
     resetBookingStore();
     resetPersonalizationLogs();
-    resetPersonalizationCache();
+    await resetPersonalizationCache();
   });
 
   it('returns service metadata on the root route', async () => {

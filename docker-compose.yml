@@ -36,8 +36,12 @@ services:
       DATABASE_URL: postgresql://mrdj_user:mrdj_secure_password_2025@mr-dj-postgres:5432/mrdj_db
       JWT_SECRET: mrdj_jwt_secret_key_2025_very_secure
       CORS_ORIGIN: https://mr-dj.sevensa.nl
+      REDIS_URL: redis://:mrdj_redis_password_2025@mr-dj-redis:6379/0
+      REDIS_NAMESPACE: mr-dj
     depends_on:
       mr-dj-postgres:
+        condition: service_healthy
+      mr-dj-redis:
         condition: service_healthy
     networks:
       - web
@@ -81,7 +85,7 @@ services:
     networks:
       - web
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "mrdj_redis_password_2025", "ping"]
       interval: 10s
       timeout: 3s
       retries: 5
