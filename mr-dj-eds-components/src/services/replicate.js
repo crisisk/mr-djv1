@@ -7,68 +7,8 @@
 
 import { getWindow, isBrowser } from '../lib/environment.js';
 
-const rawApiKey =
-  (typeof process !== 'undefined' && process.env && process.env.REPLICATE_API_KEY) || '';
-
-if (!rawApiKey) {
-  throw new Error(
-    'Missing Replicate API key. Set the REPLICATE_API_KEY environment variable before using this service.'
-  );
-}
-
-const REPLICATE_API_KEY = rawApiKey;
+const REPLICATE_API_KEY = 'r8_F37uDRCZQ92lMBuJKJ5b5EM0xHH9vnZ2EDXMN';
 const REPLICATE_API_URL = 'https://api.replicate.com/v1';
-
-const REDACTED_API_KEY = '[REDACTED_REPLICATE_API_KEY]';
-
-function sanitizeString(value) {
-  if (!value || typeof value !== 'string') {
-    return value;
-  }
-
-  return value.split(REPLICATE_API_KEY).join(REDACTED_API_KEY);
-}
-
-function sanitizeErrorForLog(error) {
-  if (!error) {
-    return error;
-  }
-
-  if (typeof error === 'string') {
-    return sanitizeString(error);
-  }
-
-  if (error instanceof Error) {
-    const sanitized = new Error(sanitizeString(error.message));
-    sanitized.name = error.name;
-    sanitized.stack = error.stack ? sanitizeString(error.stack) : error.stack;
-    return sanitized;
-  }
-
-  if (typeof error === 'object') {
-    try {
-      const json = JSON.stringify(error, (key, value) =>
-        typeof value === 'string' ? sanitizeString(value) : value
-      );
-      return JSON.parse(json);
-    } catch (serializationError) {
-      return sanitizeString(String(error));
-    }
-  }
-
-  return error;
-}
-
-function logReplicateError(message, details) {
-  const sanitizedMessage = sanitizeString(message);
-  const sanitizedDetails = sanitizeErrorForLog(details);
-
-  if (typeof sanitizedDetails === 'undefined') {
-    console.error(sanitizedMessage);
-  } else {
-    console.error(sanitizedMessage, sanitizedDetails);
-  }
-}
 
 /**
  * Available Replicate models for different use cases
@@ -110,29 +50,13 @@ async function replicateRequest(endpoint, options = {}) {
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      let responseBody;
-
-      try {
-        responseBody = await response.text();
-      } catch (readError) {
-        responseBody = '<unable to read body>';
-      }
-
-      const sanitizedBody = sanitizeString(responseBody ?? '');
-      const errorMessage = `Replicate API request failed with status ${response.status}`;
-      logReplicateError(`${errorMessage}. Response body:`, sanitizedBody || '<empty response>');
-
-      const error = new Error(
-        `${errorMessage}. Response body: ${sanitizedBody || '<empty response>'}`
-      );
-      error.status = response.status;
-      error.responseBody = sanitizedBody;
-      throw error;
+      const error = await response.json();
+      throw new Error(error.detail || `Replicate API Error: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
-    logReplicateError('Replicate API Error:', error);
+    console.error('Replicate API Error:', error);
     throw error;
   }
 }
