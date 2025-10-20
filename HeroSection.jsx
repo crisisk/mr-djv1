@@ -5,11 +5,18 @@ import Button from './Buttons.jsx'
 const HeroSection = ({
   title,
   subtitle,
+  supportingCopy,
+  badge,
+  testimonial,
+  stats,
   ctaPrimaryText,
   ctaSecondaryText,
+  ctaPrimaryProps = {},
+  ctaSecondaryProps = {},
   backgroundClass = 'bg-neutral-dark',
   titleColor = 'text-secondary',
   subtitleColor = 'text-neutral-light',
+  supportingColor = 'text-neutral-light/90',
   children,
 }) => {
   const { t } = useTranslation()
@@ -18,6 +25,16 @@ const HeroSection = ({
   const resolvedSubtitle = subtitle ?? t('hero.subtitle')
   const resolvedPrimaryCta = ctaPrimaryText ?? t('hero.ctaPrimaryText')
   const resolvedSecondaryCta = ctaSecondaryText ?? t('hero.ctaSecondaryText')
+  const resolvedBadge = badge ?? t('hero.badge')
+  const resolvedSupportingCopy = supportingCopy ?? t('hero.supportingCopy')
+  const translatedStats = stats ?? t('hero.stats', { returnObjects: true })
+  const resolvedStats = Array.isArray(translatedStats) ? translatedStats : []
+  const translatedTestimonial =
+    testimonial ?? t('hero.testimonial', { returnObjects: true })
+  const resolvedTestimonial =
+    translatedTestimonial && typeof translatedTestimonial === 'object'
+      ? translatedTestimonial
+      : {}
 
   const ctaGroupLabelId = useId()
   const ctaGroupDescriptionId = useId()
