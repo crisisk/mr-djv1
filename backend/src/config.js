@@ -76,7 +76,7 @@ const DEFAULT_SECTION_CONFIG = [
     label: 'Personalization & CRO',
     description:
       'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
-    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
+    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'FEATURE_PERSONALIZATION']
   },
   {
     id: 'automation',
@@ -84,6 +84,7 @@ const DEFAULT_SECTION_CONFIG = [
     description:
       'SEO keyword ingest, LLM-configuratie en reviewkanalen voor de interne city page generator.',
     keys: [
+      'FEATURE_AUTOMATION',
       'SEO_AUTOMATION_API_URL',
       'SEO_AUTOMATION_API_KEY',
       'SEO_AUTOMATION_KEYWORDSET_ID',

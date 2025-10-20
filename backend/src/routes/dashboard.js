@@ -4,6 +4,7 @@ const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
 const observabilityService = require('../services/observabilityService');
+const featureFlags = require('../lib/featureFlags');
 
 const router = express.Router();
 
@@ -1753,10 +1754,30 @@ router.get('/', (_req, res) => {
   res.type('html').send(renderPage());
 });
 
+async function buildStateWithFlags(state, { forceRefresh = false } = {}) {
+  if (forceRefresh) {
+    await featureFlags.refreshIfNeeded(true);
+  }
+
+  const values = await featureFlags.getAll();
+  const active = Object.entries(values)
+    .filter(([, enabled]) => Boolean(enabled))
+    .map(([name]) => name);
+
+  return {
+    ...state,
+    featureFlags: {
+      values,
+      active
+    }
+  };
+}
+
 router.get('/api/variables', async (_req, res, next) => {
   try {
     const state = await configDashboardService.getState();
-    res.json(state);
+    const withFlags = await buildStateWithFlags(state);
+    res.json(withFlags);
   } catch (error) {
     next(error);
   }
@@ -1772,7 +1793,8 @@ router.post('/api/variables', async (req, res, next) => {
     }
 
     const state = await configDashboardService.updateValues(entries);
-    res.json(state);
+    const withFlags = await buildStateWithFlags(state, { forceRefresh: true });
+    res.json(withFlags);
   } catch (error) {
     next(error);
   }
