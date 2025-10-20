@@ -8,7 +8,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
     class="container mx-auto px-spacing-md"
   >
     <h2
-      class="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold"
+      class="heading-2 text-center text-neutral-dark mb-spacing-2xl"
     >
       Onze Pakketten
     </h2>
@@ -22,12 +22,12 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
         >
           <h3
-            class="text-font-size-h3 font-bold"
+            class="heading-3"
           >
             Essentials
           </h3>
           <p
-            class="text-font-size-small opacity-80"
+            class="body-sm opacity-80"
           >
             Voor verjaardagen en jubilea
           </p>
@@ -36,12 +36,12 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="flex items-baseline mb-spacing-lg"
         >
           <span
-            class="text-font-size-h1 font-extrabold"
+            class="heading-1"
           >
             €550
           </span>
           <span
-            class="text-font-size-body ml-spacing-xs"
+            class="body-md ml-spacing-xs"
           >
             / event
           </span>
@@ -50,7 +50,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="flex-grow space-y-spacing-sm mb-spacing-xl"
         >
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-primary"
@@ -69,7 +69,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
             4 uur DJ-set
           </li>
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-primary"
@@ -88,7 +88,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
             Compacte lichtshow
           </li>
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-primary"
@@ -108,7 +108,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           </li>
         </ul>
         <button
-          class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+          class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md body-lg w-full"
           type="button"
         >
           Plan intake
@@ -118,7 +118,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
         class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-dark text-neutral-light shadow-2xl transform scale-105"
       >
         <div
-          class="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg"
+          class="absolute top-0 right-0 bg-secondary text-neutral-dark body-sm text-strong px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg"
         >
           Populair
         </div>
@@ -126,12 +126,12 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="pb-spacing-md mb-spacing-md text-secondary border-b border-secondary/50"
         >
           <h3
-            class="text-font-size-h3 font-bold"
+            class="heading-3"
           >
             Celebration
           </h3>
           <p
-            class="text-font-size-small opacity-80"
+            class="body-sm opacity-80"
           >
             Meest gekozen voor bruiloften
           </p>
@@ -140,12 +140,12 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="flex items-baseline mb-spacing-lg"
         >
           <span
-            class="text-font-size-h1 font-extrabold"
+            class="heading-1"
           >
             €890
           </span>
           <span
-            class="text-font-size-body ml-spacing-xs"
+            class="body-md ml-spacing-xs"
           >
             / event
           </span>
@@ -154,7 +154,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="flex-grow space-y-spacing-sm mb-spacing-xl"
         >
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -173,7 +173,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
             6 uur DJ-set
           </li>
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -192,7 +192,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
             Live saxofonist
           </li>
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -211,7 +211,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
             Premium geluid
           </li>
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -231,7 +231,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           </li>
         </ul>
         <button
-          class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+          class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md body-lg w-full"
           type="button"
         >
           Boek nu
@@ -244,12 +244,12 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
         >
           <h3
-            class="text-font-size-h3 font-bold"
+            class="heading-3"
           >
             Grand Gala
           </h3>
           <p
-            class="text-font-size-small opacity-80"
+            class="body-sm opacity-80"
           >
             Voor grote events en bedrijfsfeesten
           </p>
@@ -258,12 +258,12 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="flex items-baseline mb-spacing-lg"
         >
           <span
-            class="text-font-size-h1 font-extrabold"
+            class="heading-1"
           >
             €1.450
           </span>
           <span
-            class="text-font-size-body ml-spacing-xs"
+            class="body-md ml-spacing-xs"
           >
             / event
           </span>
@@ -272,7 +272,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           class="flex-grow space-y-spacing-sm mb-spacing-xl"
         >
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-primary"
@@ -291,7 +291,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
             8 uur DJ-set
           </li>
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-primary"
@@ -310,7 +310,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
             Licht- en ledshow
           </li>
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-primary"
@@ -329,7 +329,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
             MC service
           </li>
           <li
-            class="flex items-start text-font-size-body"
+            class="flex items-start body-md"
           >
             <svg
               class="w-5 h-5 mr-spacing-sm text-primary"
@@ -349,7 +349,7 @@ exports[`PricingTables matches the snapshot for custom packages 1`] = `
           </li>
         </ul>
         <button
-          class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+          class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md body-lg w-full"
           type="button"
         >
           Vraag offerte aan
