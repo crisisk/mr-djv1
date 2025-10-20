@@ -1,4 +1,5 @@
 import React from 'react';
+import { Icon } from '../../icons/index.jsx';
 
 /**
  * TrustBadges - Display credibility indicators
@@ -8,28 +9,32 @@ import React from 'react';
 const TrustBadges = ({ variant = 'horizontal', className = '' }) => {
   const badges = [
     {
-      icon: '🎉',
+      icon: 'icon-private-party',
       value: '15+',
       label: 'Jaar Ervaring',
       color: 'text-primary',
+      iconClass: 'text-secondary',
     },
     {
-      icon: '✨',
+      icon: 'icon-sparkles',
       value: '2500+',
       label: 'Geslaagde Feesten',
       color: 'text-secondary',
+      iconClass: 'text-secondary',
     },
     {
-      icon: '⭐',
+      icon: 'icon-star',
       value: '4.9/5',
       label: 'Google Reviews',
       color: 'text-secondary',
+      iconClass: 'text-secondary',
     },
     {
-      icon: '💃',
+      icon: 'icon-dancer',
       value: '100%',
       label: 'Dansgarantie',
       color: 'text-primary',
+      iconClass: 'text-primary',
     },
   ];
 
@@ -47,8 +52,8 @@ const TrustBadges = ({ variant = 'horizontal', className = '' }) => {
               className="flex flex-col items-center p-spacing-md rounded-lg hover:bg-neutral-gray-100 transition-colors duration-300"
             >
               {/* Icon */}
-              <div className="text-5xl md:text-6xl mb-spacing-sm">
-                {badge.icon}
+              <div className={`text-5xl md:text-6xl mb-spacing-sm ${badge.iconClass ?? ''}`}>
+                <Icon name={badge.icon} size={64} />
               </div>
 
               {/* Value */}
@@ -75,19 +80,19 @@ export const TrustBadgesCompact = () => {
   return (
     <div className="flex items-center justify-center gap-6 py-4 text-sm">
       <div className="flex items-center gap-2">
-        <span className="text-xl">🎉</span>
+        <Icon name="icon-private-party" size={24} className="text-primary" />
         <span className="font-bold text-primary">15+ jaar</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xl">✨</span>
+        <Icon name="icon-sparkles" size={24} className="text-secondary" />
         <span className="font-bold text-primary">2500+ feesten</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xl">⭐</span>
+        <Icon name="icon-star" size={24} className="text-secondary" />
         <span className="font-bold text-secondary">4.9/5</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xl">💃</span>
+        <Icon name="icon-dancer" size={24} className="text-primary" />
         <span className="font-bold text-primary">100% garantie</span>
       </div>
     </div>

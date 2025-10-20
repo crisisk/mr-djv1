@@ -1,5 +1,5 @@
 import React from 'react';
-import { trackPhoneClick, getUserVariant } from '../../utils/trackConversion';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 /**
  * PhoneLink Component
@@ -22,8 +22,16 @@ const PhoneLink = ({
   children
 }) => {
   const handleClick = () => {
-    const variant = getUserVariant();
-    trackPhoneClick(variant, location);
+    loadTrackConversion()
+      .then(({ getUserVariant, trackPhoneClick }) => {
+        if (typeof trackPhoneClick === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackPhoneClick(variant, location);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for phone click', error);
+      });
   };
 
   return (

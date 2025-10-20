@@ -1,60 +1,77 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
-import { useReplicateImage, useHeroImage } from '../useReplicateImage.js';
-import { getCachedOrGenerateImage, generateHeroImage, generateEventImage } from '../services/replicate';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../services/replicate', () => ({
+vi.mock('../../services/replicate.js', () => ({
   getCachedOrGenerateImage: vi.fn(),
   generateHeroImage: vi.fn(),
   generateEventImage: vi.fn(),
 }));
 
+import { useReplicateImage, useHeroImage } from '../useReplicateImage.js';
+import { getCachedOrGenerateImage, generateHeroImage, generateEventImage } from '../../services/replicate.js';
+
 describe('useReplicateImage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getCachedOrGenerateImage.mockImplementation(async (_key, generator) => {
+      return generator ? await generator() : null;
+    });
+    generateHeroImage.mockResolvedValue('hero-url');
+    generateEventImage.mockResolvedValue('event-url');
   });
 
-  it('routes hero and event generation through their respective services', async () => {
-    vi.mocked(getCachedOrGenerateImage).mockImplementation(async (_key, generator) => generator());
-    vi.mocked(generateHeroImage).mockResolvedValue('hero-url');
-    vi.mocked(generateEventImage).mockResolvedValue('event-url');
-
+  it('routes hero requests through generateHeroImage', async () => {
     const { result } = renderHook(() => useReplicateImage());
 
+    const params = { type: 'hero', city: 'Amsterdam', eventType: 'feest' };
+    let returnedUrl;
     await act(async () => {
-      await result.current.generateImage({ type: 'hero', city: 'Paris' });
+      returnedUrl = await result.current.generateImage(params);
     });
 
-    expect(generateHeroImage).toHaveBeenCalledWith({ type: 'hero', city: 'Paris' });
+    expect(getCachedOrGenerateImage).toHaveBeenCalledWith(JSON.stringify(params), expect.any(Function));
+    expect(generateHeroImage).toHaveBeenCalledWith(params);
+    expect(generateEventImage).not.toHaveBeenCalled();
+    expect(returnedUrl).toBe('hero-url');
     expect(result.current.imageUrl).toBe('hero-url');
+  });
 
+  it('routes event requests through generateEventImage', async () => {
+    const { result } = renderHook(() => useReplicateImage());
+
+    const params = { type: 'event', prompt: 'Dance floor', aspectRatio: '4:3' };
+    let returnedUrl;
     await act(async () => {
-      await result.current.generateImage({ type: 'event', name: 'Gala' });
+      returnedUrl = await result.current.generateImage(params);
     });
 
-    expect(generateEventImage).toHaveBeenCalledWith({ type: 'event', name: 'Gala' });
+    expect(getCachedOrGenerateImage).toHaveBeenCalledWith(JSON.stringify(params), expect.any(Function));
+    expect(generateEventImage).toHaveBeenCalledWith(params);
+    expect(generateHeroImage).not.toHaveBeenCalled();
+    expect(returnedUrl).toBe('event-url');
     expect(result.current.imageUrl).toBe('event-url');
   });
 
   it('updates error state when generation fails', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.mocked(getCachedOrGenerateImage).mockRejectedValue(new Error('generation failed'));
-
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const { result } = renderHook(() => useReplicateImage());
+
+    getCachedOrGenerateImage.mockRejectedValueOnce(new Error('Network error'));
 
     await act(async () => {
-      const response = await result.current.generateImage({ type: 'hero', city: 'Berlin' });
-      expect(response).toBeNull();
+      await result.current.generateImage({ type: 'hero', city: 'Rotterdam' });
     });
 
-    expect(result.current.error).toBe('generation failed');
+    await waitFor(() => expect(result.current.error).toBe('Network error'));
     expect(result.current.isLoading).toBe(false);
 
-    consoleSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
-  it('exposes setImageUrl for imperative overrides', () => {
-    const { result } = renderHook(() => useReplicateImage());
+  it('allows imperative overrides through setImageUrl', () => {
+    const { result } = renderHook(() => useReplicateImage({ placeholder: 'initial' }));
+
+    expect(result.current.imageUrl).toBe('initial');
 
     act(() => {
       result.current.setImageUrl('manual-url');
@@ -67,32 +84,30 @@ describe('useReplicateImage', () => {
 describe('useHeroImage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getCachedOrGenerateImage.mockImplementation(async (_key, generator) => await generator());
+    generateHeroImage.mockResolvedValue('auto-hero-url');
   });
 
-  it('generates hero images only when autoGenerate is enabled with a city', async () => {
-    vi.mocked(getCachedOrGenerateImage).mockImplementation(async (_key, generator) => generator());
-    vi.mocked(generateHeroImage).mockResolvedValue('auto-hero-url');
+  it('auto generates a hero image when city and autoGenerate are provided', async () => {
+    const { result } = renderHook(() =>
+      useHeroImage({ city: 'Utrecht', eventType: 'bruiloft', autoGenerate: true })
+    );
 
-    const { rerender } = renderHook((props) => useHeroImage(props), {
-      initialProps: { city: undefined, eventType: 'festival', autoGenerate: true },
-    });
+    await waitFor(() =>
+      expect(generateHeroImage).toHaveBeenCalledWith({
+        type: 'hero',
+        city: 'Utrecht',
+        eventType: 'bruiloft',
+      })
+    );
 
-    await act(async () => {
-      await Promise.resolve();
-    });
+    expect(result.current.imageUrl).toBe('auto-hero-url');
+  });
 
-    expect(generateHeroImage).not.toHaveBeenCalled();
+  it('skips generation when required data is missing', async () => {
+    renderHook(() => useHeroImage({ city: undefined, autoGenerate: true }));
+    renderHook(() => useHeroImage({ city: 'Eindhoven', autoGenerate: false }));
 
-    rerender({ city: 'Amsterdam', eventType: 'festival', autoGenerate: true });
-
-    await waitFor(() => {
-      expect(generateHeroImage).toHaveBeenCalledTimes(1);
-    });
-
-    expect(generateHeroImage).toHaveBeenCalledWith({
-      type: 'hero',
-      city: 'Amsterdam',
-      eventType: 'festival',
-    });
+    await waitFor(() => expect(generateHeroImage).not.toHaveBeenCalled());
   });
 });
