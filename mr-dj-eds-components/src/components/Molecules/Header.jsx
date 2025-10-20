@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../Atoms/Logo.jsx';
-import { trackPhoneClick, trackContactNavigation, getUserVariant } from '../../utils/trackConversion';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 /**
  * Professional Header Component with Mobile Menu
@@ -23,14 +23,30 @@ const Header = ({ transparent = false }) => {
 
   // Track phone click
   const handlePhoneClick = () => {
-    const variant = getUserVariant();
-    trackPhoneClick(variant, 'header');
+    loadTrackConversion()
+      .then(({ getUserVariant, trackPhoneClick }) => {
+        if (typeof trackPhoneClick === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackPhoneClick(variant, 'header');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for header phone click', error);
+      });
   };
 
   // Track contact navigation
-  const handleContactClick = (e) => {
-    const variant = getUserVariant();
-    trackContactNavigation(variant, 'header');
+  const handleContactClick = () => {
+    loadTrackConversion()
+      .then(({ getUserVariant, trackContactNavigation }) => {
+        if (typeof trackContactNavigation === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackContactNavigation(variant, 'header');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for header contact click', error);
+      });
   };
 
   const bgClass = transparent && !isScrolled
@@ -69,13 +85,13 @@ const Header = ({ transparent = false }) => {
             <a href="/faq" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium">
               FAQ
             </a>
-            <a href="/contact" onClick={handleContactClick} className="text-base bg-gradient-to-r from-[#00AEEF] to-[#0096D6] text-white px-6 py-2.5 rounded-full hover:shadow-lg transition-all font-bold">
+            <a href="/contact" onClick={handleContactClick} className="text-base bg-gradient-to-r from-primary to-primary-dark text-neutral-light px-6 py-2.5 rounded-full hover:shadow-lg transition-all font-bold">
               Contact
             </a>
-            <a href="tel:+31408422594" onClick={handlePhoneClick} className="text-base bg-[#D4AF37] text-white px-6 py-2.5 rounded-full hover:bg-[#C4A137] transition font-bold flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="tel:+31408422594" onClick={handlePhoneClick} className="text-base bg-secondary text-neutral-dark px-6 py-2.5 rounded-full hover:bg-secondary/90 transition font-bold flex items-center gap-2">
+              <IconBase className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
+              </IconBase>
               Bel Direct
             </a>
           </nav>
@@ -83,16 +99,16 @@ const Header = ({ transparent = false }) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-[#1A2C4B] hover:bg-gray-100 rounded-lg transition"
+            className="lg:hidden p-2 text-neutral-dark hover:bg-neutral-gray-100 rounded-lg transition"
             aria-label="Toggle menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <IconBase className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
-            </svg>
+            </IconBase>
           </button>
         </div>
 
@@ -118,13 +134,13 @@ const Header = ({ transparent = false }) => {
               <a href="/faq" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium py-2">
                 FAQ
               </a>
-              <a href="/contact" onClick={handleContactClick} className="text-base bg-[#00AEEF] text-white px-6 py-3 rounded-lg hover:bg-[#0096D6] transition font-bold text-center mt-2">
+              <a href="/contact" onClick={handleContactClick} className="text-base bg-primary text-neutral-light px-6 py-3 rounded-lg hover:bg-primary-dark transition font-bold text-center mt-2">
                 Contact Opnemen
               </a>
-              <a href="tel:+31408422594" onClick={handlePhoneClick} className="text-base bg-[#D4AF37] text-white px-6 py-3 rounded-lg hover:bg-[#C4A137] transition font-bold text-center flex items-center justify-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <a href="tel:+31408422594" onClick={handlePhoneClick} className="text-base bg-secondary text-neutral-dark px-6 py-3 rounded-lg hover:bg-secondary/90 transition font-bold text-center flex items-center justify-center gap-2">
+                <IconBase className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
+                </IconBase>
                 Bel: +31 (0) 40 842 2594
               </a>
             </div>

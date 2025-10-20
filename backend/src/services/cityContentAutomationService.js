@@ -120,6 +120,68 @@ const DEFAULT_BANNED_CLAIMS = [
   'no cure no pay'
 ];
 
+const DEFAULT_LOCALE = 'nl';
+
+const ensureTranslationObject = (value, existing) => {
+  if (value && typeof value === 'object' && value.translations) {
+    const translations = { ...value.translations };
+    if (typeof translations[DEFAULT_LOCALE] !== 'string' && typeof translations.nl === 'string') {
+      translations[DEFAULT_LOCALE] = translations.nl;
+    }
+    if (typeof translations[DEFAULT_LOCALE] !== 'string') {
+      translations[DEFAULT_LOCALE] = '';
+    }
+    if (translations.en === undefined) {
+      translations.en = translations[DEFAULT_LOCALE];
+    }
+    return { translations };
+  }
+
+  const translations =
+    existing && existing.translations && typeof existing.translations === 'object'
+      ? { ...existing.translations }
+      : {};
+
+  const normalized = typeof value === 'string' ? value : '';
+  translations[DEFAULT_LOCALE] = normalized;
+
+  if (translations.en === undefined) {
+    translations.en = translations[DEFAULT_LOCALE];
+  }
+
+  return { translations };
+};
+
+const ensureTranslationList = (value, existing) => {
+  if (value && typeof value === 'object' && value.translations) {
+    const translations = { ...value.translations };
+    if (!Array.isArray(translations[DEFAULT_LOCALE]) && Array.isArray(translations.nl)) {
+      translations[DEFAULT_LOCALE] = translations.nl;
+    }
+    if (!Array.isArray(translations[DEFAULT_LOCALE])) {
+      translations[DEFAULT_LOCALE] = [];
+    }
+    if (!Array.isArray(translations.en)) {
+      translations.en = translations[DEFAULT_LOCALE];
+    }
+    return { translations };
+  }
+
+  const translations =
+    existing && existing.translations && typeof existing.translations === 'object'
+      ? { ...existing.translations }
+      : {};
+
+  const normalized = Array.isArray(value) ? value : [];
+  translations[DEFAULT_LOCALE] = normalized;
+
+  if (!Array.isArray(translations.en)) {
+    translations.en = translations[DEFAULT_LOCALE];
+  }
+
+  return { translations };
+};
+
 const REVIEW_FILE_HEADER =
   '# City content automation review queue\n\nDit document bevat content die handmatige controle vereist voordat de update kan worden gepusht naar productie.\n\n';
 
@@ -627,25 +689,39 @@ async function upsertCityContent(entries, contextOverrides = {}) {
 
   const sanitized = entries.map((entry) => {
     const slug = ensureSlug(entry);
+    const existingEntry = map.get(slug) || {};
+    const existingCases = Array.isArray(existingEntry.cases) ? existingEntry.cases : [];
+    const existingFaqs = Array.isArray(existingEntry.faqs) ? existingEntry.faqs : [];
+
     return {
       slug,
       city: entry.city,
-      intro: entry.intro,
-      cases: entry.cases,
-      venues: entry.venues,
-      faqs: entry.faqs
+      intro: ensureTranslationObject(entry.intro, existingEntry.intro),
+      cases: Array.isArray(entry.cases)
+        ? entry.cases.map((item, index) => {
+            const existingCase = existingCases[index] || {};
+            return {
+              title: ensureTranslationObject(item?.title, existingCase.title),
+              result: ensureTranslationObject(item?.result, existingCase.result),
+              venue: ensureTranslationObject(item?.venue, existingCase.venue),
+            };
+          })
+        : [],
+      venues: ensureTranslationList(entry.venues, existingEntry.venues),
+      faqs: Array.isArray(entry.faqs)
+        ? entry.faqs.map((item, index) => {
+            const existingFaq = existingFaqs[index] || {};
+            return {
+              question: ensureTranslationObject(item?.question, existingFaq.question),
+              answer: ensureTranslationObject(item?.answer, existingFaq.answer),
+            };
+          })
+        : [],
     };
   });
 
   sanitized.forEach((entry) => {
-    map.set(entry.slug, {
-      slug: entry.slug,
-      city: entry.city,
-      intro: entry.intro,
-      cases: entry.cases,
-      venues: entry.venues,
-      faqs: entry.faqs
-    });
+    map.set(entry.slug, entry);
   });
 
   const updated = Array.from(map.values());

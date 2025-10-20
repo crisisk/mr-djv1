@@ -5,11 +5,16 @@ import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
 import PricingTables from '../components/Organisms/PricingTables.jsx';
+import { generateBreadcrumbSchema } from '../utils/schemaOrg.js';
+import { createServiceBreadcrumbs } from '../utils/breadcrumbs.js';
 
 const BedrijfsfeestDJPage = ({ variant = 'A' }) => {
   // Variant-specific CTA text
   const ctaPrimaryText = variant === 'B' ? 'Boek Nu' : 'Bekijk Video';
   const ctaSecondaryText = variant === 'B' ? 'Check Beschikbaarheid' : 'Vraag Prijs Aan';
+
+  const breadcrumbs = createServiceBreadcrumbs('Zakelijk DJ', '/zakelijk');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
 
   return (
     <div className="BedrijfsfeestDJPage">
@@ -38,6 +43,7 @@ const BedrijfsfeestDJPage = ({ variant = 'A' }) => {
             }
           `}
         </script>
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />

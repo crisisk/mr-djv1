@@ -7,19 +7,39 @@ import ContactForm from '../Organisms/ContactForm.jsx';
 import { useHeroImage } from '../../hooks/useReplicateImage.js';
 import { localSeoData, getLocalSeoDataBySlug } from '../../data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from '../../data/local_seo_bruiloft_data.js';
+import { pricingPackages } from '../../data/pricingPackages.js';
+import { generateOfferCatalogSchema } from '../../utils/schemaOrg.js';
 import { getWindow } from '../../lib/environment.js';
+import { generateBreadcrumbSchema } from '../../utils/schemaOrg.js';
+import { createLocalSeoBreadcrumbs } from '../../utils/breadcrumbs.js';
 
-const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) => {
+const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, locale = getDefaultLocale() }) => {
   const hasData = Boolean(data);
   const city = hasData ? data.city : '';
   const province = hasData ? data.province : '';
-  const localUSP = hasData ? data.localUSP : '';
-  const localReviews = hasData ? data.localReviews : '';
-  const localVenues = hasData ? data.localVenues : [];
-  const seoTitle = hasData ? data.seoTitle : 'Mister DJ - Lokale DJ';
-  const seoDescription = hasData
-    ? data.seoDescription
-    : 'Mr. DJ verzorgt feesten door heel Nederland met 100% dansgarantie.';
+  const localUSP = useMemo(
+    () => (hasData ? resolveLocalizedValue(data.localUSP, locale) : ''),
+    [data, hasData, locale],
+  );
+  const localReviews = useMemo(
+    () => (hasData ? resolveLocalizedValue(data.localReviews, locale) : ''),
+    [data, hasData, locale],
+  );
+  const localVenues = useMemo(
+    () => (hasData ? resolveLocalizedList(data.localVenues, locale) : []),
+    [data, hasData, locale],
+  );
+  const seoTitle = useMemo(
+    () => (hasData ? resolveLocalizedValue(data.seoTitle, locale) : 'Mister DJ - Lokale DJ'),
+    [data, hasData, locale],
+  );
+  const seoDescription = useMemo(
+    () =>
+      hasData
+        ? resolveLocalizedValue(data.seoDescription, locale)
+        : 'Mr. DJ verzorgt feesten door heel Nederland met 100% dansgarantie.',
+    [data, hasData, locale],
+  );
   const slug = hasData ? data.slug : '';
   const isBruiloftPage = hasData && slug.startsWith('bruiloft-dj-');
   const counterpartSlug = isBruiloftPage ? slug.replace('bruiloft-dj-', '') : `bruiloft-dj-${slug}`;
@@ -38,12 +58,100 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
   );
 
   const heroBackgroundImage = heroImage || fallbackHeroImage;
-  const heroTitle = isBruiloftPage ? `Uw Bruiloft DJ in ${city}, ${province}` : `Uw DJ voor Feesten in ${city}, ${province}`;
+  const heroProvinceSuffix = province ? `, ${province}` : '';
+  const venuesProvinceSuffix = province ? ` en ${province}` : '';
+  const footerProvinceSuffix = province ? ` of ${province}` : '';
+  const eventTypeTitle = translate(
+    isBruiloftPage ? 'localSeo.hero.eventTypeWedding' : 'localSeo.hero.eventTypeGeneral',
+    {
+      locale,
+      defaultValue: isBruiloftPage ? 'Bruiloft DJ' : 'DJ voor feesten',
+    },
+  );
+
+  const heroTitle = translate('localSeo.hero.title', {
+    locale,
+    defaultValue: isBruiloftPage
+      ? `Uw Bruiloft DJ in ${city}${heroProvinceSuffix}`
+      : `Uw DJ voor Feesten in ${city}${heroProvinceSuffix}`,
+    params: {
+      city,
+      provinceSuffix: heroProvinceSuffix,
+      eventTypeTitle,
+    },
+  });
+
+  const heroPrimaryCta = translate('localSeo.hero.ctaPrimary', {
+    locale,
+    defaultValue: 'Check Beschikbaarheid',
+  });
+
+  const heroSecondaryCta = translate('localSeo.hero.ctaSecondary', {
+    locale,
+    defaultValue: 'Vraag Offerte Aan',
+  });
+
+  const venuesHeading = translate('localSeo.venues.heading', {
+    locale,
+    defaultValue: `Bekend met de beste locaties in ${city}${venuesProvinceSuffix}`,
+    params: {
+      city,
+      provinceSuffix: venuesProvinceSuffix,
+    },
+  });
+
+  const testimonialsHeading = translate('localSeo.testimonials.heading', {
+    locale,
+    defaultValue: `Wat klanten in ${city}${venuesProvinceSuffix} zeggen`,
+    params: {
+      city,
+      provinceSuffix: venuesProvinceSuffix,
+    },
+  });
+
+  const footerHeading = translate(
+    variant === 'B' ? 'localSeo.footer.variantBHeading' : 'localSeo.footer.heading',
+    {
+      locale,
+      defaultValue:
+        variant === 'B'
+          ? `Vraag vandaag nog een gratis offerte aan in ${city}!`
+          : `Klaar voor een onvergetelijk feest in ${city}${footerProvinceSuffix}?`,
+      params:
+        variant === 'B'
+          ? {
+              city,
+            }
+          : {
+              city,
+              provinceSuffix: footerProvinceSuffix,
+            },
+    },
+  );
+
+  const footerCtaPrompt = translate('localSeo.footer.ctaPrompt', {
+    locale,
+    defaultValue: 'Bel ons direct op',
+  });
+
+  const footerCtaButton = translate('localSeo.footer.ctaButton', {
+    locale,
+    defaultValue: 'Vraag nu een offerte aan',
+  });
 
   const canonicalPath = hasData ? (isBruiloftPage ? `/${slug}` : `/dj-in-${slug}`) : '/';
   const browser = getWindow();
   const origin = browser?.location?.origin ?? 'https://www.mrdj.nl';
   const canonicalUrl = `${origin}${canonicalPath}`;
+
+  const offerCatalogSchema = useMemo(
+    () =>
+      generateOfferCatalogSchema({
+        packages: pricingPackages,
+        pagePath: canonicalPath,
+      }),
+    [canonicalPath],
+  );
 
   const hasCounterpart = useMemo(() => {
     if (!hasData) {
@@ -145,8 +253,29 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
         url: origin,
       },
       url: canonicalUrl,
+      offers: offerCatalogSchema ? { '@id': offerCatalogSchema['@id'] } : undefined,
     });
-  }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, origin, province]);
+  }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, offerCatalogSchema, origin, province]);
+
+  const breadcrumbs = useMemo(() => {
+    if (!hasData) {
+      return [];
+    }
+
+    return createLocalSeoBreadcrumbs({
+      city,
+      slug,
+      isBruiloft: isBruiloftPage,
+    });
+  }, [city, hasData, isBruiloftPage, slug]);
+
+  const breadcrumbSchema = useMemo(() => {
+    if (!breadcrumbs.length) {
+      return null;
+    }
+
+    return JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+  }, [breadcrumbs]);
 
   if (!hasData) {
     return <div className="p-10 text-center text-red-500">Geen lokale SEO data gevonden.</div>;
@@ -162,13 +291,14 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
         <link rel="canonical" href={canonicalUrl} />
         {localBusinessSchema && <script type="application/ld+json">{localBusinessSchema}</script>}
         {eventSchema && <script type="application/ld+json">{eventSchema}</script>}
+        {breadcrumbSchema && <script type="application/ld+json">{breadcrumbSchema}</script>}
       </Helmet>
 
       <HeroSection
         title={heroTitle}
         subtitle={localUSP}
-        ctaPrimaryText="Check Beschikbaarheid"
-        ctaSecondaryText="Vraag Offerte Aan"
+        ctaPrimaryText={heroPrimaryCta}
+        ctaSecondaryText={heroSecondaryCta}
         backgroundClass="bg-primary"
         titleColor="text-white"
         subtitleColor="text-white"
@@ -188,9 +318,7 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 
       <section className="bg-white py-12">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-6 text-4xl font-bold text-[#1A2C4B]">
-            Bekend met de beste locaties in {city} en {province}
-          </h2>
+          <h2 className="mb-6 text-4xl font-bold text-[#1A2C4B]">{venuesHeading}</h2>
           <div className="flex flex-wrap justify-center gap-3">
             {localVenues.map((venue) => (
               <span key={venue} className="rounded-full bg-gray-100 px-4 py-2 text-base text-[#1A2C4B] shadow-sm">
@@ -203,9 +331,7 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 
       <section className="bg-gray-100 py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-center text-4xl font-extrabold text-[#1A2C4B]">
-            Wat klanten in {city} en {province} zeggen
-          </h2>
+          <h2 className="text-center text-4xl font-extrabold text-[#1A2C4B]">{testimonialsHeading}</h2>
           <div className="mt-8">{testimonialsSection}</div>
           {localReviews && (
             <blockquote className="mx-auto mt-10 max-w-3xl rounded-xl bg-white/70 p-6 text-center text-lg italic text-[#1A2C4B] shadow-md">
@@ -239,17 +365,21 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
       </section>
 
       <div className="bg-[#1A2C4B] py-12 text-center text-white">
-        <h3 className="mb-4 text-4xl font-bold">
-          {variant === 'B'
-            ? `Vraag vandaag nog een gratis offerte aan in ${city}!`
-            : `Klaar voor een onvergetelijk feest in ${city} of ${province}?`}
-        </h3>
+        <h3 className="mb-4 text-4xl font-bold">{footerHeading}</h3>
         <p className="text-white">
-          Bel ons direct op{' '}
+          {footerCtaPrompt}{' '}
           <a href="tel:+31408422594" className="font-bold underline hover:text-secondary">
             +31 (0) 40 8422594
           </a>
         </p>
+        <div className="mt-6 flex justify-center">
+          <a
+            href="/contact"
+            className="inline-flex items-center rounded-full bg-white px-6 py-3 text-lg font-semibold text-[#1A2C4B] shadow-md transition hover:bg-gray-100"
+          >
+            {footerCtaButton}
+          </a>
+        </div>
       </div>
 
       <Footer />

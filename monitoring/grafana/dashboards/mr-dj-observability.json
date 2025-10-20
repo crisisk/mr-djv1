@@ -1,0 +1,70 @@
+{
+  "id": null,
+  "title": "MR-DJ Observability",
+  "timezone": "browser",
+  "editable": true,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Frontend NGINX Requests",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(nginx_http_requests_total[5m]))",
+          "legendFormat": "requests/s"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Node Exporter Load Average",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "node_load1{job='node'}",
+          "legendFormat": "1m load"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "PostgreSQL Availability",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "pg_up{job='postgres'}",
+          "legendFormat": "up"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Redis Memory Usage",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "redis_memory_used_bytes{job='redis'}",
+          "legendFormat": "used"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 }
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}
