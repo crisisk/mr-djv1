@@ -62,7 +62,13 @@ const DEFAULT_SECTION_CONFIG = [
     label: 'RentGuy integratie',
     description:
       'API-parameters voor de synchronisatie van leads en boekingen richting de RentGuy applicatie.',
-    keys: ['RENTGUY_API_BASE_URL', 'RENTGUY_API_KEY', 'RENTGUY_WORKSPACE_ID', 'RENTGUY_TIMEOUT_MS']
+    keys: [
+      'RENTGUY_API_BASE_URL',
+      'RENTGUY_API_KEY',
+      'RENTGUY_WORKSPACE_ID',
+      'RENTGUY_TIMEOUT_MS',
+      'RENTGUY_WEBHOOK_SECRETS'
+    ]
   },
   {
     id: 'content-automation',
@@ -76,7 +82,7 @@ const DEFAULT_SECTION_CONFIG = [
     label: 'Personalization & CRO',
     description:
       'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
-    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
+    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'PERSONALIZATION_WEBHOOK_SECRETS']
   },
   {
     id: 'automation',
@@ -201,7 +207,8 @@ function buildConfig() {
         enabled: Boolean(process.env.RENTGUY_API_BASE_URL && process.env.RENTGUY_API_KEY),
         baseUrl: process.env.RENTGUY_API_BASE_URL || null,
         workspaceId: process.env.RENTGUY_WORKSPACE_ID || null,
-        timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS)
+        timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS),
+        webhookSecrets: parseList(process.env.RENTGUY_WEBHOOK_SECRETS)
       },
       sevensa: {
         enabled: Boolean(process.env.SEVENSA_SUBMIT_URL),
@@ -217,7 +224,8 @@ function buildConfig() {
       }
     },
     personalization: {
-      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null
+      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null,
+      incomingWebhookSecrets: parseList(process.env.PERSONALIZATION_WEBHOOK_SECRETS)
     },
     automation: {
       seo: {
