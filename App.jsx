@@ -1,12 +1,8 @@
-import DjSaxLanding from './mr-dj-eds-components/src/components/Templates/DjSaxLanding.jsx';
 import './App.css';
+import MrDjApp from './mr-dj-eds-components/src/App.jsx';
 
 function App() {
-  return (
-    <div className="min-h-screen bg-neutral-light">
-      <DjSaxLanding />
-    </div>
-  )
+  return <MrDjApp />;
 }
 
-export default App
+export default App;
