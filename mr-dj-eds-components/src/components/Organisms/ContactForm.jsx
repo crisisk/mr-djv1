@@ -231,8 +231,15 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
               fieldErrors.name ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="Jouw naam"
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.name)}
+            aria-describedby={fieldErrors.name ? 'contact-name-error' : undefined}
           />
-          {fieldErrors.name && <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>}
+          {fieldErrors.name && (
+            <p id="contact-name-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.name}
+            </p>
+          )}
         </div>
 
         {/* Email */}
@@ -250,8 +257,15 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
               fieldErrors.email ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="jouw@email.nl"
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? 'contact-email-error' : undefined}
           />
-          {fieldErrors.email && <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>}
+          {fieldErrors.email && (
+            <p id="contact-email-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.email}
+            </p>
+          )}
         </div>
 
         {/* Phone */}
@@ -271,11 +285,12 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
               fieldErrors.phone ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="+31 6 12345678"
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.phone)}
-            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+            aria-describedby={fieldErrors.phone ? 'contact-phone-error' : undefined}
           />
           {fieldErrors.phone && (
-            <p id="phone-error" className="text-red-500 text-sm mt-1">
+            <p id="contact-phone-error" className="text-red-500 text-sm mt-1">
               {fieldErrors.phone}
             </p>
           )}
@@ -294,6 +309,9 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
               fieldErrors.eventType ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.eventType)}
+            aria-describedby={fieldErrors.eventType ? 'contact-event-type-error' : undefined}
           >
             <option value="">Selecteer type evenement</option>
             <option value="bruiloft">Bruiloft</option>
@@ -303,7 +321,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             <option value="feest">Algemeen Feest</option>
             <option value="anders">Anders</option>
           </select>
-          {fieldErrors.eventType && <p className="text-red-500 text-sm mt-1">{fieldErrors.eventType}</p>}
+          {fieldErrors.eventType && (
+            <p id="contact-event-type-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.eventType}
+            </p>
+          )}
         </div>
 
         {/* Event Date */}
@@ -337,8 +359,15 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
               fieldErrors.message ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="Vertel ons meer over jouw evenement..."
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.message)}
+            aria-describedby={fieldErrors.message ? 'contact-message-error' : undefined}
           />
-          {fieldErrors.message && <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>}
+          {fieldErrors.message && (
+            <p id="contact-message-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.message}
+            </p>
+          )}
         </div>
 
         {HCAPTCHA_SITE_KEY && (
