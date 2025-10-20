@@ -1,4 +1,5 @@
 const express = require('express');
+const { body, validationResult, matchedData } = require('express-validator');
 const dashboardAuth = require('../middleware/dashboardAuth');
 const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
@@ -6,6 +7,121 @@ const sevensaService = require('../services/sevensaService');
 const observabilityService = require('../services/observabilityService');
 const reviewService = require('../services/reviewService');
 const { logger } = require('../lib/logger');
+
+const DASHBOARD_LIMIT_BOUNDS = { min: 1, max: 500 };
+const ALLOWED_DEVICES = ['desktop', 'mobile'];
+const ALLOWED_TOOLS = ['lighthouse', 'axe'];
+const managedDashboardKeys = Array.isArray(config.dashboard?.managedKeys)
+  ? config.dashboard.managedKeys
+  : [];
+const managedKeySet = new Set(managedDashboardKeys);
+
+function createDashboardLimiter({ windowMs, max }) {
+  const hits = new Map();
+
+  function cleanup() {
+    const threshold = Date.now() - windowMs;
+    for (const [key, entry] of hits.entries()) {
+      if (entry.start < threshold) {
+        hits.delete(key);
+      }
+    }
+  }
+
+  setInterval(cleanup, windowMs).unref();
+
+  return function dashboardLimiter(req, res, next) {
+    const identifier = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+    const now = Date.now();
+    const record = hits.get(identifier) || { count: 0, start: now };
+
+    if (now - record.start > windowMs) {
+      record.count = 0;
+      record.start = now;
+    }
+
+    record.count += 1;
+    hits.set(identifier, record);
+
+    if (record.count > max) {
+      const retryAfterSeconds = Math.ceil((windowMs - (now - record.start)) / 1000);
+      res.status(429).json({
+        error: 'Too many requests',
+        retryAfter: retryAfterSeconds
+      });
+      return;
+    }
+
+    next();
+  };
+}
+
+function auditManagementAction(req, action, details = {}) {
+  const auditLogger = logger.child({
+    route: 'dashboard-management',
+    action,
+    ip: req.ip,
+    userAgent: req.headers['user-agent'] || undefined
+  });
+
+  auditLogger.info({ details }, 'Dashboard management action invoked');
+}
+
+function onlyAllowFields(allowed) {
+  return body()
+    .custom((_value, { req }) => {
+      const provided = Object.keys(req.body || {});
+      const unknown = provided.filter((key) => !allowed.includes(key));
+      if (unknown.length > 0) {
+        throw new Error(`Onbekende velden: ${unknown.join(', ')}`);
+      }
+      return true;
+    })
+    .withMessage('Onbekende velden in aanvraag');
+}
+
+function ensurePlainObject(value) {
+  return value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function handleValidation(req, res, next) {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const details = errors.array().map((error) => ({
+      field: error.path || error.param || 'body',
+      message: error.msg
+    }));
+
+    res.status(422).json({
+      error: 'Validatie mislukt',
+      details
+    });
+    return;
+  }
+
+  next();
+}
+
+function isValidUrlOrPath(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  if (value.startsWith('/')) {
+    return true;
+  }
+
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch (_error) {
+    return false;
+  }
+}
+
+const queueOperationLimiter = createDashboardLimiter({ windowMs: 60 * 1000, max: 5 });
+const monitoringRunLimiter = createDashboardLimiter({ windowMs: 60 * 1000, max: 3 });
 
 const router = express.Router();
 
@@ -2720,6 +2836,87 @@ async function buildStateWithFlags(state, { forceRefresh = false } = {}) {
   };
 }
 
+const variablesValidations = [
+  onlyAllowFields(['entries', 'assignments']),
+  body('entries')
+    .exists({ checkNull: true })
+    .withMessage('entries is vereist')
+    .bail()
+    .custom((value) => ensurePlainObject(value))
+    .withMessage('entries moet een object zijn')
+    .bail()
+    .custom((value) => {
+      const keys = Object.keys(value || {});
+      const unknown = keys.filter((key) => !managedKeySet.has(key));
+      if (unknown.length > 0) {
+        throw new Error(`Onbekende configuratiesleutels: ${unknown.join(', ')}`);
+      }
+      return true;
+    }),
+  body('assignments')
+    .optional({ nullable: true })
+    .custom((value) => value === null || ensurePlainObject(value))
+    .withMessage('assignments moet een object zijn')
+];
+
+const flushQueueValidations = [
+  onlyAllowFields(['limit']),
+  body('limit')
+    .optional({ checkFalsy: false, nullable: true })
+    .isInt(DASHBOARD_LIMIT_BOUNDS)
+    .withMessage(
+      `limit moet een geheel getal tussen ${DASHBOARD_LIMIT_BOUNDS.min} en ${DASHBOARD_LIMIT_BOUNDS.max} zijn`
+    )
+    .toInt()
+];
+
+const performanceRunValidations = [
+  onlyAllowFields(['url', 'device', 'variantId', 'tools']),
+  body('url')
+    .exists({ checkFalsy: true })
+    .withMessage('url is vereist')
+    .bail()
+    .isString()
+    .withMessage('url moet een string zijn')
+    .bail()
+    .customSanitizer((value) => (typeof value === 'string' ? value.trim() : value))
+    .custom((value) => isValidUrlOrPath(value))
+    .withMessage('url moet een geldige URL of pad zijn'),
+  body('device')
+    .optional()
+    .isString()
+    .withMessage('device moet een string zijn')
+    .bail()
+    .customSanitizer((value) => (typeof value === 'string' ? value.toLowerCase() : value))
+    .isIn(ALLOWED_DEVICES)
+    .withMessage(`device moet een van ${ALLOWED_DEVICES.join(', ')} zijn`),
+  body('variantId')
+    .optional({ nullable: true })
+    .isString()
+    .withMessage('variantId moet een string zijn')
+    .bail()
+    .customSanitizer((value) => (typeof value === 'string' ? value.trim() : value))
+    .isLength({ max: 100 })
+    .withMessage('variantId is te lang'),
+  body('tools')
+    .optional()
+    .isArray({ min: 1 })
+    .withMessage('tools moet een lijst zijn')
+    .bail()
+    .custom((tools) => tools.every((tool) => typeof tool === 'string'))
+    .withMessage('tools moet strings bevatten')
+    .bail()
+    .custom((tools) => {
+      const normalized = tools.map((tool) => tool.toLowerCase());
+      const unknown = normalized.filter((tool) => !ALLOWED_TOOLS.includes(tool));
+      if (unknown.length > 0) {
+        throw new Error(`tools bevat onbekende waarden: ${unknown.join(', ')}`);
+      }
+      return true;
+    })
+    .customSanitizer((tools) => [...new Set(tools.map((tool) => tool.toLowerCase()))])
+];
+
 router.get('/api/variables', async (_req, res, next) => {
   try {
     const state = await configDashboardService.getState();
@@ -2730,17 +2927,19 @@ router.get('/api/variables', async (_req, res, next) => {
   }
 });
 
-router.post('/api/variables', async (req, res, next) => {
+router.post('/api/variables', variablesValidations, handleValidation, async (req, res, next) => {
   try {
-    const entries = req.body?.entries;
-    const assignments = req.body?.assignments;
-
-    if (!entries || typeof entries !== 'object' || Array.isArray(entries)) {
-      res.status(400).json({ error: 'Invalid payload' });
-      return;
-    }
+    const data = matchedData(req, { includeOptionals: true, locations: ['body'] });
+    const entries = data.entries || {};
+    const assignments = Object.prototype.hasOwnProperty.call(data, 'assignments')
+      ? data.assignments
+      : undefined;
 
     const state = await configDashboardService.updateValues(entries, { assignments });
+    auditManagementAction(req, 'variables:update', {
+      keyCount: Object.keys(entries || {}).length,
+      assignmentsUpdated: assignments !== undefined
+    });
     res.json(state);
   } catch (error) {
     next(error);
@@ -2887,17 +3086,26 @@ router.get('/api/integrations/rentguy/status', async (_req, res, next) => {
   }
 });
 
-router.post('/api/integrations/rentguy/flush', async (req, res, next) => {
-  try {
-    const rawLimit = req.body?.limit;
-    const parsedLimit = Number(rawLimit);
-    const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
-    const result = await rentGuyService.flushQueue(limit);
-    res.json(result);
-  } catch (error) {
-    next(error);
+router.post(
+  '/api/integrations/rentguy/flush',
+  queueOperationLimiter,
+  flushQueueValidations,
+  handleValidation,
+  async (req, res, next) => {
+    try {
+      const { limit } = matchedData(req, { includeOptionals: true, locations: ['body'] });
+      const result = await rentGuyService.flushQueue(limit);
+      auditManagementAction(req, 'rentguy:flush', {
+        limit: limit ?? null,
+        attempted: result?.attempted,
+        delivered: result?.delivered
+      });
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.get('/api/integrations/sevensa/status', async (_req, res, next) => {
   try {
@@ -2908,17 +3116,26 @@ router.get('/api/integrations/sevensa/status', async (_req, res, next) => {
   }
 });
 
-router.post('/api/integrations/sevensa/flush', async (req, res, next) => {
-  try {
-    const rawLimit = req.body?.limit;
-    const parsedLimit = Number(rawLimit);
-    const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : undefined;
-    const result = await sevensaService.flushQueue(limit);
-    res.json(result);
-  } catch (error) {
-    next(error);
+router.post(
+  '/api/integrations/sevensa/flush',
+  queueOperationLimiter,
+  flushQueueValidations,
+  handleValidation,
+  async (req, res, next) => {
+    try {
+      const { limit } = matchedData(req, { includeOptionals: true, locations: ['body'] });
+      const result = await sevensaService.flushQueue(limit);
+      auditManagementAction(req, 'sevensa:flush', {
+        limit: limit ?? null,
+        attempted: result?.attempted,
+        delivered: result?.delivered
+      });
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.get('/api/observability/performance', async (_req, res, next) => {
   try {
@@ -2929,21 +3146,36 @@ router.get('/api/observability/performance', async (_req, res, next) => {
   }
 });
 
-router.post('/api/observability/performance/run', async (req, res, next) => {
-  try {
-    const entry = await observabilityService.scheduleRun({
-      url: req.body?.url,
-      device: req.body?.device,
-      variantId: req.body?.variantId || null,
-      trigger: 'dashboard',
-      tools: Array.isArray(req.body?.tools) ? req.body.tools : undefined
-    });
+router.post(
+  '/api/observability/performance/run',
+  monitoringRunLimiter,
+  performanceRunValidations,
+  handleValidation,
+  async (req, res, next) => {
+    try {
+      const data = matchedData(req, { includeOptionals: true, locations: ['body'] });
+      const variantId = data.variantId === undefined ? null : data.variantId || null;
+      const payload = {
+        url: data.url,
+        device: data.device || undefined,
+        variantId,
+        trigger: 'dashboard',
+        tools: data.tools && data.tools.length ? data.tools : undefined
+      };
 
-    res.status(202).json({ scheduled: true, entry });
-  } catch (error) {
-    next(error);
+      const entry = await observabilityService.scheduleRun(payload);
+      auditManagementAction(req, 'observability:run', {
+        url: entry?.url || payload.url,
+        device: entry?.device || payload.device || 'desktop',
+        tools: entry?.tools || payload.tools || ALLOWED_TOOLS
+      });
+
+      res.status(202).json({ scheduled: true, entry });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.get('/api/observability/variants', async (_req, res, next) => {
   try {
