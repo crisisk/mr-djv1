@@ -82,37 +82,45 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Suspense fallback={<div className="p-10 text-center text-xl">Laden...</div>}>
-        <Routes>
-          {/* Homepage - DJ + Sax landing page */}
-          <Route path="/" element={<DjSaxLanding />} />
+      <Suspense
+        fallback={
+          <div className="p-10 text-center text-xl" role="status" aria-live="polite">
+            Laden...
+          </div>
+        }
+      >
+        <main id="main-content" tabIndex={-1}>
+          <Routes>
+            {/* Homepage - DJ + Sax landing page */}
+            <Route path="/" element={<DjSaxLanding />} />
 
-          {/* Main Service Pages */}
-          <Route path="/bruiloft-dj" element={<BruiloftDJPage />} />
-          <Route path="/bedrijfsfeest-dj" element={<BedrijfsfeestDJPage />} />
-          <Route path="/zakelijk" element={<BedrijfsfeestDJPage />} />
-          <Route path="/feest-dj" element={<FeestDJPage />} />
-          <Route path="/verhuur" element={<VerhuurPage />} />
+            {/* Main Service Pages */}
+            <Route path="/bruiloft-dj" element={<BruiloftDJPage />} />
+            <Route path="/bedrijfsfeest-dj" element={<BedrijfsfeestDJPage />} />
+            <Route path="/zakelijk" element={<BedrijfsfeestDJPage />} />
+            <Route path="/feest-dj" element={<FeestDJPage />} />
+            <Route path="/verhuur" element={<VerhuurPage />} />
 
-          {/* Dynamic Local SEO Pages - General DJ */}
-          <Route path="/dj-in-:citySlug" element={<LocalSeoPageWrapper />} />
+            {/* Dynamic Local SEO Pages - General DJ */}
+            <Route path="/dj-in-:citySlug" element={<LocalSeoPageWrapper />} />
 
-          {/* Dynamic Local SEO Pages - Bruiloft DJ */}
-          <Route path="/bruiloft-dj-:citySlug" element={<LocalSeoPageWrapper />} />
+            {/* Dynamic Local SEO Pages - Bruiloft DJ */}
+            <Route path="/bruiloft-dj-:citySlug" element={<LocalSeoPageWrapper />} />
 
-          {/* Info Pages */}
-          <Route path="/over-ons" element={<OverOnsPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+            {/* Info Pages */}
+            <Route path="/over-ons" element={<OverOnsPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/contact" element={<ContactPage />} />
 
-          {/* Legal Pages */}
-          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-          <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-          <Route path="/algemene-voorwaarden" element={<TermsConditionsPage />} />
+            {/* Legal Pages */}
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+            <Route path="/algemene-voorwaarden" element={<TermsConditionsPage />} />
 
-          {/* 404 Fallback */}
-          <Route path="*" element={<div className="p-10 text-center">Pagina niet gevonden. <a href="/" className="text-blue-500 underline">Terug naar home</a></div>} />
-        </Routes>
+            {/* 404 Fallback */}
+            <Route path="*" element={<div className="p-10 text-center">Pagina niet gevonden. <a href="/" className="text-blue-500 underline">Terug naar home</a></div>} />
+          </Routes>
+        </main>
       </Suspense>
 
       {/* T1.2: GDPR Cookie Consent Banner - Shows on all pages */}
