@@ -59,22 +59,25 @@ const TestimonialCard = ({ testimonial, isActive, slideId, index, total }) => {
       tabIndex={isActive ? 0 : -1}
     >
       <StarRating rating={testimonial.rating} />
-      <blockquote className="text-2xl text-[#1A2C4B] italic my-spacing-lg flex-grow" aria-live={isActive ? 'polite' : undefined}>
-        “{testimonial.quote}”
+      <blockquote
+        className="text-2xl text-[#1A2C4B] italic my-spacing-lg flex-grow"
+        aria-live={isActive ? 'polite' : undefined}
+      >
+        “{testimonial.reviewBody}”
       </blockquote>
       <div className="border-t border-gray-100 pt-4">
         <p className="text-base font-bold text-primary">{testimonial.author}</p>
-        <p className="text-sm text-gray-500">{testimonial.source}</p>
+        <p className="text-sm text-gray-500">{testimonial.event}</p>
       </div>
     </article>
   );
 };
 
-const Testimonials = () => {
+const Testimonials = ({ testimonials = defaultTestimonials }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const autoplayRef = useRef(null);
-  const testimonialsCount = testimonialsData.length;
+  const testimonialsCount = testimonials.length;
 
   const goToIndex = (index) => {
     setActiveIndex((index + testimonialsCount) % testimonialsCount);
@@ -172,7 +175,7 @@ const Testimonials = () => {
               className="flex transition-transform duration-700 ease-out"
               style={{ transform: `translateX(-${activeIndex * 100}%)` }}
             >
-              {testimonialsData.map((testimonial, index) => (
+              {testimonials.map((testimonial, index) => (
                 <div key={index} className="min-w-full px-2 md:px-6" role="presentation">
                   <TestimonialCard
                     testimonial={testimonial}
@@ -211,7 +214,7 @@ const Testimonials = () => {
           </div>
 
           <div className="flex justify-center gap-3 mt-8" role="tablist" aria-label="Testimonials selecties">
-            {testimonialsData.map((_, index) => (
+            {testimonials.map((_, index) => (
               <button
                 key={index}
                 type="button"
@@ -234,3 +237,4 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
+export { defaultTestimonials };

@@ -187,6 +187,17 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, loca
     return mapped;
   }, [city, counterpartSlug, generalSlug, hasCounterpart, hasData, isBruiloftPage, province, slug]);
 
+  const reviewSchemas = testimonials.map((testimonial) =>
+    JSON.stringify(
+      generateReviewSchema({
+        reviewBody: testimonial.reviewBody,
+        author: testimonial.author,
+        ratingValue: testimonial.rating,
+        datePublished: testimonial.datePublished,
+      })
+    )
+  );
+
   const localBusinessSchema = useMemo(() => {
     if (!hasData) {
       return null;
