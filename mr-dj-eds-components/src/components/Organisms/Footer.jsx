@@ -1,6 +1,6 @@
 import React from 'react';
 import { trackPhoneClick, trackContactNavigation, getUserVariant } from '../../utils/trackConversion';
-import socialLinks from '../../content/social.json';
+import socialLinks from '../../config/socialLinks';
 
 /**
  * Professional Footer Component
@@ -21,11 +21,7 @@ const Footer = () => {
     trackContactNavigation(variant, 'footer');
   };
 
-  const {
-    facebook = 'https://www.facebook.com/',
-    instagram = 'https://www.instagram.com/',
-    linkedin = 'https://www.linkedin.com/'
-  } = socialLinks ?? {};
+  const { facebook, instagram, linkedin } = socialLinks;
 
   return (
     <footer className="bg-gradient-to-br from-[#1A2C4B] via-[#2A3C5B] to-[#1A2C4B] text-white">
