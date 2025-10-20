@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { submitCallbackRequest } from '../../services/api';
 import { trackFormSubmission } from '../../utils/trackConversion';
+import { submitCallbackRequest } from '../../services/api';
 
 /**
  * QuickCallbackForm - Simplified callback request form
@@ -15,7 +16,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,12 +30,13 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     e.preventDefault();
     setSubmitError(null);
     setIsSubmitting(true);
+    setErrorMessage('');
 
     try {
-      const response = await submitCallbackRequest(formData);
-
+      // Track form submission
       trackFormSubmission(variant, formData.eventType, 'callback');
 
+      // Push to GTM dataLayer
       if (typeof window !== 'undefined') {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
@@ -42,19 +44,19 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           form_variant: variant,
           event_type: formData.eventType,
           form_type: 'callback',
-          callback_id: response.callbackId,
         });
       }
 
+      await submitCallbackRequest(formData);
       setIsSubmitted(true);
-
+      // Reset form after 3 seconds
       setTimeout(() => {
         setFormData({ name: '', phone: '', eventType: '' });
         setIsSubmitted(false);
       }, 3000);
     } catch (error) {
       console.error('Form submission error:', error);
-      setSubmitError(error.message || 'Er ging iets mis. Probeer het opnieuw.');
+      setErrorMessage(error.message || 'Er ging iets mis. Bel ons direct: 040 - 842 2594');
     } finally {
       setIsSubmitting(false);
     }
@@ -173,6 +175,12 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         <p className="text-xs text-neutral-dark text-center mt-4">
           We respecteren je privacy en bellen alleen tijdens kantooruren (9:00-18:00)
         </p>
+
+        {errorMessage && (
+          <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-3 text-center">
+            {errorMessage} <a href="tel:+31408422594" className="font-semibold underline">Bel ons direct</a>
+          </p>
+        )}
       </form>
     </div>
   );

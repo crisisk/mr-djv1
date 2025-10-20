@@ -47,6 +47,7 @@ describe('contactService', () => {
   afterEach(() => {
     jest.clearAllMocks();
     contactService.resetInMemoryStore();
+    callbackRequestService.resetInMemoryStore();
   });
 
   it('persists contact submissions in the database when configured', async () => {
@@ -149,7 +150,7 @@ describe('callbackRequestService', () => {
     callbackRequestService.resetInMemoryStore();
   });
 
-  it('persists callback requests via the database when available', async () => {
+  it('persists callback requests when the database is available', async () => {
     const createdAt = new Date('2024-03-01T12:00:00Z');
     db.isConfigured.mockReturnValueOnce(true);
     db.runQuery.mockResolvedValueOnce({
@@ -157,72 +158,76 @@ describe('callbackRequestService', () => {
         {
           id: 'callback-id',
           status: 'new',
-          createdAt,
-          eventType: 'Bruiloft'
+          eventType: 'bruiloft',
+          createdAt
         }
       ]
     });
+    rentGuyService.syncLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
+    sevensaService.submitLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
 
     const result = await callbackRequestService.saveCallbackRequest({
-      name: 'Callback Tester',
+      name: 'Bel mij terug',
       phone: '0612345678',
-      eventType: 'Bruiloft'
+      eventType: 'bruiloft'
     });
 
     expect(result).toMatchObject({
       id: 'callback-id',
       status: 'new',
       persisted: true,
-      eventType: 'Bruiloft'
+      eventType: 'bruiloft',
+      rentGuySync: { delivered: true, queued: false },
+      sevensaSync: { delivered: true, queued: false }
     });
+    expect(db.runQuery).toHaveBeenCalled();
     expect(rentGuyService.syncLead).toHaveBeenCalledWith(
       expect.objectContaining({
         id: 'callback-id',
-        name: 'Callback Tester',
-        phone: '0612345678',
-        eventType: 'Bruiloft'
+        name: 'Bel mij terug',
+        phone: '0612345678'
       }),
-      { source: 'callback-request' }
+      { source: 'quick-callback-form' }
     );
     expect(sevensaService.submitLead).toHaveBeenCalledWith(
       expect.objectContaining({
         id: 'callback-id',
         phone: '0612345678',
-        eventType: 'Bruiloft'
+        eventType: 'bruiloft'
       }),
-      { source: 'callback-request' }
+      { source: 'quick-callback-form' }
     );
   });
 
-  it('falls back to in-memory storage when persistence fails', async () => {
+  it('uses in-memory storage when the database insert fails', async () => {
     db.isConfigured.mockReturnValueOnce(true);
-    db.runQuery.mockRejectedValueOnce(new Error('insert failed'));
+    db.runQuery.mockRejectedValueOnce(new Error('boom'));
     const errorSpy = mockConsole('error');
 
     const result = await callbackRequestService.saveCallbackRequest({
-      name: 'Fallback Caller',
-      phone: '0687654321',
-      eventType: 'Bedrijfsfeest'
+      name: 'Fallback',
+      phone: '0612345678',
+      eventType: 'bedrijfsfeest'
     });
 
     expect(errorSpy).toHaveBeenCalled();
     expect(result).toMatchObject({
       status: 'pending',
       persisted: false,
-      eventType: 'Bedrijfsfeest'
+      eventType: 'bedrijfsfeest',
+      rentGuySync: expect.objectContaining({ queued: true }),
+      sevensaSync: expect.objectContaining({ queued: true })
     });
-    expect(rentGuyService.syncLead).toHaveBeenCalled();
-    expect(sevensaService.submitLead).toHaveBeenCalled();
   });
 
-  it('exposes the current service status', () => {
-    db.getStatus.mockReturnValueOnce({ connected: true, lastError: null });
+  it('reports the current storage strategy', () => {
+    db.getStatus.mockReturnValueOnce({ connected: false, lastError: 'kapot' });
 
     expect(callbackRequestService.getCallbackRequestServiceStatus()).toEqual({
-      databaseConnected: true,
-      storageStrategy: 'postgres',
+      databaseConnected: false,
+      storageStrategy: 'in-memory',
       fallbackQueueSize: 0,
-      lastError: null
+      lastError: 'kapot'
     });
   });
 });

@@ -5,114 +5,90 @@ const sevensaService = require('./sevensaService');
 
 const inMemoryCallbackRequests = new Map();
 
-function normalizeString(value) {
-  if (typeof value !== 'string') {
-    return '';
-  }
-  return value.trim();
-}
-
-function normalizeEventType(value) {
-  const normalized = normalizeString(value);
-  return normalized || null;
-}
-
-async function persistCallbackRequest(payload, timestamp) {
-  if (!db.isConfigured()) {
-    return null;
-  }
-
-  try {
-    const result = await db.runQuery(
-      `INSERT INTO callback_requests (name, phone, event_type, status, created_at)
-       VALUES ($1, $2, $3, 'new', $4)
-       RETURNING id, status, created_at AS "createdAt", event_type AS "eventType"`,
-      [payload.name, payload.phone, payload.eventType, timestamp]
-    );
-
-    const row = result.rows[0];
-    return {
-      id: row.id,
-      status: row.status,
-      createdAt: row.createdAt,
-      eventType: row.eventType || payload.eventType,
-      persisted: true,
-      name: payload.name,
-      phone: payload.phone
-    };
-  } catch (error) {
-    console.error('[callbackRequestService] Database insert failed:', error.message);
-    return null;
-  }
-}
-
-async function saveCallbackRequest(input) {
+async function saveCallbackRequest(payload) {
   const timestamp = new Date();
-  const name = normalizeString(input.name);
-  const phone = normalizeString(input.phone);
-  const eventType = normalizeEventType(input.eventType);
+  let result;
 
-  const payload = {
-    name,
-    phone,
-    eventType
-  };
+  if (db.isConfigured()) {
+    try {
+      const queryResult = await db.runQuery(
+        `INSERT INTO callback_requests (name, phone, event_type, status, created_at)
+         VALUES ($1, $2, $3, 'new', $4)
+         RETURNING id, status, event_type AS "eventType", created_at AS "createdAt"`,
+        [payload.name, payload.phone, payload.eventType || null, timestamp]
+      );
 
-  let record = await persistCallbackRequest(payload, timestamp);
+      const row = queryResult.rows[0];
+      result = {
+        id: row.id,
+        status: row.status,
+        createdAt: row.createdAt,
+        eventType: row.eventType || payload.eventType || null,
+        persisted: true,
+        name: payload.name,
+        phone: payload.phone
+      };
+    } catch (error) {
+      console.error('[callbackRequestService] Database insert failed:', error.message);
+    }
+  }
 
-  if (!record) {
+  if (!result) {
     const id = randomUUID();
-    record = {
+    const record = {
       id,
       status: 'pending',
       createdAt: timestamp,
       persisted: false,
-      eventType,
-      name,
-      phone
+      eventType: payload.eventType || null,
+      name: payload.name,
+      phone: payload.phone
     };
 
     inMemoryCallbackRequests.set(id, record);
+    result = record;
   }
 
   const rentGuySync = await rentGuyService.syncLead(
     {
-      id: record.id,
-      status: record.status,
-      eventType: record.eventType,
+      id: result.id,
+      status: result.status,
+      eventType: result.eventType,
       eventDate: null,
       packageId: null,
-      name: record.name,
+      name: result.name,
       email: null,
-      phone: record.phone,
-      message: null,
-      persisted: record.persisted
+      phone: result.phone,
+      message: 'Callback verzoek via quick form',
+      persisted: result.persisted
     },
-    { source: 'callback-request' }
+    { source: 'quick-callback-form' }
   );
 
-  const [firstName, ...rest] = record.name
+  const [firstName, ...lastNameParts] = (result.name || '')
+    .trim()
     .split(/\s+/)
-    .map((part) => part.trim())
     .filter(Boolean);
-  const lastName = rest.length ? rest.join(' ') : undefined;
+  const lastName = lastNameParts.length ? lastNameParts.join(' ') : undefined;
 
   const sevensaSync = await sevensaService.submitLead(
     {
-      id: record.id,
+      id: result.id,
       firstName: firstName || undefined,
       lastName,
-      phone: record.phone,
-      eventType: record.eventType,
-      message: null,
-      source: 'callback-request',
-      persisted: record.persisted
+      email: undefined,
+      phone: result.phone,
+      eventType: result.eventType,
+      eventDate: null,
+      message: 'Callback verzoek via quick form',
+      source: 'quick-callback-form',
+      persisted: result.persisted
     },
-    { source: 'callback-request' }
+    { source: 'quick-callback-form' }
   );
 
   return {
-    ...record,
+    ...result,
     rentGuySync,
     sevensaSync
   };
@@ -120,6 +96,7 @@ async function saveCallbackRequest(input) {
 
 function getCallbackRequestServiceStatus() {
   const status = db.getStatus();
+
   return {
     databaseConnected: status.connected,
     storageStrategy: status.connected ? 'postgres' : 'in-memory',
