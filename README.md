@@ -19,6 +19,17 @@ chmod +x deploy.sh
 **Website**: https://staging.sevensa.nl
 
 
+## 🗄️ Database back-ups
+
+Voer handmatig een PostgreSQL back-up uit met het Docker-script:
+
+```bash
+./scripts/backup.sh ~/backups/mrdj
+```
+
+Zie [docs/operations/backups.md](docs/operations/backups.md) voor cronvoorbeelden en aanvullende informatie.
+
+
 ## ✅ Production Readiness Q4 2025
 
 - **Score**: **100 %** – alle regressietests (88/88) groen, OTEL-tracing actief en webhook-alerting naar Slack/Teams met throttling.
