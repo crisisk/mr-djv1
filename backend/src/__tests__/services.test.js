@@ -14,6 +14,21 @@ jest.mock('../lib/db', () => ({
   }))
 }));
 
+jest.mock('../lib/logger', () => ({
+  logger: {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn()
+  },
+  createLogger: jest.fn(() => ({
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn()
+  }))
+}));
+
 jest.mock('../services/rentGuyService', () => ({
   syncLead: jest.fn(() =>
     Promise.resolve({ delivered: false, queued: true, reason: 'not-configured', queueSize: 1 })
@@ -45,6 +60,7 @@ const packageService = require('../services/packageService');
 const reviewService = require('../services/reviewService');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
+const { logger } = require('../lib/logger');
 
 function mockConsole(method = 'error') {
   return jest.spyOn(console, method).mockImplementation(() => {});
@@ -70,6 +86,7 @@ describe('contactService', () => {
   it('persists contact submissions in the database when configured', async () => {
     const createdAt = new Date('2024-01-01T10:00:00Z');
     db.isConfigured.mockReturnValueOnce(true);
+    db.getStatus.mockReturnValueOnce({ connected: true, lastError: null });
     db.runQuery.mockResolvedValueOnce({
       rows: [
         {
@@ -99,6 +116,8 @@ describe('contactService', () => {
       id: 'db-id',
       status: 'new',
       persisted: true,
+      queued: false,
+      storageStrategy: 'postgres',
       eventType: 'Bruiloft',
       packageId: 'gold',
       rentGuySync: { delivered: true, queued: false },
@@ -132,7 +151,8 @@ describe('contactService', () => {
   it('falls back to in-memory storage when the database fails', async () => {
     db.isConfigured.mockReturnValueOnce(true);
     db.runQuery.mockRejectedValueOnce(new Error('insert failed'));
-    const errorSpy = mockConsole('error');
+    logger.error.mockClear();
+    logger.warn.mockClear();
 
     const result = await contactService.saveContact({
       name: 'Fallback',
@@ -143,10 +163,19 @@ describe('contactService', () => {
       eventDate: 'invalid-date'
     });
 
-    expect(errorSpy).toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ event: 'contact.database.insert-error' }),
+      expect.any(String)
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ event: 'contact.queue.enqueue', reason: 'insert-failed' }),
+      expect.stringContaining('in-memory queue')
+    );
     expect(result).toMatchObject({
       status: 'pending',
       persisted: false,
+      queued: true,
+      storageStrategy: 'in-memory',
       eventDate: null,
       rentGuySync: expect.objectContaining({ queued: true }),
       sevensaSync: expect.objectContaining({ queued: true })
@@ -227,8 +256,47 @@ describe('contactService', () => {
       databaseConnected: false,
       storageStrategy: 'in-memory',
       fallbackQueueSize: 0,
-      lastError: 'boom'
+      lastError: 'boom',
+      queueMetrics: expect.objectContaining({ totalEnqueued: 0 })
     });
+  });
+
+  it('flushes queued contacts once the database becomes available', async () => {
+    db.isConfigured.mockReturnValue(false);
+    await contactService.saveContact({
+      name: 'Queued User',
+      email: 'queued@example.com',
+      phone: '0612345678',
+      message: 'Please call me back',
+      eventType: 'Bruiloft'
+    });
+
+    expect(contactService.getFallbackQueueSnapshot().queueSize).toBe(1);
+
+    db.isConfigured.mockReturnValue(true);
+    db.getStatus.mockReturnValue({ connected: true, lastError: null });
+    const createdAt = new Date('2024-02-02T10:00:00Z');
+    db.runQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 'flushed-id',
+          status: 'new',
+          createdAt,
+          eventType: 'Bruiloft',
+          eventDate: null,
+          packageId: null
+        }
+      ]
+    });
+
+    const result = await contactService.flushQueuedContacts({ force: true });
+
+    expect(result).toEqual({ flushed: 1, queueSize: 0 });
+    expect(contactService.getFallbackQueueSnapshot().queueSize).toBe(0);
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.objectContaining({ event: 'contact.queue.flush-complete', flushed: 1, queueSize: 0 }),
+      expect.stringContaining('Persisted queued contacts')
+    );
   });
 });
 

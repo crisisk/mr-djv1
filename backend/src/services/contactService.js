@@ -1,6 +1,7 @@
 const { randomUUID } = require('crypto');
 const db = require('../lib/db');
 const config = require('../config');
+const { logger } = require('../lib/logger');
 const rentGuyService = require('./rentGuyService');
 const sevensaService = require('./sevensaService');
 const surveyService = require('./surveyService');
@@ -66,6 +67,18 @@ const surveyService = require('./surveyService');
  */
 
 const inMemoryContacts = new Map();
+const queueMetrics = {
+  totalEnqueued: 0,
+  totalFlushed: 0,
+  lastEnqueuedAt: null,
+  lastFlushAttemptAt: null,
+  lastFlushSuccessAt: null,
+  lastFlushError: null,
+  lastFlushCount: 0,
+  consecutiveFailures: 0,
+  lastFlushDurationMs: null
+};
+let flushInProgress = false;
 const HCAPTCHA_DEFAULT_VERIFY_URL = 'https://hcaptcha.com/siteverify';
 
 const contactLogger = logger.child({ service: 'contactService' });
@@ -413,7 +426,13 @@ async function saveContact(payload, options = {}) {
         message: payload.message || null
       };
     } catch (error) {
-      console.error('[contactService] Database insert failed:', error.message);
+      logger.error(
+        {
+          event: 'contact.database.insert-error',
+          err: error
+        },
+        'Database insert failed for contact submission'
+      );
     }
   }
 
@@ -423,6 +442,8 @@ async function saveContact(payload, options = {}) {
       id,
       status: 'pending',
       createdAt: timestamp,
+      queuedAt: timestamp,
+      queueReason: db.isConfigured() ? 'insert-failed' : 'database-not-configured',
       persisted: false,
       eventType: payload.eventType || null,
       eventDate,
@@ -438,7 +459,23 @@ async function saveContact(payload, options = {}) {
       ...record
     });
 
-    result = record;
+    queueMetrics.totalEnqueued += 1;
+    queueMetrics.lastEnqueuedAt = timestamp;
+    logger.warn(
+      {
+        event: 'contact.queue.enqueue',
+        contactId: id,
+        queueSize: inMemoryContacts.size,
+        reason: record.queueReason
+      },
+      'Database unavailable, contact stored in in-memory queue'
+    );
+
+    result = {
+      ...record,
+      queued: true,
+      storageStrategy: 'in-memory'
+    };
   }
 
   const rentGuyLead = {
@@ -543,7 +580,8 @@ function getContactServiceStatus() {
     databaseConnected: status.connected,
     storageStrategy: status.connected ? 'postgres' : 'in-memory',
     fallbackQueueSize: inMemoryContacts.size,
-    lastError: status.lastError
+    lastError: status.lastError,
+    queueMetrics: getQueueMetrics()
   };
 }
 
@@ -559,11 +597,24 @@ function ping() {
 
 function resetInMemoryStore() {
   inMemoryContacts.clear();
+  queueMetrics.totalEnqueued = 0;
+  queueMetrics.totalFlushed = 0;
+  queueMetrics.lastEnqueuedAt = null;
+  queueMetrics.lastFlushAttemptAt = null;
+  queueMetrics.lastFlushSuccessAt = null;
+  queueMetrics.lastFlushError = null;
+  queueMetrics.lastFlushCount = 0;
+  queueMetrics.consecutiveFailures = 0;
+  queueMetrics.lastFlushDurationMs = null;
+  flushInProgress = false;
 }
 
 module.exports = {
   saveContact,
   getContactServiceStatus,
   resetInMemoryStore,
-  ping
+  ping,
+  flushQueuedContacts,
+  getFallbackQueueSnapshot,
+  getQueueMetrics
 };

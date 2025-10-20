@@ -264,7 +264,7 @@ router.post('/', rateLimiter, ipThrottle, detectAutomation, ensureCaptchaPresenc
       persisted: contactRecord.persisted,
       eventType: contactRecord.eventType || payload.eventType || null,
       eventDate: eventDateIso,
-      requestedPackage: contactRecord.packageId || payload.packageId || null,
+      requestedPackage: contactRecord.packageId || req.body.packageId || null,
       submittedAt: contactRecord.createdAt,
       processingStatus: partnerIncidents.length ? 'queued' : 'delivered',
       partnerIncidents,
