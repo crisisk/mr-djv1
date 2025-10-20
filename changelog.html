@@ -12,7 +12,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Montserrat', sans-serif;
             background: #FFFFFF;
@@ -22,7 +22,7 @@
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .slide-container {
             width: 1280px;
             min-height: 720px;
@@ -31,20 +31,20 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         h1 {
             font-size: 42px;
             font-weight: 900;
             color: #1A2C4B;
             margin-bottom: 8px;
         }
-        
+
         .subtitle {
             font-size: 16px;
             color: #666;
             margin-bottom: 25px;
         }
-        
+
         .changelog-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -52,14 +52,14 @@
             flex: 1;
             overflow-y: auto;
         }
-        
+
         .version-box {
             border: 2px solid #E5E5E5;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
         }
-        
+
         .version-header {
             display: flex;
             justify-content: space-between;
@@ -68,24 +68,24 @@
             padding-bottom: 5px;
             margin-bottom: 10px;
         }
-        
+
         .version-number {
             font-size: 24px;
             font-weight: 900;
             color: #1A2C4B;
         }
-        
+
         .version-date {
             font-size: 14px;
             font-weight: 600;
             color: #666;
         }
-        
+
         .update-list {
             list-style-type: none;
             padding: 0;
         }
-        
+
         .update-list li {
             font-size: 14px;
             color: #1A2C4B;
@@ -93,7 +93,7 @@
             display: flex;
             align-items: flex-start;
         }
-        
+
         .update-type {
             font-weight: 800;
             width: 60px;
@@ -103,7 +103,7 @@
             text-align: center;
             color: white;
         }
-        
+
         .type-feat { background: #00AEEF; }
         .type-fix { background: #FF4D4D; }
         .type-docs { background: #D4AF37; color: #1A2C4B; }
@@ -113,10 +113,8 @@
     <div class="slide-container">
         <h1>Changelog & Version History</h1>
         <p class="subtitle">Overzicht van alle wijzigingen, updates en nieuwe componenten in het Enterprise Design System.</p>
-        
+
         <div class="changelog-grid">
-            
-            <!-- Kolom 1: Versie 1.0.0 -->
             <div class="version-box">
                 <div class="version-header">
                     <div class="version-number">v1.0.0 (Huidig)</div>
@@ -131,8 +129,7 @@
                     <li><span class="update-type type-fix">FIX</span> Contrastproblemen in Primary Blue opgelost (alleen als achtergrond).</li>
                 </ul>
             </div>
-            
-            <!-- Kolom 2: Toekomstige Versies -->
+
             <div class="version-box" style="opacity: 0.7;">
                 <div class="version-header">
                     <div class="version-number">v1.1.0 (Toekomst)</div>
@@ -145,7 +142,7 @@
                     <li><span class="update-type type-fix">FIX</span> Bugfix in mobiele navigatie.</li>
                 </ul>
             </div>
-            
+
             <div class="version-box" style="opacity: 0.5;">
                 <div class="version-header">
                     <div class="version-number">v2.0.0 (Major)</div>
@@ -157,9 +154,7 @@
                     <li><span class="update-type type-docs">DOCS</span> Volledige migratie naar TypeScript.</li>
                 </ul>
             </div>
-            
         </div>
     </div>
 </body>
 </html>
-

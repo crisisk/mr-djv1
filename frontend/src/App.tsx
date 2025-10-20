@@ -1,53 +1,61 @@
 import { useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { pushEvent } from './lib/analytics/ga4'
+import LanguageSwitcher from './components/LanguageSwitcher'
+import HeroSection from '../../HeroSection.jsx'
+import Testimonials from '../../Testimonials.jsx'
+
+type HeroContent = {
+  title: string
+  subtitle: string
+  ctaPrimaryText: string
+  ctaSecondaryText?: string
+}
 
 function App() {
+  const { t } = useTranslation()
   const [count, setCount] = useState(0)
 
-  const handleBookingClick = (ctaLocation: string) => {
-    pushEvent({
-      name: 'booking_cta_click',
-      params: {
-        location: ctaLocation,
-      },
-    })
-  }
+  const heroContent = t('hero', { returnObjects: true }) as HeroContent
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((value) => value + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <div className="card">
-        <button
-          type="button"
-          onClick={() => handleBookingClick('primary-cta')}
-          className="booking-button"
-        >
-          Book your consultation
-        </button>
-        <p className="read-the-docs">
-          Clicking the booking button will send a GA4 event when analytics is available.
-        </p>
-      </div>
-    </>
+    <div className="App">
+      <header className="app-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <a href="https://vite.dev" target="_blank" rel="noreferrer">
+            <img src={viteLogo} className="logo" alt={t('app.viteLogoAlt')} />
+          </a>
+          <a href="https://react.dev" target="_blank" rel="noreferrer">
+            <img src={reactLogo} className="logo react" alt={t('app.reactLogoAlt')} />
+          </a>
+        </div>
+        <LanguageSwitcher />
+      </header>
+
+      <main>
+        <h1>{t('app.title')}</h1>
+        <div className="card">
+          <button onClick={() => setCount((currentCount) => currentCount + 1)}>
+            {t('app.counterLabel', { count })}
+          </button>
+          <p>
+            <Trans i18nKey="app.editPrompt" components={{ code: <code /> }} />
+          </p>
+        </div>
+        <p className="read-the-docs">{t('app.docsPrompt')}</p>
+
+        <HeroSection
+          title={heroContent.title}
+          subtitle={heroContent.subtitle}
+          ctaPrimaryText={heroContent.ctaPrimaryText}
+          ctaSecondaryText={heroContent.ctaSecondaryText}
+        />
+
+        <Testimonials />
+      </main>
+    </div>
   )
 }
 
