@@ -1,6 +1,14 @@
 // mr-djv1/mr-dj-eds-components/src/data/local_seo_data.js
 
-export const localSeoData = [
+import {
+    createTranslationList,
+    createTranslationObject,
+    DEFAULT_LOCALE,
+    resolveLocalizedList,
+    resolveLocalizedValue,
+} from './mr-dj-eds-components/src/utils/localization.js';
+
+const rawLocalSeoData = [
     {
         city: "Eindhoven",
         province: "Noord-Brabant",
@@ -53,8 +61,35 @@ export const localSeoData = [
     },
 ];
 
+const withTranslations = ({ localUSP, localReviews, localVenues, seoTitle, seoDescription, ...rest }) => ({
+    ...rest,
+    localUSP: createTranslationObject(localUSP),
+    localReviews: createTranslationObject(localReviews),
+    localVenues: createTranslationList(localVenues),
+    seoTitle: createTranslationObject(seoTitle),
+    seoDescription: createTranslationObject(seoDescription),
+});
+
+export const localSeoData = rawLocalSeoData.map(withTranslations);
+
 // Function to find data by slug, useful for routing
 export const getLocalSeoDataBySlug = (slug) => {
     return localSeoData.find(data => data.slug === slug);
+};
+
+export const getLocalizedLocalSeoDataBySlug = (slug, locale = DEFAULT_LOCALE) => {
+    const entry = getLocalSeoDataBySlug(slug);
+    if (!entry) {
+        return undefined;
+    }
+
+    return {
+        ...entry,
+        localUSP: resolveLocalizedValue(entry.localUSP, locale),
+        localReviews: resolveLocalizedValue(entry.localReviews, locale),
+        localVenues: resolveLocalizedList(entry.localVenues, locale),
+        seoTitle: resolveLocalizedValue(entry.seoTitle, locale),
+        seoDescription: resolveLocalizedValue(entry.seoDescription, locale),
+    };
 };
 
