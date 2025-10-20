@@ -56,9 +56,13 @@ ssh -o StrictHostKeyChecking=no \
     ${VPS_USER}@${VPS_HOST} << 'ENDSSH'
 
 # Check if the 'web' network exists and create it as external if it doesn't
-if ! docker network ls | grep -q " web "; then
+if ! docker network inspect web >/dev/null 2>&1; then
     echo "Creating external 'web' network for Traefik integration..."
-    docker network create web
+    # Use an attachable bridge so Traefik and compose-managed services can share the network.
+    if ! docker network create --driver bridge --attachable web; then
+        echo "❌ Failed to create 'web' network. Aborting deployment." >&2
+        exit 1
+    fi
 fi
 
 # Stop existing containers for this project (using the new container names)
