@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from '../Atoms/Buttons.jsx';
-import { trackPricingCTA, getUserVariant } from '../../utils/trackConversion';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 // Data structure for the three packages
 const packages = [
@@ -63,8 +63,16 @@ const PricingCard = ({ pkg }) => {
 
   // Handle CTA click with tracking
   const handleCTAClick = () => {
-    const variant = getUserVariant();
-    trackPricingCTA(variant, name, price);
+    loadTrackConversion()
+      .then(({ getUserVariant, trackPricingCTA }) => {
+        if (typeof trackPricingCTA === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackPricingCTA(variant, name, price);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for pricing CTA', error);
+      });
   };
 
   return (

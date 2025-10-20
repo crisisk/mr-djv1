@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { submitCallbackRequest } from '../../services/api.js';
-import { trackFormSubmission, getUserVariant } from '../../utils/trackConversion.js';
 import { getWindow } from '../../lib/environment.js';
 import { useHCaptchaWidget } from '../../hooks/useHCaptchaWidget.js';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY;
 
@@ -96,10 +96,20 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     };
 
     try {
-      const abVariant = getUserVariant() || variant;
       const response = await submitCallbackRequest(payload);
+      let abVariant = variant;
 
-      trackFormSubmission(abVariant, payload.eventType || '', 'callback');
+      try {
+        const { getUserVariant, trackFormSubmission } = await loadTrackConversion();
+        if (typeof getUserVariant === 'function') {
+          abVariant = getUserVariant() || variant;
+        }
+        if (typeof trackFormSubmission === 'function') {
+          trackFormSubmission(abVariant, payload.eventType || '', 'callback');
+        }
+      } catch (trackingError) {
+        console.error('Failed to load tracking utilities for quick callback submission', trackingError);
+      }
 
       const browser = getWindow();
       if (browser) {

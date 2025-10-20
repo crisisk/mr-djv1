@@ -1,6 +1,6 @@
 import React from 'react';
-import { trackPhoneClick, trackContactNavigation, getUserVariant } from '../../utils/trackConversion';
 import socialLinks from '../../content/social.json';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 /**
  * Professional Footer Component
@@ -11,14 +11,30 @@ const Footer = () => {
 
   // Track phone click
   const handlePhoneClick = () => {
-    const variant = getUserVariant();
-    trackPhoneClick(variant, 'footer');
+    loadTrackConversion()
+      .then(({ getUserVariant, trackPhoneClick }) => {
+        if (typeof trackPhoneClick === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackPhoneClick(variant, 'footer');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for footer phone click', error);
+      });
   };
 
   // Track contact navigation
-  const handleContactClick = (e) => {
-    const variant = getUserVariant();
-    trackContactNavigation(variant, 'footer');
+  const handleContactClick = () => {
+    loadTrackConversion()
+      .then(({ getUserVariant, trackContactNavigation }) => {
+        if (typeof trackContactNavigation === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackContactNavigation(variant, 'footer');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for footer contact click', error);
+      });
   };
 
   const {

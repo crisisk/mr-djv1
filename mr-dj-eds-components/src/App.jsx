@@ -1,8 +1,6 @@
 
 import { Routes, Route, useParams, useLocation } from 'react-router-dom';
 import React, { Suspense, useEffect } from 'react';
-import CookieConsent from './components/Molecules/CookieConsent.jsx';
-import WhatsAppButton from './components/Atoms/WhatsAppButton.jsx';
 import { getOrAssignVariant, pushVariantToGTM } from './utils/abTesting.js';
 // Use React.lazy for code splitting to improve initial load time (T6: Performance)
 const DjSaxLanding = React.lazy(() => import('./components/Templates/DjSaxLanding.jsx'));
@@ -25,6 +23,8 @@ const ContactPage = React.lazy(() => import('./pages/ContactPage.jsx'));
 const PrivacyPolicyPage = React.lazy(() => import('./pages/PrivacyPolicyPage.jsx'));
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage.jsx'));
 const TermsConditionsPage = React.lazy(() => import('./pages/TermsConditionsPage.jsx'));
+const CookieConsent = React.lazy(() => import('./components/Molecules/CookieConsent.jsx'));
+const WhatsAppButton = React.lazy(() => import('./components/Atoms/WhatsAppButton.jsx'));
 import { getLocalSeoDataBySlug } from './data/local_seo_data.js';
 import { getLocalSeoBruiloftDataBySlug } from './data/local_seo_bruiloft_data.js';
 import './App.css';
@@ -116,10 +116,28 @@ function App() {
       </Suspense>
 
       {/* T1.2: GDPR Cookie Consent Banner - Shows on all pages */}
-      <CookieConsent />
+      <Suspense
+        fallback={(
+          <div
+            aria-hidden="true"
+            className="fixed bottom-0 left-0 right-0 h-0 pointer-events-none"
+          />
+        )}
+      >
+        <CookieConsent />
+      </Suspense>
 
       {/* WhatsApp Floating Button - Available on all pages */}
-      <WhatsAppButton />
+      <Suspense
+        fallback={(
+          <div
+            aria-hidden="true"
+            className="fixed bottom-6 right-6 h-12 w-12 rounded-full pointer-events-none"
+          />
+        )}
+      >
+        <WhatsAppButton />
+      </Suspense>
     </div>
   );
 }

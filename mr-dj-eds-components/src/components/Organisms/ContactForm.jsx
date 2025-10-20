@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { submitContactForm } from '../../services/api';
 import Button from '../Atoms/Buttons';
-import { trackFormSubmission } from '../../utils/trackConversion';
 import { useHCaptchaWidget } from '../../hooks/useHCaptchaWidget.js';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY;
 
@@ -145,7 +145,14 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       setSubmitSuccess(true);
 
       // Track conversion with enhanced GA4 tracking
-      trackFormSubmission(variant, formData.eventType, 'contact');
+      try {
+        const { trackFormSubmission } = await loadTrackConversion();
+        if (typeof trackFormSubmission === 'function') {
+          trackFormSubmission(variant, formData.eventType, 'contact');
+        }
+      } catch (trackingError) {
+        console.error('Failed to load tracking utilities for contact form submission', trackingError);
+      }
 
       // Legacy GTM tracking (keeping for backwards compatibility)
       if (typeof window !== 'undefined' && window.dataLayer) {
