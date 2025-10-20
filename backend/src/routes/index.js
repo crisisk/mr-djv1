@@ -1,5 +1,6 @@
 const express = require('express');
 const config = require('../config');
+const rateLimiter = require('../middleware/rateLimiter');
 const healthRouter = require('./health');
 const packagesRouter = require('./packages');
 const contactRouter = require('./contact');
@@ -45,9 +46,9 @@ router.get('/', (_req, res) => {
 
 router.use('/health', healthRouter);
 router.use('/packages', packagesRouter);
-router.use('/contact', contactRouter);
-router.use('/callback-request', callbackRequestsRouter);
-router.use('/bookings', bookingsRouter);
+router.use('/contact', rateLimiter, contactRouter);
+router.use('/callback-request', rateLimiter, callbackRequestsRouter);
+router.use('/bookings', rateLimiter, bookingsRouter);
 router.use('/reviews', reviewsRouter);
 router.use('/integrations', integrationsRouter);
 router.use('/personalization', personalizationRouter);
