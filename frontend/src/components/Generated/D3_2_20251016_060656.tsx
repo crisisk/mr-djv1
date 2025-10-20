@@ -1,6 +1,7 @@
 // components/WhatsAppChat.jsx
 import React from 'react';
 import styled from 'styled-components';
+import { WhatsAppIcon } from '../../icons';
 
 import { IconBase, mergeClassNames } from '../shared/IconBase';
 import type { IconBaseProps } from '../shared/IconBase';
