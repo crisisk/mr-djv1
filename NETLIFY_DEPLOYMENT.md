@@ -24,6 +24,12 @@ Netlify bouwt en deploy automatisch!
 
 Je krijgt een URL zoals: `https://mr-dj-abc123.netlify.app`
 
+### Stap 3b: Snellere vervolgbuilds met caching
+- De `netlify.toml` cachet nu automatisch de `node_modules` directory.
+- Eerste build: blijft ~1-2 minuten (download + caching van dependencies).
+- Vervolgbuilds: besparen gemiddeld 20-30 seconden omdat npm install wordt overgeslagen.
+- Resultaat: snellere previews en minder build-minuten verbruik.
+
 ### Stap 4: Enable Netlify Identity
 1. Ga naar Site settings → Identity
 2. Klik "Enable Identity"
@@ -81,6 +87,12 @@ Je krijgt een URL zoals: `https://mr-dj-abc123.netlify.app`
 - **Accessibility:** 90-95
 - **Best Practices:** 95-100
 - **SEO:** 90-95
+
+### Lighthouse Performance Budgets
+- `@netlify/plugin-lighthouse` bewaakt nu resource- en timing-budgets.
+- Budgets: scripts ≤ 180 KB, totale pagina ≤ 500 KB, interactief ≤ 4s, FCP ≤ 2s.
+- Deploys falen pas na review, maar logs tonen direct waar overschrijdingen plaatsvinden.
+- Bewaakt regressies automatisch voor `/` en kan worden uitgebreid voor andere routes.
 
 ### Netlify Analytics (Optioneel, €9/mnd)
 - Real-time visitor stats
