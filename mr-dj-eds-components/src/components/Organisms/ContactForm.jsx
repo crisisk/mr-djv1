@@ -227,12 +227,20 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             name="name"
             value={formData.name}
             onChange={handleChange}
+            required
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.name)}
+            aria-describedby={fieldErrors.name ? 'name-error' : undefined}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
               fieldErrors.name ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="Jouw naam"
           />
-          {fieldErrors.name && <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>}
+          {fieldErrors.name && (
+            <p id="name-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.name}
+            </p>
+          )}
         </div>
 
         {/* Email */}
@@ -246,12 +254,20 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             name="email"
             value={formData.email}
             onChange={handleChange}
+            required
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
               fieldErrors.email ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="jouw@email.nl"
           />
-          {fieldErrors.email && <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>}
+          {fieldErrors.email && (
+            <p id="email-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.email}
+            </p>
+          )}
         </div>
 
         {/* Phone */}
@@ -267,6 +283,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             onChange={handleChange}
             required
             minLength={6}
+            aria-required="true"
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
               fieldErrors.phone ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
@@ -291,6 +308,10 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             name="eventType"
             value={formData.eventType}
             onChange={handleChange}
+            required
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.eventType)}
+            aria-describedby={fieldErrors.eventType ? 'event-type-error' : undefined}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
               fieldErrors.eventType ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
@@ -303,7 +324,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             <option value="feest">Algemeen Feest</option>
             <option value="anders">Anders</option>
           </select>
-          {fieldErrors.eventType && <p className="text-red-500 text-sm mt-1">{fieldErrors.eventType}</p>}
+          {fieldErrors.eventType && (
+            <p id="event-type-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.eventType}
+            </p>
+          )}
         </div>
 
         {/* Event Date */}
@@ -333,12 +358,20 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             value={formData.message}
             onChange={handleChange}
             rows="4"
+            required
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.message)}
+            aria-describedby={fieldErrors.message ? 'message-error' : undefined}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none resize-none ${
               fieldErrors.message ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="Vertel ons meer over jouw evenement..."
           />
-          {fieldErrors.message && <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>}
+          {fieldErrors.message && (
+            <p id="message-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.message}
+            </p>
+          )}
         </div>
 
         {HCAPTCHA_SITE_KEY && (
