@@ -70,6 +70,10 @@ describe('config', () => {
       automationWebhook: null,
       incomingWebhookSecrets: []
     });
+    expect(config.feedback).toEqual({
+      automationWebhook: null,
+      responseBaseUrl: null
+    });
     expect(config.alerts).toEqual({
       webhooks: [],
       throttleMs: 2 * 60 * 1000,
@@ -122,6 +126,8 @@ describe('config', () => {
         'SEVENSA_QUEUE_MAX_ATTEMPTS',
         'N8N_PERSONALIZATION_WEBHOOK_URL',
         'PERSONALIZATION_WEBHOOK_SECRETS',
+        'N8N_SURVEY_WEBHOOK_URL',
+        'SURVEY_RESPONSE_BASE_URL',
         'SEO_AUTOMATION_API_URL',
         'SEO_AUTOMATION_API_KEY',
         'SEO_AUTOMATION_KEYWORDSET_ID',
@@ -201,6 +207,12 @@ describe('config', () => {
         description:
           'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
         keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'PERSONALIZATION_WEBHOOK_SECRETS']
+      }),
+      expect.objectContaining({
+        id: 'feedback',
+        label: 'Feedback & surveys',
+        description: 'Surveyautomatisering en post-event klantfeedback workflows.',
+        keys: ['N8N_SURVEY_WEBHOOK_URL', 'SURVEY_RESPONSE_BASE_URL']
       }),
       expect.objectContaining({
         id: 'automation',
