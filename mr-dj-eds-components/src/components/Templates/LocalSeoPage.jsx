@@ -5,6 +5,9 @@ import HeroSection from '../Organisms/HeroSection.jsx';
 import Footer from '../Organisms/Footer.jsx';
 import ContactForm from '../Organisms/ContactForm.jsx';
 import { useHeroImage } from '../../hooks/useReplicateImage.js';
+import { localSeoData, getLocalSeoDataBySlug } from '../../data/local_seo_data.js';
+import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from '../../data/local_seo_bruiloft_data.js';
+import { getWindow } from '../../lib/environment.js';
 
 const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) => {
   const hasData = Boolean(data);
@@ -19,6 +22,8 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
     : 'Mr. DJ verzorgt feesten door heel Nederland met 100% dansgarantie.';
   const slug = hasData ? data.slug : '';
   const isBruiloftPage = hasData && slug.startsWith('bruiloft-dj-');
+  const counterpartSlug = isBruiloftPage ? slug.replace('bruiloft-dj-', '') : `bruiloft-dj-${slug}`;
+  const generalSlug = isBruiloftPage ? counterpartSlug : slug;
   const eventType = isBruiloftPage ? 'bruiloft' : 'feest';
 
   const { imageUrl: heroImage, isLoading: heroImageLoading, error: heroImageError } = useHeroImage({
@@ -33,6 +38,115 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
   );
 
   const heroBackgroundImage = heroImage || fallbackHeroImage;
+  const heroTitle = isBruiloftPage ? `Uw Bruiloft DJ in ${city}, ${province}` : `Uw DJ voor Feesten in ${city}, ${province}`;
+
+  const canonicalPath = hasData ? (isBruiloftPage ? `/${slug}` : `/dj-in-${slug}`) : '/';
+  const browser = getWindow();
+  const origin = browser?.location?.origin ?? 'https://www.mrdj.nl';
+  const canonicalUrl = `${origin}${canonicalPath}`;
+
+  const hasCounterpart = useMemo(() => {
+    if (!hasData) {
+      return false;
+    }
+    return isBruiloftPage
+      ? Boolean(getLocalSeoDataBySlug(counterpartSlug))
+      : Boolean(getLocalSeoBruiloftDataBySlug(counterpartSlug));
+  }, [counterpartSlug, hasData, isBruiloftPage]);
+
+  const relatedPages = useMemo(() => {
+    if (!hasData) {
+      return [];
+    }
+
+    const dataset = isBruiloftPage ? localSeoBruiloftData : localSeoData;
+    const sameProvince = dataset.filter((item) => item.slug !== slug && item.province === province);
+    const fallbackList = dataset.filter((item) => item.slug !== slug);
+    const pool = sameProvince.length ? sameProvince : fallbackList;
+
+    const mapped = pool.slice(0, 3).map((item) => ({
+      label: `${isBruiloftPage ? 'Bruiloft DJ' : 'DJ'} in ${item.city}`,
+      path: item.slug.startsWith('bruiloft-dj-') ? `/${item.slug}` : `/dj-in-${item.slug}`,
+    }));
+
+    if (hasCounterpart) {
+      mapped.unshift({
+        label: isBruiloftPage ? `DJ in ${city}` : `Bruiloft DJ in ${city}`,
+        path: isBruiloftPage ? `/dj-in-${generalSlug}` : `/${counterpartSlug}`,
+      });
+    }
+
+    return mapped;
+  }, [city, counterpartSlug, generalSlug, hasCounterpart, hasData, isBruiloftPage, province, slug]);
+
+  const localBusinessSchema = useMemo(() => {
+    if (!hasData) {
+      return null;
+    }
+
+    return JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      '@id': `${canonicalUrl}#business`,
+      name: `Mr. DJ - Uw DJ in ${city}`,
+      image: `${origin}/images/logo.webp`,
+      url: canonicalUrl,
+      telephone: '+31850601234',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: city,
+        addressRegion: province,
+        addressCountry: 'NL',
+      },
+      priceRange: '€€€',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.9',
+        reviewCount: '250',
+      },
+      areaServed: {
+        '@type': 'City',
+        name: city,
+      },
+      sameAs: [
+        'https://www.facebook.com/mrdj',
+        'https://www.instagram.com/misterdj',
+      ],
+    });
+  }, [canonicalUrl, city, hasData, origin, province]);
+
+  const eventSchema = useMemo(() => {
+    if (!hasData) {
+      return null;
+    }
+
+    return JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: `${isBruiloftPage ? 'Bruiloft' : 'Feest'} met DJ in ${city}`,
+      startDate: '2025-12-31T20:00',
+      endDate: '2026-01-01T04:00',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      eventStatus: 'https://schema.org/EventScheduled',
+      location: {
+        '@type': 'Place',
+        name: `Diverse locaties in ${city}`,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: city,
+          addressRegion: province,
+          addressCountry: 'NL',
+        },
+      },
+      description: localUSP,
+      organizer: {
+        '@type': 'Organization',
+        name: 'Mr. DJ',
+        url: origin,
+      },
+      url: canonicalUrl,
+    });
+  }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, origin, province]);
 
   if (!hasData) {
     return <div className="p-10 text-center text-red-500">Geen lokale SEO data gevonden.</div>;
@@ -45,65 +159,13 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "LocalBusiness",
-              "name": "Mr. DJ - Uw DJ in ${city}",
-              "image": "https://www.mrdj.nl/logo.png",
-              "url": "https://www.mrdj.nl/dj-in-${slug}",
-              "telephone": "+31850601234",
-              "address": {
-                "@type": "PostalAddress",
-                "addressLocality": "${city}",
-                "addressRegion": "${province}",
-                "addressCountry": "NL"
-              },
-              "priceRange": "€€€",
-              "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "reviewCount": "250"
-              },
-              "servesCuisine": "Muziek",
-              "hasMap": "https://www.google.com/maps/search/${city}+DJ"
-            }
-          `}
-        </script>
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "Event",
-              "name": "Feest met DJ in ${city}",
-              "startDate": "2025-12-31T20:00",
-              "endDate": "2026-01-01T04:00",
-              "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-              "eventStatus": "https://schema.org/EventScheduled",
-              "location": {
-                "@type": "Place",
-                "name": "Diverse Locaties in ${city}",
-                "address": {
-                  "@type": "PostalAddress",
-                  "addressLocality": "${city}",
-                  "addressRegion": "${province}",
-                  "addressCountry": "NL"
-                }
-              },
-              "description": "${localUSP}",
-              "organizer": {
-                "@type": "Organization",
-                "name": "Mr. DJ",
-                "url": "https://www.mrdj.nl"
-              }
-            }
-          `}
-        </script>
+        <link rel="canonical" href={canonicalUrl} />
+        {localBusinessSchema && <script type="application/ld+json">{localBusinessSchema}</script>}
+        {eventSchema && <script type="application/ld+json">{eventSchema}</script>}
       </Helmet>
 
       <HeroSection
-        title={`Uw DJ voor Feesten in ${city}, ${province}`}
+        title={heroTitle}
         subtitle={localUSP}
         ctaPrimaryText="Check Beschikbaarheid"
         ctaSecondaryText="Vraag Offerte Aan"
@@ -155,37 +217,20 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 
       {pricingSection}
 
-      <section className="bg-white py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-6 text-2xl font-bold text-[#1A2C4B]">Ontdek Onze DJ Services in de Regio</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href="/dj-in-tilburg" className="text-primary-500 underline hover:text-primary-700">
-              DJ in Tilburg
-            </a>
-            <a href="/dj-in-breda" className="text-primary-500 underline hover:text-primary-700">
-              DJ in Breda
-            </a>
-            <a href="/bruiloft-dj-eindhoven" className="text-primary-500 underline hover:text-primary-700">
-              Bruiloft DJ in Eindhoven
-            </a>
-            <a href="/bruiloft-dj-maastricht" className="text-primary-500 underline hover:text-primary-700">
-              Bruiloft DJ in Maastricht
-            </a>
-            {isBruiloftPage ? (
-              <a
-                href={`/dj-in-${slug.replace('bruiloft-dj-', '')}`}
-                className="text-primary-500 underline hover:text-primary-700"
-              >
-                Algemene DJ Service in {city}
-              </a>
-            ) : (
-              <a href={`/bruiloft-dj-${slug}`} className="text-primary-500 underline hover:text-primary-700">
-                Bruiloft DJ Service in {city}
-              </a>
-            )}
+      {relatedPages.length > 0 && (
+        <section className="bg-white py-12">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="mb-6 text-2xl font-bold text-[#1A2C4B]">Ontdek Onze DJ Services in de Regio</h2>
+            <div className="flex flex-wrap justify-center gap-4">
+              {relatedPages.map((item) => (
+                <a key={item.path} href={item.path} className="text-primary-500 underline hover:text-primary-700">
+                  {item.label}
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="bg-white py-16">
         <div className="container mx-auto px-4 max-w-3xl">
