@@ -19,15 +19,12 @@ chmod +x deploy.sh
 **Website**: https://staging.sevensa.nl
 
 
-## 🗄️ Database back-ups
+## 🧰 Vereisten
 
-Voer handmatig een PostgreSQL back-up uit met het Docker-script:
-
-```bash
-./scripts/backup.sh ~/backups/mrdj
-```
-
-Zie [docs/operations/backups.md](docs/operations/backups.md) voor cronvoorbeelden en aanvullende informatie.
+- **Node.js**: versie **20 LTS** (20.11 of hoger) voor lokale scripts (`scripts/automation/*`, `scripts/generate-city-pages.mjs`) en tooling.
+  - Verifieer lokaal met `node -v`. Gebruik [nvm](https://github.com/nvm-sh/nvm) om eenvoudig naar Node 20 te wisselen.
+- **npm**: versie **10.x** (meegeleverd bij Node 20). Controleer met `npm -v` en voer `npm install -g npm@10` uit indien nodig.
+- **Package installaties**: voer in de `frontend/` map `npm install` uit na het wisselen naar de juiste Node-versie zodat native modules tegen de juiste ABI worden gebouwd.
 
 
 ## ✅ Production Readiness Q4 2025
