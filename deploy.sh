@@ -56,8 +56,22 @@ scp -o StrictHostKeyChecking=no \
     "$ROOT_DIR/$PACKAGE_NAME" ${VPS_USER}@${VPS_HOST}:/tmp/
 
 echo "🔧 Deploying on VPS..."
+
+echo "🔍 Detecting Docker Compose availability on VPS..."
+COMPOSE_CMD=$(ssh -o StrictHostKeyChecking=no \
+    ${VPS_USER}@${VPS_HOST} \
+    "if command -v docker-compose >/dev/null 2>&1; then echo docker-compose; elif docker compose version >/dev/null 2>&1; then echo 'docker compose'; fi")
+
+if [[ -z "${COMPOSE_CMD}" ]]; then
+    echo "❌ Neither docker-compose nor the Docker Compose plugin is available on the VPS."
+    echo "   Please install Docker Compose before running the deployment script again."
+    exit 1
+fi
+
+echo "ℹ️ Using '$COMPOSE_CMD' on the VPS."
+
 ssh -o StrictHostKeyChecking=no \
-    ${VPS_USER}@${VPS_HOST} << 'ENDSSH'
+    ${VPS_USER}@${VPS_HOST} "COMPOSE_CMD='${COMPOSE_CMD}' bash -s" <<'ENDSSH'
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -71,6 +85,14 @@ if ! docker network inspect web >/dev/null 2>&1; then
         exit 1
     fi
 fi
+
+# Ensure Compose command is available
+if [[ -z "${COMPOSE_CMD:-}" ]]; then
+    echo "❌ COMPOSE_CMD is not set. Aborting deployment."
+    exit 1
+fi
+
+export COMPOSE_CMD
 
 # Stop existing containers for this project (using the new container names)
 DEPLOY_DIR="/opt/mr-dj"
