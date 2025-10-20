@@ -46,7 +46,7 @@ describe('configuration dashboard', () => {
     observabilityService.reset();
     personalizationService = require('../services/personalizationService');
     personalizationService.resetLogs();
-    personalizationService.resetCache();
+    await personalizationService.resetCache();
 
     await new Promise((resolve) => {
       server.listen(0, '127.0.0.1', resolve);

@@ -11,9 +11,9 @@ const {
 } = require('../services/personalizationService');
 
 describe('personalizationService', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     resetLogs();
-    resetCache();
+    await resetCache();
   });
 
   afterAll(() => {
