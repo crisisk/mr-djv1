@@ -88,6 +88,10 @@ docker-compose up -d
 echo "Waiting for services to start..."
 sleep 10
 
+# Ensure database migrations are up to date
+echo "Running database migrations..."
+docker-compose exec -T mr-dj-backend npm run migrate
+
 # Check container status
 echo "Container Status:"
 docker-compose ps
