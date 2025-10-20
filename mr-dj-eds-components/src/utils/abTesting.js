@@ -61,13 +61,21 @@ export const getOrAssignVariant = () => {
   const COOKIE_NAME = 'mr_dj_ab_variant';
   const COOKIE_DAYS = 30;
 
+  const persistVariant = (variant) => {
+    setCookie(COOKIE_NAME, variant, COOKIE_DAYS);
+
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      window.sessionStorage.setItem('ab_variant', variant);
+    }
+  };
+
   // Check URL parameter first (manual override)
   const urlParams = new URLSearchParams(window.location.search);
   const urlVariant = urlParams.get('variant');
 
   if (urlVariant === 'B' || urlVariant === 'A') {
-    // URL parameter takes precedence - store in cookie
-    setCookie(COOKIE_NAME, urlVariant, COOKIE_DAYS);
+    // URL parameter takes precedence - store in cookie and session storage
+    persistVariant(urlVariant);
     return urlVariant;
   }
 
@@ -75,13 +83,16 @@ export const getOrAssignVariant = () => {
   const cookieVariant = getCookie(COOKIE_NAME);
 
   if (cookieVariant === 'A' || cookieVariant === 'B') {
-    // Valid cookie exists - use it
+    // Valid cookie exists - hydrate session storage for downstream tracking
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      window.sessionStorage.setItem('ab_variant', cookieVariant);
+    }
     return cookieVariant;
   }
 
   // No valid variant found - assign randomly (50/50 split)
   const randomVariant = Math.random() < 0.5 ? 'A' : 'B';
-  setCookie(COOKIE_NAME, randomVariant, COOKIE_DAYS);
+  persistVariant(randomVariant);
 
   return randomVariant;
 };
