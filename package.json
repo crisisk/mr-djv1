@@ -1,11 +1,8 @@
 {
-  "name": "mr-dj-assets-tools",
+  "name": "mr-djv1",
+  "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "optimize-images": "node scripts/optimize-images.mjs"
-  },
-  "dependencies": {
-    "sharp": "^0.33.4"
+    "test:e2e": "cypress run --spec tests/e2e/booking-flow.cy.ts"
   }
 }
