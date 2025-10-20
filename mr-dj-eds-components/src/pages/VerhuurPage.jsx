@@ -4,8 +4,13 @@ import Header from '../components/Molecules/Header.jsx';
 import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
+import { generateBreadcrumbSchema } from '../utils/schemaOrg.js';
+import { createServiceBreadcrumbs } from '../utils/breadcrumbs.js';
 
 const VerhuurPage = () => {
+  const breadcrumbs = createServiceBreadcrumbs('Verhuur', '/verhuur');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+
   return (
     <div className="VerhuurPage">
       <Helmet>
@@ -15,6 +20,7 @@ const VerhuurPage = () => {
           content="Professionele DJ apparatuur nodig? Huur van een professionele DJ! Draaitafels, Geluidsset, Kabels, Microfoons, Mixers, Lichtinstallaties, Lasers en meer!"
         />
         <meta name="keywords" content="licht verhuur, geluid verhuur, DJ apparatuur huren, geluidsinstallatie verhuur, lichtinstallatie verhuur, laser verhuur, brabant" />
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />
