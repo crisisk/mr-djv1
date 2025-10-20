@@ -80,6 +80,14 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     setIsSubmitting(true);
 
+    const trimmedName = formData.name.trim();
+    const normalizedPhone = formData.phone.replace(/\s+/g, ' ').trim();
+    const payload = {
+      name: trimmedName,
+      phone: normalizedPhone,
+      eventType: formData.eventType,
+    };
+
     try {
       await submitCallbackRequest(payload);
 
