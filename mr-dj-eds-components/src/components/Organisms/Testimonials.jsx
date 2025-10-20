@@ -45,12 +45,16 @@ const StarRating = ({ rating }) => {
   return <div className="flex" aria-hidden="true">{stars}</div>;
 };
 
-const TestimonialCard = ({ testimonial, isActive }) => {
+const TestimonialCard = ({ testimonial, isActive, slideId, index, total }) => {
   return (
     <article
+      id={slideId}
       className={`bg-white p-8 rounded-lg shadow-xl flex flex-col h-full transition-transform duration-500 ease-out ${
         isActive ? 'opacity-100 translate-y-0' : 'opacity-40 md:opacity-60 translate-y-2'
       }`}
+      role="group"
+      aria-roledescription="slide"
+      aria-label={`Testimonial ${index + 1} van ${total}`}
       aria-hidden={!isActive}
       tabIndex={isActive ? 0 : -1}
     >
@@ -106,8 +110,42 @@ const Testimonials = () => {
   const handlePause = () => setIsPaused(true);
   const handleResume = () => setIsPaused(false);
 
+  const handleFocus = () => handlePause();
+  const handleBlur = (event) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      handleResume();
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        goToPrev();
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        goToNext();
+        break;
+      case 'Home':
+        event.preventDefault();
+        goToIndex(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        goToIndex(testimonialsCount - 1);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
-    <section className="py-16 bg-gray-100" aria-labelledby="testimonials-heading">
+    <section
+      className="py-16 bg-gray-100"
+      aria-labelledby="testimonials-heading"
+      role="region"
+    >
       <div className="container mx-auto px-4">
         <h2
           id="testimonials-heading"
@@ -120,8 +158,14 @@ const Testimonials = () => {
           className="relative max-w-5xl mx-auto"
           onMouseEnter={handlePause}
           onMouseLeave={handleResume}
-          onFocus={handlePause}
-          onBlur={handleResume}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          role="group"
+          aria-roledescription="carousel"
+          aria-live="polite"
+          aria-label="Testimonials carrousel"
         >
           <div className="overflow-hidden">
             <div
@@ -129,8 +173,14 @@ const Testimonials = () => {
               style={{ transform: `translateX(-${activeIndex * 100}%)` }}
             >
               {testimonialsData.map((testimonial, index) => (
-                <div key={index} className="min-w-full px-2 md:px-6">
-                  <TestimonialCard testimonial={testimonial} isActive={index === activeIndex} />
+                <div key={index} className="min-w-full px-2 md:px-6" role="presentation">
+                  <TestimonialCard
+                    testimonial={testimonial}
+                    isActive={index === activeIndex}
+                    slideId={`testimonial-slide-${index}`}
+                    index={index}
+                    total={testimonialsCount}
+                  />
                 </div>
               ))}
             </div>
@@ -160,7 +210,7 @@ const Testimonials = () => {
             </button>
           </div>
 
-          <div className="flex justify-center gap-3 mt-8">
+          <div className="flex justify-center gap-3 mt-8" role="tablist" aria-label="Testimonials selecties">
             {testimonialsData.map((_, index) => (
               <button
                 key={index}
@@ -170,7 +220,10 @@ const Testimonials = () => {
                   index === activeIndex ? 'bg-primary scale-110' : 'bg-gray-300 hover:bg-gray-400'
                 }`}
                 aria-label={`Ga naar testimonial ${index + 1}`}
-                aria-pressed={index === activeIndex}
+                aria-controls={`testimonial-slide-${index}`}
+                role="tab"
+                aria-selected={index === activeIndex}
+                tabIndex={index === activeIndex ? 0 : -1}
               />
             ))}
           </div>
