@@ -2694,10 +2694,30 @@ router.get('/', (_req, res) => {
   res.type('html').send(renderPage());
 });
 
+async function buildStateWithFlags(state, { forceRefresh = false } = {}) {
+  if (forceRefresh) {
+    await featureFlags.refreshIfNeeded(true);
+  }
+
+  const values = await featureFlags.getAll();
+  const active = Object.entries(values)
+    .filter(([, enabled]) => Boolean(enabled))
+    .map(([name]) => name);
+
+  return {
+    ...state,
+    featureFlags: {
+      values,
+      active
+    }
+  };
+}
+
 router.get('/api/variables', async (_req, res, next) => {
   try {
     const state = await configDashboardService.getState();
-    res.json(state);
+    const withFlags = await buildStateWithFlags(state);
+    res.json(withFlags);
   } catch (error) {
     next(error);
   }

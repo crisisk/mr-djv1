@@ -11,6 +11,7 @@ const integrationsRouter = require('./integrations');
 const personalizationRouter = require('./personalization');
 const dashboardRouter = require('./dashboard');
 const metricsRouter = require('./metrics');
+const featureFlags = require('../lib/featureFlags');
 
 const router = express.Router();
 
@@ -32,17 +33,22 @@ router.get('/', (_req, res) => {
       keyword: '/personalization/keyword',
       events: '/personalization/events'
     }
-  };
 
-  if (config.dashboard.enabled) {
-    endpoints.dashboard = '/dashboard';
+    if (config.dashboard.enabled) {
+      endpoints.dashboard = '/dashboard';
+    }
+
+    res.json({
+      message: 'Mister DJ API',
+      version: config.version,
+      endpoints,
+      featureFlags: {
+        active: await featureFlags.getActive()
+      }
+    });
+  } catch (error) {
+    next(error);
   }
-
-  res.json({
-    message: 'Mister DJ API',
-    version: config.version,
-    endpoints
-  });
 });
 
 router.use('/health', healthRouter);
@@ -52,7 +58,7 @@ router.use('/callback-request', rateLimiter, callbackRequestsRouter);
 router.use('/bookings', rateLimiter, bookingsRouter);
 router.use('/reviews', reviewsRouter);
 router.use('/integrations', integrationsRouter);
-router.use('/personalization', personalizationRouter);
+router.use('/personalization', featureFlags.guard('personalization'), personalizationRouter);
 router.use('/metrics', metricsRouter);
 
 if (config.dashboard.enabled) {

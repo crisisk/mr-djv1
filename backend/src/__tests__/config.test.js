@@ -125,6 +125,7 @@ describe('config', () => {
         'SEO_AUTOMATION_API_URL',
         'SEO_AUTOMATION_API_KEY',
         'SEO_AUTOMATION_KEYWORDSET_ID',
+        'FEATURE_AUTOMATION',
         'CITY_AUTOMATION_LLM_PROVIDER',
         'CITY_AUTOMATION_LLM_MODEL'
       ])
@@ -206,6 +207,7 @@ describe('config', () => {
         label: 'Content automatisering',
         description: 'SEO keyword ingest, LLM-configuratie en reviewkanalen voor de interne city page generator.',
         keys: [
+          'FEATURE_AUTOMATION',
           'SEO_AUTOMATION_API_URL',
           'SEO_AUTOMATION_API_KEY',
           'SEO_AUTOMATION_KEYWORDSET_ID',
