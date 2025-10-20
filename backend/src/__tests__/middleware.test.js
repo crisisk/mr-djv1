@@ -170,6 +170,8 @@ describe('error handlers', () => {
   });
 });
 
+const ORIGINAL_ENV = { ...process.env };
+
 describe('dashboard auth middleware', () => {
   function createResponse() {
     return {
@@ -181,6 +183,7 @@ describe('dashboard auth middleware', () => {
 
   afterEach(() => {
     jest.resetModules();
+    process.env = { ...ORIGINAL_ENV };
   });
 
   function loadMiddleware(overrides = {}) {

@@ -9,11 +9,6 @@ function normalizeIp(value) {
   return value.startsWith('::ffff:') ? value.slice(7) : value;
 }
 
-function unauthorized(res) {
-  res.set('WWW-Authenticate', 'Basic realm="Config Dashboard"');
-  res.status(401).json({ error: 'Unauthorized' });
-}
-
 function forbidden(res) {
   res.status(403).json({ error: 'Forbidden' });
 }
@@ -77,7 +72,6 @@ function dashboardAuth(req, res, next) {
       forbidden(res);
       return;
     }
-  }
 
   requestLogger.debug('Dashboard authentication succeeded');
   next();
