@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { submitCallbackRequest } from '../../services/api.js';
 import { trackFormSubmission } from '../../utils/trackConversion';
+import { getWindow } from '../../lib/environment.js';
 
 /**
  * QuickCallbackForm - Simplified callback request form
@@ -13,10 +14,20 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     phone: '',
     eventType: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const successResetTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (successResetTimeoutRef.current) {
+        clearTimeout(successResetTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const validateForm = () => {
     const errors = {};
@@ -45,11 +56,36 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     return Object.keys(errors).length === 0;
   };
 
+  const validateForm = () => {
+    const errors = {};
+    const trimmedName = formData.name.trim();
+    const trimmedPhone = formData.phone.trim();
+
+    if (!trimmedName) {
+      errors.name = 'Naam is verplicht';
+    } else if (trimmedName.length < 2) {
+      errors.name = 'Naam moet minimaal 2 tekens bevatten';
+    }
+
+    if (!trimmedPhone) {
+      errors.phone = 'Telefoonnummer is verplicht';
+    } else if (!/^[\d\s()+-]{10,15}$/.test(trimmedPhone)) {
+      errors.phone = 'Voer een geldig telefoonnummer in';
+    }
+
+    if (!formData.eventType) {
+      errors.eventType = 'Kies een type feest';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     if (fieldErrors[name]) {
@@ -70,24 +106,27 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     setIsSubmitting(true);
 
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
+    const trimmedName = formData.name.trim();
+    const normalizedPhone = formData.phone.replace(/\s+/g, ' ').trim();
+    const payload = {
+      name: trimmedName,
+      phone: normalizedPhone,
+      eventType: formData.eventType,
+    };
 
     try {
-      await submitCallbackRequest(formData);
+      await submitCallbackRequest(payload);
 
       // Track successful submission
-      trackFormSubmission(variant, formData.eventType, 'callback');
+      trackFormSubmission(variant, payload.eventType, 'callback');
 
-      if (typeof window !== 'undefined') {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
+      const browser = getWindow();
+      if (browser) {
+        browser.dataLayer = browser.dataLayer || [];
+        browser.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
-          event_type: payload.eventType,
+          event_type: formData.eventType,
           form_type: 'callback',
         });
       }
@@ -95,7 +134,10 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       setFieldErrors({});
       setIsSubmitted(true);
       // Reset form after 3 seconds
-      setTimeout(() => {
+      if (successResetTimeoutRef.current) {
+        clearTimeout(successResetTimeoutRef.current);
+      }
+      successResetTimeoutRef.current = setTimeout(() => {
         setFormData({ name: '', phone: '', eventType: '' });
         setFieldErrors({});
         setIsSubmitted(false);

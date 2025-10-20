@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { format } from 'date-fns';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import Button from '../Atoms/Buttons.jsx';
@@ -110,12 +111,12 @@ const AvailabilityChecker = () => {
 
   return (
     <section className="py-16 bg-white">
-      <div className="container mx-auto px-4 max-w-lg shadow-xl rounded-lg p-12">
+      <div className="container mx-auto px-4 max-w-2xl shadow-xl rounded-lg p-12">
         <h2 className="text-4xl text-center text-[#1A2C4B] mb-6 font-extrabold">
           Controleer Beschikbaarheid
         </h2>
-        <p className="text-center text-[#1A2C4B] mb-8">
-          Kies uw gewenste datum en wij controleren direct of Mr. DJ beschikbaar is.
+        <p className="text-center text-[#1A2C4B] mb-10">
+          Vul je gegevens in en wij koppelen binnen 24 uur terug met een definitieve bevestiging.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-8" noValidate>
@@ -256,11 +257,10 @@ const AvailabilityChecker = () => {
             </div>
           )}
 
-          {/* Submit Button */}
           <Button
             type="submit"
             variant="primary"
-            size="lg"
+            size="large"
             className="w-full"
             disabled={isSubmitting}
           >

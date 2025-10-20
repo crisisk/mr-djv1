@@ -5,7 +5,7 @@
  * Handles all backend API calls with error handling and CORS
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
 /**
  * Generic fetch wrapper with error handling
