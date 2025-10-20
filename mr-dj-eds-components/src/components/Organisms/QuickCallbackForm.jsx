@@ -1,26 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { submitCallbackRequest } from '../../services/api.js';
-import { trackFormSubmission, getUserVariant } from '../../utils/trackConversion';
+import { trackFormSubmission, getUserVariant } from '../../utils/trackConversion.js';
 import { getWindow } from '../../lib/environment.js';
+import { useHCaptchaWidget } from '../../hooks/useHCaptchaWidget.js';
 
-/**
- * QuickCallbackForm - Simplified callback request form
- * Reduced friction: only name, phone, event type
- * Higher conversion than full contact forms
- */
+const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY;
+
+const INITIAL_FORM_STATE = {
+  name: '',
+  phone: '',
+  eventType: '',
+};
+
 const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    eventType: '',
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
   const successResetTimeoutRef = useRef(null);
+
+  const captcha = useHCaptchaWidget(HCAPTCHA_SITE_KEY);
 
   useEffect(() => {
     return () => {
@@ -29,33 +30,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       }
     };
   }, []);
-
-  const validateForm = () => {
-    const errors = {};
-
-    if (!formData.name.trim()) {
-      errors.name = 'Naam is verplicht';
-    } else if (formData.name.trim().length < 2) {
-      errors.name = 'Naam moet minimaal 2 tekens bevatten';
-    }
-
-    const trimmedPhone = formData.phone.trim();
-    if (!trimmedPhone) {
-      errors.phone = 'Telefoonnummer is verplicht';
-    } else {
-      const digitsOnly = trimmedPhone.replace(/\D/g, '');
-      if (digitsOnly.length < 6) {
-        errors.phone = 'Telefoonnummer moet minimaal 6 cijfers bevatten';
-      }
-    }
-
-    if (!formData.eventType) {
-      errors.eventType = 'Selecteer een type feest';
-    }
-
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   const validateForm = () => {
     const errors = {};
@@ -70,7 +44,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     if (!trimmedPhone) {
       errors.phone = 'Telefoonnummer is verplicht';
-    } else if (!/^[\d\s()+-]{10,15}$/.test(trimmedPhone)) {
+    } else if (!/^[0-9+\s()-]{6,}$/.test(trimmedPhone)) {
       errors.phone = 'Voer een geldig telefoonnummer in';
     }
 
@@ -82,34 +56,33 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (event) => {
+    const { name, value } = event.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
 
     if (fieldErrors[name]) {
-      setFieldErrors(prev => ({
+      setFieldErrors((prev) => ({
         ...prev,
-        [name]: null
+        [name]: null,
       }));
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setSubmitError(null);
 
     if (!validateForm()) {
       return;
     }
 
-    const payload = {
-      name: formData.name.trim(),
-      phone: formData.phone.trim(),
-      eventType: formData.eventType || undefined,
-    };
+    if (HCAPTCHA_SITE_KEY && !captcha.token) {
+      captcha.setError('Bevestig dat je geen robot bent.');
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -119,19 +92,13 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       name: trimmedName,
       phone: normalizedPhone,
       eventType: formData.eventType,
+      hCaptchaToken: captcha.token || undefined,
     };
 
     try {
       const abVariant = getUserVariant() || variant;
-      const payload = {
-        name: formData.name.trim(),
-        phone: formData.phone.trim(),
-        eventType: formData.eventType || null,
-      };
+      const response = await submitCallbackRequest(payload);
 
-      await submitCallbackRequest(payload);
-
-      // Track successful submission
       trackFormSubmission(abVariant, payload.eventType || '', 'callback');
 
       const browser = getWindow();
@@ -149,19 +116,26 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       setSuccessMessage(response?.message || 'Bedankt! We bellen je zo snel mogelijk terug.');
       setIsSubmitted(true);
       setSubmitError(null);
-      // Reset form after 3 seconds
+      captcha.reset();
+
       if (successResetTimeoutRef.current) {
         clearTimeout(successResetTimeoutRef.current);
       }
+
       successResetTimeoutRef.current = setTimeout(() => {
-        setFormData({ name: '', phone: '', eventType: '' });
+        setFormData(INITIAL_FORM_STATE);
         setFieldErrors({});
         setIsSubmitted(false);
         setSuccessMessage('');
+        captcha.reset();
       }, 5000);
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitError(error.message || 'Er ging iets mis. Bel ons direct: 040 - 842 2594');
+      captcha.reset();
+      if (error?.message && error.message.toLowerCase().includes('captcha')) {
+        captcha.setError(error.message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -171,9 +145,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     return (
       <div className={`bg-green-50 border-2 border-green-500 p-spacing-xl rounded-lg text-center ${className}`}>
         <div className="text-5xl mb-spacing-md">✓</div>
-        <h3 className="text-2xl font-bold text-green-700 mb-spacing-sm">
-          Bedankt!
-        </h3>
+        <h3 className="text-2xl font-bold text-green-700 mb-spacing-sm">Bedankt!</h3>
         <p className="text-neutral-dark">
           {successMessage || 'We bellen je zo snel mogelijk terug!'}
         </p>
@@ -183,12 +155,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
   return (
     <div className={`bg-secondary p-spacing-xl rounded-lg shadow-xl ${className}`}>
-      <h3 className="text-2xl md:text-3xl font-bold text-neutral-dark mb-spacing-sm text-center">
-        📞 Bel Mij Terug
-      </h3>
-      <p className="text-neutral-dark mb-spacing-lg text-center">
-        Vul je gegevens in en wij bellen je vandaag nog!
-      </p>
+      <h3 className="text-2xl md:text-3xl font-bold text-neutral-dark mb-spacing-sm text-center">📞 Bel Mij Terug</h3>
+      <p className="text-neutral-dark mb-spacing-lg text-center">Vul je gegevens in en wij bellen je vandaag nog!</p>
 
       {submitError && (
         <div
@@ -207,7 +175,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        {/* Name Field */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-neutral-dark mb-1">
             Je naam *
@@ -231,7 +198,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           )}
         </div>
 
-        {/* Phone Field */}
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-neutral-dark mb-1">
             Je telefoonnummer *
@@ -254,7 +220,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           )}
         </div>
 
-        {/* Event Type Field */}
         <div>
           <label htmlFor="eventType" className="block text-sm font-medium text-neutral-dark mb-1">
             Type feest *
@@ -283,17 +248,33 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           )}
         </div>
 
-        {/* Submit Button */}
+        {HCAPTCHA_SITE_KEY && (
+          <div>
+            <label className="block text-sm font-medium text-neutral-dark mb-2">
+              Beveiligingscontrole <span className="text-red-500">*</span>
+            </label>
+            <div ref={captcha.containerRef} className="h-captcha" aria-live="polite" />
+            {captcha.isLoading && (
+              <p className="text-sm text-neutral-dark mt-2">Beveiligingscontrole wordt geladen…</p>
+            )}
+            {captcha.error && <p className="text-sm text-red-600 mt-2">{captcha.error}</p>}
+          </div>
+        )}
+
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (HCAPTCHA_SITE_KEY ? !captcha.isReady : false)}
           className="w-full bg-primary text-white p-4 md:p-5 rounded-lg font-bold text-lg hover:bg-primary-dark transition-colors duration-300 disabled:bg-neutral-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
               <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
               </svg>
               Versturen...
             </span>
@@ -302,7 +283,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           )}
         </button>
 
-        {/* Trust Signal */}
         <p className="text-xs text-neutral-dark text-center mt-4">
           We respecteren je privacy en bellen alleen tijdens kantooruren (9:00-18:00)
         </p>
@@ -312,3 +292,4 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 };
 
 export default QuickCallbackForm;
+
