@@ -2661,12 +2661,18 @@ om een waarde te wissen.</p>
         });
 
         try {
+          const requestBody = { entries: payload };
+
+          if (form.dataset.rolesDirty === 'true') {
+            requestBody.assignments = serializeAssignments();
+          }
+
           const response = await fetch('./api/variables', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ entries: payload, assignments: serializeAssignments() })
+            body: JSON.stringify(requestBody)
           });
 
           if (!response.ok) {
