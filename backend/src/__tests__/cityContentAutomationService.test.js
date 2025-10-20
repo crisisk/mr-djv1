@@ -120,12 +120,13 @@ describe('cityContentAutomationService', () => {
       const updatedCities = JSON.parse(await fs.readFile(citiesFilePath, 'utf8'));
       const helmond = updatedCities.find((city) => city.slug === 'dj-helmond');
       expect(helmond).toBeDefined();
-      expect(helmond.intro).toContain('Mister DJ');
+      expect(helmond.intro.translations.nl).toContain('Mister DJ');
 
       const generatedCityFile = await fs.readFile(path.join(cityContentDirPath, 'dj-helmond.json'), 'utf8');
       const parsedCityFile = JSON.parse(generatedCityFile);
       expect(parsedCityFile.slug).toBe('dj-helmond');
       expect(parsedCityFile.city).toBe('Helmond');
+      expect(parsedCityFile.intro.translations.nl).toContain('Mister DJ');
 
       const report = await fs.readFile(reportFilePath, 'utf8');
       expect(report).toContain('City content automation run');

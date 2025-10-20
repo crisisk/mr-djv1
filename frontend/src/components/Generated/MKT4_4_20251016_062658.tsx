@@ -29,7 +29,7 @@ const TestimonialsSection = () => {
 
   return (
     <section className="testimonials-section">
-      <h2 className="text-3xl font-bold text-center mb-8">
+      <h2 className="heading-2 text-center mb-8">
         What Our Clients Say
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -89,9 +89,9 @@ const VideoTestimonial = ({ testimonial, isActive, onPlay }) => {
         </div>
       )}
       <div className="p-4" id={statusId} aria-live="polite">
-        <h3 className="font-semibold text-xl">{testimonial.name}</h3>
-        <p className="text-gray-600">{testimonial.event}</p>
-        <p className="mt-2 italic">"{testimonial.quote}"</p>
+        <h3 className="heading-4">{testimonial.name}</h3>
+        <p className="body-sm text-gray-600">{testimonial.event}</p>
+        <p className="mt-2 body-md text-emphasis">"{testimonial.quote}"</p>
         {isActive && (
           <p className="sr-only">Now playing testimonial video</p>
         )}

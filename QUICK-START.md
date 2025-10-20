@@ -127,6 +127,8 @@ docker exec mr-dj-eds-frontend curl -s http://localhost/api/health
 - `CSP_DIRECTIVES="connect-src 'self' https://mr-dj.sevensa.nl"`
 - `REFERRER_POLICY=strict-origin-when-cross-origin`
 
+> ℹ️ **Runtime validation** – The backend now validates critical environment variables (`DATABASE_URL`, RentGuy/Sevensa API keys, dashboard credentials, etc.) on startup and during `config.reload()`. Missing keys abort the boot process with a descriptive error, while optional values that fall back to defaults are emitted as JSON warnings (e.g. `PORT` → `3000`, rate-limit windows, hCaptcha verify URL). Override any default by setting the corresponding variable in `.env`, `managed.env`, or via the configuration dashboard before reloading the service.
+
 ### Frontend
 - `VITE_API_URL=/api` (uses nginx proxy)
 

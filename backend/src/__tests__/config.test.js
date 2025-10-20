@@ -13,6 +13,7 @@ function loadConfig() {
 describe('config', () => {
   afterEach(() => {
     process.env = { ...ORIGINAL_ENV };
+    jest.restoreAllMocks();
     jest.resetModules();
   });
 
@@ -20,18 +21,18 @@ describe('config', () => {
     process.env = ORIGINAL_ENV;
   });
 
-  it('throws descriptive errors when required environment variables are missing', () => {
+  it('builds configuration with defaults for optional values', () => {
     const env = { ...BASE_ENV };
-    delete env.RENTGUY_API_BASE_URL;
+    delete env.MAIL_PROVIDER;
+    delete env.MAIL_API_KEY;
+    delete env.MAIL_FROM_ADDRESS;
+    delete env.MAIL_REPLY_TO;
+    delete env.MAIL_TEMPLATES_CONTACT;
+    delete env.MAIL_TEMPLATES_BOOKING;
+    delete env.RENTGUY_WORKSPACE_ID;
     process.env = env;
 
-    expect(() => loadConfig()).toThrow(
-      "Missing required environment variable \"RENTGUY_API_BASE_URL\" for RentGuy integration (RENTGUY_API_BASE_URL and RENTGUY_API_KEY)."
-    );
-  });
-
-  it('loads configuration with defaults', () => {
-    process.env = { ...BASE_ENV };
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     const config = loadConfig();
 
@@ -55,7 +56,7 @@ describe('config', () => {
     });
     expect(config.rateLimit).toEqual({ windowMs: 15 * 60 * 1000, max: 100 });
     expect(config.logging).toBe('dev');
-    expect(config.databaseUrl).toBe('postgres://test-user:test-pass@localhost:5432/mrdj');
+    expect(config.databaseUrl).toBe(BASE_ENV.DATABASE_URL);
     expect(config.mail).toEqual({
       provider: 'postmark',
       apiKey: 'test-mail-key',
@@ -73,17 +74,18 @@ describe('config', () => {
       expect.objectContaining({
         rentGuy: {
           enabled: true,
-          baseUrl: 'https://rentguy.example/api',
-          workspaceId: 'workspace-test',
+          baseUrl: BASE_ENV.RENTGUY_API_BASE_URL,
+          workspaceId: null,
           timeoutMs: 5000,
           webhookSecrets: []
         },
         sevensa: {
           enabled: true,
-          submitUrl: 'https://sevensa.example/submit',
+          submitUrl: BASE_ENV.SEVENSA_SUBMIT_URL,
           retryDelayMs: 15000,
-          maxAttempts: 5
-        },
+          maxAttempts: 5,
+          circuitBreaker: { failureThreshold: 3, cooldownMs: 120000 }
+        }),
         hcaptcha: {
           enabled: false,
           siteKey: null,
@@ -92,9 +94,18 @@ describe('config', () => {
         }
       })
     );
+    expect(config.contactForm).toEqual({
+      rateLimit: { windowMs: 600000, max: 20 },
+      ipThrottle: { windowMs: 3600000, max: 50, blockDurationMs: 1800000 },
+      bot: { blockedAgents: [], suspiciousAgents: [] }
+    });
     expect(config.personalization).toEqual({
-      automationWebhook: 'https://n8n.example/webhook',
+      automationWebhook: BASE_ENV.N8N_PERSONALIZATION_WEBHOOK_URL,
       incomingWebhookSecrets: []
+    });
+    expect(config.feedback).toEqual({
+      automationWebhook: null,
+      responseBaseUrl: null
     });
     expect(config.alerts).toEqual({
       webhooks: [],
@@ -155,9 +166,15 @@ describe('config', () => {
         'SEVENSA_QUEUE_MAX_ATTEMPTS',
         'N8N_PERSONALIZATION_WEBHOOK_URL',
         'PERSONALIZATION_WEBHOOK_SECRETS',
+        'N8N_SURVEY_WEBHOOK_URL',
+        'SURVEY_RESPONSE_BASE_URL',
         'SEO_AUTOMATION_API_URL',
         'SEO_AUTOMATION_API_KEY',
         'SEO_AUTOMATION_KEYWORDSET_ID',
+        'FLAG_PERSONALIZATION',
+        'FLAG_RENTGUY_INTEGRATION',
+        'FLAG_SEVENSA_INTEGRATION',
+        'FLAG_TELEMETRY',
         'FEATURE_AUTOMATION',
         'CITY_AUTOMATION_LLM_PROVIDER',
         'CITY_AUTOMATION_LLM_MODEL'
@@ -232,8 +249,226 @@ describe('config', () => {
       expect.objectContaining({
         id: 'content-automation',
         label: 'Automation & CRM',
+        description: 'Instellingen voor Sevensa submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
+        keys: ['SEVENSA_SUBMIT_URL', 'SEVENSA_QUEUE_RETRY_DELAY_MS', 'SEVENSA_QUEUE_MAX_ATTEMPTS']
+      }),
+      expect.objectContaining({
+        id: 'personalization',
+        label: 'Personalization & CRO',
         description:
-          'Instellingen voor Sevensa submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
+          'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
+        keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'PERSONALIZATION_WEBHOOK_SECRETS']
+      }),
+      expect.objectContaining({
+        id: 'feedback',
+        label: 'Feedback & surveys',
+        description: 'Surveyautomatisering en post-event klantfeedback workflows.',
+        keys: ['N8N_SURVEY_WEBHOOK_URL', 'SURVEY_RESPONSE_BASE_URL']
+      }),
+      expect.objectContaining({
+        id: 'automation',
+        label: 'Content automatisering',
+        description: 'SEO keyword ingest, LLM-configuratie en reviewkanalen voor de interne city page generator.',
+        keys: [
+          'FEATURE_AUTOMATION',
+          'SEO_AUTOMATION_API_URL',
+          'SEO_AUTOMATION_API_KEY',
+          'SEO_AUTOMATION_KEYWORDSET_ID',
+          'SEO_AUTOMATION_REGION',
+          'SEO_AUTOMATION_THEME_KEYWORDS',
+          'SEO_AUTOMATION_APPROVAL_EMAIL',
+          'CITY_AUTOMATION_LLM_PROVIDER',
+          'CITY_AUTOMATION_LLM_MODEL',
+          'CITY_AUTOMATION_LLM_API_KEY',
+          'CITY_AUTOMATION_DRY_RUN'
+        ]
+      })
+    ]);
+    expect(config.dashboard.storePath).toBe(DEFAULT_STORE_PATH);
+
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('builds configuration with defaults for optional values', () => {
+    const env = { ...BASE_ENV };
+    delete env.MAIL_PROVIDER;
+    delete env.MAIL_API_KEY;
+    delete env.MAIL_FROM_ADDRESS;
+    delete env.MAIL_REPLY_TO;
+    delete env.MAIL_TEMPLATES_CONTACT;
+    delete env.MAIL_TEMPLATES_BOOKING;
+    delete env.RENTGUY_WORKSPACE_ID;
+    process.env = env;
+
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const config = loadConfig();
+
+    expect(config.port).toBe(3000);
+    expect(config.host).toBe('0.0.0.0');
+    expect(config.cors).toEqual({ origin: '*', credentials: false });
+    expect(config.rateLimit).toEqual({ windowMs: 15 * 60 * 1000, max: 100 });
+    expect(config.logging).toBe('dev');
+    expect(config.databaseUrl).toBe(BASE_ENV.DATABASE_URL);
+    expect(config.mail).toEqual({
+      provider: null,
+      apiKey: null,
+      from: null,
+      replyTo: null,
+      stream: null,
+      templates: {
+        contact: {},
+        booking: {}
+      }
+    });
+    expect(config.serviceName).toBe('mr-dj-backend');
+    expect(config.version).toBe('1.0.0');
+    expect(config.integrations).toEqual(
+      expect.objectContaining({
+        rentGuy: {
+          enabled: true,
+          baseUrl: BASE_ENV.RENTGUY_API_BASE_URL,
+          workspaceId: null,
+          timeoutMs: 5000,
+          webhookSecrets: []
+        },
+        sevensa: {
+          enabled: true,
+          submitUrl: BASE_ENV.SEVENSA_SUBMIT_URL,
+          retryDelayMs: 15000,
+          maxAttempts: 5
+        },
+        hcaptcha: {
+          enabled: false,
+          siteKey: null,
+          secretKey: null,
+          verifyUrl: 'https://hcaptcha.com/siteverify'
+        },
+      })
+    );
+    expect(config.personalization).toEqual({
+      automationWebhook: BASE_ENV.N8N_PERSONALIZATION_WEBHOOK_URL,
+      incomingWebhookSecrets: []
+    });
+    expect(config.alerts).toEqual({
+      webhooks: [],
+      throttleMs: 2 * 60 * 1000,
+      queue: {
+        warningBacklog: 25,
+        criticalBacklog: 75,
+        recoveryBacklog: 5,
+        warningRetryAgeMs: 5 * 60 * 1000,
+        criticalRetryAgeMs: 15 * 60 * 1000,
+        recoveryRetryAgeMs: 2 * 60 * 1000,
+        deadLetterWarning: 1
+      },
+    });
+    expect(config.dashboard.enabled).toBe(false);
+    expect(config.dashboard.username).toBeNull();
+    expect(config.dashboard.password).toBeNull();
+    expect(config.dashboard.allowedIps).toEqual([]);
+    expect(config.dashboard.managedKeys).toEqual(
+      expect.arrayContaining([
+        'NODE_ENV',
+        'HOST',
+        'PORT',
+        'SERVICE_NAME',
+        'LOG_FORMAT',
+        'CORS_ORIGIN',
+        'RATE_LIMIT_WINDOW_MS',
+        'RATE_LIMIT_MAX',
+        'DATABASE_URL',
+        'REDIS_URL',
+        'REDIS_TLS',
+        'REDIS_NAMESPACE',
+        'REDIS_TLS_REJECT_UNAUTHORIZED',
+        'PGSSLMODE',
+        'MAIL_PROVIDER',
+        'MAIL_API_KEY',
+        'MAIL_FROM_ADDRESS',
+        'MAIL_REPLY_TO',
+        'MAIL_TEMPLATES_CONTACT',
+        'MAIL_TEMPLATES_BOOKING',
+        'HCAPTCHA_SITE_KEY',
+        'HCAPTCHA_SECRET_KEY',
+        'HCAPTCHA_VERIFY_URL',
+        'RENTGUY_API_BASE_URL',
+        'RENTGUY_API_KEY',
+        'RENTGUY_WORKSPACE_ID',
+        'RENTGUY_TIMEOUT_MS',
+        'RENTGUY_WEBHOOK_SECRETS',
+        'SEVENSA_SUBMIT_URL',
+        'SEVENSA_QUEUE_RETRY_DELAY_MS',
+        'SEVENSA_QUEUE_MAX_ATTEMPTS',
+        'N8N_PERSONALIZATION_WEBHOOK_URL',
+        'PERSONALIZATION_WEBHOOK_SECRETS',
+        'SEO_AUTOMATION_API_URL',
+        'SEO_AUTOMATION_API_KEY',
+        'SEO_AUTOMATION_KEYWORDSET_ID',
+        'FEATURE_AUTOMATION',
+        'CITY_AUTOMATION_LLM_PROVIDER',
+        'CITY_AUTOMATION_LLM_MODEL'
+      ])
+    );
+    expect(config.dashboard.sections).toEqual([
+      expect.objectContaining({
+        id: 'application',
+        label: 'Applicatie instellingen',
+        description: 'Basisconfiguratie voor runtime gedrag, databaseverbindingen en rate limiting voor de API.',
+        keys: [
+          'NODE_ENV',
+          'HOST',
+          'PORT',
+          'SERVICE_NAME',
+          'LOG_FORMAT',
+          'CORS_ORIGIN',
+          'RATE_LIMIT_WINDOW_MS',
+          'RATE_LIMIT_MAX',
+          'DATABASE_URL',
+          'REDIS_URL',
+          'REDIS_TLS',
+          'REDIS_NAMESPACE',
+          'REDIS_TLS_REJECT_UNAUTHORIZED',
+          'PGSSLMODE'
+        ]
+      }),
+      expect.objectContaining({
+        id: 'mail',
+        label: 'E-mailintegratie',
+        description:
+          'Credentials, afzender en templaten voor transactionele mails richting klanten en interne teams.',
+        keys: [
+          'MAIL_PROVIDER',
+          'MAIL_API_KEY',
+          'MAIL_FROM_ADDRESS',
+          'MAIL_REPLY_TO',
+          'MAIL_TEMPLATES_CONTACT',
+          'MAIL_TEMPLATES_BOOKING'
+        ]
+      }),
+      expect.objectContaining({
+        id: 'security',
+        label: 'Beveiliging',
+        description: 'Instellingen voor hCaptcha-validatie van formulieren en spam-preventie.',
+        keys: ['HCAPTCHA_SITE_KEY', 'HCAPTCHA_SECRET_KEY', 'HCAPTCHA_VERIFY_URL']
+      }),
+      expect.objectContaining({
+        id: 'rentguy',
+        label: 'RentGuy integratie',
+        description:
+          'API-parameters voor de synchronisatie van leads en boekingen richting de RentGuy applicatie.',
+        keys: [
+          'RENTGUY_API_BASE_URL',
+          'RENTGUY_API_KEY',
+          'RENTGUY_WORKSPACE_ID',
+          'RENTGUY_TIMEOUT_MS',
+          'RENTGUY_WEBHOOK_SECRETS'
+        ]
+      }),
+      expect.objectContaining({
+        id: 'content-automation',
+        label: 'Automation & CRM',
+        description: 'Instellingen voor Sevensa submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
         keys: ['SEVENSA_SUBMIT_URL', 'SEVENSA_QUEUE_RETRY_DELAY_MS', 'SEVENSA_QUEUE_MAX_ATTEMPTS']
       }),
       expect.objectContaining({
@@ -260,11 +495,28 @@ describe('config', () => {
           'CITY_AUTOMATION_LLM_API_KEY',
           'CITY_AUTOMATION_DRY_RUN'
         ]
-      })
+      }),
     ]);
     expect(config.dashboard.storePath).toBe(DEFAULT_STORE_PATH);
+
+    expect(warnSpy).toHaveBeenCalled();
   });
 
+  it('throws descriptive errors when required environment variables are missing', () => {
+    const env = { ...BASE_ENV };
+    delete env.RENTGUY_API_BASE_URL;
+    process.env = env;
+
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => loadConfig()).toThrow(
+      'Environment validation failed: RENTGUY_API_BASE_URL is required for the RentGuy integration.'
+    );
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Environment validation failed')
+    );
+  });
   it('parses numeric and list based configuration values', () => {
     const tmpPath = path.join(__dirname, '..', '..', 'tmp-manual.env');
     process.env = buildRequiredEnv({
@@ -347,19 +599,21 @@ describe('config', () => {
     expect(config.version).toBe('2.3.4');
     expect(config.integrations).toEqual(
       expect.objectContaining({
-        rentGuy: {
-          enabled: true,
-          baseUrl: 'https://rentguy.example/api',
-          workspaceId: 'workspace-test',
-          timeoutMs: 7000,
-          webhookSecrets: []
-        },
-        sevensa: {
-          enabled: true,
-          submitUrl: 'https://sevensa.example/submit',
-          retryDelayMs: 45000,
-          maxAttempts: 7
-        },
+        rentGuy: expect.objectContaining({
+          enabled: false,
+          baseUrl: null,
+          workspaceId: null,
+          timeoutMs: 5000,
+          webhookSecrets: [],
+          circuitBreaker: { failureThreshold: 3, cooldownMs: 120000 }
+        }),
+        sevensa: expect.objectContaining({
+          enabled: false,
+          submitUrl: null,
+          retryDelayMs: 15000,
+          maxAttempts: 5,
+          circuitBreaker: { failureThreshold: 3, cooldownMs: 120000 }
+        }),
         hcaptcha: {
           enabled: false,
           siteKey: null,
@@ -368,6 +622,11 @@ describe('config', () => {
         }
       })
     );
+    expect(config.contactForm).toEqual({
+      rateLimit: { windowMs: 600000, max: 20 },
+      ipThrottle: { windowMs: 3600000, max: 50, blockDurationMs: 1800000 },
+      bot: { blockedAgents: [], suspiciousAgents: [] }
+    });
     expect(config.personalization).toEqual({
       automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL,
       incomingWebhookSecrets: []
@@ -549,7 +808,7 @@ describe('config', () => {
     process.env = env;
 
     expect(() => loadConfig()).toThrow(
-      'Missing required environment variable "CITY_AUTOMATION_LLM_API_KEY" for city content automation LLM access (provide CITY_AUTOMATION_LLM_API_KEY or OPENAI_API_KEY).'
+      'Environment validation failed: Provide CITY_AUTOMATION_LLM_API_KEY or OPENAI_API_KEY for city content automation.'
     );
   });
 });
