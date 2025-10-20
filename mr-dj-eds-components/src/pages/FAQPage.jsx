@@ -3,13 +3,13 @@ import { Helmet } from 'react-helmet';
 import Header from '../components/Molecules/Header.jsx';
 import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
-import {
-  generateFAQSchema,
-  generateBreadcrumbSchema,
-  generateWebPageSchema
-} from '../utils/schemaOrg.js';
+import { generateBreadcrumbSchema } from '../utils/schemaOrg.js';
+import { createSimpleBreadcrumbs } from '../utils/breadcrumbs.js';
 
 const FAQPage = () => {
+  const breadcrumbs = createSimpleBreadcrumbs('FAQ', '/faq');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+
   const faqs = [
     {
       category: 'Boeken & Reserveren',
@@ -166,11 +166,12 @@ const FAQPage = () => {
   return (
     <div className="FAQPage">
       <Helmet>
-        <title>{metaTitle}</title>
-        <meta name="description" content={metaDescription} />
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
+        <title>Veelgestelde Vragen | FAQ | Mr. DJ</title>
+        <meta
+          name="description"
+          content="Veelgestelde vragen over DJ huren, prijzen, pakketten en praktische zaken. Vind snel antwoord op je vraag!"
+        />
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />

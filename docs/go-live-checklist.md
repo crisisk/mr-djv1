@@ -28,6 +28,7 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 - [ ] Open de tab **RentGuy integratie**, vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, `RENTGUY_WORKSPACE_ID` en controleer dat de statusindicator "API geconfigureerd" toont
 - [ ] Controleer in de RentGuy statuskaart dat de queue-grootte `0` is en gebruik eventueel **Queue flushen** om wachtrij-items te verwerken
 - [ ] Vul (indien gebruikt) `N8N_PERSONALIZATION_WEBHOOK_URL` in zodat CRO-events naar n8n worden doorgestuurd en herlaad het dashboard
+- [ ] Open de tab **Feature flags** en bevestig dat `FLAG_PERSONALIZATION`, `FLAG_RENTGUY_INTEGRATION`, `FLAG_SEVENSA_INTEGRATION` en `FLAG_TELEMETRY` ingeschakeld zijn (deze toggles worden opgeslagen in `managed.env` en zijn ook via `FLAG_*` omgevingsvariabelen aan te passen)
 - [ ] Open `/api/health` en verifieer dat `dependencies.integrations.personalization.automationWebhookConfigured` `true` is wanneer de webhook actief moet zijn
 - [ ] Controleer dat de status-indicatoren groen kleuren en de `managed.env` op de server is bijgewerkt (`docker exec mr-dj-backend cat /app/managed.env`)
 - [ ] Herlaad de health endpoint (`/api/health`) en verifieer dat de database status `connected: true` toont

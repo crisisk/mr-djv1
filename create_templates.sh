@@ -1,11 +1,45 @@
 #!/bin/bash
 
+# Function to escape strings for safe sed replacement
+escape_sed_replacement() {
+    local str="$1"
+    str=${str//\/\\}
+    str=${str//&/\&}
+    str=${str//\//\/}
+    printf '%s' "$str"
+}
+
+# Function to safely run sed replacement with error handling
+run_sed_replace() {
+    local file="$1"
+    local placeholder="$2"
+    local replacement="$3"
+
+    if ! sed -i.bak "s/${placeholder}/${replacement}/g" "$file"; then
+        echo "Error: Failed to replace ${placeholder} in ${file}." >&2
+        if [ -f "${file}.bak" ]; then
+            mv "${file}.bak" "$file"
+        fi
+        exit 1
+    fi
+
+    if grep -Fq -- "$placeholder" "$file"; then
+        echo "Error: Placeholder ${placeholder} still present in ${file} after replacement." >&2
+        if [ -f "${file}.bak" ]; then
+            mv "${file}.bak" "$file"
+        fi
+        exit 1
+    fi
+
+    rm -f "${file}.bak"
+}
+
 # Function to create a template slide
 create_template() {
     local file=$1
     local title=$2
     local description=$3
-    
+
     cat > "$file" << 'EOF'
 <!DOCTYPE html>
 <html lang="nl">
@@ -73,9 +107,14 @@ create_template() {
 </html>
 EOF
     
-    # Replace placeholders
-    sed -i "s/TITLE_PLACEHOLDER/$title/g" "$file"
-    sed -i "s/DESC_PLACEHOLDER/$description/g" "$file"
+    # Replace placeholders with escaped values and error checking
+    local escaped_title
+    escaped_title=$(escape_sed_replacement "$title")
+    run_sed_replace "$file" "TITLE_PLACEHOLDER" "$escaped_title"
+
+    local escaped_description
+    escaped_description=$(escape_sed_replacement "$description")
+    run_sed_replace "$file" "DESC_PLACEHOLDER" "$escaped_description"
 }
 
 # Create template slides (these will be filled later)
