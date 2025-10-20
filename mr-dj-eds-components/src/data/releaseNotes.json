@@ -1,0 +1,85 @@
+{
+  "title": "Changelog & Version History",
+  "subtitle": "Overzicht van alle wijzigingen, updates en nieuwe componenten in het Enterprise Design System.",
+  "versions": [
+    {
+      "version": "v1.0.0",
+      "note": "Huidig",
+      "date": "15 Oktober 2025",
+      "status": "current",
+      "order": 1,
+      "changes": [
+        {
+          "type": "FEAT",
+          "description": "Eerste release van het complete Enterprise Design System."
+        },
+        {
+          "type": "FEAT",
+          "description": "Alle 31 kernslides en componenten gedefinieerd."
+        },
+        {
+          "type": "FEAT",
+          "description": "Introductie van professionele SVG-iconen voor diensten."
+        },
+        {
+          "type": "FEAT",
+          "description": "Implementatie van 8-punts spacing en 12-koloms grid."
+        },
+        {
+          "type": "DOCS",
+          "description": "Volledige documentatie voor Color, Typography en Buttons."
+        },
+        {
+          "type": "FIX",
+          "description": "Contrastproblemen in Primary Blue opgelost (alleen als achtergrond)."
+        }
+      ]
+    },
+    {
+      "version": "v1.1.0",
+      "note": "Toekomst",
+      "date": "Q4 2025",
+      "status": "upcoming",
+      "order": 2,
+      "changes": [
+        {
+          "type": "FEAT",
+          "description": "Nieuwe component: Accordion/FAQ."
+        },
+        {
+          "type": "FEAT",
+          "description": "Integratie met Figma Design Tokens."
+        },
+        {
+          "type": "DOCS",
+          "description": "Storybook integratie voor alle Organisms."
+        },
+        {
+          "type": "FIX",
+          "description": "Bugfix in mobiele navigatie."
+        }
+      ]
+    },
+    {
+      "version": "v2.0.0",
+      "note": "Major",
+      "date": "Q1 2026",
+      "status": "future",
+      "order": 3,
+      "changes": [
+        {
+          "type": "FEAT",
+          "description": "Dark Mode Support."
+        },
+        {
+          "type": "FEAT",
+          "description": "Nieuwe Template: Checkout Flow."
+        },
+        {
+          "type": "DOCS",
+          "description": "Volledige migratie naar TypeScript."
+        }
+      ]
+    }
+  ]
+}

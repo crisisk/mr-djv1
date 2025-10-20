@@ -20,6 +20,7 @@ const DEFAULT_ALERT_QUEUE_THRESHOLDS = {
   recoveryRetryAgeMs: 2 * 60 * 1000,
   deadLetterWarning: 1
 };
+const DEFAULT_HCAPTCHA_VERIFY_URL = 'https://hcaptcha.com/siteverify';
 const DEFAULT_SECTION_CONFIG = [
   {
     id: 'application',
@@ -58,11 +59,23 @@ const DEFAULT_SECTION_CONFIG = [
     ]
   },
   {
+    id: 'security',
+    label: 'Beveiliging',
+    description: 'Instellingen voor hCaptcha-validatie van formulieren en spam-preventie.',
+    keys: ['HCAPTCHA_SITE_KEY', 'HCAPTCHA_SECRET_KEY', 'HCAPTCHA_VERIFY_URL']
+  },
+  {
     id: 'rentguy',
     label: 'RentGuy integratie',
     description:
       'API-parameters voor de synchronisatie van leads en boekingen richting de RentGuy applicatie.',
-    keys: ['RENTGUY_API_BASE_URL', 'RENTGUY_API_KEY', 'RENTGUY_WORKSPACE_ID', 'RENTGUY_TIMEOUT_MS']
+    keys: [
+      'RENTGUY_API_BASE_URL',
+      'RENTGUY_API_KEY',
+      'RENTGUY_WORKSPACE_ID',
+      'RENTGUY_TIMEOUT_MS',
+      'RENTGUY_WEBHOOK_SECRETS'
+    ]
   },
   {
     id: 'content-automation',
@@ -76,7 +89,7 @@ const DEFAULT_SECTION_CONFIG = [
     label: 'Personalization & CRO',
     description:
       'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
-    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
+    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'PERSONALIZATION_WEBHOOK_SECRETS']
   },
   {
     id: 'automation',
@@ -201,7 +214,8 @@ function buildConfig() {
         enabled: Boolean(process.env.RENTGUY_API_BASE_URL && process.env.RENTGUY_API_KEY),
         baseUrl: process.env.RENTGUY_API_BASE_URL || null,
         workspaceId: process.env.RENTGUY_WORKSPACE_ID || null,
-        timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS)
+        timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS),
+        webhookSecrets: parseList(process.env.RENTGUY_WEBHOOK_SECRETS)
       },
       sevensa: {
         enabled: Boolean(process.env.SEVENSA_SUBMIT_URL),
@@ -214,10 +228,17 @@ function buildConfig() {
           process.env.SEVENSA_QUEUE_MAX_ATTEMPTS,
           DEFAULT_SEVENSA_MAX_ATTEMPTS
         )
+      },
+      hcaptcha: {
+        enabled: Boolean(process.env.HCAPTCHA_SECRET_KEY),
+        siteKey: process.env.HCAPTCHA_SITE_KEY || null,
+        secretKey: process.env.HCAPTCHA_SECRET_KEY || null,
+        verifyUrl: process.env.HCAPTCHA_VERIFY_URL || DEFAULT_HCAPTCHA_VERIFY_URL
       }
     },
     personalization: {
-      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null
+      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null,
+      incomingWebhookSecrets: parseList(process.env.PERSONALIZATION_WEBHOOK_SECRETS)
     },
     automation: {
       seo: {

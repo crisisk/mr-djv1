@@ -1,150 +1,35 @@
-import React from 'react';
+import React from 'react'
+import { useTranslation } from 'react-i18next'
 
-const VisuallyHidden = ({ children }) => (
-    <span
-        style={{
-            position: 'absolute',
-            width: '1px',
-            height: '1px',
-            padding: 0,
-            margin: '-1px',
-            overflow: 'hidden',
-            clip: 'rect(0, 0, 0, 0)',
-            whiteSpace: 'nowrap',
-            border: 0,
-        }}
-    >
-        {children}
-    </span>
-);
+const StarRating = ({ rating }) => {
+  const stars = Array(5)
+    .fill(0)
+    .map((_, i) => (
+      <svg
+        key={i}
+        className={`w-5 h-5 ${i < rating ? 'text-secondary' : 'text-neutral-gray-500'}`}
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+      </svg>
+    ))
+  return <div className="flex">{stars}</div>
+}
 
-const featuredTestimonial = {
-    badge: '⭐ FEATURED REVIEW',
-    quote:
-        'Onze bruiloft was absoluut perfect dankzij Mr. DJ! De hele avond stond de dansvloer vol en hij wist precies welke muziek wanneer te draaien. Professioneel, flexibel en super enthousiast. Onze gasten praten er nog steeds over!',
-    author: 'Sarah & Mark',
-    event: 'Bruiloft • Evoluon Eindhoven • 28 juli 2024',
-    initials: 'SM',
-    rating: 5,
-    ratingText: '10/10 Perfect',
-    platform: {
-        icon: '📘',
-        label: 'Facebook Reviews',
-    },
-};
-
-const testimonialsData = [
-    {
-        initials: 'LB',
-        name: 'Linda Bakker',
-        event: 'Bedrijfsfeest',
-        rating: 5,
-        quote:
-            'Voor ons bedrijfsfeest hebben we Mr. DJ ingehuurd en wat een succes! Hij las de sfeer perfect aan en zorgde ervoor dat iedereen zich vermaakt heeft. De lichtshow was spectaculair!',
-        date: '12 september 2024',
-        dateISO: '2024-09-12',
-        platform: {
-            icon: '📷',
-            label: 'Instagram',
-        },
-    },
-    {
-        initials: 'JD',
-        name: 'Jan de Vries',
-        event: 'Bruiloft',
-        rating: 5,
-        quote:
-            'Onze bruiloft was een droom die uitkwam, mede dankzij de geweldige DJ service van Mr. DJ. Hij nam alle tijd voor een intakegesprek en speelde precies de muziek die wij wilden.',
-        date: '5 augustus 2024',
-        dateISO: '2024-08-05',
-        platform: {
-            icon: '⭐',
-            label: 'Google Reviews',
-        },
-    },
-    {
-        initials: 'MJ',
-        name: 'Maria Jansen',
-        event: 'Verjaardag',
-        rating: 5,
-        quote:
-            'Voor mijn 50e verjaardag wilde ik een onvergetelijk feest en Mr. DJ heeft dat mogelijk gemaakt! Professionele apparatuur, geweldige muziek en een DJ die echt met je meedenkt.',
-        date: '20 juni 2024',
-        dateISO: '2024-06-20',
-        platform: {
-            icon: '📘',
-            label: 'Facebook',
-        },
-    },
-    {
-        initials: 'PH',
-        name: 'Peter Hendriks',
-        event: 'Bedrijfsfeest',
-        rating: 5,
-        quote:
-            "Als eventmanager heb ik met veel DJ's gewerkt, maar Mr. DJ springt er echt uit. Betrouwbaar, professioneel en altijd goed voorbereid. De communicatie vooraf was uitstekend.",
-        date: '15 oktober 2024',
-        dateISO: '2024-10-15',
-        platform: {
-            icon: '💼',
-            label: 'LinkedIn',
-        },
-    },
-];
-
-const statsData = [
-    {
-        id: 'avg-score',
-        highlight: '⭐⭐⭐⭐⭐',
-        value: '10/10',
-        label: 'Gemiddelde Score',
-        srLabel: 'Gemiddelde score: tien op tien',
-    },
-    {
-        id: 'verified-reviews',
-        value: '250+',
-        label: 'Verified Reviews',
-        srLabel: 'Meer dan tweehonderdvijftig geverifieerde reviews',
-    },
-    {
-        id: 'recommendation-rate',
-        value: '98%',
-        label: 'Zou Aanbevelen',
-        srLabel: 'Achtennegentig procent van de klanten zou aanbevelen',
-    },
-    {
-        id: 'successful-events',
-        value: '2500+',
-        label: 'Geslaagde Events',
-        srLabel: 'Meer dan tweeduizend vijfhonderd geslaagde events',
-    },
-];
-
-const StarRating = ({ rating, label }) => {
-    const stars = Array(5)
-        .fill(0)
-        .map((_, i) => (
-            <svg
-                key={i}
-                className={`w-5 h-5 ${i < rating ? 'text-secondary' : 'text-neutral-gray-400'}`}
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-            >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-        ));
-
-    return (
-        <div className="relative flex items-center" aria-label={label ?? `Beoordeling: ${rating} van 5 sterren`}>
-            <VisuallyHidden>{label ?? `Beoordeling: ${rating} van 5 sterren`}</VisuallyHidden>
-            <div className="flex" aria-hidden="true">
-                {stars}
-            </div>
-        </div>
-    );
-};
+const TestimonialCard = ({ testimonial }) => {
+  return (
+    <div className="bg-neutral-light p-spacing-xl rounded-lg shadow-xl flex flex-col h-full">
+      <StarRating rating={testimonial.rating} />
+      <p className="text-font-size-h3 text-neutral-dark italic my-spacing-lg flex-grow">"{testimonial.quote}"</p>
+      <div className="border-t border-neutral-gray-100 pt-spacing-md">
+        <p className="text-font-size-body font-bold text-primary">{testimonial.author}</p>
+        <p className="text-font-size-small text-neutral-gray-500">{testimonial.source}</p>
+      </div>
+    </div>
+  )
+}
 
 const InitialsAvatar = ({ initials, className = '' }) => (
     <div
@@ -231,31 +116,24 @@ const FeaturedTestimonial = () => (
 );
 
 const Testimonials = () => {
-    return (
-        <section className="py-spacing-3xl bg-neutral-gray-100" aria-labelledby="testimonials-heading">
-            <div className="container mx-auto px-spacing-md">
-                <div className="mx-auto max-w-3xl text-center mb-spacing-2xl">
-                    <h2 id="testimonials-heading" className="text-font-size-h2 text-neutral-dark font-extrabold">
-                        Wat Klanten Zeggen
-                    </h2>
-                    <p className="mt-spacing-sm text-font-size-body text-neutral-gray-600">
-                        Sociale bewijskracht met echte verhalen van klanten die vertrouwen en conversie versterken.
-                    </p>
-                </div>
-                <div className="grid grid-cols-1 gap-spacing-xl md:grid-cols-2">
-                    <div className="md:col-span-2">
-                        <FeaturedTestimonial />
-                    </div>
-                    {testimonialsData.map((testimonial) => (
-                        <TestimonialCard key={`${testimonial.name}-${testimonial.date}`} testimonial={testimonial} />
-                    ))}
-                    <div className="md:col-span-2">
-                        <StatsSection />
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-};
+  const { t } = useTranslation()
+  const testimonialsTranslation = t('testimonials.items', { returnObjects: true })
+  const testimonialsData = Array.isArray(testimonialsTranslation) ? testimonialsTranslation : []
 
-export default Testimonials;
+  return (
+    <section className="py-spacing-3xl bg-neutral-gray-100">
+      <div className="container mx-auto px-spacing-md">
+        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">
+          {t('testimonials.title')}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl">
+          {testimonialsData.map((testimonial, index) => (
+            <TestimonialCard key={index} testimonial={testimonial} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default Testimonials
