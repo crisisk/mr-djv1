@@ -3,6 +3,11 @@ import { Helmet } from 'react-helmet';
 import Header from '../components/Molecules/Header.jsx';
 import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
+import {
+  generateFAQSchema,
+  generateBreadcrumbSchema,
+  generateWebPageSchema
+} from '../utils/schemaOrg.js';
 
 const FAQPage = () => {
   const faqs = [
@@ -134,14 +139,38 @@ const FAQPage = () => {
     }
   ];
 
+  const metaTitle = 'Veelgestelde Vragen | FAQ | Mr. DJ';
+  const metaDescription =
+    'Veelgestelde vragen over DJ huren, prijzen, pakketten en praktische zaken. Vind snel antwoord op je vraag!';
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'FAQ', url: '/faq' }
+  ];
+  const faqSchemaData = generateFAQSchema(
+    faqs.flatMap(category =>
+      category.questions.map(faq => ({
+        question: faq.q,
+        answer: faq.a
+      }))
+    )
+  );
+  const breadcrumbSchemaData = generateBreadcrumbSchema(breadcrumbs);
+  const webPageSchemaData = generateWebPageSchema({
+    title: metaTitle,
+    description: metaDescription,
+    url: '/faq',
+    breadcrumbs
+  });
+  const structuredData = [webPageSchemaData, breadcrumbSchemaData, faqSchemaData];
+
   return (
     <div className="FAQPage">
       <Helmet>
-        <title>Veelgestelde Vragen | FAQ | Mr. DJ</title>
-        <meta
-          name="description"
-          content="Veelgestelde vragen over DJ huren, prijzen, pakketten en praktische zaken. Vind snel antwoord op je vraag!"
-        />
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
       </Helmet>
 
       <Header />
