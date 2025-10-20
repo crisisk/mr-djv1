@@ -70,6 +70,12 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     setIsSubmitting(true);
 
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
       await submitCallbackRequest(formData);
 
@@ -81,7 +87,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         window.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
-          event_type: formData.eventType,
+          event_type: payload.eventType,
           form_type: 'callback',
         });
       }
@@ -91,6 +97,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       // Reset form after 3 seconds
       setTimeout(() => {
         setFormData({ name: '', phone: '', eventType: '' });
+        setFieldErrors({});
         setIsSubmitted(false);
       }, 3000);
     } catch (error) {
