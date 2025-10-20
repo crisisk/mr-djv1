@@ -130,17 +130,9 @@ const PricingCard = ({ pkg, billingMode, isHighlighted }) => {
       <ul style={featuresStyle}>
         {features.map((feature, index) => (
           <li key={index} style={featureItemStyle}>
-            <svg
-              width="20"
-              height="20"
-              style={{ color: isFeatured ? colors.secondary.main : colors.primary.main, flexShrink: 0 }}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-            </svg>
+            <CheckIcon
+              style={{ color: isFeatured ? colors.secondary.main : colors.primary.main }}
+            />
             {feature}
           </li>
         ))}

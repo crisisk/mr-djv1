@@ -124,7 +124,7 @@ const Footer = () => {
           {/* Column 1: Company Info */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-2xl font-bold text-[#D4AF37] mb-2">Mr. DJ</h3>
+              <h3 className="text-2xl font-bold text-secondary mb-2">Mr. DJ</h3>
               <p className="text-base text-gray-300">
                 Dé Feestspecialist van het Zuiden
               </p>
@@ -132,21 +132,21 @@ const Footer = () => {
 
             <div className="space-y-3">
               <p className="text-sm text-gray-400 flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#00AEEF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <IconBase className="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                </IconBase>
                 15+ jaar ervaring
               </p>
               <p className="text-sm text-gray-400 flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#00AEEF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <IconBase className="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+                </IconBase>
                 500+ tevreden klanten
               </p>
               <p className="text-sm text-gray-400 flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#00AEEF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <IconBase className="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                </svg>
+                </IconBase>
                 4.9/5 gemiddelde score
               </p>
             </div>
@@ -155,25 +155,25 @@ const Footer = () => {
               <a
                 href="tel:+31408422594"
                 onClick={handlePhoneClick}
-                className="flex items-center gap-3 text-base hover:text-[#00AEEF] transition group"
+                className="flex items-center gap-3 text-base hover:text-primary transition group"
                 aria-label="Bel Mister DJ via +31 (0) 40 842 2594"
                 title="Bel Mister DJ via +31 (0) 40 842 2594"
               >
-                <svg className="w-5 h-5 text-[#D4AF37] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <IconBase className="h-5 w-5 text-secondary group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
+                </IconBase>
                 <span aria-hidden="true">+31 (0) 40 842 2594</span>
                 <span className="sr-only">Bel Mister DJ via telefoon</span>
               </a>
               <a
                 href="mailto:info@mr-dj.nl"
-                className="flex items-center gap-3 text-base hover:text-[#00AEEF] transition group"
+                className="flex items-center gap-3 text-base hover:text-primary transition group"
                 aria-label="Stuur een e-mail naar info@mr-dj.nl"
                 title="Stuur een e-mail naar info@mr-dj.nl"
               >
-                <svg className="w-5 h-5 text-[#D4AF37] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <IconBase className="h-5 w-5 text-secondary group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+                </IconBase>
                 <span aria-hidden="true">info@mr-dj.nl</span>
                 <span className="sr-only">E-mail Mister DJ</span>
               </a>
@@ -182,45 +182,45 @@ const Footer = () => {
 
           {/* Column 2: Services */}
           <div className="space-y-6">
-            <h4 className="text-lg font-bold text-[#00AEEF] mb-4">Onze Diensten</h4>
+            <h4 className="text-lg font-bold text-primary mb-4">Onze Diensten</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/bruiloft-dj" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/bruiloft-dj" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Bruiloft DJ + Saxofoon
                 </a>
               </li>
               <li>
-                <a href="/zakelijk" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/zakelijk" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Zakelijk DJ
                 </a>
               </li>
               <li>
-                <a href="/feest-dj" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/feest-dj" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Feest DJ (Verjaardag & Jubileum)
                 </a>
               </li>
               <li>
-                <a href="/verhuur" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/verhuur" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Licht & Geluid Verhuur
                 </a>
               </li>
               <li>
-                <a href="/#" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/#" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Live Saxofonist
                 </a>
               </li>
@@ -229,45 +229,45 @@ const Footer = () => {
 
           {/* Column 3: Quick Links */}
           <div className="space-y-6">
-            <h4 className="text-lg font-bold text-[#00AEEF] mb-4">Informatie</h4>
+            <h4 className="text-lg font-bold text-primary mb-4">Informatie</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/over-ons" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/over-ons" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Over Ons
                 </a>
               </li>
               <li>
-                <a href="/faq" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/faq" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Veelgestelde Vragen
                 </a>
               </li>
               <li>
-                <a href="/contact" onClick={handleContactClick} className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/contact" onClick={handleContactClick} className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Contact
                 </a>
               </li>
               <li>
-                <a href="/#reviews" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/#reviews" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Reviews & Referenties
                 </a>
               </li>
               <li>
-                <a href="/#pakketten" className="text-base text-gray-300 hover:text-[#D4AF37] transition flex items-center gap-2 group">
-                  <svg className="w-4 h-4 text-[#00AEEF] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/#pakketten" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                  <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  </IconBase>
                   Pakketten & Prijzen
                 </a>
               </li>
@@ -276,7 +276,7 @@ const Footer = () => {
 
           {/* Column 4: Social Media & Newsletter */}
           <div className="space-y-6">
-            <h4 className="text-lg font-bold text-[#00AEEF] mb-4">Blijf Verbonden</h4>
+            <h4 className="text-lg font-bold text-primary mb-4">Blijf Verbonden</h4>
             <p className="text-sm text-gray-400">
               Volg ons voor de nieuwste shows, tips en exclusieve aanbiedingen
             </p>
@@ -300,15 +300,15 @@ const Footer = () => {
             {/* Trust Badges */}
             <div className="pt-6 space-y-3">
               <div className="flex items-center gap-3 text-sm text-gray-400">
-                <svg className="w-8 h-8 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <IconBase className="h-8 w-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
+                </IconBase>
                 <span>100% Betrouwbaar</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-400">
-                <svg className="w-8 h-8 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <IconBase className="h-8 w-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                </IconBase>
                 <span>24/7 Bereikbaar</span>
               </div>
             </div>
@@ -324,13 +324,13 @@ const Footer = () => {
               © {currentYear} Mr. DJ. Alle rechten voorbehouden. | Kvk: 12345678
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-gray-400">
-              <a href="/privacy-policy" className="hover:text-[#00AEEF] transition">
+              <a href="/privacy-policy" className="hover:text-primary transition">
                 Privacybeleid
               </a>
-              <a href="/algemene-voorwaarden" className="hover:text-[#00AEEF] transition">
+              <a href="/algemene-voorwaarden" className="hover:text-primary transition">
                 Algemene Voorwaarden
               </a>
-              <a href="/cookie-policy" className="hover:text-[#00AEEF] transition">
+              <a href="/cookie-policy" className="hover:text-primary transition">
                 Cookiebeleid
               </a>
             </div>
