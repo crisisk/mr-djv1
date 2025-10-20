@@ -9,16 +9,31 @@ try {
 }
 
 const clients = new Set();
+let sharedClient = null;
+let sharedClientPromise = null;
 
 function createMockRedis() {
   const mock = {
+    status: 'end',
+    async connect() {
+      this.status = 'ready';
+      return this;
+    },
+    async ping() {
+      this.status = 'ready';
+      return 'PONG';
+    },
     duplicate() {
-      return createMockRedis();
+      const clone = createMockRedis();
+      clone.status = this.status;
+      return clone;
     },
     on() {
       return this;
     },
-    async quit() {}
+    async quit() {
+      this.status = 'end';
+    }
   };
   return mock;
 }
@@ -46,6 +61,10 @@ function buildOptions() {
   return options;
 }
 
+function isRedisEnabled() {
+  return Boolean(IORedis) && Boolean(config.redis.url);
+}
+
 function createRedisConnection() {
   if (process.env.NODE_ENV === 'test' || !IORedis) {
     const mock = createMockRedis();
@@ -65,6 +84,36 @@ function createRedisConnection() {
   return client;
 }
 
+async function getSharedRedisClient() {
+  if (!isRedisEnabled()) {
+    return null;
+  }
+
+  if (sharedClient && sharedClient.status === 'ready') {
+    return sharedClient;
+  }
+
+  if (!sharedClient || sharedClient.status === 'end') {
+    sharedClient = createRedisConnection();
+    sharedClientPromise = null;
+  }
+
+  if (!sharedClientPromise) {
+    sharedClientPromise = sharedClient
+      .connect()
+      .then(() => sharedClient)
+      .catch((error) => {
+        sharedClient = null;
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('[redis] Failed to connect', error);
+        }
+        return null;
+      });
+  }
+
+  return sharedClientPromise;
+}
+
 async function closeAllRedisConnections() {
   await Promise.all(
     Array.from(clients).map(async (client) => {
@@ -78,9 +127,12 @@ async function closeAllRedisConnections() {
     })
   );
   clients.clear();
+  sharedClient = null;
+  sharedClientPromise = null;
 }
 
 module.exports = {
   createRedisConnection,
+  getSharedRedisClient,
   closeAllRedisConnections
 };
