@@ -13,6 +13,8 @@ const REQUIRED_ENV = Object.freeze({
   RENTGUY_WORKSPACE_ID: 'workspace-test',
   SEVENSA_SUBMIT_URL: 'https://sevensa.example/submit',
   N8N_PERSONALIZATION_WEBHOOK_URL: 'https://n8n.example/webhook',
+  N8N_SURVEY_WEBHOOK_URL: 'https://n8n.example/webhook/surveys',
+  SURVEY_RESPONSE_BASE_URL: 'https://feedback.example/respond',
   SEO_AUTOMATION_API_URL: 'https://seo.example/api',
   SEO_AUTOMATION_API_KEY: 'seo-test-key',
   SEO_AUTOMATION_KEYWORDSET_ID: 'keywordset-test',

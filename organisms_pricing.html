@@ -63,6 +63,31 @@
             position: relative;
             transition: all 0.3s ease;
         }
+
+        .pricing-card .local-highlight {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 214, 102, 0.45);
+            background: rgba(255, 214, 102, 0.15);
+            color: #7A5400;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .pricing-card .local-highlight .label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            color: #9b6600;
+        }
+
+        .pricing-card .local-highlight[data-active="false"] {
+            display: none;
+        }
         
         .pricing-card:hover {
             transform: translateY(-4px);
@@ -293,22 +318,23 @@
         <h1>Organisms: Pricing Tables</h1>
         <p class="subtitle">Conversie-geoptimaliseerde pricing components met duidelijke waardepropositie</p>
         
+        <!-- Content gesynchroniseerd met src/data/pricing_packages.js -->
         <div class="pricing-grid">
             <!-- Bronze Package -->
             <div class="pricing-card bronze">
                 <div class="tier-badge" role="img" aria-label="Bronzen pakket badge">🥉</div>
                 <h3 class="tier-name">Brons Pakket</h3>
                 <p class="tier-description">Perfect voor kleinere feesten en intieme bijeenkomsten</p>
-                
+
                 <div class="price-wrapper">
                     <div class="price">€495</div>
-                    <div class="price-period">per evenement</div>
+                    <div class="price-period">per event</div>
                 </div>
-                
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text">4 uur DJ service</span>
+                        <span class="feature-text">4 uur DJ-service</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -331,8 +357,8 @@
                         <span class="feature-text">Standaard setup</span>
                     </div>
                 </div>
-                
-                <button class="cta-button cta-secondary" type="button">Vraag Offerte Aan</button>
+
+                <button class="cta-button cta-secondary">Vraag Offerte Aan</button>
             </div>
 
             <!-- Silver Package - Featured -->
@@ -340,16 +366,16 @@
                 <div class="tier-badge" role="img" aria-label="Zilveren pakket badge">🥈</div>
                 <h3 class="tier-name">Zilver Pakket</h3>
                 <p class="tier-description">De complete ervaring voor onvergetelijke feesten</p>
-                
+
                 <div class="price-wrapper">
                     <div class="price">€795</div>
-                    <div class="price-period">per evenement</div>
+                    <div class="price-period">per event</div>
                 </div>
-                
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>6 uur DJ service</strong></span>
+                        <span class="feature-text">6 uur DJ-service</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -357,11 +383,15 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>Uitgebreide lichtshow</strong></span>
+                        <span class="feature-text">Uitgebreide lichtshow</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
                         <span class="feature-text">Persoonlijk intakegesprek</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">DJ + Saxofonist optie</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -373,11 +403,11 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>100% Dansgarantie</strong></span>
+                        <span class="feature-text">100% dansgarantie</span>
                     </div>
                 </div>
-                
-                <button class="cta-button cta-primary" type="button">Direct Boeken</button>
+
+                <button class="cta-button cta-primary">Boek Nu</button>
             </div>
 
             <!-- Gold Package -->
@@ -385,16 +415,16 @@
                 <div class="tier-badge" role="img" aria-label="Gouden pakket badge">🥇</div>
                 <h3 class="tier-name">Goud Pakket</h3>
                 <p class="tier-description">De ultieme all-inclusive entertainment ervaring</p>
-                
+
                 <div class="price-wrapper">
                     <div class="price">€1.295</div>
-                    <div class="price-period">per evenement</div>
+                    <div class="price-period">per event</div>
                 </div>
-                
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>8 uur DJ service</strong></span>
+                        <span class="feature-text">8 uur DJ-service</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -402,7 +432,7 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>Spectaculaire lichtshow</strong></span>
+                        <span class="feature-text">Spectaculaire lichtshow</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -410,7 +440,11 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text">Onbeperkt gasten</span>
+                        <span class="feature-text">Ceremonie &amp; receptie muziek</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Onbeperkt aantal gasten</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -418,15 +452,15 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text">Persoonlijke playlist curation</span>
+                        <span class="feature-text">Persoonlijke playlist curatie</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>VIP behandeling</strong></span>
+                        <span class="feature-text">VIP behandeling</span>
                     </div>
                 </div>
-                
-                <button class="cta-button cta-secondary" type="button">Vraag Offerte Aan</button>
+
+                <button class="cta-button cta-secondary">Vraag Offerte Aan</button>
             </div>
         </div>
         
