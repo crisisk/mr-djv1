@@ -6,368 +6,162 @@ const mailService = require('./mailService');
 const packageService = require('./packageService');
 const personalizationService = require('./personalizationService');
 
+/**
+ * @typedef {Object} BookingPayload
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} eventType
+ * @property {string|Date|null} [eventDate]
+ * @property {string|null} [packageId]
+ * @property {string|null} [message]
+ */
+
+/**
+ * @typedef {Object} RentGuySyncResult
+ * @property {boolean} delivered
+ * @property {boolean} queued
+ * @property {number} [queueSize]
+ * @property {string} [reason]
+ */
+
+/**
+ * @typedef {Object} BookingRecord
+ * @property {string} id
+ * @property {string} status
+ * @property {Date} createdAt
+ * @property {boolean} persisted
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} eventType
+ * @property {Date|null} eventDate
+ * @property {string|null} packageId
+ * @property {string|null} message
+ */
+
+/**
+ * @typedef {Object} CreateBookingResult
+ * @property {string} id
+ * @property {string} status
+ * @property {Date} createdAt
+ * @property {boolean} persisted
+ * @property {RentGuySyncResult} rentGuySync
+ */
+
 const inMemoryBookings = new Map();
 
-const DEFAULT_SUPPORT_PHONE = process.env.SUPPORT_PHONE || '085 303 0780';
+const DEFAULT_TIMEZONE = 'Europe/Amsterdam';
 
-const dutchDateFormatter = new Intl.DateTimeFormat('nl-NL', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric'
-});
-
-const dutchDateShortFormatter = new Intl.DateTimeFormat('nl-NL', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric'
-});
-
-const dutchDateTimeFormatter = new Intl.DateTimeFormat('nl-NL', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit'
-});
-
-const euroFormatter = new Intl.NumberFormat('nl-NL', {
-  style: 'currency',
-  currency: 'EUR'
-});
-
-const NEXT_STEPS = [
-  'Onze producer belt binnen 24 uur voor de laatste details en muziekvoorkeuren.',
-  'We reserveren crew, apparatuur en back-up direct na jullie telefonische bevestiging.',
-  'Je ontvangt een draaiboek en Spotify-playlist op maat binnen 48 uur.'
-];
-
-const INFO_LIST = [
-  'Vrijblijvend annuleren kan binnen 48 uur na deze bevestiging.',
-  'Aanpassingen aan pakket of locatie? Reageer eenvoudig op deze mail.',
-  '100% dansgarantie: bij calamiteiten staat ons backup-team stand-by.'
-];
-
-function escapeHtml(value) {
-  if (value === null || value === undefined) {
-    return '';
-  }
-
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+function zonedDateTimeToUtc({ year, month, day, hour = 0, minute = 0, second = 0 }, timeZone) {
+  const baseline = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  const parts = formatter.formatToParts(baseline).filter((part) => part.type !== 'literal');
+  const partMap = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const zonedUtc = Date.UTC(
+    Number(partMap.year),
+    Number(partMap.month) - 1,
+    Number(partMap.day),
+    Number(partMap.hour),
+    Number(partMap.minute),
+    Number(partMap.second)
+  );
+  const offset = zonedUtc - baseline.getTime();
+  return new Date(baseline.getTime() - offset);
 }
 
-function buildListHtml(items) {
-  return items.map((item) => `<li>${escapeHtml(item)}</li>`).join('');
-}
-
-function extractNameParts(name) {
-  if (!name || typeof name !== 'string') {
-    return { firstName: null, lastName: null };
-  }
-
-  const parts = name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if (!parts.length) {
-    return { firstName: null, lastName: null };
-  }
-
-  const [firstName, ...rest] = parts;
-  return {
-    firstName,
-    lastName: rest.length ? rest.join(' ') : null
-  };
-}
-
-function formatEventDate(value) {
+function parseZonedDate(value, timeZone = DEFAULT_TIMEZONE) {
   if (!value) {
-    return {
-      iso: null,
-      human: 'Datum in overleg',
-      short: null
-    };
-  }
-
-  const date = value instanceof Date ? value : new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return {
-      iso: null,
-      human: 'Datum in overleg',
-      short: null
-    };
-  }
-
-  return {
-    iso: date.toISOString(),
-    human: dutchDateFormatter.format(date),
-    short: dutchDateShortFormatter.format(date)
-  };
-}
-
-function formatSubmittedAt(value) {
-  const date = value instanceof Date ? value : new Date(value);
-  const valid = !Number.isNaN(date.getTime());
-  const safeDate = valid ? date : new Date();
-
-  return {
-    iso: safeDate.toISOString(),
-    human: dutchDateTimeFormatter.format(safeDate)
-  };
-}
-
-function buildPhoneLink(phone) {
-  if (!phone) {
-    return '';
-  }
-
-  const normalized = String(phone).replace(/[^0-9+]/g, '');
-  if (!normalized) {
-    return '';
-  }
-
-  return normalized.startsWith('+') ? `tel:${normalized}` : `tel:${normalized}`;
-}
-
-async function resolvePackageDetails(packageId) {
-  if (!packageId) {
     return null;
   }
 
-  try {
-    const { packages } = await packageService.getPackages({ forceRefresh: false });
-    if (Array.isArray(packages)) {
-      return packages.find((pkg) => pkg.id === packageId) || null;
-    }
-  } catch (error) {
-    console.error('[bookingService] Failed to resolve package details:', error.message);
+  if (value instanceof Date) {
+    return new Date(value.getTime());
   }
 
-  return null;
+  if (typeof value === 'number') {
+    return new Date(value);
+  }
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const isoTimezoneMatch = /([zZ]|[+\-]\d{2}:?\d{2})$/.test(trimmed);
+  if (isoTimezoneMatch) {
+    const direct = new Date(trimmed);
+    return Number.isNaN(direct.getTime()) ? null : direct;
+  }
+
+  const partsMatch = trimmed.match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?$/
+  );
+  if (!partsMatch) {
+    const fallback = new Date(trimmed);
+    return Number.isNaN(fallback.getTime()) ? null : fallback;
+  }
+
+  const [, year, month, day, hour = '00', minute = '00', second = '00'] = partsMatch;
+  return zonedDateTimeToUtc(
+    {
+      year: Number(year),
+      month: Number(month),
+      day: Number(day),
+      hour: Number(hour),
+      minute: Number(minute),
+      second: Number(second)
+    },
+    timeZone
+  );
 }
 
-function buildPackageSummary(details, fallbackId) {
-  if (details) {
-    const name = escapeHtml(details.name || '');
-    const priceLabel = Number.isFinite(details.price)
-      ? ` • ${escapeHtml(euroFormatter.format(details.price))}`
-      : '';
-    const durationLabel = details.duration ? ` (${escapeHtml(details.duration)})` : '';
-    return `${name}${durationLabel}${priceLabel}`;
+function normalizeEventDate(input, defaultTimeZone = DEFAULT_TIMEZONE) {
+  if (!input) {
+    return { start: null, end: null, timeZone: defaultTimeZone };
   }
 
-  if (fallbackId) {
-    return `Pakket ${escapeHtml(fallbackId)}`;
+  if (typeof input === 'string' || input instanceof Date || typeof input === 'number') {
+    return {
+      start: parseZonedDate(input, defaultTimeZone),
+      end: null,
+      timeZone: defaultTimeZone
+    };
   }
 
-  return 'Op maat samen te stellen';
-}
-
-function buildMessageHtml(message) {
-  if (!message || !String(message).trim()) {
-    return '<em>Geen aanvullende wensen gedeeld.</em>';
+  if (typeof input === 'object') {
+    const timeZone = input.timezone || input.timeZone || defaultTimeZone;
+    const startSource = input.start ?? input.date ?? input.from ?? null;
+    const endSource = input.end ?? input.until ?? input.to ?? null;
+    return {
+      start: parseZonedDate(startSource, timeZone),
+      end: parseZonedDate(endSource, timeZone),
+      timeZone
+    };
   }
 
-  return escapeHtml(message).replace(/\r?\n/g, '<br />');
-}
-
-function buildMessagePlain(message) {
-  if (!message || !String(message).trim()) {
-    return 'Geen aanvullende wensen gedeeld.';
-  }
-
-  return String(message).trim();
-}
-
-function buildPreviewText({ eventTypeLabel, eventDateHuman }) {
-  const label = typeof eventTypeLabel === 'string' ? eventTypeLabel : '';
-  const normalizedLabel = label ? label.toLowerCase() : '';
-
-  if (normalizedLabel && eventDateHuman && eventDateHuman !== 'Datum in overleg') {
-    return `We plannen jullie ${normalizedLabel} op ${eventDateHuman}.`;
-  }
-
-  if (normalizedLabel) {
-    return `We bevestigen jullie ${normalizedLabel} en nemen snel contact op.`;
-  }
-
-  return 'Jullie boeking is ontvangen – we nemen binnen 24 uur contact op.';
-}
-
-function buildIntroParagraph({ eventTypeLabel, firstName }) {
-  const label = typeof eventTypeLabel === 'string' ? eventTypeLabel.toLowerCase() : null;
-  const base = label
-    ? `Wat leuk dat jullie Mister DJ kiezen voor jullie ${label}`
-    : 'Wat gaaf dat jullie Mister DJ kiezen voor jullie event';
-
-  const greeting = firstName ? `${firstName},` : '';
-  const sentence = `${base}! We zetten ons team alvast klaar en zorgen dat alles perfect aansluit op jullie wensen.`;
-  return greeting ? `${sentence}` : sentence;
-}
-
-async function buildPersonalizationSummary(tokens, payload) {
-  const context =
-    (payload && typeof payload.personalization === 'object' && payload.personalization) ||
-    (payload && typeof payload.personalizationContext === 'object' && payload.personalizationContext) ||
-    null;
-
-  const summary = {
-    variantId: null,
-    matchType: 'default',
-    keywords: [],
-    city: null
-  };
-
-  if (!context) {
-    tokens.personalizationSummary =
-      escapeHtml(
-        'Zodra we jullie intake hebben gehad koppelen we de juiste crew en playlist aan jullie event.'
-      );
-    tokens.personalizationMatchType = summary.matchType ? escapeHtml(summary.matchType) : '';
-    tokens.personalizationVariant = null;
-    tokens.personalizationKeywords = '';
-    tokens.personalizationCity = null;
-    return summary;
-  }
-
-  try {
-    const { variant, meta } = await personalizationService.getVariantForRequest(context);
-    summary.variantId = meta?.variantId || variant?.id || null;
-    summary.matchType = meta?.matchType || 'default';
-    summary.keywords = Array.isArray(meta?.matchedKeywords) ? meta.matchedKeywords : [];
-    summary.city = meta?.city || null;
-
-    const keywordLabel = summary.keywords.length ? `Zoektermen: ${summary.keywords.join(', ')}` : null;
-    const cityLabel = summary.city ? `Regio focus: ${summary.city}` : null;
-    const variantLabel = summary.variantId ? `Variant: ${summary.variantId}` : null;
-    const matchLabel = summary.matchType ? `Matchtype: ${summary.matchType}` : null;
-
-    tokens.personalizationMatchType = summary.matchType ? escapeHtml(summary.matchType) : '';
-    tokens.personalizationVariant = summary.variantId ? escapeHtml(summary.variantId) : null;
-    tokens.personalizationKeywords = summary.keywords.length
-      ? escapeHtml(summary.keywords.join(', '))
-      : '';
-    tokens.personalizationCity = summary.city ? escapeHtml(summary.city) : null;
-    tokens.personalizationSummary = [variantLabel, matchLabel, cityLabel, keywordLabel]
-      .filter(Boolean)
-      .map(escapeHtml)
-      .join(' • ') ||
-      escapeHtml('We combineren jullie voorkeuren met onze bewezen eventformules voor maximale impact.');
-  } catch (error) {
-    console.error('[bookingService] Failed to derive personalization tokens:', error.message);
-    tokens.personalizationSummary =
-      escapeHtml('Personalisatiegegevens konden niet geladen worden. We stemmen telefonisch de details af.');
-    tokens.personalizationMatchType = summary.matchType ? escapeHtml(summary.matchType) : '';
-    tokens.personalizationVariant = null;
-    tokens.personalizationKeywords = '';
-    tokens.personalizationCity = null;
-  }
-
-  return summary;
-}
-
-async function buildBookingEmailContext(payload, record) {
-  const packageDetails = await resolvePackageDetails(record.packageId);
-  const { firstName, lastName } = extractNameParts(record.name || payload.name);
-  const eventDate = formatEventDate(record.eventDate || payload.eventDate);
-  const submittedAt = formatSubmittedAt(record.createdAt);
-  const packageSummary = buildPackageSummary(packageDetails, record.packageId || payload.packageId);
-  const packagePrice = Number.isFinite(packageDetails?.price) ? packageDetails.price : null;
-  const eventTypeRaw = record.eventType || payload.eventType;
-  const eventTypeLabel = eventTypeRaw ? String(eventTypeRaw) : 'Event in overleg';
-
-  const sanitizedFirstName = firstName ? escapeHtml(firstName) : 'DJ liefhebbers';
-  const sanitizedLastName = lastName ? escapeHtml(lastName) : '';
-  const sanitizedFullName = record.name
-    ? escapeHtml(record.name)
-    : payload.name
-    ? escapeHtml(payload.name)
-    : sanitizedFirstName;
-
-  const eventDateFriendly = eventDate.human ? escapeHtml(eventDate.human) : 'Datum in overleg';
-  const eventDateShort = eventDate.short ? escapeHtml(eventDate.short) : '';
-  const packageName = packageDetails?.name ? escapeHtml(packageDetails.name) : '';
-  const packageDuration = packageDetails?.duration ? escapeHtml(packageDetails.duration) : '';
-  const packagePriceFormatted = packagePrice ? escapeHtml(euroFormatter.format(packagePrice)) : '';
-  const contactEmail = record.email ? escapeHtml(record.email) : '';
-  const contactPhone = record.phone ? escapeHtml(String(record.phone)) : '';
-  const contactPhoneLink = escapeHtml(buildPhoneLink(record.phone));
-  const bookingReference = escapeHtml(String(record.id));
-  const bookingStatusLabel = record.status ? escapeHtml(record.status) : 'In behandeling';
-  const messageHtml = buildMessageHtml(record.message || payload.message);
-  const messagePlain = buildMessagePlain(record.message || payload.message);
-  const submittedAtFriendly = escapeHtml(submittedAt.human);
-  const replyToCandidate = config.mail?.replyTo || config.mail?.from || record.email || contactEmail || 'info@misterdj.nl';
-  const replyToAddress = escapeHtml(replyToCandidate);
-  const supportPhone = escapeHtml(process.env.SUPPORT_PHONE || DEFAULT_SUPPORT_PHONE);
-  const ctaUrl = escapeHtml(payload.ctaUrl || `https://misterdj.nl/booking/${record.id}`);
-  const previewTextRaw = buildPreviewText({
-    eventTypeLabel,
-    eventDateHuman: eventDate.human
-  });
-  const introParagraphRaw = buildIntroParagraph({
-    eventTypeLabel,
-    firstName
-  });
-  const emailSubjectRaw = eventDate.short
-    ? `Boeking bevestigd: ${eventTypeLabel} op ${eventDate.short}`
-    : `Bedankt voor jullie boeking bij Mister DJ`;
-  const packageIdValue = record.packageId || payload.packageId || '';
-  const packageId = packageIdValue ? escapeHtml(String(packageIdValue)) : '';
-
-  const tokens = {
-    customerFirstName: sanitizedFirstName,
-    customerFullName: sanitizedFullName,
-    customerLastName: sanitizedLastName,
-    eventTypeLabel: escapeHtml(eventTypeLabel),
-    eventDateFriendly,
-    eventDateIso: eventDate.iso || '',
-    eventDateShort,
-    packageSummary,
-    packageId,
-    packageName,
-    packageDuration,
-    packagePrice,
-    packagePriceFormatted,
-    contactEmail,
-    contactPhone,
-    contactPhoneLink,
-    bookingReference,
-    bookingStatusLabel,
-    messageHtml,
-    messagePlain,
-    submittedAtFriendly,
-    submittedAtIso: submittedAt.iso,
-    replyToAddress,
-    supportPhone,
-    currentYear: new Date().getFullYear(),
-    nextStepsHtml: buildListHtml(NEXT_STEPS),
-    infoListHtml: buildListHtml(INFO_LIST),
-    ctaUrl,
-    emailSubjectText: emailSubjectRaw
-  };
-
-  tokens.previewText = escapeHtml(previewTextRaw);
-  tokens.headerSummary = tokens.previewText;
-  tokens.introParagraph = escapeHtml(introParagraphRaw);
-  tokens.emailSubject = escapeHtml(emailSubjectRaw);
-
-  const personalization = await buildPersonalizationSummary(tokens, payload);
-
-  return { tokens, personalization };
+  return { start: null, end: null, timeZone: defaultTimeZone };
 }
 
 async function createBooking(payload) {
   const timestamp = new Date();
   let result;
+
+  const normalizedEventDate = normalizeEventDate(payload.eventDate);
+  const eventDateForStorage = normalizedEventDate.start;
 
   if (db.isConfigured()) {
     try {
@@ -380,7 +174,7 @@ async function createBooking(payload) {
           payload.email,
           payload.phone,
           payload.eventType,
-          payload.eventDate ? new Date(payload.eventDate) : null,
+          eventDateForStorage,
           payload.message,
           payload.packageId || null,
           timestamp
@@ -392,12 +186,15 @@ async function createBooking(payload) {
         id: row.id,
         status: row.status,
         createdAt: row.created_at,
+        updatedAt: row.created_at,
         persisted: true,
         name: payload.name,
         email: payload.email,
         phone: payload.phone,
         eventType: payload.eventType,
-        eventDate: payload.eventDate ? new Date(payload.eventDate) : null,
+        eventDate: eventDateForStorage,
+        eventEndDate: normalizedEventDate.end,
+        eventTimeZone: normalizedEventDate.timeZone,
         packageId: payload.packageId || null,
         message: payload.message || null
       };
@@ -412,12 +209,15 @@ async function createBooking(payload) {
       id,
       status: 'pending',
       createdAt: timestamp,
+      updatedAt: timestamp,
       persisted: false,
       name: payload.name,
       email: payload.email,
       phone: payload.phone,
       eventType: payload.eventType,
-      eventDate: payload.eventDate ? new Date(payload.eventDate) : null,
+      eventDate: eventDateForStorage,
+      eventEndDate: normalizedEventDate.end,
+      eventTimeZone: normalizedEventDate.timeZone,
       packageId: payload.packageId || null,
       message: payload.message || null
     };
@@ -437,6 +237,8 @@ async function createBooking(payload) {
       phone: result.phone,
       eventType: result.eventType,
       eventDate: result.eventDate,
+      eventEndDate: result.eventEndDate,
+      eventTimeZone: result.eventTimeZone,
       packageId: result.packageId,
       message: result.message
     },
@@ -489,12 +291,19 @@ async function createBooking(payload) {
     status: result.status,
     createdAt: result.createdAt,
     persisted: result.persisted,
-    rentGuySync,
-    mailDelivery,
-    personalization: personalizationMeta
+    eventDate: result.eventDate,
+    eventEndDate: result.eventEndDate,
+    eventTimeZone: result.eventTimeZone,
+    rentGuySync
   };
 }
 
+/**
+ * Fetches the most recent bookings, falling back to the in-memory store.
+ *
+ * @param {number} [limit=10]
+ * @returns {Promise<{persisted: boolean, bookings: Array<BookingRecord>}>}
+ */
 async function getRecentBookings(limit = 10) {
   if (db.isConfigured()) {
     try {
@@ -538,10 +347,25 @@ async function getRecentBookings(limit = 10) {
   };
 }
 
+/**
+ * Clears the in-memory booking cache (used in tests).
+ *
+ * @returns {void}
+ */
 function resetInMemoryStore() {
   inMemoryBookings.clear();
 }
 
+/**
+ * Provides diagnostics about the current booking persistence strategy.
+ *
+ * @returns {{
+ *   databaseConnected: boolean,
+ *   storageStrategy: 'postgres'|'in-memory',
+ *   fallbackQueueSize: number,
+ *   lastError: string|null
+ * }}
+ */
 function getBookingServiceStatus() {
   const dbStatus = db.getStatus();
 
@@ -553,9 +377,22 @@ function getBookingServiceStatus() {
   };
 }
 
+function ping() {
+  const status = getBookingServiceStatus();
+  return {
+    ok: true,
+    databaseConnected: status.databaseConnected,
+    storageStrategy: status.storageStrategy,
+    fallbackQueueSize: status.fallbackQueueSize
+  };
+}
+
 module.exports = {
   createBooking,
   getRecentBookings,
+  updateBooking,
+  deleteBooking,
   resetInMemoryStore,
-  getBookingServiceStatus
+  getBookingServiceStatus,
+  ping
 };

@@ -4,7 +4,10 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm install --production
+
+# Install curl for container health checks
+RUN apk add --no-cache curl \
+    && npm install --production
 
 # Copy application code
 COPY . .
@@ -17,6 +20,9 @@ RUN addgroup -g 1001 -S nodejs && \
 USER nodejs
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
 
 CMD ["node", "src/server.js"]
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { trackPhoneClick, trackContactNavigation, getUserVariant } from '../../utils/trackConversion';
+import socialLinks from '../../content/social.json';
 
 /**
  * Professional Footer Component
@@ -19,6 +20,12 @@ const Footer = () => {
     const variant = getUserVariant();
     trackContactNavigation(variant, 'footer');
   };
+
+  const {
+    facebook = 'https://www.facebook.com/',
+    instagram = 'https://www.instagram.com/',
+    linkedin = 'https://www.linkedin.com/'
+  } = socialLinks ?? {};
 
   return (
     <footer className="bg-gradient-to-br from-[#1A2C4B] via-[#2A3C5B] to-[#1A2C4B] text-white">
@@ -60,20 +67,26 @@ const Footer = () => {
                 href="tel:+31408422594"
                 onClick={handlePhoneClick}
                 className="flex items-center gap-3 text-base hover:text-[#00AEEF] transition group"
+                aria-label="Bel Mister DJ via +31 (0) 40 842 2594"
+                title="Bel Mister DJ via +31 (0) 40 842 2594"
               >
                 <svg className="w-5 h-5 text-[#D4AF37] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                +31 (0) 40 842 2594
+                <span aria-hidden="true">+31 (0) 40 842 2594</span>
+                <span className="sr-only">Bel Mister DJ via telefoon</span>
               </a>
               <a
                 href="mailto:info@mr-dj.nl"
                 className="flex items-center gap-3 text-base hover:text-[#00AEEF] transition group"
+                aria-label="Stuur een e-mail naar info@mr-dj.nl"
+                title="Stuur een e-mail naar info@mr-dj.nl"
               >
                 <svg className="w-5 h-5 text-[#D4AF37] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                info@mr-dj.nl
+                <span aria-hidden="true">info@mr-dj.nl</span>
+                <span className="sr-only">E-mail Mister DJ</span>
               </a>
             </div>
           </div>
@@ -182,7 +195,7 @@ const Footer = () => {
             {/* Social Media Icons */}
             <div className="flex gap-3">
               <a
-                href="https://www.facebook.com/mrdj.nl"
+                href={facebook}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 bg-white/10 hover:bg-[#00AEEF] text-white rounded-lg flex items-center justify-center transition-all hover:scale-110"
@@ -193,7 +206,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="https://www.instagram.com/mrdj.nl"
+                href={instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 bg-white/10 hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-500 text-white rounded-lg flex items-center justify-center transition-all hover:scale-110"
@@ -204,7 +217,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="https://www.linkedin.com/company/mrdj-nl"
+                href={linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-12 h-12 bg-white/10 hover:bg-[#0077B5] text-white rounded-lg flex items-center justify-center transition-all hover:scale-110"
