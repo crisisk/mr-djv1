@@ -31,24 +31,28 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     };
   }, []);
 
-  const validateForm = () => {
-    const errors = {};
-    const trimmedName = formData.name.trim();
-    const trimmedPhone = formData.phone.trim();
+  const normalizeFormData = (data) => ({
+    name: data.name.trim(),
+    phone: data.phone.replace(/\s+/g, ' ').trim(),
+    eventType: data.eventType,
+  });
 
-    if (!trimmedName) {
+  const validateForm = (data) => {
+    const errors = {};
+
+    if (!data.name) {
       errors.name = 'Naam is verplicht';
-    } else if (trimmedName.length < 2) {
+    } else if (data.name.length < 2) {
       errors.name = 'Naam moet minimaal 2 tekens bevatten';
     }
 
-    if (!trimmedPhone) {
+    if (!data.phone) {
       errors.phone = 'Telefoonnummer is verplicht';
-    } else if (!/^[0-9+\s()-]{6,}$/.test(trimmedPhone)) {
+    } else if (!/^[0-9+\s()-]{6,}$/.test(data.phone)) {
       errors.phone = 'Voer een geldig telefoonnummer in';
     }
 
-    if (!formData.eventType) {
+    if (!data.eventType) {
       errors.eventType = 'Kies een type feest';
     }
 
@@ -75,7 +79,9 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     event.preventDefault();
     setSubmitError(null);
 
-    if (!validateForm()) {
+    const normalizedFormData = normalizeFormData(formData);
+
+    if (!validateForm(normalizedFormData)) {
       return;
     }
 
@@ -86,12 +92,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     setIsSubmitting(true);
 
-    const trimmedName = formData.name.trim();
-    const normalizedPhone = formData.phone.replace(/\s+/g, ' ').trim();
     const payload = {
-      name: trimmedName,
-      phone: normalizedPhone,
-      eventType: formData.eventType,
+      ...normalizedFormData,
       hCaptchaToken: captcha.token || undefined,
     };
 
@@ -188,6 +190,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             placeholder="Bijv. Jan Jansen"
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
             minLength={2}
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.name)}
             aria-describedby={fieldErrors.name ? 'callback-name-error' : undefined}
           />
@@ -210,6 +214,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             onChange={handleChange}
             placeholder="06 12 34 56 78"
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.phone)}
             aria-describedby={fieldErrors.phone ? 'callback-phone-error' : undefined}
           />
@@ -230,6 +236,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             value={formData.eventType}
             onChange={handleChange}
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark bg-white"
+            required
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.eventType)}
             aria-describedby={fieldErrors.eventType ? 'callback-event-type-error' : undefined}
           >

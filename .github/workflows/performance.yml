@@ -1,0 +1,35 @@
+name: Performance Load Test
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Mondays at 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  k6-baseline:
+    name: Run k6 Baseline Profile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run k6 baseline profile
+        uses: grafana/k6-action@v0.2.0
+        with:
+          filename: tests/performance/baseline.js
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-summary
+          path: k6-summary.json
+          if-no-files-found: ignore
+
+      - name: Upload k6 metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-results
+          path: results
+          if-no-files-found: ignore
