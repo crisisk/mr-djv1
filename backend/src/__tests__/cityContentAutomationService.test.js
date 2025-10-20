@@ -91,6 +91,7 @@ describe('cityContentAutomationService', () => {
 
       const reviewFilePath = path.join(tmpDir, 'review.md');
       const reportFilePath = path.join(tmpDir, 'report.md');
+      const cityContentDirPath = path.join(tmpDir, 'cities');
 
       const payload = {
         keywords: [
@@ -105,6 +106,7 @@ describe('cityContentAutomationService', () => {
           fetchImpl: createMockFetch(payload),
           seoApiUrl: 'https://example.com/keywords',
           citiesFilePath,
+          cityContentDirPath,
           reportFilePath,
           reviewFilePath,
           generatorScriptPath: null
@@ -119,6 +121,11 @@ describe('cityContentAutomationService', () => {
       const helmond = updatedCities.find((city) => city.slug === 'dj-helmond');
       expect(helmond).toBeDefined();
       expect(helmond.intro).toContain('Mister DJ');
+
+      const generatedCityFile = await fs.readFile(path.join(cityContentDirPath, 'dj-helmond.json'), 'utf8');
+      const parsedCityFile = JSON.parse(generatedCityFile);
+      expect(parsedCityFile.slug).toBe('dj-helmond');
+      expect(parsedCityFile.city).toBe('Helmond');
 
       const report = await fs.readFile(reportFilePath, 'utf8');
       expect(report).toContain('City content automation run');
