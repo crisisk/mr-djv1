@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Button from '../Atoms/Buttons.jsx';
 
 /**
@@ -13,6 +13,9 @@ import Button from '../Atoms/Buttons.jsx';
  */
 const CookieConsent = () => {
   const [showBanner, setShowBanner] = useState(false);
+  const bannerRef = useRef(null);
+  const declineButtonRef = useRef(null);
+  const previouslyFocusedElementRef = useRef(null);
 
   useEffect(() => {
     // Check if user has already given consent
@@ -45,16 +48,85 @@ const CookieConsent = () => {
     }
   };
 
+  const closeBanner = () => {
+    setShowBanner(false);
+  };
+
   const handleAccept = () => {
     localStorage.setItem('cookieConsent', 'accepted');
     updateConsentMode(true);
-    setShowBanner(false);
+    closeBanner();
   };
 
   const handleDecline = () => {
     localStorage.setItem('cookieConsent', 'declined');
     updateConsentMode(false);
-    setShowBanner(false);
+    closeBanner();
+  };
+
+  useEffect(() => {
+    if (showBanner) {
+      previouslyFocusedElementRef.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+      // Ensure focusable elements render before attempting to focus
+      const focusTimeout = setTimeout(() => {
+        declineButtonRef.current?.focus();
+      }, 0);
+
+      return () => clearTimeout(focusTimeout);
+    }
+
+    const previouslyFocused = previouslyFocusedElementRef.current;
+
+    if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+      previouslyFocused.focus();
+    }
+
+    previouslyFocusedElementRef.current = null;
+
+    return undefined;
+  }, [showBanner]);
+
+  const handleKeyDown = (event) => {
+    if (!bannerRef.current) {
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      handleDecline();
+      return;
+    }
+
+    if (event.key !== 'Tab') {
+      return;
+    }
+
+    const focusableSelectors =
+      'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(
+      bannerRef.current.querySelectorAll(focusableSelectors)
+    ).filter(
+      (element) => !element.hasAttribute('disabled') && !element.getAttribute('aria-hidden')
+    );
+
+    if (focusableElements.length === 0) {
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    const isShiftPressed = event.shiftKey;
+    const currentFocus = document.activeElement;
+
+    if (!isShiftPressed && currentFocus === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    } else if (isShiftPressed && currentFocus === firstElement) {
+      event.preventDefault();
+      lastElement.focus();
+    }
   };
 
   if (!showBanner) {
@@ -67,6 +139,10 @@ const CookieConsent = () => {
       role="dialog"
       aria-label="Cookie consent"
       aria-describedby="cookie-consent-description"
+      aria-modal="true"
+      tabIndex="-1"
+      ref={bannerRef}
+      onKeyDown={handleKeyDown}
     >
       <div className="container mx-auto max-w-6xl">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -98,6 +174,7 @@ const CookieConsent = () => {
               size="medium"
               onClick={handleDecline}
               className="border border-neutral-light text-white hover:bg-white hover:text-[#1A2C4B]"
+              ref={declineButtonRef}
             >
               Weigeren
             </Button>
