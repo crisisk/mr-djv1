@@ -61,6 +61,11 @@
     "outDir": "./types"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.test.js",
+      "**/__tests__/**/*.unit.test.js",
+      "**/__tests__/**/*.integration.test.js"
+    ]
   }
 }
