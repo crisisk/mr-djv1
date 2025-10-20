@@ -28,7 +28,7 @@ grep "Host" docker-compose.yml
 
 ```bash
 # Build the production image
-docker-compose build --no-cache
+docker compose build --no-cache
 
 # Verify image created
 docker images | grep mr-dj-onboarding
@@ -38,17 +38,17 @@ docker images | grep mr-dj-onboarding
 
 ```bash
 # Start the container
-docker-compose up -d
+docker compose up -d
 
 # Check container status
-docker-compose ps
+docker compose ps
 
 # Expected output:
 # NAME                 STATUS          PORTS
 # mr-dj-onboarding     Up 10 seconds   80/tcp
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### Step 4: Verify Deployment
@@ -81,7 +81,7 @@ Open browser and navigate through all steps:
 
 **Issue: Container not starting**
 ```bash
-docker-compose logs
+docker compose logs
 # Check for port conflicts or missing dependencies
 ```
 
@@ -152,10 +152,10 @@ export const BookingSuccess = () => {
 cd /opt/mr-dj
 
 # Rebuild frontend
-docker-compose build eds-frontend
+docker compose build eds-frontend
 
 # Restart container
-docker-compose restart eds-frontend
+docker compose restart eds-frontend
 
 # Verify
 curl -s https://mr-dj.sevensa.nl | grep "onboarding"
@@ -287,9 +287,9 @@ cd /opt/mr-dj/backend
 # Add ioredis dependency
 npm install ioredis
 
-# Update package.json in docker-compose volumes or rebuild
-docker-compose build mr-dj-backend
-docker-compose restart mr-dj-backend
+# Update package.json in Docker Compose volumes or rebuild
+docker compose build mr-dj-backend
+docker compose restart mr-dj-backend
 ```
 
 ### Step 4: Update Onboarding Portal
@@ -381,13 +381,13 @@ export const BusinessInfoStep = ({ onNext, onBack, initialData = {} }) => {
 ```bash
 # Backend
 cd /opt/mr-dj
-docker-compose build mr-dj-backend
-docker-compose restart mr-dj-backend
+docker compose build mr-dj-backend
+docker compose restart mr-dj-backend
 
 # Onboarding Portal
 cd /opt/rentguy/onboarding/mr-dj-onboarding-enhanced
-docker-compose build
-docker-compose restart mr-dj-onboarding
+docker compose build
+docker compose restart mr-dj-onboarding
 ```
 
 ### Step 7: Test Integration
@@ -464,8 +464,8 @@ curl "https://mr-dj.sevensa.nl/api/onboarding/prefill?token=YOUR_TOKEN_HERE"
 
 ```bash
 # All services
-docker-compose -f /opt/mr-dj/docker-compose.yml ps
-docker-compose -f /opt/rentguy/onboarding/mr-dj-onboarding-enhanced/docker-compose.yml ps
+docker compose -f /opt/mr-dj/docker-compose.yml ps
+docker compose -f /opt/rentguy/onboarding/mr-dj-onboarding-enhanced/docker-compose.yml ps
 
 # Logs
 docker logs mr-dj-backend --tail 100
@@ -512,13 +512,13 @@ docker exec -it mr-dj-redis redis-cli -a mrdj_redis_password_2025 DBSIZE
 cd /opt/rentguy/onboarding/mr-dj-onboarding-enhanced
 
 # Stop and remove container
-docker-compose down
+docker compose down
 
 # Restore original config
 cp docker-compose.yml.backup docker-compose.yml
 
 # Or completely remove
-docker-compose down -v
+docker compose down -v
 docker rmi rentguy/mr-dj-onboarding
 ```
 
@@ -531,8 +531,8 @@ cd /opt/mr-dj
 git checkout HEAD^ backend/src/server.js
 
 # Rebuild
-docker-compose build mr-dj-backend
-docker-compose restart mr-dj-backend
+docker compose build mr-dj-backend
+docker compose restart mr-dj-backend
 ```
 
 ---

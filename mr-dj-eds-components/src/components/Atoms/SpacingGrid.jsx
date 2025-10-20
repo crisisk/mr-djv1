@@ -2,11 +2,11 @@ import React from 'react';
 import SlideLayout from '../common/SlideLayout.jsx';
 
 const spacingScale = [
-  { token: 'xs', value: '4px', description: 'Micro spacing – badges, icon padding' },
-  { token: 'sm', value: '8px', description: 'Form labels, compacte componenten' },
-  { token: 'md', value: '16px', description: 'Body copy, standaard componentafstanden' },
-  { token: 'lg', value: '24px', description: 'Secties, kaarten, horizontale ritme' },
-  { token: 'xl', value: '32px', description: 'Hero content, grid gutters mobile' },
+  { token: 'xs', value: '8px', description: 'Micro spacing – badges, icon padding' },
+  { token: 'sm', value: '16px', description: 'Form labels, compacte componenten' },
+  { token: 'md', value: '24px', description: 'Body copy, standaard componentafstanden' },
+  { token: 'lg', value: '32px', description: 'Secties, kaarten, horizontale ritme' },
+  { token: 'xl', value: '40px', description: 'Hero content, grid gutters mobile' },
   { token: '2xl', value: '48px', description: 'Section spacing desktop' },
   { token: '3xl', value: '64px', description: 'Hero en landing page blokken' },
 ];

@@ -37,7 +37,7 @@ All pages now return HTTP 200:
 **IMPORTANT**: The manual `docker network connect` command is not persistent. If the mr-dj-traefik container is recreated, it will lose the `web` network connection.
 
 ### Option 1: Update Traefik Docker Compose
-If mr-dj-traefik has its own docker-compose file, add the `web` network to it:
+If mr-dj-traefik has its own docker compose file, add the `web` network to it:
 ```yaml
 services:
   mr-dj-traefik:
