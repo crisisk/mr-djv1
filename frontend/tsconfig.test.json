@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "verbatimModuleSyntax": false,
+    "types": ["vite/client", "jest"],
+    "allowJs": true
+  }
+}
