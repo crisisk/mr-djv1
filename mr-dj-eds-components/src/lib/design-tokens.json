@@ -2,14 +2,14 @@
   "color": {
     "primary": {
       "blue": {
-        "value": "#00AEEF",
+        "value": "#005B99",
         "type": "color",
         "description": "Mr. DJ Primary Blue"
       }
     },
     "secondary": {
       "gold": {
-        "value": "#D4AF37",
+        "value": "#8A6700",
         "type": "color",
         "description": "Mr. DJ Secondary Gold"
       }

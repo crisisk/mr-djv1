@@ -264,7 +264,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         <button
           type="submit"
           disabled={isSubmitting || (HCAPTCHA_SITE_KEY ? !captcha.isReady : false)}
-          className="w-full bg-primary text-white p-4 md:p-5 rounded-lg font-bold text-lg hover:bg-primary-dark transition-colors duration-300 disabled:bg-neutral-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+          className="w-full bg-[var(--color-primary-blue)] text-white p-4 md:p-5 rounded-lg font-bold text-lg hover:bg-[#00487A] transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-[#66A6D9] focus:ring-offset-2 focus:ring-offset-white disabled:bg-neutral-gray-500 disabled:text-white disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
