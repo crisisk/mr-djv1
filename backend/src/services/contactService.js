@@ -242,6 +242,16 @@ function getContactServiceStatus() {
   };
 }
 
+function ping() {
+  const status = getContactServiceStatus();
+  return {
+    ok: true,
+    databaseConnected: status.databaseConnected,
+    storageStrategy: status.storageStrategy,
+    fallbackQueueSize: status.fallbackQueueSize
+  };
+}
+
 function resetInMemoryStore() {
   inMemoryContacts.clear();
 }
@@ -249,5 +259,6 @@ function resetInMemoryStore() {
 module.exports = {
   saveContact,
   getContactServiceStatus,
-  resetInMemoryStore
+  resetInMemoryStore,
+  ping
 };

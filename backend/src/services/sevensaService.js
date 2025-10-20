@@ -371,6 +371,29 @@ async function getStatus() {
   };
 }
 
+async function ping() {
+  const configured = isConfigured();
+  try {
+    const metrics = await queue.getMetrics();
+    return {
+      ok: true,
+      configured,
+      queueSize: computeQueueSize(metrics.counts),
+      retryAgeP95: metrics.retryAgeP95,
+      lastSubmitSuccess,
+      lastSubmitError
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      configured,
+      error: error.message,
+      lastSubmitSuccess,
+      lastSubmitError
+    };
+  }
+}
+
 async function replayDeadLetters(limit = 20) {
   const jobs = await queue.deadLetterQueue.getJobs(['waiting', 'delayed'], 0, limit - 1, true);
   let replayed = 0;
@@ -403,5 +426,6 @@ module.exports = {
   replayDeadLetters,
   getCrmExportRows,
   getStatus,
-  reset
+  reset,
+  ping
 };

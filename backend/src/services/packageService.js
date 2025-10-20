@@ -154,7 +154,16 @@ async function resetCache() {
   await cache.del(CACHE_KEY);
 }
 
+function ping() {
+  return {
+    ok: true,
+    cacheWarm: Boolean(cache.get(CACHE_KEY)),
+    databaseConfigured: db.isConfigured()
+  };
+}
+
 module.exports = {
   getPackages,
-  resetCache
+  resetCache,
+  ping
 };

@@ -268,9 +268,20 @@ function getBookingServiceStatus() {
   };
 }
 
+function ping() {
+  const status = getBookingServiceStatus();
+  return {
+    ok: true,
+    databaseConnected: status.databaseConnected,
+    storageStrategy: status.storageStrategy,
+    fallbackQueueSize: status.fallbackQueueSize
+  };
+}
+
 module.exports = {
   createBooking,
   getRecentBookings,
   resetInMemoryStore,
-  getBookingServiceStatus
+  getBookingServiceStatus,
+  ping
 };

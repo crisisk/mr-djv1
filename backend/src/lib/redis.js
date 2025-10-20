@@ -14,13 +14,26 @@ let sharedClientPromise = null;
 
 function createMockRedis() {
   const mock = {
+    status: 'end',
+    async connect() {
+      this.status = 'ready';
+      return this;
+    },
+    async ping() {
+      this.status = 'ready';
+      return 'PONG';
+    },
     duplicate() {
-      return createMockRedis();
+      const clone = createMockRedis();
+      clone.status = this.status;
+      return clone;
     },
     on() {
       return this;
     },
-    async quit() {}
+    async quit() {
+      this.status = 'end';
+    }
   };
   return mock;
 }
