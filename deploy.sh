@@ -8,6 +8,7 @@
 #   3. The script recreates containers on the VPS using docker-compose up -d, so the new build
 #      is live once the health checks pass. For a quick remote redeploy, SSH into the VPS and run
 #      "docker-compose pull && docker-compose up -d" inside /opt/mr-dj.
+# Recovery playbook: docs/operations/deployment-rollback.md
 
 set -euo pipefail
 IFS=$'\n\t'
