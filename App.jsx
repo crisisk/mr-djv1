@@ -1,12 +1,13 @@
-import DjSaxLanding from './mr-dj-eds-components/src/components/Templates/DjSaxLanding.jsx';
+import { BrowserRouter } from 'react-router-dom';
+import CoreApp from './mr-dj-eds-components/src/App.jsx';
 import './App.css';
 
 function App() {
   return (
-    <div className="min-h-screen bg-neutral-light">
-      <DjSaxLanding />
-    </div>
-  )
+    <BrowserRouter>
+      <CoreApp />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
