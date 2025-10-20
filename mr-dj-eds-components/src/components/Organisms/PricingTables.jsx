@@ -132,8 +132,16 @@ const PricingCard = ({ pkg }) => {
 
   // Handle CTA click with tracking
   const handleCTAClick = () => {
-    const variant = getUserVariant();
-    trackPricingCTA(variant, name, price);
+    loadTrackConversion()
+      .then(({ getUserVariant, trackPricingCTA }) => {
+        if (typeof trackPricingCTA === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackPricingCTA(variant, name, price);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for pricing CTA', error);
+      });
   };
 
   return (

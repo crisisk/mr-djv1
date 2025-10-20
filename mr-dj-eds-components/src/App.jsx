@@ -172,10 +172,28 @@ function App() {
       </Suspense>
 
       {/* T1.2: GDPR Cookie Consent Banner - Shows on all pages */}
-      <CookieConsent />
+      <Suspense
+        fallback={(
+          <div
+            aria-hidden="true"
+            className="fixed bottom-0 left-0 right-0 h-0 pointer-events-none"
+          />
+        )}
+      >
+        <CookieConsent />
+      </Suspense>
 
       {/* WhatsApp Floating Button - Available on all pages */}
-      <WhatsAppButton />
+      <Suspense
+        fallback={(
+          <div
+            aria-hidden="true"
+            className="fixed bottom-6 right-6 h-12 w-12 rounded-full pointer-events-none"
+          />
+        )}
+      >
+        <WhatsAppButton />
+      </Suspense>
     </div>
   );
 }

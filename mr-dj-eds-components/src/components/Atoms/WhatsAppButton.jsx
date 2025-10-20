@@ -1,5 +1,5 @@
 import React from 'react';
-import { trackWhatsAppClick } from '../../utils/trackConversion';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 /**
  * WhatsAppButton - Floating WhatsApp contact button
@@ -13,8 +13,15 @@ const WhatsAppButton = () => {
   );
 
   const handleClick = () => {
-    // Track WhatsApp clicks for analytics
-    trackWhatsAppClick();
+    loadTrackConversion()
+      .then(({ trackWhatsAppClick }) => {
+        if (typeof trackWhatsAppClick === 'function') {
+          trackWhatsAppClick();
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for WhatsApp click', error);
+      });
   };
 
   return (
