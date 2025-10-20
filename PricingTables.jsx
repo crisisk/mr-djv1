@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from './Buttons.jsx';
-import usePricingToggle from './frontend/src/hooks/usePricingToggle';
+import usePricingToggle from './usePricingToggle';
 
 const BILLING_MODES = {
   EVENT: 'event',
