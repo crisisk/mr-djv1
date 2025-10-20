@@ -1,18 +1,25 @@
-const configDashboardService = require('../services/configDashboardService');
+const fs = require('fs');
+const path = require('path');
+const managedEnv = require('./managedEnv');
 
-const FLAG_PREFIX = 'FEATURE_';
-const REFRESH_INTERVAL_MS = 30 * 1000;
+const FLAG_PREFIX = 'FLAG_';
+const CACHE_TTL_MS = 30 * 1000;
+const MANIFEST_PATH = path.resolve(__dirname, '..', '..', '..', 'config', 'feature-flags.json');
 
-let cache = new Map();
-let lastLoaded = 0;
-let pendingRefresh = null;
+let manifestCache = null;
+let manifestLoadedAt = 0;
+let cache = null;
+let cacheExpiresAt = 0;
 
-function normalizeName(name) {
+function normalizeKey(name) {
   if (!name) {
     return '';
   }
 
-  return String(name).trim().toLowerCase();
+  return String(name)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-');
 }
 
 function toEnvKey(name) {
@@ -54,95 +61,171 @@ function coerceToBoolean(value) {
   return Boolean(normalized);
 }
 
-async function loadFlags() {
-  const state = await configDashboardService.getState();
-  const entries = Array.isArray(state?.entries) ? state.entries : [];
-  const next = new Map();
-
-  for (const entry of entries) {
-    if (!entry?.name || typeof entry.name !== 'string') {
-      continue;
-    }
-
-    if (!entry.name.startsWith(FLAG_PREFIX)) {
-      continue;
-    }
-
-    const featureName = normalizeName(entry.name.slice(FLAG_PREFIX.length));
-    const rawValue = process.env[entry.name];
-
-    next.set(featureName, coerceToBoolean(rawValue));
+function loadManifest() {
+  if (manifestCache && Date.now() - manifestLoadedAt < CACHE_TTL_MS) {
+    return manifestCache;
   }
 
-  cache = next;
-  lastLoaded = Date.now();
+  try {
+    const raw = fs.readFileSync(MANIFEST_PATH, 'utf8');
+    const parsed = JSON.parse(raw);
+
+    if (!Array.isArray(parsed)) {
+      throw new Error('Manifest must be an array of flag definitions');
+    }
+
+    const definitions = parsed
+      .map((entry) => {
+        if (!entry || typeof entry !== 'object') {
+          return null;
+        }
+
+        const key = normalizeKey(entry.key);
+        if (!key) {
+          return null;
+        }
+
+        return {
+          key,
+          rawKey: entry.key,
+          envKey: toEnvKey(entry.key),
+          defaultState: coerceToBoolean(entry.defaultState),
+          description: entry.description ? String(entry.description) : null
+        };
+      })
+      .filter(Boolean);
+
+    manifestCache = definitions;
+    manifestLoadedAt = Date.now();
+  } catch (error) {
+    console.warn('[featureFlags] Failed to load manifest:', error.message);
+    manifestCache = [];
+    manifestLoadedAt = Date.now();
+  }
+
+  return manifestCache;
+}
+
+function buildCache() {
+  const manifest = loadManifest();
+  const managedOverrides = managedEnv.loadFromDiskSync();
+
+  const result = new Map();
+  const definitionMap = new Map();
+
+  for (const definition of manifest) {
+    definitionMap.set(definition.key, definition);
+    result.set(definition.key, {
+      value: Boolean(definition.defaultState),
+      defaultState: Boolean(definition.defaultState),
+      description: definition.description,
+      envKey: definition.envKey || toEnvKey(definition.key)
+    });
+  }
+
+  const sources = [managedOverrides, process.env];
+
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') {
+      continue;
+    }
+
+    for (const [envKey, rawValue] of Object.entries(source)) {
+      if (!envKey || !envKey.startsWith(FLAG_PREFIX)) {
+        continue;
+      }
+
+      const normalized = normalizeKey(envKey.slice(FLAG_PREFIX.length));
+      if (!normalized) {
+        continue;
+      }
+
+      const definition = definitionMap.get(normalized);
+      const existing = result.get(normalized);
+      const value = coerceToBoolean(rawValue);
+
+      if (existing) {
+        existing.value = value;
+        existing.envKey = existing.envKey || envKey;
+      } else {
+        result.set(normalized, {
+          value,
+          defaultState: definition ? Boolean(definition.defaultState) : false,
+          description: definition ? definition.description : null,
+          envKey: definition?.envKey || envKey
+        });
+      }
+    }
+  }
+
+  return {
+    values: result,
+    definitions: definitionMap
+  };
+}
+
+function ensureCache(force = false) {
+  if (force || !cache || Date.now() > cacheExpiresAt) {
+    cache = buildCache();
+    cacheExpiresAt = Date.now() + CACHE_TTL_MS;
+  }
+
   return cache;
 }
 
-function triggerRefreshIfStale() {
-  if (pendingRefresh) {
-    return;
+function getFlag(name, { forceReload = false } = {}) {
+  const normalized = normalizeKey(name);
+  if (!normalized) {
+    return {
+      key: null,
+      envKey: null,
+      value: false,
+      defaultState: false,
+      description: null
+    };
   }
 
-  if (Date.now() - lastLoaded < REFRESH_INTERVAL_MS) {
-    return;
+  const state = ensureCache(forceReload);
+  const entry = state.values.get(normalized);
+
+  if (entry) {
+    return {
+      key: normalized,
+      envKey: entry.envKey,
+      value: Boolean(entry.value),
+      defaultState: Boolean(entry.defaultState),
+      description: entry.description
+    };
   }
 
-  pendingRefresh = loadFlags()
-    .catch((error) => {
-      console.warn('[featureFlags] Failed to refresh feature flags:', error.message);
-      return cache;
-    })
-    .finally(() => {
-      pendingRefresh = null;
-    });
+  return {
+    key: normalized,
+    envKey: toEnvKey(normalized),
+    value: false,
+    defaultState: false,
+    description: null
+  };
+}
+
+function isEnabled(name, options) {
+  return Boolean(getFlag(name, options).value);
 }
 
 async function refreshIfNeeded(force = false) {
-  if (force || cache.size === 0 || Date.now() - lastLoaded > REFRESH_INTERVAL_MS) {
-    if (!pendingRefresh) {
-      pendingRefresh = loadFlags()
-        .catch((error) => {
-          console.warn('[featureFlags] Failed to refresh feature flags:', error.message);
-          return cache;
-        })
-        .finally(() => {
-          pendingRefresh = null;
-        });
-    }
-
-    await pendingRefresh;
-  }
-
-  return cache;
-}
-
-function isEnabled(name) {
-  const normalized = normalizeName(name);
-  if (!normalized) {
-    return false;
-  }
-
-  if (cache.has(normalized)) {
-    triggerRefreshIfStale();
-    return cache.get(normalized);
-  }
-
-  const envKey = toEnvKey(normalized);
-  const value = envKey ? coerceToBoolean(process.env[envKey]) : false;
-  cache.set(normalized, value);
-  triggerRefreshIfStale();
-  return value;
+  ensureCache(force);
+  return cache.values;
 }
 
 async function getAll() {
-  await refreshIfNeeded();
-  return Object.fromEntries(cache.entries());
+  const state = ensureCache();
+  return Object.fromEntries(
+    Array.from(state.values.entries()).map(([key, entry]) => [key, Boolean(entry.value)])
+  );
 }
 
 async function getActive() {
-  const allFlags = await getAll();
-  return Object.entries(allFlags)
+  const all = await getAll();
+  return Object.entries(all)
     .filter(([, enabled]) => Boolean(enabled))
     .map(([key]) => key);
 }
@@ -166,10 +249,19 @@ function guard(featureName, options = {}) {
   };
 }
 
+function clearCache() {
+  cache = null;
+  cacheExpiresAt = 0;
+  manifestCache = null;
+  manifestLoadedAt = 0;
+}
+
 module.exports = {
+  getFlag,
   isEnabled,
-  refreshIfNeeded,
   getAll,
   getActive,
-  guard
+  refreshIfNeeded,
+  guard,
+  clearCache
 };

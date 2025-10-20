@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Update the meta description per generated city-specific page -->
+    <meta name="description" content="Professionele bruiloft DJ in {CITY} die elk feest onvergetelijk maakt met maatwerk muziek, strakke mixen, premium licht en geluid en persoonlijke aandacht.">
     <title>Templates: Local SEO Pages</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -32,7 +34,7 @@
             flex-direction: column;
         }
         
-        h1 {
+        .page-title {
             font-size: 42px;
             font-weight: 900;
             color: #1A2C4B;
@@ -256,7 +258,7 @@
             padding: 20px;
             border: 2px solid #00AEEF;
         }
-        
+
         .seo-title {
             font-size: 16px;
             font-weight: 800;
@@ -265,6 +267,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .seo-caption {
+            font-size: 10px;
+            color: #1A2C4B;
+            background: #E6F7FF;
+            border-left: 3px solid #00AEEF;
+            padding: 8px 10px;
+            border-radius: 6px;
+            line-height: 1.4;
+            margin-bottom: 16px;
         }
         
         .seo-section {
@@ -300,6 +313,14 @@
             color: #333;
             font-weight: 600;
             line-height: 1.4;
+        }
+
+        .seo-note {
+            display: block;
+            margin-top: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #1A2C4B;
         }
         
         .dynamic-tag {
@@ -353,7 +374,7 @@
 </head>
 <body>
     <div class="slide-container">
-        <h1>Templates: Local SEO Pages</h1>
+        <h2 class="page-title">Templates: Local SEO Pages</h2>
         <p class="subtitle">Programmatisch gegenereerde city-specific landing pages voor lokale SEO dominantie</p>
         
         <div class="content-wrapper">
@@ -369,7 +390,7 @@
                                     <span>📍</span>
                                     <span>EINDHOVEN</span>
                                 </div>
-                                <h2 class="local-title">Bruiloft DJ Eindhoven</h2>
+                                <h1 class="local-title">Bruiloft DJ Eindhoven</h1>
                                 <p class="local-description">
                                     Op zoek naar een professionele bruiloft DJ in Eindhoven? Mister DJ zorgt voor een onvergetelijke feestavond met 100% dansgarantie. Lokale ervaring met 150+ bruiloften in Eindhoven en omgeving.
                                 </p>
@@ -439,7 +460,11 @@
                         <span>🎯</span>
                         <span>Local SEO Setup</span>
                     </div>
-                    
+
+                    <p class="seo-caption">
+                        Structured data ondersteunt de lokale autoriteit van elke stadspagina via <code>LocalBusiness</code> en <code>Event</code> JSON-LD blokken die dezelfde dynamische content gebruiken als <code>LocalSeoPage.jsx</code>.
+                    </p>
+
                     <div class="seo-section">
                         <div class="seo-section-title">Dynamic Content</div>
                         <div class="seo-item">
@@ -458,6 +483,13 @@
                             <div class="seo-item-label">H1 Heading</div>
                             <div class="seo-item-value">
                                 Bruiloft DJ <span class="dynamic-tag">{CITY}</span>
+                                <span class="seo-note">Elke stadspagina krijgt exact één unieke H1 met de stadsnaam.</span>
+                            </div>
+                        </div>
+                        <div class="seo-item">
+                            <div class="seo-item-label">Canonical URL</div>
+                            <div class="seo-item-value">
+                                <code>&lt;link rel="canonical" href="https://misterdj.nl/bruiloft-dj/{CITY-SLUG}" /&gt;</code>
                             </div>
                         </div>
                     </div>
@@ -487,6 +519,82 @@
                                 • Lokale reviews & testimonials<br>
                                 • Stad-specifieke content<br>
                                 • Afstandsberekening vanaf stad
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="seo-section">
+                        <div class="seo-section-title">Structured Data Templates</div>
+                        <div class="seo-item">
+                            <div class="seo-item-label">LocalBusiness JSON-LD</div>
+                            <div class="seo-item-value">
+                                <div class="seo-code">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Mr. DJ {CITY}",
+  "url": "https://misterdj.nl/bruiloft-dj/{CITY-SLUG}",
+  "description": "{localUSP}",
+  "areaServed": "{CITY}",
+  "knowsAbout": ["{localVenues[0]}", "{localVenues[1]}", "{localVenues[2]}"]
+}
+&lt;/script&gt;</div>
+                                <!--
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Mr. DJ {CITY}",
+  "url": "https://misterdj.nl/bruiloft-dj/{CITY-SLUG}",
+  "description": "{localUSP}",
+  "areaServed": "{CITY}",
+  "knowsAbout": ["{localVenues[0]}", "{localVenues[1]}", "{localVenues[2]}"]
+}
+</script>
+                                -->
+                            </div>
+                        </div>
+                        <div class="seo-item">
+                            <div class="seo-item-label">Event JSON-LD</div>
+                            <div class="seo-item-value">
+                                <div class="seo-code">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "MusicEvent",
+  "name": "Bruiloft DJ {CITY} Experience",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "Place",
+    "name": "{localVenues[0]}",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{CITY}",
+      "addressCountry": "NL"
+    }
+  }
+}
+&lt;/script&gt;</div>
+                                <!--
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicEvent",
+  "name": "Bruiloft DJ {CITY} Experience",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "Place",
+    "name": "{localVenues[0]}",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{CITY}",
+      "addressCountry": "NL"
+    }
+  }
+}
+</script>
+                                -->
                             </div>
                         </div>
                     </div>

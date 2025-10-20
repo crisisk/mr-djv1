@@ -2,14 +2,20 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import Header from '../components/Molecules/Header.jsx';
 import Footer from '../components/Organisms/Footer.jsx';
+import { generateBreadcrumbSchema } from '../utils/schemaOrg.js';
+import { createSimpleBreadcrumbs } from '../utils/breadcrumbs.js';
 
 const PrivacyPolicyPage = () => {
+  const breadcrumbs = createSimpleBreadcrumbs('Privacy Policy', '/privacy-policy');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+
   return (
     <div className="PrivacyPolicyPage">
       <Helmet>
         <title>Privacyverklaring | Mr. DJ</title>
         <meta name="description" content="Privacyverklaring van Mr. DJ. Wij respecteren uw privacy en behandelen uw persoonsgegevens zorgvuldig conform de AVG." />
         <meta name="robots" content="noindex, follow" />
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />

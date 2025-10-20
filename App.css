@@ -20,6 +20,8 @@
   --spacing-2xl: 3rem;
   --spacing-3xl: 4rem;
 
+  --ease-out-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+
   /* Responsive typography scale */
   --font-size-display: clamp(3.5rem, 5vw + 1rem, 5rem);
   --font-size-h1: clamp(2.75rem, 4vw + 1rem, 3.75rem);
@@ -93,6 +95,107 @@ small,
 .text-font-size-caption {
   font-size: var(--font-size-caption);
   line-height: var(--line-height-relaxed);
+}
+
+.hero-motion {
+  position: relative;
+  overflow: hidden;
+  background-size: 140% 140%;
+  animation: heroBackgroundShift 26s ease-in-out infinite;
+}
+
+.hero-motion__inner {
+  animation: heroFadeIn 480ms var(--ease-out-fluid) both;
+}
+
+.hero-motion__headline {
+  animation: heroFadeUp 520ms var(--ease-out-fluid) both;
+  animation-delay: 120ms;
+}
+
+.hero-motion__subtitle {
+  animation: heroFadeUp 520ms var(--ease-out-fluid) both;
+  animation-delay: 220ms;
+}
+
+.hero-motion__ctaGroup {
+  animation: heroFadeUp 520ms var(--ease-out-fluid) both;
+  animation-delay: 320ms;
+}
+
+.hero-motion__cta {
+  transition: transform 240ms var(--ease-out-fluid), filter 240ms ease;
+  will-change: transform;
+}
+
+.hero-motion__cta:hover,
+.hero-motion__cta:focus-visible {
+  transform: translateY(-4px) scale(1.035);
+  filter: brightness(1.08) saturate(1.06);
+}
+
+.hero-motion__cta:active {
+  transform: translateY(0) scale(0.995);
+}
+
+.hero-motion__cta--secondary:hover,
+.hero-motion__cta--secondary:focus-visible {
+  filter: brightness(1.12) saturate(1.08);
+}
+
+.hero-motion__statsSlot {
+  animation: heroFadeUp 520ms var(--ease-out-fluid) both;
+  animation-delay: 420ms;
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroBackgroundShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-motion,
+  .hero-motion__inner,
+  .hero-motion__headline,
+  .hero-motion__subtitle,
+  .hero-motion__ctaGroup,
+  .hero-motion__cta,
+  .hero-motion__statsSlot {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
 }
 
 pre {

@@ -2,13 +2,13 @@ import React from 'react';
 import SlideLayout from '../common/SlideLayout.jsx';
 
 const spacingScale = [
-  { label: 'Extra Small', px: 8, value: '8px (0.5rem)' },
-  { label: 'Small', px: 16, value: '16px (1rem)' },
-  { label: 'Medium', px: 24, value: '24px (1.5rem)' },
-  { label: 'Large', px: 32, value: '32px (2rem)' },
-  { label: 'Extra Large', px: 48, value: '48px (3rem)' },
-  { label: 'XXL', px: 64, value: '64px (4rem)' },
-  { label: 'Section', px: 96, value: '96px (6rem)' },
+  { token: 'xs', value: '8px', description: 'Micro spacing – badges, icon padding' },
+  { token: 'sm', value: '16px', description: 'Form labels, compacte componenten' },
+  { token: 'md', value: '24px', description: 'Body copy, standaard componentafstanden' },
+  { token: 'lg', value: '32px', description: 'Secties, kaarten, horizontale ritme' },
+  { token: 'xl', value: '40px', description: 'Hero content, grid gutters mobile' },
+  { token: '2xl', value: '48px', description: 'Section spacing desktop' },
+  { token: '3xl', value: '64px', description: 'Hero en landing page blokken' },
 ];
 
 const gridDemo = [

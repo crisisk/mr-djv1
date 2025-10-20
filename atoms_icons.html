@@ -7,357 +7,558 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
+        :root {
+            --brand-primary: #00AEEF;
+            --brand-secondary: #D4AF37;
+            --brand-ink: #1A2C4B;
+            --brand-muted: #5F7088;
+            --brand-success: #1FBF75;
+            --social-facebook: #1877F2;
+            --social-instagram: #E4405F;
+            --social-linkedin: #0A66C2;
+            --social-spotify: #1DB954;
+            --social-youtube: #FF0000;
+            --surface: #FFFFFF;
+            --surface-alt: #F8FCFF;
+            --border: #E3EDF5;
+            --shadow-soft: rgba(26, 44, 75, 0.12);
+            --shadow-strong: rgba(26, 44, 75, 0.2);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Montserrat', sans-serif;
-            background: #FFFFFF;
+            background: var(--surface);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px;
+            color: var(--brand-ink);
         }
-        
+
         .slide-container {
             width: 1280px;
             min-height: 720px;
-            background: #FFFFFF;
-            padding: 30px 40px;
+            background: var(--surface);
+            border-radius: 32px;
+            padding: 48px;
             display: flex;
             flex-direction: column;
+            gap: 40px;
+            box-shadow: 0 24px 64px -32px rgba(13, 36, 62, 0.25);
         }
-        
+
         h1 {
-            font-size: 42px;
+            font-size: 44px;
             font-weight: 900;
-            color: #1A2C4B;
-            margin-bottom: 8px;
+            color: var(--brand-ink);
+            letter-spacing: -0.02em;
         }
-        
+
         .subtitle {
             font-size: 16px;
-            color: #666;
-            margin-bottom: 25px;
+            color: var(--brand-muted);
+            font-weight: 600;
         }
-        
+
         .icons-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-            flex: 1;
+            gap: 48px;
         }
-        
+
+        .icon-group {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .icon-group-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .icon-group-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+
+        .icon-group-subtitle {
+            font-size: 15px;
+            color: var(--brand-muted);
+            max-width: 720px;
+            line-height: 1.5;
+        }
+
+        .icon-collection {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
         .icon-card {
-            background: #F8FCFF;
-            border: 2px solid #E5E5E5;
-            border-radius: 12px;
-            padding: 20px;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            gap: 18px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            box-shadow: 0 16px 32px -24px var(--shadow-strong);
         }
-        
+
         .icon-card:hover {
-            border-color: #00AEEF;
-            box-shadow: 0 6px 20px rgba(0, 174, 239, 0.1);
-            transform: translateY(-4px);
+            transform: translateY(-6px);
+            border-color: rgba(0, 174, 239, 0.35);
+            box-shadow: 0 28px 48px -30px rgba(26, 44, 75, 0.32);
         }
-        
+
         .icon-display {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 15px;
-            color: #1A2C4B;
-        }
-        
-        .icon-name {
-            font-size: 14px;
-            font-weight: 800;
-            color: #1A2C4B;
-            margin-bottom: 4px;
-        }
-        
-        .icon-class {
-            font-size: 11px;
-            color: #666;
-            font-weight: 600;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .icon-variant {
-            margin-top: 15px;
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+        }
+
+        .icon-name {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+
+        .icon-token {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--brand-muted);
+        }
+
+        .color-samples {
+            display: flex;
+            flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
         }
-        
-        .variant-box {
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            display: flex;
+
+        .utility-chip {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 800;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border: 1px solid currentColor;
+            background: rgba(255, 255, 255, 0.92);
         }
-        
-        .variant-box.primary {
-            background: #00AEEF;
-            color: white;
+
+        .utility-chip::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: currentColor;
         }
-        
-        .variant-box.secondary {
-            background: #D4AF37;
-            color: white;
-        }
-        
-        .variant-box.dark {
-            background: #1A2C4B;
-            color: white;
-        }
-        
-        .icon-category {
-            grid-column: 1 / -1;
-            font-size: 24px;
-            font-weight: 800;
-            color: #00AEEF;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #E5E5E5;
-            padding-bottom: 5px;
-        }
-        
-        .icon-category.utility {
-            color: #1A2C4B;
-        }
-        
-        .icon-category.social {
-            color: #D4AF37;
-        }
-        
-        .icon-display.primary-color {
-            color: #00AEEF;
-        }
-        
-        .icon-display.secondary-color {
-            color: #D4AF37;
-        }
-        
-        .icon-display.dark-color {
-            color: #1A2C4B;
-        }
-        
-        /* SVG Icon Styling */
+
         .svg-icon {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
-        .svg-icon.primary-fill path {
-            fill: #00AEEF;
+
+        /* Utility colors */
+        .text-brand-primary { color: var(--brand-primary); }
+        .text-brand-secondary { color: var(--brand-secondary); }
+        .text-brand-ink { color: var(--brand-ink); }
+        .text-brand-success { color: var(--brand-success); }
+        .text-social-facebook { color: var(--social-facebook); }
+        .text-social-instagram { color: var(--social-instagram); }
+        .text-social-linkedin { color: var(--social-linkedin); }
+        .text-social-spotify { color: var(--social-spotify); }
+        .text-social-youtube { color: var(--social-youtube); }
+
+        .bg-brand-primary-soft {
+            background: rgba(0, 174, 239, 0.12);
+            border-color: rgba(0, 174, 239, 0.2);
         }
-        .svg-icon.secondary-fill path {
-            fill: #D4AF37;
+
+        .bg-brand-secondary-soft {
+            background: rgba(212, 175, 55, 0.16);
+            border-color: rgba(212, 175, 55, 0.24);
         }
-        .svg-icon.dark-fill path {
-            fill: #1A2C4B;
+
+        .bg-brand-ink-soft {
+            background: rgba(26, 44, 75, 0.08);
+            border-color: rgba(26, 44, 75, 0.18);
         }
-        .svg-icon.primary-stroke path {
-            stroke: #00AEEF;
+
+        .bg-brand-success-soft {
+            background: rgba(31, 191, 117, 0.1);
+            border-color: rgba(31, 191, 117, 0.25);
         }
-        .svg-icon.secondary-stroke path {
-            stroke: #D4AF37;
+
+        .bg-social-facebook {
+            background: rgba(24, 119, 242, 0.12);
+            border-color: rgba(24, 119, 242, 0.2);
         }
-        .svg-icon.dark-stroke path {
-            stroke: #1A2C4B;
+
+        .bg-social-instagram {
+            background: rgba(228, 64, 95, 0.12);
+            border-color: rgba(228, 64, 95, 0.2);
+        }
+
+        .bg-social-linkedin {
+            background: rgba(10, 102, 194, 0.12);
+            border-color: rgba(10, 102, 194, 0.2);
+        }
+
+        .bg-social-spotify {
+            background: rgba(29, 185, 84, 0.12);
+            border-color: rgba(29, 185, 84, 0.24);
+        }
+
+        .bg-social-youtube {
+            background: rgba(255, 0, 0, 0.12);
+            border-color: rgba(255, 0, 0, 0.22);
+        }
+
+        .utility-chip--primary { color: var(--brand-primary); }
+        .utility-chip--secondary { color: var(--brand-secondary); }
+        .utility-chip--ink { color: var(--brand-ink); }
+        .utility-chip--success { color: var(--brand-success); }
+        .utility-chip--facebook { color: var(--social-facebook); }
+        .utility-chip--instagram { color: var(--social-instagram); }
+        .utility-chip--linkedin { color: var(--social-linkedin); }
+        .utility-chip--spotify { color: var(--social-spotify); }
+        .utility-chip--youtube { color: var(--social-youtube); }
+
+        @media (max-width: 768px) {
+            .slide-container {
+                width: 100%;
+                min-height: auto;
+                border-radius: 24px;
+                padding: 32px 20px;
+            }
+
+            .icon-collection {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
     <div class="slide-container">
-        <h1>Atoms: Icons</h1>
-        <p class="subtitle">Gestandaardiseerde iconografie voor diensten, features en navigatie (SVG-gebaseerd)</p>
-        
+        <div>
+            <h1>Atoms: Icons</h1>
+            <p class="subtitle">Gestandaardiseerde iconografie voor diensten, conversieflows en kanalen. Alle iconen zijn SVG-gebaseerd en kleuren mee met utility classes.</p>
+        </div>
+
         <div class="icons-grid">
-            
-            <div class="icon-category">Dienst Iconen (SVG)</div>
-            
-            <!-- Bruiloft DJ (Wedding Ring & Note) -->
-            <div class="icon-card">
-                <div class="icon-display">
-                    <svg class="svg-icon secondary-fill" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C8.686 2 6 4.686 6 8c0 2.85 2.06 5.21 4.8 5.84l-1.6 4.8c-.1.3.1.6.4.7h6.8c.3-.1.5-.4.4-.7l-1.6-4.8c2.74-.63 4.8-2.99 4.8-5.84 0-3.314-2.686-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zM16 18h-8l1.2-3.6c.1-.3.4-.5.7-.5h4.2c.3 0 .6.2.7.5L16 18z"/>
-                        <path fill="#1A2C4B" d="M14.5 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-                    </svg>
+            <section class="icon-group">
+                <div class="icon-group-header">
+                    <h2 class="icon-group-title text-brand-primary">Dienst Iconen (SVG)</h2>
+                    <p class="icon-group-subtitle">Gebruik deze iconen voor de belangrijkste Mister DJ proposities. Combineer kleurvarianten via <code>.text-brand-*</code> utility classes.</p>
                 </div>
-                <div class="icon-name">Bruiloft DJ</div>
-                <div class="icon-class">icon-wedding</div>
-                <div class="icon-variant">
-                    <div class="variant-box secondary">💍</div>
-                    <div class="variant-box dark">💍</div>
+                <div class="icon-collection">
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-primary bg-brand-primary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="8" cy="18" r="4"></circle>
+                                <path d="M12 18V2l7 4"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Bruiloft DJ</div>
+                        <div class="icon-token">music-2</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-secondary bg-brand-secondary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
+                                <path d="M20 3v4"></path>
+                                <path d="M22 5h-4"></path>
+                                <path d="M4 17v2"></path>
+                                <path d="M5 18H3"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Premium Ervaring</div>
+                        <div class="icon-token">sparkles</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--secondary">.text-brand-secondary</span>
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-primary bg-brand-primary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+                                <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+                                <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
+                                <path d="M10 6h4"></path>
+                                <path d="M10 10h4"></path>
+                                <path d="M10 14h4"></path>
+                                <path d="M10 18h4"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Bedrijfsfeest DJ</div>
+                        <div class="icon-token">building-2</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-secondary bg-brand-secondary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M5.8 11.3 2 22l10.7-3.79"></path>
+                                <path d="M4 3h.01"></path>
+                                <path d="M22 8h.01"></path>
+                                <path d="M15 2h.01"></path>
+                                <path d="M22 20h.01"></path>
+                                <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"></path>
+                                <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"></path>
+                                <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"></path>
+                                <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Private Feesten</div>
+                        <div class="icon-token">party-popper</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--secondary">.text-brand-secondary</span>
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-primary bg-brand-primary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M5 3h3v7a5 5 0 0 0 5 5h3a3 3 0 0 0 6 0v-2"></path>
+                                <path d="M16 15v3a4 4 0 1 1-8 0v-1.2"></path>
+                                <circle cx="9" cy="17" r="1"></circle>
+                                <circle cx="11.5" cy="18.5" r="1"></circle>
+                                <path d="M16 5h3"></path>
+                                <path d="M18 5v4"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">DJ + Sax</div>
+                        <div class="icon-token">custom-sax</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                            <span class="utility-chip utility-chip--secondary">.text-brand-secondary</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-ink bg-brand-ink-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Silent Disco</div>
+                        <div class="icon-token">headphones</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                        </div>
+                    </article>
                 </div>
-            </div>
-            
-            <!-- Bedrijfsfeest DJ (Corporate Building & Note) -->
-            <div class="icon-card">
-                <div class="icon-display">
-                    <svg class="svg-icon primary-fill" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 20V4h12v16H6z"/>
-                        <path fill="#FFFFFF" d="M8 6h2v2H8zM11 6h2v2h-2zM14 6h2v2h-2zM8 9h2v2H8zM11 9h2v2h-2zM14 9h2v2h-2zM8 12h2v2H8zM11 12h2v2h-2zM14 12h2v2h-2z"/>
-                        <path fill="#D4AF37" d="M15 17.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-                    </svg>
+            </section>
+
+            <section class="icon-group">
+                <div class="icon-group-header">
+                    <h2 class="icon-group-title text-brand-secondary">Conversie &amp; Vertrouwen</h2>
+                    <p class="icon-group-subtitle">Icons voor formulieren, CTA’s en social proof. Toepasbaar in verschillende kleurstellingen voor leesbaarheid op lichte en donkere achtergronden.</p>
                 </div>
-                <div class="icon-name">Bedrijfsfeest DJ</div>
-                <div class="icon-class">icon-corporate</div>
-                <div class="icon-variant">
-                    <div class="variant-box primary">🏢</div>
-                    <div class="variant-box dark">🏢</div>
+                <div class="icon-collection">
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-primary bg-brand-primary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M8 2v4"></path>
+                                <path d="M16 2v4"></path>
+                                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                                <path d="M3 10h18"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Beschikbaarheid</div>
+                        <div class="icon-token">calendar</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-secondary bg-brand-secondary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Locatie</div>
+                        <div class="icon-token">map-pin</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--secondary">.text-brand-secondary</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-primary bg-brand-primary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Contact</div>
+                        <div class="icon-token">message-circle</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-secondary bg-brand-secondary-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Review Score</div>
+                        <div class="icon-token">star</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--secondary">.text-brand-secondary</span>
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-brand-success bg-brand-success-soft">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Gegarandeerde kwaliteit</div>
+                        <div class="icon-token">circle-check</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--success">.text-brand-success</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
                 </div>
-            </div>
-            
-            <!-- Private Feesten (Party Hat & Confetti) -->
-            <div class="icon-card">
-                <div class="icon-display">
-                    <svg class="svg-icon secondary-fill" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L6 10h3v8h6v-8h3L12 2z"/>
-                        <circle cx="17" cy="17" r="2" fill="#00AEEF"/>
-                        <circle cx="7" cy="17" r="2" fill="#1A2C4B"/>
-                        <path fill="#1A2C4B" d="M12 10l-1 3h2l-1-3z"/>
-                    </svg>
+            </section>
+
+            <section class="icon-group">
+                <div class="icon-group-header">
+                    <h2 class="icon-group-title text-brand-ink">Social &amp; Media</h2>
+                    <p class="icon-group-subtitle">Kanaalspecifieke iconen voor footers, dashboards en media hubs. Brand-kleuren komen via utility classes zodat de SVG één bronbestand blijft.</p>
                 </div>
-                <div class="icon-name">Private Feesten</div>
-                <div class="icon-class">icon-private-party</div>
-                <div class="icon-variant">
-                    <div class="variant-box secondary">🎉</div>
-                    <div class="variant-box dark">🎉</div>
+                <div class="icon-collection">
+                    <article class="icon-card">
+                        <div class="icon-display text-social-facebook bg-social-facebook">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Facebook</div>
+                        <div class="icon-token">facebook</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--facebook">.text-social-facebook</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-social-instagram bg-social-instagram">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Instagram</div>
+                        <div class="icon-token">instagram</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--instagram">.text-social-instagram</span>
+                            <span class="utility-chip utility-chip--secondary">.text-brand-secondary</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-social-linkedin bg-social-linkedin">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                                <rect width="4" height="12" x="2" y="9"></rect>
+                                <circle cx="4" cy="4" r="2"></circle>
+                            </svg>
+                        </div>
+                        <div class="icon-name">LinkedIn</div>
+                        <div class="icon-token">linkedin</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--linkedin">.text-social-linkedin</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-social-spotify bg-social-spotify">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <path d="M8.2 9.7c2.4-1 5.2-1 7.6 0"></path>
+                                <path d="M8.6 12.5c2.1-.8 4.6-.8 6.7 0"></path>
+                                <path d="M9 15.2c1.8-.6 3.8-.6 5.4 0"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">Spotify</div>
+                        <div class="icon-token">custom-spotify</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--spotify">.text-social-spotify</span>
+                            <span class="utility-chip utility-chip--primary">.text-brand-primary</span>
+                        </div>
+                    </article>
+
+                    <article class="icon-card">
+                        <div class="icon-display text-social-youtube bg-social-youtube">
+                            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path>
+                                <path d="m10 15 5-3-5-3z"></path>
+                            </svg>
+                        </div>
+                        <div class="icon-name">YouTube</div>
+                        <div class="icon-token">youtube</div>
+                        <div class="color-samples">
+                            <span class="utility-chip utility-chip--youtube">.text-social-youtube</span>
+                            <span class="utility-chip utility-chip--ink">.text-brand-ink</span>
+                        </div>
+                    </article>
                 </div>
-            </div>
-            
-            <!-- DJ + Saxofonist -->
-            <div class="icon-card">
-                <div class="icon-display primary-color">🎷</div>
-                <div class="icon-name">DJ + Saxofonist</div>
-                <div class="icon-class">icon-sax</div>
-                <div class="icon-variant">
-                    <div class="variant-box primary">🎷</div>
-                    <div class="variant-box dark">🎷</div>
-                </div>
-            </div>
-            
-            <!-- Overige Diensten -->
-            <div class="icon-card">
-                <div class="icon-display primary-color">🎧</div>
-                <div class="icon-name">Overige Diensten</div>
-                <div class="icon-class">icon-other-services</div>
-                <div class="icon-variant">
-                    <div class="variant-box primary">🎧</div>
-                    <div class="variant-box dark">🎧</div>
-                </div>
-            </div>
-            
-            <div class="icon-category utility">Utility Iconen (Dark)</div>
-            
-            <!-- Checkmark -->
-            <div class="icon-card">
-                <div class="icon-display dark-color">✓</div>
-                <div class="icon-name">Checkmark</div>
-                <div class="icon-class">icon-check</div>
-                <div class="icon-variant">
-                    <div class="variant-box dark">✓</div>
-                    <div class="variant-box primary">✓</div>
-                </div>
-            </div>
-            
-            <!-- Calendar -->
-            <div class="icon-card">
-                <div class="icon-display dark-color">📅</div>
-                <div class="icon-name">Beschikbaarheid</div>
-                <div class="icon-class">icon-calendar</div>
-                <div class="icon-variant">
-                    <div class="variant-box dark">📅</div>
-                    <div class="variant-box primary">📅</div>
-                </div>
-            </div>
-            
-            <!-- Location -->
-            <div class="icon-card">
-                <div class="icon-display dark-color">📍</div>
-                <div class="icon-name">Locatie</div>
-                <div class="icon-class">icon-location</div>
-                <div class="icon-variant">
-                    <div class="variant-box dark">📍</div>
-                    <div class="variant-box primary">📍</div>
-                </div>
-            </div>
-            
-            <!-- Quote -->
-            <div class="icon-card">
-                <div class="icon-display dark-color">💬</div>
-                <div class="icon-name">Review / Quote</div>
-                <div class="icon-class">icon-quote</div>
-                <div class="icon-variant">
-                    <div class="variant-box dark">💬</div>
-                    <div class="variant-box primary">💬</div>
-                </div>
-            </div>
-            
-            <!-- Star -->
-            <div class="icon-card">
-                <div class="icon-display secondary-color">⭐</div>
-                <div class="icon-name">Rating Star</div>
-                <div class="icon-class">icon-star</div>
-                <div class="icon-variant">
-                    <div class="variant-box secondary">⭐</div>
-                    <div class="variant-box dark">⭐</div>
-                </div>
-            </div>
-            
-            <div class="icon-category social">Social Media Iconen (Secondary)</div>
-            
-            <!-- Facebook -->
-            <div class="icon-card">
-                <div class="icon-display secondary-color">📘</div>
-                <div class="icon-name">Facebook</div>
-                <div class="icon-class">icon-facebook</div>
-            </div>
-            
-            <!-- Instagram -->
-            <div class="icon-card">
-                <div class="icon-display secondary-color">📷</div>
-                <div class="icon-name">Instagram</div>
-                <div class="icon-class">icon-instagram</div>
-            </div>
-            
-            <!-- LinkedIn -->
-            <div class="icon-card">
-                <div class="icon-display secondary-color">💼</div>
-                <div class="icon-name">LinkedIn</div>
-                <div class="icon-class">icon-linkedin</div>
-            </div>
-            
-            <!-- Spotify -->
-            <div class="icon-card">
-                <div class="icon-display secondary-color">🎵</div>
-                <div class="icon-name">Spotify</div>
-                <div class="icon-class">icon-spotify</div>
-            </div>
-            
-            <!-- YouTube -->
-            <div class="icon-card">
-                <div class="icon-display secondary-color">▶️</div>
-                <div class="icon-name">YouTube</div>
-                <div class="icon-class">icon-youtube</div>
-            </div>
+            </section>
         </div>
     </div>
 </body>
 </html>
-
