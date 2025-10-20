@@ -13,6 +13,7 @@ const integrationsRouter = require('./integrations');
 const personalizationRouter = require('./personalization');
 const dashboardRouter = require('./dashboard');
 const metricsRouter = require('./metrics');
+const sessionRouter = require('./session');
 const featureFlags = require('../lib/featureFlags');
 
 const router = express.Router();
@@ -43,12 +44,14 @@ router.get('/', async (_req, res, next) => {
       endpoints.dashboard = '/dashboard';
     }
 
+    const activeFeatureFlags = await featureFlags.getActive();
+
     res.json({
       message: 'Mister DJ API',
       version: config.version,
       endpoints,
       featureFlags: {
-        active: await featureFlags.getActive()
+        active: activeFeatureFlags
       }
     });
   } catch (error) {
