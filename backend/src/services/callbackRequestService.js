@@ -3,8 +3,62 @@ const db = require('../lib/db');
 const rentGuyService = require('./rentGuyService');
 const sevensaService = require('./sevensaService');
 
+/**
+ * @typedef {Object} CallbackRequestPayload
+ * @property {string} name
+ * @property {string} phone
+ * @property {string|null} [eventType]
+ */
+
+/**
+ * @typedef {Object} CallbackRequestRecord
+ * @property {string} id
+ * @property {string} status
+ * @property {Date} createdAt
+ * @property {boolean} persisted
+ * @property {string|null} eventType
+ * @property {string} name
+ * @property {string} phone
+ */
+
+/**
+ * @typedef {Object} RentGuySyncResult
+ * @property {boolean} delivered
+ * @property {boolean} queued
+ * @property {number} [queueSize]
+ * @property {string} [reason]
+ */
+
+/**
+ * @typedef {Object} SevensaSyncResult
+ * @property {boolean} delivered
+ * @property {boolean} queued
+ * @property {number} [queueSize]
+ * @property {string} [reason]
+ * @property {string} [lastError]
+ */
+
+/**
+ * @typedef {Object} SaveCallbackRequestResult
+ * @property {string} id
+ * @property {string} status
+ * @property {Date} createdAt
+ * @property {boolean} persisted
+ * @property {string|null} eventType
+ * @property {string} name
+ * @property {string} phone
+ * @property {RentGuySyncResult} rentGuySync
+ * @property {SevensaSyncResult} sevensaSync
+ */
+
 const inMemoryCallbackRequests = new Map();
 
+/**
+ * Stores a callback request, falling back to an in-memory queue and syncing with partners.
+ *
+ * @param {CallbackRequestPayload} payload
+ * @returns {Promise<SaveCallbackRequestResult>}
+ */
 async function saveCallbackRequest(payload) {
   const timestamp = new Date();
   let result;
@@ -94,6 +148,16 @@ async function saveCallbackRequest(payload) {
   };
 }
 
+/**
+ * Returns the operational status for the callback request pipeline.
+ *
+ * @returns {{
+ *   databaseConnected: boolean,
+ *   storageStrategy: 'postgres'|'in-memory',
+ *   fallbackQueueSize: number,
+ *   lastError: string|null
+ * }}
+ */
 function getCallbackRequestServiceStatus() {
   const status = db.getStatus();
 

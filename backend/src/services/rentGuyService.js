@@ -2,6 +2,62 @@ const { randomUUID, createHash } = require('crypto');
 const { createDurableQueue } = require('../lib/durableQueue');
 const { logger } = require('../lib/logger');
 
+/**
+ * @typedef {Object} RentGuyDeliveryMeta
+ * @property {string} [id]
+ * @property {string} [source]
+ * @property {string} [dedupeKey]
+ */
+
+/**
+ * @typedef {Object} RentGuyDeliveryResult
+ * @property {boolean} delivered
+ * @property {boolean} queued
+ * @property {number} queueSize
+ * @property {string} [reason]
+ */
+
+/**
+ * @typedef {Object} RentGuyBookingPayload
+ * @property {string} id
+ * @property {string} status
+ * @property {string} eventType
+ * @property {Date|string|null} [eventDate]
+ * @property {string|null} [packageId]
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {string|null} [message]
+ * @property {boolean} persisted
+ */
+
+/**
+ * @typedef {Object} RentGuyLeadPayload
+ * @property {string} id
+ * @property {string} status
+ * @property {string|null} eventType
+ * @property {Date|string|null} [eventDate]
+ * @property {string|null} [packageId]
+ * @property {string} name
+ * @property {string} [email]
+ * @property {string} phone
+ * @property {string|null} [message]
+ * @property {boolean} persisted
+ */
+
+/**
+ * @typedef {Object} RentGuyStatus
+ * @property {boolean} configured
+ * @property {string|null} workspaceId
+ * @property {number} queueSize
+ * @property {number} activeJobs
+ * @property {{ retryAgeP95: number, counts: Object<string, number> }} metrics
+ * @property {number} deadLetterCount
+ * @property {{ at: Date, resource: string, attempts: number }|null} lastSyncSuccess
+ * @property {{ at: Date, resource: string, message: string, attempts: number }|null} lastSyncError
+ * @property {{ resource: string, enqueuedAt: Date, attempts: number, dedupeKey: string }|null} nextInQueue
+ */
+
 const DEFAULT_TIMEOUT_MS = 5000;
 
 let lastSyncSuccess = null;
@@ -205,18 +261,45 @@ function mapLeadPayload(lead) {
   };
 }
 
+/**
+ * Sends booking payloads to the RentGuy API, queueing if necessary.
+ *
+ * @param {RentGuyBookingPayload} booking
+ * @param {RentGuyDeliveryMeta} [meta]
+ * @returns {Promise<RentGuyDeliveryResult>}
+ */
 async function syncBooking(booking, meta = {}) {
   return tryImmediateDelivery('bookings', mapBookingPayload(booking), meta);
 }
 
+/**
+ * Sends lead payloads to the RentGuy API, queueing if necessary.
+ *
+ * @param {RentGuyLeadPayload} lead
+ * @param {RentGuyDeliveryMeta} [meta]
+ * @returns {Promise<RentGuyDeliveryResult>}
+ */
 async function syncLead(lead, meta = {}) {
   return tryImmediateDelivery('leads', mapLeadPayload(lead), meta);
 }
 
+/**
+ * Sends personalization telemetry to RentGuy.
+ *
+ * @param {Object<string, *>} event
+ * @param {RentGuyDeliveryMeta} [meta]
+ * @returns {Promise<RentGuyDeliveryResult>}
+ */
 async function syncPersonalizationEvent(event, meta = {}) {
   return tryImmediateDelivery('personalization-events', event, meta);
 }
 
+/**
+ * Forces pending jobs to be retried immediately.
+ *
+ * @param {number} [limit=50]
+ * @returns {Promise<{ configured: boolean, attempted: number, delivered: number, remaining: number }>}
+ */
 async function flushQueue(limit = 50) {
   const configured = isConfigured();
   const metricsBefore = await queue.getMetrics();
@@ -260,6 +343,11 @@ async function flushQueue(limit = 50) {
   };
 }
 
+/**
+ * Returns integration health metrics and queue depth information.
+ *
+ * @returns {Promise<RentGuyStatus>}
+ */
 async function getStatus() {
   const configured = isConfigured();
   const metrics = await queue.getMetrics();
@@ -331,6 +419,11 @@ async function replayDeadLetters(limit = 20) {
   return { replayed };
 }
 
+/**
+ * Clears the durable queue and resets diagnostics (primarily for tests).
+ *
+ * @returns {Promise<void>}
+ */
 async function reset() {
   await Promise.all([
     queue.queue.drain(true),
