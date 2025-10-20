@@ -89,9 +89,22 @@ export async function submitBooking(bookingData) {
   });
 }
 
+/**
+ * Submit quick callback request
+ * @param {Object} callbackData - Callback request data
+ * @returns {Promise<Object>} API response
+ */
+export async function submitCallbackRequest(callbackData) {
+  return fetchAPI('/callback-request', {
+    method: 'POST',
+    body: JSON.stringify(callbackData),
+  });
+}
+
 export default {
   submitContactForm,
   getPackages,
   checkHealth,
   submitBooking,
+  submitCallbackRequest,
 };

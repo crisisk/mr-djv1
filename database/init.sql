@@ -33,6 +33,15 @@ ALTER TABLE contacts
     ADD COLUMN IF NOT EXISTS event_date DATE,
     ADD COLUMN IF NOT EXISTS package_id VARCHAR(50);
 
+CREATE TABLE IF NOT EXISTS callback_requests (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    event_type VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'new',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS packages (
     id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -79,6 +88,7 @@ ON CONFLICT DO NOTHING;
 CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);
 CREATE INDEX IF NOT EXISTS idx_bookings_event_date ON bookings(event_date);
 CREATE INDEX IF NOT EXISTS idx_contacts_status ON contacts(status);
+CREATE INDEX IF NOT EXISTS idx_callback_requests_status ON callback_requests(status);
 CREATE INDEX IF NOT EXISTS idx_reviews_approved ON reviews(approved);
 
 -- Grant permissions

@@ -32,6 +32,7 @@ jest.mock('../services/sevensaService', () => ({
 
 const db = require('../lib/db');
 const contactService = require('../services/contactService');
+const callbackRequestService = require('../services/callbackRequestService');
 const bookingService = require('../services/bookingService');
 const packageService = require('../services/packageService');
 const reviewService = require('../services/reviewService');
@@ -46,6 +47,7 @@ describe('contactService', () => {
   afterEach(() => {
     jest.clearAllMocks();
     contactService.resetInMemoryStore();
+    callbackRequestService.resetInMemoryStore();
   });
 
   it('persists contact submissions in the database when configured', async () => {
@@ -138,6 +140,94 @@ describe('contactService', () => {
       storageStrategy: 'in-memory',
       fallbackQueueSize: 0,
       lastError: 'boom'
+    });
+  });
+});
+
+describe('callbackRequestService', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    callbackRequestService.resetInMemoryStore();
+  });
+
+  it('persists callback requests when the database is available', async () => {
+    const createdAt = new Date('2024-03-01T12:00:00Z');
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 'callback-id',
+          status: 'new',
+          eventType: 'bruiloft',
+          createdAt
+        }
+      ]
+    });
+    rentGuyService.syncLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
+    sevensaService.submitLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
+
+    const result = await callbackRequestService.saveCallbackRequest({
+      name: 'Bel mij terug',
+      phone: '0612345678',
+      eventType: 'bruiloft'
+    });
+
+    expect(result).toMatchObject({
+      id: 'callback-id',
+      status: 'new',
+      persisted: true,
+      eventType: 'bruiloft',
+      rentGuySync: { delivered: true, queued: false },
+      sevensaSync: { delivered: true, queued: false }
+    });
+    expect(db.runQuery).toHaveBeenCalled();
+    expect(rentGuyService.syncLead).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'callback-id',
+        name: 'Bel mij terug',
+        phone: '0612345678'
+      }),
+      { source: 'quick-callback-form' }
+    );
+    expect(sevensaService.submitLead).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'callback-id',
+        phone: '0612345678',
+        eventType: 'bruiloft'
+      }),
+      { source: 'quick-callback-form' }
+    );
+  });
+
+  it('uses in-memory storage when the database insert fails', async () => {
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockRejectedValueOnce(new Error('boom'));
+    const errorSpy = mockConsole('error');
+
+    const result = await callbackRequestService.saveCallbackRequest({
+      name: 'Fallback',
+      phone: '0612345678',
+      eventType: 'bedrijfsfeest'
+    });
+
+    expect(errorSpy).toHaveBeenCalled();
+    expect(result).toMatchObject({
+      status: 'pending',
+      persisted: false,
+      eventType: 'bedrijfsfeest',
+      rentGuySync: expect.objectContaining({ queued: true }),
+      sevensaSync: expect.objectContaining({ queued: true })
+    });
+  });
+
+  it('reports the current storage strategy', () => {
+    db.getStatus.mockReturnValueOnce({ connected: false, lastError: 'kapot' });
+
+    expect(callbackRequestService.getCallbackRequestServiceStatus()).toEqual({
+      databaseConnected: false,
+      storageStrategy: 'in-memory',
+      fallbackQueueSize: 0,
+      lastError: 'kapot'
     });
   });
 });
