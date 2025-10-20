@@ -3,6 +3,35 @@ const path = require('path');
 const config = require('../config');
 const managedEnv = require('../lib/managedEnv');
 
+/**
+ * @typedef {Object} DashboardEntry
+ * @property {string} name
+ * @property {boolean} hasValue
+ * @property {string|null} preview
+ */
+
+/**
+ * @typedef {Object} DashboardGroup
+ * @property {string} id
+ * @property {string} label
+ * @property {string} [description]
+ * @property {DashboardEntry[]} entries
+ */
+
+/**
+ * @typedef {Object} DashboardState
+ * @property {string[]} managedKeys
+ * @property {DashboardEntry[]} entries
+ * @property {DashboardGroup[]} groups
+ * @property {{ storePath: string, lastModified: string|null }} metadata
+ */
+
+/**
+ * Replaces sensitive values with a masked representation.
+ *
+ * @param {string|null|undefined} value
+ * @returns {string|null}
+ */
 function maskValue(value) {
   if (!value) {
     return null;
@@ -16,6 +45,12 @@ function maskValue(value) {
   return `${'*'.repeat(value.length - 4)}${visible}`;
 }
 
+/**
+ * Normalizes user supplied values to strings for storage.
+ *
+ * @param {unknown} value
+ * @returns {string|null}
+ */
 function normalizeValue(value) {
   if (value === null || value === undefined) {
     return null;
@@ -28,11 +63,22 @@ function normalizeValue(value) {
   return value;
 }
 
+/**
+ * Loads the managed environment file.
+ *
+ * @returns {Object<string, string>}
+ */
 function getCurrentValues() {
   const fileValues = managedEnv.loadFromDiskSync();
   return { ...fileValues };
 }
 
+/**
+ * Builds the dashboard view model for the provided configuration values.
+ *
+ * @param {Object<string, string>} values
+ * @returns {DashboardState}
+ */
 function buildState(values) {
   const entryMap = new Map();
   const entries = config.dashboard.managedKeys.map((key) => {
@@ -76,6 +122,12 @@ function buildState(values) {
   };
 }
 
+/**
+ * Persists submitted dashboard changes and reloads runtime config.
+ *
+ * @param {Object<string, *>} payload
+ * @returns {Promise<DashboardState>}
+ */
 async function updateValues(payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
     throw new Error('Invalid payload');
@@ -111,12 +163,27 @@ async function updateValues(payload) {
   return buildState(nextValues);
 }
 
+/**
+ * Returns the current dashboard state for rendering.
+ *
+ * @returns {DashboardState}
+ */
 function getState() {
   const values = getCurrentValues();
   return buildState(values);
 }
 
+function ping() {
+  return {
+    ok: true,
+    enabled: Boolean(config.dashboard.enabled),
+    managedKeyCount: config.dashboard.managedKeys.length,
+    storePath: path.relative(process.cwd(), config.dashboard.storePath)
+  };
+}
+
 module.exports = {
   getState,
-  updateValues
+  updateValues,
+  ping
 };
