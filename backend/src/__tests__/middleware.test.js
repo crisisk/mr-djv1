@@ -135,6 +135,8 @@ describe('error handlers', () => {
   });
 });
 
+const ORIGINAL_ENV = { ...process.env };
+
 describe('dashboard auth middleware', () => {
   function createResponse() {
     return {
@@ -146,9 +148,23 @@ describe('dashboard auth middleware', () => {
 
   afterEach(() => {
     jest.resetModules();
+    process.env = { ...ORIGINAL_ENV };
   });
 
   function loadMiddleware(overrides = {}) {
+    process.env = {
+      ...ORIGINAL_ENV,
+      CONFIG_DASHBOARD_USER: 'admin',
+      CONFIG_DASHBOARD_PASS: 'secret',
+      ...overrides.env
+    };
+
+    for (const [key, value] of Object.entries(process.env)) {
+      if (value === undefined) {
+        delete process.env[key];
+      }
+    }
+
     jest.doMock('../config', () => ({
       dashboard: {
         enabled: true,
