@@ -8,6 +8,11 @@ import { useHeroImage } from '../../hooks/useReplicateImage.js';
 import { localSeoData, getLocalSeoDataBySlug } from '../../data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from '../../data/local_seo_bruiloft_data.js';
 import { getWindow } from '../../lib/environment.js';
+import {
+  generateServiceSchema,
+  generateBreadcrumbSchema,
+  generateWebPageSchema,
+} from '../../utils/schemaOrg.js';
 
 const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) => {
   const hasData = Boolean(data);
@@ -44,6 +49,18 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
   const browser = getWindow();
   const origin = browser?.location?.origin ?? 'https://www.mrdj.nl';
   const canonicalUrl = `${origin}${canonicalPath}`;
+
+  const breadcrumbs = useMemo(() => {
+    const base = [{ name: 'Home', url: origin }];
+
+    if (!hasData || !city) {
+      return base;
+    }
+
+    const label = isBruiloftPage ? `Bruiloft DJ in ${city}` : `DJ in ${city}`;
+    base.push({ name: label, url: canonicalUrl });
+    return base;
+  }, [city, hasData, isBruiloftPage, origin, canonicalUrl]);
 
   const hasCounterpart = useMemo(() => {
     if (!hasData) {
@@ -148,6 +165,48 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
     });
   }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, origin, province]);
 
+  const serviceSchema = useMemo(() => {
+    if (!hasData) {
+      return null;
+    }
+
+    const schema = generateServiceSchema({
+      serviceName: isBruiloftPage ? `Bruiloft DJ Service ${city}` : `DJ Service ${city}`,
+      description: seoDescription,
+      serviceType: isBruiloftPage ? 'Wedding Entertainment' : 'Event Entertainment',
+    });
+
+    if (schema?.offers?.priceSpecification) {
+      const price = isBruiloftPage ? '1295' : '995';
+      const label = isBruiloftPage
+        ? 'Bruiloft DJ pakketten vanaf €1.295'
+        : 'DJ pakketten vanaf €995';
+
+      schema.offers.priceSpecification.price = price;
+      schema.offers.priceSpecification.description = label;
+    }
+
+    return JSON.stringify(schema);
+  }, [city, hasData, isBruiloftPage, seoDescription]);
+
+  const breadcrumbSchema = useMemo(
+    () => JSON.stringify(generateBreadcrumbSchema(breadcrumbs)),
+    [breadcrumbs],
+  );
+
+  const webPageSchema = useMemo(
+    () =>
+      JSON.stringify(
+        generateWebPageSchema({
+          title: seoTitle,
+          description: seoDescription,
+          url: canonicalUrl,
+          breadcrumbs,
+        }),
+      ),
+    [breadcrumbs, canonicalUrl, seoDescription, seoTitle],
+  );
+
   if (!hasData) {
     return <div className="p-10 text-center text-red-500">Geen lokale SEO data gevonden.</div>;
   }
@@ -160,6 +219,9 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <link rel="canonical" href={canonicalUrl} />
+        <script type="application/ld+json">{webPageSchema}</script>
+        <script type="application/ld+json">{breadcrumbSchema}</script>
+        {serviceSchema && <script type="application/ld+json">{serviceSchema}</script>}
         {localBusinessSchema && <script type="application/ld+json">{localBusinessSchema}</script>}
         {eventSchema && <script type="application/ld+json">{eventSchema}</script>}
       </Helmet>
