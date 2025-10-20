@@ -1,4 +1,5 @@
 const app = require('../app');
+const config = require('../config');
 const { resetInMemoryStore: resetContactStore } = require('../services/contactService');
 const { resetInMemoryStore: resetCallbackStore } = require('../services/callbackRequestService');
 const { resetInMemoryStore: resetBookingStore } = require('../services/bookingService');
@@ -7,6 +8,7 @@ const {
   resetCache: resetPersonalizationCache
 } = require('../services/personalizationService');
 const http = require('http');
+const { createSignatureHeader } = require('../lib/signature');
 
 let server;
 let baseUrl;
@@ -67,6 +69,9 @@ describe('Mister DJ API', () => {
     resetBookingStore();
     resetPersonalizationLogs();
     resetPersonalizationCache();
+    delete process.env.RENTGUY_WEBHOOK_SECRETS;
+    delete process.env.PERSONALIZATION_WEBHOOK_SECRETS;
+    config.reload();
   });
 
   it('returns service metadata on the root route', async () => {
@@ -87,6 +92,8 @@ describe('Mister DJ API', () => {
     expect(response.body.endpoints.integrations).toEqual(
       expect.objectContaining({
         rentGuy: '/integrations/rentguy/status',
+        rentGuyWebhook: '/integrations/rentguy/webhook',
+        personalizationWebhook: '/integrations/personalization/webhook',
         sevensa: '/integrations/sevensa/status'
       })
     );
@@ -348,5 +355,56 @@ describe('Mister DJ API', () => {
         payload: { cta: 'Plan trouwgesprek' }
       })
     });
+  });
+
+  it('accepts authenticated RentGuy webhook callbacks', async () => {
+    process.env.RENTGUY_WEBHOOK_SECRETS = 'legacy-secret,current-secret';
+    config.reload();
+
+    const payload = { type: 'status.updated', bookingId: 'bk_123' };
+    const body = JSON.stringify(payload);
+    const signature = createSignatureHeader({ secret: 'current-secret', payload: body });
+
+    const response = await request(
+      'POST',
+      '/integrations/rentguy/webhook',
+      body,
+      {
+        'X-MRDJ-Signature': signature
+      }
+    );
+
+    expect(response.status).toBe(204);
+    expect(response.body).toBeUndefined();
+  });
+
+  it('rejects RentGuy webhook calls with invalid signatures', async () => {
+    process.env.RENTGUY_WEBHOOK_SECRETS = 'current-secret';
+    config.reload();
+
+    const payload = { type: 'queue.flush', queueSize: 3 };
+    const body = JSON.stringify(payload);
+    const signature = createSignatureHeader({ secret: 'other-secret', payload: body });
+
+    const response = await request(
+      'POST',
+      '/integrations/rentguy/webhook',
+      body,
+      {
+        'X-MRDJ-Signature': signature
+      }
+    );
+
+    expect(response.status).toBe(401);
+    expect(response.body).toMatchObject({ error: 'Invalid webhook signature', code: 'signature_mismatch' });
+  });
+
+  it('rejects personalization webhook calls when secrets are not configured', async () => {
+    const payload = { type: 'personalization.sync', status: 'ok' };
+
+    const response = await request('POST', '/integrations/personalization/webhook', payload);
+
+    expect(response.status).toBe(503);
+    expect(response.body).toMatchObject({ error: 'Invalid webhook signature', code: 'missing_secret' });
   });
 });
