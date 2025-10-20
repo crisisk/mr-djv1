@@ -14,30 +14,43 @@ async function fetchAPI(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
 
   const config = {
+    ...options,
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
     },
-    ...options,
   };
 
   try {
     const response = await fetch(url, config);
 
-    // Parse JSON response
-    const data = await response.json();
+    const contentType = response.headers.get('content-type') || '';
+    let data = null;
 
-    // Check for HTTP errors
-    if (!response.ok) {
-      throw new Error(data.message || data.error || `HTTP Error: ${response.status}`);
+    if (contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = { message: text };
+        }
+      }
     }
 
-    return data;
+    if (!response.ok) {
+      const message = data?.message || data?.error || `HTTP Error: ${response.status}`;
+      throw new Error(message);
+    }
+
+    return data ?? { success: true };
   } catch (error) {
-    // Network errors or JSON parse errors
     if (error instanceof TypeError) {
       throw new Error('Netwerkfout: Kan geen verbinding maken met de server');
     }
+
     throw error;
   }
 }
@@ -78,7 +91,7 @@ export async function submitCallbackRequest(formData) {
  */
 export async function getPackages() {
   const response = await fetchAPI('/packages');
-  return response.packages;
+  return response?.packages || [];
 }
 
 /**
@@ -101,23 +114,10 @@ export async function submitBooking(bookingData) {
   });
 }
 
-/**
- * Submit quick callback request
- * @param {Object} callbackData - Callback request data
- * @returns {Promise<Object>} API response
- */
-export async function submitCallbackRequest(callbackData) {
-  return fetchAPI('/callback-request', {
-    method: 'POST',
-    body: JSON.stringify(callbackData),
-  });
-}
-
 export default {
   submitContactForm,
   submitCallbackRequest,
   getPackages,
   checkHealth,
   submitBooking,
-  submitCallbackRequest,
 };

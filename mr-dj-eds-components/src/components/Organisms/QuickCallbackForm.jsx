@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { submitCallbackRequest } from '../../services/api';
 import { trackFormSubmission } from '../../utils/trackConversion';
-import { submitCallbackRequest } from '../../services/api';
 
 /**
  * QuickCallbackForm - Simplified callback request form
@@ -14,27 +13,78 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     phone: '',
     eventType: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const validateForm = () => {
+    const errors = {};
+    const trimmedName = formData.name.trim();
+    const trimmedPhone = formData.phone.trim();
+
+    if (!trimmedName) {
+      errors.name = 'Naam is verplicht';
+    } else if (trimmedName.length < 2) {
+      errors.name = 'Naam moet minimaal 2 tekens bevatten';
+    }
+
+    if (!trimmedPhone) {
+      errors.phone = 'Telefoonnummer is verplicht';
+    } else if (!/^[\d\s()+-]{10,15}$/.test(trimmedPhone)) {
+      errors.phone = 'Voer een geldig telefoonnummer in';
+    }
+
+    if (!formData.eventType) {
+      errors.eventType = 'Kies een type feest';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
+
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        [name]: null,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitError(null);
-    setIsSubmitting(true);
     setErrorMessage('');
+    setFieldErrors({});
+
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    if (!validateForm()) {
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
+      const payload = {
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        eventType: formData.eventType,
+      };
+
+      await submitCallbackRequest(payload);
+
       // Track form submission
-      trackFormSubmission(variant, formData.eventType, 'callback');
+      trackFormSubmission(variant, payload.eventType, 'callback');
 
       // Push to GTM dataLayer
       if (typeof window !== 'undefined') {
@@ -42,12 +92,11 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         window.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
-          event_type: formData.eventType,
+          event_type: payload.eventType,
           form_type: 'callback',
         });
       }
 
-      await submitCallbackRequest(formData);
       setIsSubmitted(true);
       // Reset form after 3 seconds
       setTimeout(() => {
@@ -85,13 +134,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         Vul je gegevens in en wij bellen je vandaag nog!
       </p>
 
-      {submitError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-spacing-md" role="alert" aria-live="assertive">
-          <strong className="font-semibold block mb-1">Oops!</strong>
-          <span>{submitError}</span>
-        </div>
-      )}
-
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {/* Name Field */}
         <div>
@@ -109,6 +151,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             required
             minLength={2}
           />
+          {fieldErrors.name && <p className="text-sm text-red-600 mt-1">{fieldErrors.name}</p>}
         </div>
 
         {/* Phone Field */}
@@ -123,10 +166,11 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             value={formData.phone}
             onChange={handleChange}
             placeholder="06 12 34 56 78"
-            pattern="[0-9\s\-\+\(\)]{10,15}"
+            pattern="[0-9\\s()+-]{10,15}"
             className="w-full p-3 md:p-4 rounded-lg border-2 border-neutral-gray-100 focus:border-primary focus:outline-none text-neutral-dark placeholder-neutral-gray-500"
             required
           />
+          {fieldErrors.phone && <p className="text-sm text-red-600 mt-1">{fieldErrors.phone}</p>}
         </div>
 
         {/* Event Type Field */}
@@ -150,6 +194,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
             <option value="carnaval">Carnaval</option>
             <option value="anders">Anders</option>
           </select>
+          {fieldErrors.eventType && <p className="text-sm text-red-600 mt-1">{fieldErrors.eventType}</p>}
         </div>
 
         {/* Submit Button */}
