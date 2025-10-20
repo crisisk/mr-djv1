@@ -1,14 +1,16 @@
-// mr-djv1/mr-dj-eds-components/src/data/local_seo_data.js
+/**
+ * Lokale SEO dataset met automatische pricing-highlights.
+ *
+ * ➤ Zo voeg je een nieuwe stad toe:
+ *   1. Voeg een nieuw object toe aan `baseLocalSeoData` met minimaal `city`, `slug`,
+ *      `localUSP` en een lijst `localVenues` (van meest toegankelijk naar meest premium).
+ *   2. Optioneel: geef een eigen `pricingHighlights`-object mee met sleutels `brons`,
+ *      `zilver` en `goud`. Laat je dit weg, dan worden de highlights automatisch
+ *      opgebouwd op basis van de USP en venues.
+ *   3. De pricing component leest deze highlights en toont ze wanneer een stad actief is.
+ */
 
-import {
-    createTranslationList,
-    createTranslationObject,
-    DEFAULT_LOCALE,
-    resolveLocalizedList,
-    resolveLocalizedValue,
-} from './mr-dj-eds-components/src/utils/localization.js';
-
-const rawLocalSeoData = [
+const baseLocalSeoData = [
     {
         city: "Eindhoven",
         province: "Noord-Brabant",
@@ -61,20 +63,61 @@ const rawLocalSeoData = [
     },
 ];
 
-const withTranslations = ({ localUSP, localReviews, localVenues, seoTitle, seoDescription, ...rest }) => ({
-    ...rest,
-    localUSP: createTranslationObject(localUSP),
-    localReviews: createTranslationObject(localReviews),
-    localVenues: createTranslationList(localVenues),
-    seoTitle: createTranslationObject(seoTitle),
-    seoDescription: createTranslationObject(seoDescription),
-});
+const ensureSentence = (text = "") => {
+    const trimmed = text.trim();
+    if (!trimmed) {
+        return "";
+    }
+    return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+};
 
-export const localSeoData = rawLocalSeoData.map(withTranslations);
+const formatVenueList = (venues = []) => {
+    const filtered = venues.filter(Boolean);
+    if (filtered.length === 0) {
+        return "";
+    }
+    if (filtered.length === 1) {
+        return filtered[0];
+    }
+
+    const last = filtered[filtered.length - 1];
+    const rest = filtered.slice(0, -1);
+
+    return `${rest.join(', ')} en ${last}`;
+};
+
+// Brons = toegankelijke locaties, Zilver = lokale USP, Goud = iconische/premium locaties.
+const buildPricingHighlights = ({ city, localUSP, localVenues = [] }) => {
+    const accessibleVenues = localVenues.slice(0, 2);
+    const premiumVenues = localVenues.length > 2 ? localVenues.slice(-2) : accessibleVenues;
+
+    const accessibleText = formatVenueList(accessibleVenues);
+    const premiumText = formatVenueList(premiumVenues);
+    const uspSentence = ensureSentence(localUSP);
+
+    return {
+        brons: accessibleText
+            ? `Soepele set-up voor intieme feesten bij ${accessibleText}.`
+            : `Soepele set-up voor lokale feesten in ${city}.`,
+        zilver: `${uspSentence} Perfect voor bruiloften en bedrijfsfeesten in ${city}.`,
+        goud: premiumText
+            ? `Premium showbeleving voor iconische locaties zoals ${premiumText}.`
+            : `Premium showbeleving voor iconische locaties in ${city}.`,
+    };
+};
+
+export const localSeoData = baseLocalSeoData.map((entry) =>
+    entry.pricingHighlights
+        ? entry
+        : {
+              ...entry,
+              pricingHighlights: buildPricingHighlights(entry),
+          }
+);
 
 // Function to find data by slug, useful for routing
 export const getLocalSeoDataBySlug = (slug) => {
-    return localSeoData.find(data => data.slug === slug);
+    return localSeoData.find((data) => data.slug === slug);
 };
 
 export const getLocalizedLocalSeoDataBySlug = (slug, locale = DEFAULT_LOCALE) => {

@@ -2,9 +2,20 @@
 
 Deze playbook beschrijft hoe de nieuwe queue-metrics, OTEL-telemetrie en webhook-alerting worden beheerd voor een productieklare Mister DJ stack.
 
+## 0. Feature flags beheren
+
+Beheer de runtime toggles via de **Feature flags** tab in het configuratiedashboard. De waarden worden opgeslagen in `managed.env`
+en kunnen indien nodig worden geforceerd met `FLAG_*` omgevingsvariabelen.
+
+- `FLAG_PERSONALIZATION` – schakelt de personalisatie-API’s en webhook endpoints in.
+- `FLAG_RENTGUY_INTEGRATION` – activeert queueverwerking richting de RentGuy CRM.
+- `FLAG_SEVENSA_INTEGRATION` – schakelt de Sevensa submit queue en export endpoints in.
+- `FLAG_TELEMETRY` – maakt OTEL-tracing en metrics mogelijk zolang de overige OTEL variabelen geconfigureerd zijn.
+
 ## 1. Telemetrie-bootstrap
 
 1. Stel de volgende variabelen in via het configuratiedashboard of de `managed.env` store:
+   - `FLAG_TELEMETRY=on`
    - `OTEL_ENABLED=true`
    - `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://otel-gateway.example.com/v1/traces`
    - `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=https://otel-gateway.example.com/v1/metrics`

@@ -113,12 +113,18 @@
             color: #FF4D4D;
             font-weight: 600;
         }
-        
+
+        .help-text {
+            font-size: 11px;
+            color: #555555;
+            margin-top: 6px;
+        }
+
         .textarea-field {
             min-height: 80px;
             resize: vertical;
         }
-        
+
         .submit-button {
             background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
             color: white;
@@ -130,6 +136,8 @@
             transition: all 0.3s ease;
             text-align: center;
             margin-top: 10px;
+            border: none;
+            display: inline-block;
         }
         
         .submit-button:hover {
@@ -225,13 +233,13 @@
                 
                 <div class="input-group">
                     <label class="input-label" for="name-offerte">Volledige Naam *</label>
-                    <input type="text" id="name-offerte" class="input-field" placeholder="Jan Jansen">
+                    <input type="text" id="name-offerte" class="input-field" placeholder="Jan Jansen" required aria-required="true">
                 </div>
-                
+
                 <div class="input-group">
                     <label class="input-label" for="email-offerte">E-mailadres *</label>
-                    <input type="email" id="email-offerte" class="input-field error" placeholder="jan.jansen@voorbeeld.nl">
-                    <div class="error-message">Dit e-mailadres is ongeldig.</div>
+                    <input type="email" id="email-offerte" class="input-field error" placeholder="jan.jansen@voorbeeld.nl" required aria-required="true" aria-invalid="true" aria-describedby="email-offerte-error">
+                    <div class="error-message" id="email-offerte-error" role="alert">Dit e-mailadres is ongeldig.</div>
                 </div>
                 
                 <div class="input-group">
@@ -241,17 +249,17 @@
                 
                 <div class="input-group">
                     <label class="input-label" for="event-type">Type Evenement *</label>
-                    <select id="event-type" class="input-field">
-                        <option>Kies een optie</option>
+                    <select id="event-type" class="input-field" required aria-required="true">
+                        <option value="">Kies een optie</option>
                         <option>Bruiloft</option>
                         <option>Bedrijfsfeest</option>
                         <option>Private Feest</option>
                     </select>
                 </div>
-                
+
                 <div class="input-group">
                     <label class="input-label" for="date-offerte">Datum Evenement *</label>
-                    <input type="date" id="date-offerte" class="input-field">
+                    <input type="date" id="date-offerte" class="input-field" required aria-required="true">
                 </div>
                 
                 <div class="input-group">
@@ -260,11 +268,12 @@
                 </div>
                 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="privacy-offerte">
-                    <label for="privacy-offerte">Ik ga akkoord met de <a href="#" class="text-blue-500 underline">privacyverklaring</a> *</label>
+                    <input type="checkbox" id="privacy-offerte" required aria-required="true" aria-describedby="privacy-offerte-help">
+                    <label for="privacy-offerte">Ik geef Mister DJ toestemming om mijn gegevens te gebruiken volgens de <a href="#" class="text-blue-500 underline">privacyverklaring</a>.<span aria-hidden="true"> *</span></label>
                 </div>
-                
-                <div class="submit-button">Offerte Aanvragen</div>
+                <p class="help-text" id="privacy-offerte-help">We gebruiken je gegevens uitsluitend om te reageren op je offerteaanvraag.</p>
+
+                <button type="submit" class="submit-button">Offerte Aanvragen</button>
             </div>
             
             <!-- Muziekvoorkeuren Formulier (Intake) -->
@@ -305,7 +314,7 @@
                     <input type="text" id="vibe" class="input-field" placeholder="Bijv. 'Chille lounge tijdens receptie, knallend feest na 22:00'">
                 </div>
                 
-                <div class="submit-button" style="background: #1A2C4B;">Voorkeuren Opslaan</div>
+                <button type="submit" class="submit-button" style="background: #1A2C4B;">Voorkeuren Opslaan</button>
             </div>
             
             <div class="form-specs">
