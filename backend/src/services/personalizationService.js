@@ -587,6 +587,15 @@ function resetCache() {
   cache.del(CITY_CACHE_KEY);
 }
 
+function ping() {
+  return {
+    ok: true,
+    automationWebhookConfigured: Boolean(config.personalization?.automationWebhook),
+    rentGuyConfigured: Boolean(config.integrations?.rentGuy?.enabled),
+    variantsCached: Boolean(cache.get(VARIANT_CACHE_KEY))
+  };
+}
+
 module.exports = {
   getVariantForRequest,
   recordEvent,
@@ -595,5 +604,6 @@ module.exports = {
   resetLogs,
   resetCache,
   loadVariantsConfig,
-  loadCities
+  loadCities,
+  ping
 };

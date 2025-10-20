@@ -400,9 +400,20 @@ function reset() {
   lastUpdated = null;
 }
 
+async function ping() {
+  await ensureInitialized();
+  return {
+    ok: true,
+    queueSize: queue.length,
+    historySize: history.length,
+    lastUpdated
+  };
+}
+
 module.exports = {
   scheduleRun,
   getMonitoringState,
   getVariantAnalytics,
-  reset
+  reset,
+  ping
 };

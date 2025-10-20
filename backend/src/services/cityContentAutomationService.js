@@ -72,6 +72,16 @@ function resolveContext(overrides = {}) {
   return context;
 }
 
+function ping(contextOverrides = {}) {
+  const context = resolveContext(contextOverrides);
+  return {
+    ok: true,
+    seoAutomationConfigured: Boolean(context.seoApiUrl),
+    llmProvider: context.llmProvider,
+    dryRun: Boolean(context.dryRun)
+  };
+}
+
 function normalize(value) {
   if (!value || typeof value !== 'string') {
     return '';
@@ -626,5 +636,6 @@ module.exports = {
   qualityCheck,
   lookupExistingSlugs,
   upsertCityContent,
-  runWorkflow
+  runWorkflow,
+  ping
 };

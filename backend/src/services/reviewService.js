@@ -74,7 +74,16 @@ function resetCache() {
   cache.del(CACHE_KEY);
 }
 
+function ping() {
+  return {
+    ok: true,
+    cacheWarm: Boolean(cache.get(CACHE_KEY)),
+    databaseConfigured: db.isConfigured()
+  };
+}
+
 module.exports = {
   getApprovedReviews,
-  resetCache
+  resetCache,
+  ping
 };

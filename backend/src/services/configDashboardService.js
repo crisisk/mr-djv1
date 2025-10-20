@@ -116,7 +116,17 @@ function getState() {
   return buildState(values);
 }
 
+function ping() {
+  return {
+    ok: true,
+    enabled: Boolean(config.dashboard.enabled),
+    managedKeyCount: config.dashboard.managedKeys.length,
+    storePath: path.relative(process.cwd(), config.dashboard.storePath)
+  };
+}
+
 module.exports = {
   getState,
-  updateValues
+  updateValues,
+  ping
 };
