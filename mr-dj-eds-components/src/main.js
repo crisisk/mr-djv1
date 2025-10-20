@@ -1,5 +1,5 @@
 import tokens from './lib/design-tokens.json';
-import { getDocument } from './lib/environment.js';
+import { getDocument, getWindow } from './lib/environment.js';
 
 const flattenTokens = (object, prefix = []) => {
   return Object.entries(object).reduce((acc, [key, value]) => {
@@ -35,8 +35,27 @@ export const applyDesignTokens = (target = getDocument()?.documentElement ?? nul
     return;
   }
 
+  const windowRef = getWindow();
+  const getExistingValue = (name) => {
+    const inlineValue = target.style.getPropertyValue?.(name)?.trim();
+    if (inlineValue) {
+      return inlineValue;
+    }
+
+    if (windowRef && typeof windowRef.getComputedStyle === 'function') {
+      const computed = windowRef.getComputedStyle(target);
+      return computed?.getPropertyValue(name)?.trim();
+    }
+
+    return '';
+  };
+
   const variables = flattenTokens(tokens);
   Object.entries(variables).forEach(([name, value]) => {
+    if (getExistingValue(name)) {
+      return;
+    }
+
     target.style.setProperty(name, value);
   });
 };
