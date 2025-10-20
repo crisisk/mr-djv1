@@ -112,6 +112,7 @@ let history = [];
 let queue = [];
 let processing = false;
 let lastUpdated = null;
+const requestMetrics = new Map();
 
 function nowIso() {
   return new Date().toISOString();
@@ -517,6 +518,7 @@ function reset() {
   queue = [];
   processing = false;
   lastUpdated = null;
+  requestMetrics.clear();
 }
 
 async function ping() {

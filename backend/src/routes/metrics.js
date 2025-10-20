@@ -1,14 +1,26 @@
 const express = require('express');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
+const observabilityService = require('../services/observabilityService');
 
 const router = express.Router();
+
+async function trackServiceCall(serviceName, fn) {
+  const start = process.hrtime.bigint();
+  try {
+    return await fn();
+  } finally {
+    const durationNs = process.hrtime.bigint() - start;
+    const latencyMs = Number(durationNs) / 1e6;
+    observabilityService.recordRequestMetric(serviceName, latencyMs);
+  }
+}
 
 router.get('/queues', async (_req, res, next) => {
   try {
     const [rentGuy, sevensa] = await Promise.all([
-      rentGuyService.getStatus(),
-      sevensaService.getStatus()
+      trackServiceCall('rentguy', () => rentGuyService.getStatus()),
+      trackServiceCall('sevensa', () => sevensaService.getStatus())
     ]);
 
     const payload = {
@@ -30,6 +42,7 @@ router.get('/queues', async (_req, res, next) => {
           deadLetterCount: sevensa.deadLetterCount
         }
       },
+      requestMetrics: observabilityService.getRequestMetricsSummary(),
       generatedAt: new Date().toISOString()
     };
 
