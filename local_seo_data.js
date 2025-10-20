@@ -1,9 +1,16 @@
-// mr-djv1/mr-dj-eds-components/src/data/local_seo_data.js
+/**
+ * Lokale SEO dataset met automatische pricing-highlights.
+ *
+ * ➤ Zo voeg je een nieuwe stad toe:
+ *   1. Voeg een nieuw object toe aan `baseLocalSeoData` met minimaal `city`, `slug`,
+ *      `localUSP` en een lijst `localVenues` (van meest toegankelijk naar meest premium).
+ *   2. Optioneel: geef een eigen `pricingHighlights`-object mee met sleutels `brons`,
+ *      `zilver` en `goud`. Laat je dit weg, dan worden de highlights automatisch
+ *      opgebouwd op basis van de USP en venues.
+ *   3. De pricing component leest deze highlights en toont ze wanneer een stad actief is.
+ */
 
-export const DEFAULT_LOCAL_SEO_LOCALE = 'nl-NL';
-export const DEFAULT_LOCAL_SEO_SLUG = 'eindhoven';
-
-export const localSeoData = [
+const baseLocalSeoData = [
     {
         city: "Eindhoven",
         province: "Noord-Brabant",
@@ -62,71 +69,76 @@ export const localSeoData = [
     },
 ];
 
+const ensureSentence = (text = "") => {
+    const trimmed = text.trim();
+    if (!trimmed) {
+        return "";
+    }
+    return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+};
+
+const formatVenueList = (venues = []) => {
+    const filtered = venues.filter(Boolean);
+    if (filtered.length === 0) {
+        return "";
+    }
+    if (filtered.length === 1) {
+        return filtered[0];
+    }
+
+    const last = filtered[filtered.length - 1];
+    const rest = filtered.slice(0, -1);
+
+    return `${rest.join(', ')} en ${last}`;
+};
+
+// Brons = toegankelijke locaties, Zilver = lokale USP, Goud = iconische/premium locaties.
+const buildPricingHighlights = ({ city, localUSP, localVenues = [] }) => {
+    const accessibleVenues = localVenues.slice(0, 2);
+    const premiumVenues = localVenues.length > 2 ? localVenues.slice(-2) : accessibleVenues;
+
+    const accessibleText = formatVenueList(accessibleVenues);
+    const premiumText = formatVenueList(premiumVenues);
+    const uspSentence = ensureSentence(localUSP);
+
+    return {
+        brons: accessibleText
+            ? `Soepele set-up voor intieme feesten bij ${accessibleText}.`
+            : `Soepele set-up voor lokale feesten in ${city}.`,
+        zilver: `${uspSentence} Perfect voor bruiloften en bedrijfsfeesten in ${city}.`,
+        goud: premiumText
+            ? `Premium showbeleving voor iconische locaties zoals ${premiumText}.`
+            : `Premium showbeleving voor iconische locaties in ${city}.`,
+    };
+};
+
+export const localSeoData = baseLocalSeoData.map((entry) =>
+    entry.pricingHighlights
+        ? entry
+        : {
+              ...entry,
+              pricingHighlights: buildPricingHighlights(entry),
+          }
+);
+
 // Function to find data by slug, useful for routing
 export const getLocalSeoDataBySlug = (slug) => {
-    if (!slug) {
+    return localSeoData.find((data) => data.slug === slug);
+};
+
+export const getLocalizedLocalSeoDataBySlug = (slug, locale = DEFAULT_LOCALE) => {
+    const entry = getLocalSeoDataBySlug(slug);
+    if (!entry) {
         return undefined;
     }
 
-    const normalizedSlug = slug.toLowerCase();
-    return localSeoData.find(data => data.slug.toLowerCase() === normalizedSlug);
-};
-
-const normalize = (value) => (typeof value === 'string' ? value.toLowerCase() : undefined);
-
-const getDefaultEntry = () =>
-    localSeoData.find((entry) => entry.isDefault) || getLocalSeoDataBySlug(DEFAULT_LOCAL_SEO_SLUG) || localSeoData[0];
-
-const entrySupportsLocale = (entry, locale) => {
-    if (!locale) {
-        return false;
-    }
-
-    return Array.isArray(entry.locales)
-        ? entry.locales.map(normalize).includes(locale)
-        : false;
-};
-
-const findByLocale = (locale) => {
-    const normalizedLocale = normalize(locale);
-    if (!normalizedLocale) {
-        return [];
-    }
-
-    return localSeoData.filter((entry) => entrySupportsLocale(entry, normalizedLocale));
-};
-
-const pickBySlug = (entries, slug) => {
-    if (!slug || !entries?.length) {
-        return undefined;
-    }
-
-    const normalizedSlug = normalize(slug);
-    return entries.find((entry) => normalize(entry.slug) === normalizedSlug);
-};
-
-export const selectLocalSeoContent = ({
-    locale,
-    fallbackLocale = DEFAULT_LOCAL_SEO_LOCALE,
-    citySlug,
-} = {}) => {
-    const normalizedLocale = normalize(locale);
-    const normalizedFallbackLocale = normalize(fallbackLocale);
-    const normalizedSlug = normalize(citySlug);
-
-    const primaryMatches = findByLocale(normalizedLocale);
-    const fallbackMatches =
-        normalizedFallbackLocale && normalizedFallbackLocale !== normalizedLocale
-            ? findByLocale(normalizedFallbackLocale)
-            : [];
-
-    return (
-        pickBySlug(primaryMatches, normalizedSlug) ||
-        primaryMatches[0] ||
-        pickBySlug(fallbackMatches, normalizedSlug) ||
-        fallbackMatches[0] ||
-        pickBySlug(localSeoData, normalizedSlug) ||
-        getDefaultEntry()
-    );
+    return {
+        ...entry,
+        localUSP: resolveLocalizedValue(entry.localUSP, locale),
+        localReviews: resolveLocalizedValue(entry.localReviews, locale),
+        localVenues: resolveLocalizedList(entry.localVenues, locale),
+        seoTitle: resolveLocalizedValue(entry.seoTitle, locale),
+        seoDescription: resolveLocalizedValue(entry.seoDescription, locale),
+    };
 };
 

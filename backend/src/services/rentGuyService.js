@@ -1,6 +1,8 @@
 const { randomUUID, createHash } = require('crypto');
 const { createDurableQueue } = require('../lib/durableQueue');
 const { logger } = require('../lib/logger');
+const config = require('../config');
+const featureFlags = require('../lib/featureFlags');
 
 /**
  * @typedef {Object} RentGuyDeliveryMeta
@@ -95,7 +97,12 @@ function getTimeoutMs() {
 }
 
 function isConfigured() {
-  return Boolean(getBaseUrl() && getApiKey());
+  if (!featureFlags.isEnabled('rentguy-integration')) {
+    return false;
+  }
+
+  const enabled = Boolean(config.integrations?.rentGuy?.enabled);
+  return enabled && Boolean(getBaseUrl() && getApiKey());
 }
 
 function buildHeaders() {
@@ -180,14 +187,28 @@ function computeQueueSize(counts) {
   return (counts.waiting || 0) + (counts.delayed || 0);
 }
 
+function sanitizeMeta(meta = {}) {
+  if (!meta || typeof meta !== 'object') {
+    return {};
+  }
+
+  const { forceQueue, forceQueueReason, ...rest } = meta;
+  if (forceQueueReason && !rest.queueReason) {
+    rest.queueReason = forceQueueReason;
+  }
+
+  return rest;
+}
+
 async function enqueue(resource, payload, meta = {}) {
-  const dedupeKey = meta.dedupeKey || buildDedupeKey(resource, payload);
+  const sanitizedMeta = sanitizeMeta(meta);
+  const dedupeKey = sanitizedMeta.dedupeKey || buildDedupeKey(resource, payload);
   await queue.addJob(
     {
-      id: meta.id || randomUUID(),
+      id: sanitizedMeta.id || randomUUID(),
       resource,
       payload,
-      meta
+      meta: sanitizedMeta
     },
     { dedupeKey }
   );
@@ -196,8 +217,20 @@ async function enqueue(resource, payload, meta = {}) {
 }
 
 async function tryImmediateDelivery(resource, payload, meta = {}) {
+  const sanitizedMeta = sanitizeMeta(meta);
+
+  if (meta.forceQueue) {
+    const queueSize = await enqueue(resource, payload, sanitizedMeta);
+    return {
+      delivered: false,
+      queued: true,
+      reason: meta.forceQueueReason || 'forced-queue',
+      queueSize
+    };
+  }
+
   if (!isConfigured()) {
-    const queueSize = await enqueue(resource, payload, meta);
+    const queueSize = await enqueue(resource, payload, sanitizedMeta);
     return { delivered: false, queued: true, reason: 'not-configured', queueSize };
   }
 
@@ -218,7 +251,7 @@ async function tryImmediateDelivery(resource, payload, meta = {}) {
       attempts: 1
     };
     logger.warn({ err: error, resource }, 'RentGuy delivery deferred to queue');
-    const queueSize = await enqueue(resource, payload, meta);
+    const queueSize = await enqueue(resource, payload, sanitizedMeta);
     return { delivered: false, queued: true, reason: 'delivery-failed', queueSize };
   }
 }
