@@ -89,6 +89,19 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       errors.eventType = 'Selecteer een type evenement';
     }
 
+    // Event date validation (optional, but must be in the future when provided)
+    if (formData.eventDate) {
+      const selectedDate = new Date(`${formData.eventDate}T00:00:00`);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (Number.isNaN(selectedDate.getTime())) {
+        errors.eventDate = 'Ongeldige datum';
+      } else if (selectedDate < today) {
+        errors.eventDate = 'Datum moet in de toekomst liggen';
+      }
+    }
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -105,10 +118,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
     // Clear field error when user starts typing
     if (fieldErrors[name]) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        [name]: null,
-      }));
+      setFieldErrors((prev) => {
+        const updatedErrors = { ...prev };
+        delete updatedErrors[name];
+        return updatedErrors;
+      });
     }
   };
 
@@ -334,6 +348,8 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             style={getInputStyle(Boolean(fieldErrors.name))}
             className="focus:outline-none"
             placeholder="Jouw naam"
+            aria-invalid={Boolean(fieldErrors.name)}
+            aria-describedby={fieldErrors.name ? 'name-error' : undefined}
           />
           {fieldErrors.name && <p style={helperTextStyle}>{fieldErrors.name}</p>}
         </div>
@@ -353,6 +369,8 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             style={getInputStyle(Boolean(fieldErrors.email))}
             className="focus:outline-none"
             placeholder="jouw@email.nl"
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
           />
           {fieldErrors.email && <p style={helperTextStyle}>{fieldErrors.email}</p>}
         </div>
@@ -424,6 +442,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             style={getInputStyle(false)}
             className="focus:outline-none"
           />
+          {fieldErrors.eventDate && (
+            <p id="eventDate-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.eventDate}
+            </p>
+          )}
         </div>
 
         {/* Message */}
@@ -441,6 +464,8 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             style={textareaStyle}
             className="focus:outline-none"
             placeholder="Vertel ons meer over jouw evenement..."
+            aria-invalid={Boolean(fieldErrors.message)}
+            aria-describedby={fieldErrors.message ? 'message-error' : undefined}
           />
           {fieldErrors.message && <p style={helperTextStyle}>{fieldErrors.message}</p>}
         </div>
