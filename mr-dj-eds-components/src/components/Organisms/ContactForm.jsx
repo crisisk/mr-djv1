@@ -89,6 +89,19 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       errors.eventType = 'Selecteer een type evenement';
     }
 
+    // Event date validation (optional, but must be in the future when provided)
+    if (formData.eventDate) {
+      const selectedDate = new Date(`${formData.eventDate}T00:00:00`);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (Number.isNaN(selectedDate.getTime())) {
+        errors.eventDate = 'Ongeldige datum';
+      } else if (selectedDate < today) {
+        errors.eventDate = 'Datum moet in de toekomst liggen';
+      }
+    }
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -105,10 +118,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
     // Clear field error when user starts typing
     if (fieldErrors[name]) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        [name]: null,
-      }));
+      setFieldErrors((prev) => {
+        const updatedErrors = { ...prev };
+        delete updatedErrors[name];
+        return updatedErrors;
+      });
     }
   };
 
@@ -231,8 +245,14 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
               fieldErrors.name ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="Jouw naam"
+            aria-invalid={Boolean(fieldErrors.name)}
+            aria-describedby={fieldErrors.name ? 'name-error' : undefined}
           />
-          {fieldErrors.name && <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>}
+          {fieldErrors.name && (
+            <p id="name-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.name}
+            </p>
+          )}
         </div>
 
         {/* Email */}
@@ -250,8 +270,14 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
               fieldErrors.email ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="jouw@email.nl"
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
           />
-          {fieldErrors.email && <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>}
+          {fieldErrors.email && (
+            <p id="email-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.email}
+            </p>
+          )}
         </div>
 
         {/* Phone */}
@@ -294,6 +320,8 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
               fieldErrors.eventType ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
+            aria-invalid={Boolean(fieldErrors.eventType)}
+            aria-describedby={fieldErrors.eventType ? 'eventType-error' : undefined}
           >
             <option value="">Selecteer type evenement</option>
             <option value="bruiloft">Bruiloft</option>
@@ -303,7 +331,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             <option value="feest">Algemeen Feest</option>
             <option value="anders">Anders</option>
           </select>
-          {fieldErrors.eventType && <p className="text-red-500 text-sm mt-1">{fieldErrors.eventType}</p>}
+          {fieldErrors.eventType && (
+            <p id="eventType-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.eventType}
+            </p>
+          )}
         </div>
 
         {/* Event Date */}
@@ -318,8 +350,17 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             value={formData.eventDate}
             onChange={handleChange}
             min={new Date().toISOString().split('T')[0]}
-            className="w-full px-4 py-2 border border-neutral-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
+              fieldErrors.eventDate ? 'border-red-500' : 'border-neutral-gray-300'
+            }`}
+            aria-invalid={Boolean(fieldErrors.eventDate)}
+            aria-describedby={fieldErrors.eventDate ? 'eventDate-error' : undefined}
           />
+          {fieldErrors.eventDate && (
+            <p id="eventDate-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.eventDate}
+            </p>
+          )}
         </div>
 
         {/* Message */}
@@ -337,8 +378,14 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
               fieldErrors.message ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="Vertel ons meer over jouw evenement..."
+            aria-invalid={Boolean(fieldErrors.message)}
+            aria-describedby={fieldErrors.message ? 'message-error' : undefined}
           />
-          {fieldErrors.message && <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>}
+          {fieldErrors.message && (
+            <p id="message-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.message}
+            </p>
+          )}
         </div>
 
         {HCAPTCHA_SITE_KEY && (
