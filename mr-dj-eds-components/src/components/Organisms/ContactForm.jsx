@@ -392,8 +392,9 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             style={getInputStyle(Boolean(fieldErrors.phone))}
             className="focus:outline-none"
             placeholder="+31 6 12345678"
+            aria-required="true"
             aria-invalid={Boolean(fieldErrors.phone)}
-            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+            aria-describedby={fieldErrors.phone ? 'contact-phone-error' : undefined}
           />
           {fieldErrors.phone && (
             <p id="phone-error" style={helperTextStyle}>
