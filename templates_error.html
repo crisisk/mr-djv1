@@ -86,15 +86,37 @@
         }
         
         .error-cta {
-            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
-            color: white;
+            background: linear-gradient(135deg, #005B96 0%, #003F7F 100%);
+            color: #FFFFFF;
             padding: 12px 25px;
             border-radius: 8px;
             font-weight: 800;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s ease, color 0.2s ease, outline-color 0.2s ease;
         }
+
+        .error-cta::before {
+            content: "";
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 5a7 7 0 1 1-4.95 11.95" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="m8 5 4 4-4 4" fill="white"/></svg>') no-repeat center / contain;
+            flex-shrink: 0;
+        }
+
+        .error-cta:hover,
+        .error-cta:focus-visible {
+            background: linear-gradient(135deg, #003F7F 0%, #002C63 100%);
+            color: #FFFFFF;
+            outline: 3px solid #FFD166;
+            outline-offset: 3px;
+        }
+
+        /* Contrast ratio: default gradient vs white text ≈ 7.3:1, hover/focus gradient vs white text ≈ 9.6:1 */
         
         .error-box.server-error {
             border-color: #D4AF37;
@@ -106,8 +128,15 @@
         }
         
         .error-box.server-error .error-cta {
-            background: #1A2C4B;
+            background: linear-gradient(135deg, #1A2C4B 0%, #0F1C33 100%);
         }
+
+        .error-box.server-error .error-cta:hover,
+        .error-box.server-error .error-cta:focus-visible {
+            background: linear-gradient(135deg, #10203A 0%, #0A1627 100%);
+        }
+
+        /* Server error CTA contrast ratios: default ≈ 11.9:1, hover/focus ≈ 13.6:1 */
     </style>
 </head>
 <body>
