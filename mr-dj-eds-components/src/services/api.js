@@ -23,13 +23,29 @@ async function fetchAPI(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config);
+    let rawBody = '';
+    let data = null;
 
-    // Parse JSON response
-    const data = await response.json();
+    if (response.status !== 204) {
+      rawBody = await response.text();
+
+      if (rawBody) {
+        try {
+          data = JSON.parse(rawBody);
+        } catch {
+          data = rawBody;
+        }
+      }
+    }
 
     // Check for HTTP errors
     if (!response.ok) {
-      throw new Error(data.message || data.error || `HTTP Error: ${response.status}`);
+      const message =
+        data && typeof data === 'object'
+          ? data.message || data.error
+          : rawBody || `HTTP Error: ${response.status}`;
+
+      throw new Error(message || `HTTP Error: ${response.status}`);
     }
 
     return data;
@@ -37,6 +53,9 @@ async function fetchAPI(endpoint, options = {}) {
     // Network errors or JSON parse errors
     if (error instanceof TypeError) {
       throw new Error('Netwerkfout: Kan geen verbinding maken met de server');
+    }
+    if (error instanceof SyntaxError) {
+      throw new Error('Server antwoordde met ongeldige data');
     }
     throw error;
   }
@@ -101,23 +120,10 @@ export async function submitBooking(bookingData) {
   });
 }
 
-/**
- * Submit quick callback request
- * @param {Object} callbackData - Callback request data
- * @returns {Promise<Object>} API response
- */
-export async function submitCallbackRequest(callbackData) {
-  return fetchAPI('/callback-request', {
-    method: 'POST',
-    body: JSON.stringify(callbackData),
-  });
-}
-
 export default {
   submitContactForm,
   submitCallbackRequest,
   getPackages,
   checkHealth,
   submitBooking,
-  submitCallbackRequest,
 };
