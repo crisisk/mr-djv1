@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { submitCallbackRequest } from '../../services/api.js';
 import { trackFormSubmission } from '../../utils/trackConversion';
+import { getWindow } from '../../lib/environment.js';
 
 /**
  * QuickCallbackForm - Simplified callback request form
@@ -80,14 +81,15 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     setIsSubmitting(true);
 
     try {
-      await submitCallbackRequest(formData);
+      await submitCallbackRequest(payload);
 
       // Track successful submission
-      trackFormSubmission(variant, formData.eventType, 'callback');
+      trackFormSubmission(variant, payload.eventType, 'callback');
 
-      if (typeof window !== 'undefined') {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
+      const browser = getWindow();
+      if (browser) {
+        browser.dataLayer = browser.dataLayer || [];
+        browser.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
           event_type: formData.eventType,
