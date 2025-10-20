@@ -1,3 +1,8 @@
+const { buildRequiredEnv } = require('../testUtils/env');
+
+const ORIGINAL_ENV = { ...process.env };
+process.env = { ...ORIGINAL_ENV, ...buildRequiredEnv() };
+
 const {
   getVariantForRequest,
   resetLogs,
@@ -9,6 +14,10 @@ describe('personalizationService', () => {
   beforeEach(async () => {
     resetLogs();
     await resetCache();
+  });
+
+  afterAll(() => {
+    process.env = ORIGINAL_ENV;
   });
 
   it('returns the default variant when no keywords are supplied', async () => {

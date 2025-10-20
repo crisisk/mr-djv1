@@ -3,6 +3,82 @@ const managedEnv = require('./lib/managedEnv');
 managedEnv.loadToProcessEnv();
 require('dotenv').config();
 
+const REQUIRED_ENV_GROUPS = [
+  {
+    keys: ['RENTGUY_API_BASE_URL', 'RENTGUY_API_KEY'],
+    description: 'RentGuy integration (RENTGUY_API_BASE_URL and RENTGUY_API_KEY)'
+  },
+  {
+    keys: ['SEVENSA_SUBMIT_URL'],
+    description: 'Sevensa lead automation (SEVENSA_SUBMIT_URL)'
+  },
+  {
+    keys: ['N8N_PERSONALIZATION_WEBHOOK_URL'],
+    description: 'personalization automation webhook (N8N_PERSONALIZATION_WEBHOOK_URL)'
+  },
+  {
+    keys: ['SEO_AUTOMATION_API_URL', 'SEO_AUTOMATION_API_KEY', 'SEO_AUTOMATION_KEYWORDSET_ID'],
+    description: 'SEO automation workflow (SEO_AUTOMATION_*)'
+  },
+  {
+    keys: ['CITY_AUTOMATION_LLM_PROVIDER', 'CITY_AUTOMATION_LLM_MODEL'],
+    description: 'city content automation LLM configuration (CITY_AUTOMATION_LLM_*)'
+  }
+];
+
+const AT_LEAST_ONE_REQUIREMENTS = [
+  {
+    keys: ['CITY_AUTOMATION_LLM_API_KEY', 'OPENAI_API_KEY'],
+    description:
+      'city content automation LLM access (provide CITY_AUTOMATION_LLM_API_KEY or OPENAI_API_KEY)'
+  }
+];
+
+function hasValue(value) {
+  if (value === undefined || value === null) {
+    return false;
+  }
+
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+
+  return true;
+}
+
+function assertEnvVariable(key, description) {
+  if (!hasValue(process.env[key])) {
+    throw new Error(`Missing required environment variable "${key}" for ${description}.`);
+  }
+}
+
+function validateRequiredEnvironment() {
+  for (const requirement of REQUIRED_ENV_GROUPS) {
+    for (const key of requirement.keys) {
+      assertEnvVariable(key, requirement.description);
+    }
+  }
+
+  for (const requirement of AT_LEAST_ONE_REQUIREMENTS) {
+    const hasAny = requirement.keys.some((key) => hasValue(process.env[key]));
+    if (!hasAny) {
+      const primary = requirement.keys[0];
+      throw new Error(`Missing required environment variable "${primary}" for ${requirement.description}.`);
+    }
+  }
+
+  const dashboardExplicitlyEnabled = process.env.CONFIG_DASHBOARD_ENABLED === 'true';
+  const dashboardCredentialsConfigured =
+    hasValue(process.env.CONFIG_DASHBOARD_USER) || hasValue(process.env.CONFIG_DASHBOARD_PASS);
+
+  if (dashboardExplicitlyEnabled || dashboardCredentialsConfigured) {
+    assertEnvVariable('CONFIG_DASHBOARD_USER', 'configuration dashboard authentication');
+    assertEnvVariable('CONFIG_DASHBOARD_PASS', 'configuration dashboard authentication');
+  }
+}
+
+validateRequiredEnvironment();
+
 const DEFAULT_PORT = 3000;
 const DEFAULT_HOST = '0.0.0.0';
 const DEFAULT_RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes

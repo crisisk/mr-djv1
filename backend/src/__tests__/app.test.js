@@ -1,3 +1,8 @@
+const { buildRequiredEnv } = require('../testUtils/env');
+
+const ORIGINAL_ENV = { ...process.env };
+process.env = { ...ORIGINAL_ENV, ...buildRequiredEnv() };
+
 const app = require('../app');
 const config = require('../config');
 const { resetInMemoryStore: resetContactStore } = require('../services/contactService');
@@ -62,6 +67,7 @@ describe('Mister DJ API', () => {
 
   afterAll((done) => {
     server.close(done);
+    process.env = ORIGINAL_ENV;
   });
 
   afterEach(async () => {
