@@ -164,7 +164,11 @@ Met de uitgebreide automatisering, configuratie-dashboard, RentGuy-koppeling en 
 
 - **Pricing money page**: `/pricing/` toont alle pakketten als indexeerbare HTML met Offer/Service schema en koppelt direct naar het contactproces.
 - **Local SEO generator**: `node scripts/generate-city-pages.mjs` rendert 12 city-pages op basis van `content/local-seo/cities.json` inclusief cases, venues en FAQ. Draai het script na updates van de JSON.
-- **Realtime consent & analytics**: de `ConsentManager` en design-system componenten sturen granular Consent Mode v2 en DataLayer-events uit voor CRO-metingen.
+- **Realtime consent & analytics**: de `ConsentManager` en design-system componenten sturen granular Consent Mode v2 en DataLayer-events uit voor CRO-metingen, met voor elke toestemmingsbit dezelfde flow: eerst `gtag('consent', 'update', …)`, fallback `dataLayer.push({ event: 'consent_update', … })`.
+  - `ad_storage` ↔ `consent.marketing` → marketingtags alleen laden na toestemming.
+  - `analytics_storage` ↔ `consent.statistics` → activeert meetplannen en CRO dashboards.
+  - `ad_user_data` ↔ `consent.marketing` → verstuurt remarketing-profielen of blokkeert ze.
+  - `ad_personalization` ↔ `consent.marketing` → gate't personalisatie-assets en audience syncing.
 - **Availability checker → API**: de Availability Checker stuurt nu volledige boekingsaanvragen (naam, datum, eventtype, pakket) naar `/api/bookings` zodat RentGuy direct gevoed wordt en succesfouten worden teruggekoppeld in de UI.
 - **Roadmap & KPI framework**: zie [`docs/future-development-plan.md`](docs/future-development-plan.md) voor doorontwikkeling, meetplan en persona journeys.
 - **RentGuy integratie**: backend synchroniseert contact- en bookingdata via [`rentGuyService`](backend/src/services/rentGuyService.js) met fallback queue + `/integrations/rentguy/status` monitor endpoint én dashboard-acties voor status refresh & queue flush.
