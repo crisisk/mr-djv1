@@ -1,28 +1,18 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 const { saveCallbackRequest } = require('../services/callbackRequestService');
+const { callbackRequestSchema } = require('../lib/validation/callbackRequestSchema');
 
 const router = express.Router();
 
-const validations = [
-  body('name').trim().notEmpty().withMessage('Naam is vereist').isLength({ min: 2 }).withMessage('Naam is te kort'),
-  body('phone')
-    .trim()
-    .notEmpty()
-    .withMessage('Telefoonnummer is vereist')
-    .matches(/^[0-9+\s()-]{6,}$/)
-    .withMessage('Ongeldig telefoonnummer'),
-  body('eventType').trim().notEmpty().withMessage('Type evenement is vereist').isLength({ max: 255 })
-];
-
-router.post('/', validations, async (req, res, next) => {
+router.post('/', callbackRequestSchema, async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(422).json({
       error: 'Validatie mislukt',
       details: errors.array().map((err) => ({
-        field: err.param,
+        field: err.path || err.param,
         message: err.msg
       }))
     });

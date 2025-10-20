@@ -1,17 +1,7 @@
-jest.mock('../lib/db', () => ({
-  isConfigured: jest.fn(() => false),
-  runQuery: jest.fn()
-}));
+const { buildRequiredEnv } = require('../testUtils/env');
 
-jest.mock('../services/rentGuyService', () => ({
-  syncPersonalizationEvent: jest.fn(() =>
-    Promise.resolve({ delivered: true, queued: false, queueSize: 0 })
-  )
-}));
-
-const db = require('../lib/db');
-const rentGuyService = require('../services/rentGuyService');
-const config = require('../config');
+const ORIGINAL_ENV = { ...process.env };
+process.env = { ...ORIGINAL_ENV, ...buildRequiredEnv() };
 
 const {
   getVariantForRequest,
@@ -28,26 +18,12 @@ const ORIGINAL_FETCH = global.fetch;
 
 describe('personalizationService', () => {
   beforeEach(async () => {
-    jest.clearAllMocks();
     resetLogs();
-    resetCache();
-    await resetAutomationQueue();
-    db.isConfigured.mockReturnValue(false);
-    rentGuyService.syncPersonalizationEvent.mockResolvedValue({
-      delivered: true,
-      queued: false,
-      queueSize: 0
-    });
+    await resetCache();
   });
 
-  afterEach(async () => {
-    config.personalization.automationWebhook = ORIGINAL_WEBHOOK;
-    if (ORIGINAL_FETCH) {
-      global.fetch = ORIGINAL_FETCH;
-    } else {
-      delete global.fetch;
-    }
-    await resetAutomationQueue();
+  afterAll(() => {
+    process.env = ORIGINAL_ENV;
   });
 
   it('returns the default variant when no keywords are supplied', async () => {
