@@ -1,10 +1,28 @@
 "use client";
 import * as React from "react"
-import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useInView } from "@/hooks/useInView"
+
+let emblaHookCache = null
+let emblaHookPromise = null
+
+function loadEmblaHook() {
+  if (emblaHookCache) {
+    return Promise.resolve(emblaHookCache)
+  }
+
+  if (!emblaHookPromise) {
+    emblaHookPromise = import("embla-carousel-react").then((module) => {
+      emblaHookCache = module.default
+      return emblaHookCache
+    })
+  }
+
+  return emblaHookPromise
+}
 
 const CarouselContext = React.createContext(null)
 
@@ -18,6 +36,93 @@ function useCarousel() {
   return context
 }
 
+function createCarouselComponent(useEmblaCarousel) {
+  return function CarouselWithEmbla({
+    orientation = "horizontal",
+    opts,
+    setApi,
+    plugins,
+    className,
+    children,
+    observerRef,
+    ...props
+  }) {
+    const [carouselRef, api] = useEmblaCarousel({
+      ...opts,
+      axis: orientation === "horizontal" ? "x" : "y",
+    }, plugins)
+    const [canScrollPrev, setCanScrollPrev] = React.useState(false)
+    const [canScrollNext, setCanScrollNext] = React.useState(false)
+
+    const onSelect = React.useCallback((emblaApi) => {
+      if (!emblaApi) return
+      setCanScrollPrev(emblaApi.canScrollPrev())
+      setCanScrollNext(emblaApi.canScrollNext())
+    }, [])
+
+    const scrollPrev = React.useCallback(() => {
+      api?.scrollPrev()
+    }, [api])
+
+    const scrollNext = React.useCallback(() => {
+      api?.scrollNext()
+    }, [api])
+
+    const handleKeyDown = React.useCallback((event) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault()
+        scrollPrev()
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault()
+        scrollNext()
+      }
+    }, [scrollPrev, scrollNext])
+
+    React.useEffect(() => {
+      if (!api || !setApi) return
+      setApi(api)
+    }, [api, setApi])
+
+    React.useEffect(() => {
+      if (!api) return
+      onSelect(api)
+      api.on("reInit", onSelect)
+      api.on("select", onSelect)
+
+      return () => {
+        api.off("select", onSelect)
+        api.off("reInit", onSelect)
+      }
+    }, [api, onSelect])
+
+    return (
+      <CarouselContext.Provider
+        value={{
+          carouselRef,
+          api,
+          opts,
+          orientation:
+            orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+          scrollPrev,
+          scrollNext,
+          canScrollPrev,
+          canScrollNext,
+        }}>
+        <div
+          ref={observerRef}
+          onKeyDownCapture={handleKeyDown}
+          className={cn("relative", className)}
+          role="region"
+          aria-roledescription="carousel"
+          data-slot="carousel"
+          {...props}>
+          {children}
+        </div>
+      </CarouselContext.Provider>
+    )
+  }
+}
+
 function Carousel({
   orientation = "horizontal",
   opts,
@@ -25,79 +130,67 @@ function Carousel({
   plugins,
   className,
   children,
+  fallback,
   ...props
 }) {
-  const [carouselRef, api] = useEmblaCarousel({
-    ...opts,
-    axis: orientation === "horizontal" ? "x" : "y",
-  }, plugins)
-  const [canScrollPrev, setCanScrollPrev] = React.useState(false)
-  const [canScrollNext, setCanScrollNext] = React.useState(false)
+  const { ref, isInView } = useInView({ rootMargin: "0px 0px 160px 0px" })
+  const [CarouselImpl, setCarouselImpl] = React.useState(() =>
+    emblaHookCache ? createCarouselComponent(emblaHookCache) : null
+  )
 
-  const onSelect = React.useCallback((api) => {
-    if (!api) return
-    setCanScrollPrev(api.canScrollPrev())
-    setCanScrollNext(api.canScrollNext())
-  }, [])
-
-  const scrollPrev = React.useCallback(() => {
-    api?.scrollPrev()
-  }, [api])
-
-  const scrollNext = React.useCallback(() => {
-    api?.scrollNext()
-  }, [api])
-
-  const handleKeyDown = React.useCallback((event) => {
-    if (event.key === "ArrowLeft") {
-      event.preventDefault()
-      scrollPrev()
-    } else if (event.key === "ArrowRight") {
-      event.preventDefault()
-      scrollNext()
+  React.useEffect(() => {
+    if (CarouselImpl || !isInView) {
+      return
     }
-  }, [scrollPrev, scrollNext])
 
-  React.useEffect(() => {
-    if (!api || !setApi) return
-    setApi(api)
-  }, [api, setApi])
+    let active = true
 
-  React.useEffect(() => {
-    if (!api) return
-    onSelect(api)
-    api.on("reInit", onSelect)
-    api.on("select", onSelect)
+    loadEmblaHook().then((hook) => {
+      if (!active) {
+        return
+      }
+
+      setCarouselImpl(() => createCarouselComponent(hook))
+    })
 
     return () => {
-      api?.off("select", onSelect)
-    };
-  }, [api, onSelect])
+      active = false
+    }
+  }, [CarouselImpl, isInView])
 
-  return (
-    <CarouselContext.Provider
-      value={{
-        carouselRef,
-        api: api,
-        opts,
-        orientation:
-          orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
-        scrollPrev,
-        scrollNext,
-        canScrollPrev,
-        canScrollNext,
-      }}>
+  if (!CarouselImpl) {
+    return (
       <div
-        onKeyDownCapture={handleKeyDown}
-        className={cn("relative", className)}
+        ref={ref}
+        className={cn(
+          "relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-neutral-gray-200 bg-neutral-light/40 text-sm text-neutral-gray-500",
+          className
+        )}
         role="region"
         aria-roledescription="carousel"
+        aria-live="polite"
+        aria-busy="true"
         data-slot="carousel"
         {...props}>
-        {children}
+        {typeof fallback === "function"
+          ? fallback()
+          : fallback ?? "Carousel wordt geladen…"}
       </div>
-    </CarouselContext.Provider>
-  );
+    )
+  }
+
+  return (
+    <CarouselImpl
+      orientation={orientation}
+      opts={opts}
+      setApi={setApi}
+      plugins={plugins}
+      className={className}
+      observerRef={ref}
+      {...props}>
+      {children}
+    </CarouselImpl>
+  )
 }
 
 function CarouselContent({

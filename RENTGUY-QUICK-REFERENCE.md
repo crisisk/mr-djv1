@@ -31,7 +31,7 @@ cd /opt/rentguy/onboarding/mr-dj-onboarding-enhanced
 sed -i 's/onboarding\.rentguy/mr-dj.rentguy.nl/g' docker-compose.yml
 
 # 2. Deploy
-docker-compose build && docker-compose up -d
+docker compose build && docker compose up -d
 
 # 3. Verify
 curl -I https://mr-dj.rentguy.nl
@@ -321,7 +321,7 @@ docker exec mr-dj-postgres psql -U mrdj_user -d mrdj_db -c \
 ### Rollback Onboarding Portal
 ```bash
 cd /opt/rentguy/onboarding/mr-dj-onboarding-enhanced
-docker-compose down
+docker compose down
 cp docker-compose.yml.backup docker-compose.yml
 ```
 
@@ -329,8 +329,8 @@ cp docker-compose.yml.backup docker-compose.yml
 ```bash
 cd /opt/mr-dj
 git checkout HEAD^ backend/src/server.js
-docker-compose build mr-dj-backend
-docker-compose restart mr-dj-backend
+docker compose build mr-dj-backend
+docker compose restart mr-dj-backend
 ```
 
 ---

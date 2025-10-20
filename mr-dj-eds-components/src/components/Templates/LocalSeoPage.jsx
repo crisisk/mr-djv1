@@ -7,8 +7,11 @@ import ContactForm from '../Organisms/ContactForm.jsx';
 import { useHeroImage } from '../../hooks/useReplicateImage.js';
 import { localSeoData, getLocalSeoDataBySlug } from '../../data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from '../../data/local_seo_bruiloft_data.js';
+import { pricingPackages } from '../../data/pricingPackages.js';
+import { generateOfferCatalogSchema } from '../../utils/schemaOrg.js';
 import { getWindow } from '../../lib/environment.js';
-import { translate, getDefaultLocale } from '../../lib/i18n.js';
+import { generateBreadcrumbSchema } from '../../utils/schemaOrg.js';
+import { createLocalSeoBreadcrumbs } from '../../utils/breadcrumbs.js';
 
 const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, locale = getDefaultLocale() }) => {
   const hasData = Boolean(data);
@@ -125,6 +128,15 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, loca
   const origin = browser?.location?.origin ?? 'https://www.mrdj.nl';
   const canonicalUrl = `${origin}${canonicalPath}`;
 
+  const offerCatalogSchema = useMemo(
+    () =>
+      generateOfferCatalogSchema({
+        packages: pricingPackages,
+        pagePath: canonicalPath,
+      }),
+    [canonicalPath],
+  );
+
   const hasCounterpart = useMemo(() => {
     if (!hasData) {
       return false;
@@ -225,8 +237,29 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, loca
         url: origin,
       },
       url: canonicalUrl,
+      offers: offerCatalogSchema ? { '@id': offerCatalogSchema['@id'] } : undefined,
     });
-  }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, origin, province]);
+  }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, offerCatalogSchema, origin, province]);
+
+  const breadcrumbs = useMemo(() => {
+    if (!hasData) {
+      return [];
+    }
+
+    return createLocalSeoBreadcrumbs({
+      city,
+      slug,
+      isBruiloft: isBruiloftPage,
+    });
+  }, [city, hasData, isBruiloftPage, slug]);
+
+  const breadcrumbSchema = useMemo(() => {
+    if (!breadcrumbs.length) {
+      return null;
+    }
+
+    return JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+  }, [breadcrumbs]);
 
   if (!hasData) {
     return <div className="p-10 text-center text-red-500">Geen lokale SEO data gevonden.</div>;
@@ -242,6 +275,7 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, loca
         <link rel="canonical" href={canonicalUrl} />
         {localBusinessSchema && <script type="application/ld+json">{localBusinessSchema}</script>}
         {eventSchema && <script type="application/ld+json">{eventSchema}</script>}
+        {breadcrumbSchema && <script type="application/ld+json">{breadcrumbSchema}</script>}
       </Helmet>
 
       <HeroSection
