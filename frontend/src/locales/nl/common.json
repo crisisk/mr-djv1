@@ -1,0 +1,46 @@
+{
+  "app": {
+    "title": "Vite + React",
+    "counterLabel": "teller staat op {{count}}",
+    "editPrompt": "Bewerk <code>src/App.tsx</code> en sla op om HMR te testen",
+    "docsPrompt": "Klik op de Vite- en React-logo's om meer te leren",
+    "viteLogoAlt": "Vite-logo",
+    "reactLogoAlt": "React-logo"
+  },
+  "hero": {
+    "title": "Energieke muziek voor een onvergetelijk evenement",
+    "subtitle": "Boek ons DJ- en saxofonistenduo en houd de dansvloer de hele avond vol.",
+    "ctaPrimaryText": "Boek nu",
+    "ctaSecondaryText": "Meer informatie"
+  },
+  "testimonials": {
+    "title": "Wat klanten zeggen",
+    "items": [
+      {
+        "quote": "De combinatie van DJ en saxofonist was het hoogtepunt van onze bruiloft. De sfeer was onvergetelijk!",
+        "author": "Jan & Marieke",
+        "source": "Bruiloft, Amsterdam",
+        "rating": 5
+      },
+      {
+        "quote": "Professioneel, energiek en ze wisten precies de juiste snaar te raken. Een absolute aanrader voor elk bedrijfsfeest.",
+        "author": "Suzanne van Dijk",
+        "source": "Bedrijfsfeest, Utrecht",
+        "rating": 5
+      },
+      {
+        "quote": "De muziek was perfect afgestemd op onze gasten. De saxofonist maakte het helemaal af!",
+        "author": "Mark de Vries",
+        "source": "Verjaardagsfeest, Eindhoven",
+        "rating": 5
+      }
+    ]
+  },
+  "language": {
+    "label": "Taal",
+    "options": {
+      "en": "Engels",
+      "nl": "Nederlands"
+    }
+  }
+}
