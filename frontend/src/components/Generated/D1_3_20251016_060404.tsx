@@ -1,5 +1,5 @@
 // components/AnimatedCounter.jsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 const AnimatedCounter = ({ end, duration = 2000, suffix = '' }) => {

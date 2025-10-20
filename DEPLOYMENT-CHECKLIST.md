@@ -7,6 +7,13 @@ Date: 2025-10-19
 
 ## Pre-Deployment Verification
 
+### Automated Release Gate ✅
+- [ ] Run the repository-wide readiness script to verify linting, tests and build output:
+  ```bash
+  node scripts/check-release-readiness.mjs
+  ```
+- [ ] Confirm the script reports all required artifacts from `docs/go-live-checklist.md` are present
+
 ### Build Status ✅
 - [x] Build completed successfully (`npm run build`)
 - [x] No console errors

@@ -1,5 +1,5 @@
 // src/components/marketing/YouTubeAdTracker.jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 const YouTubeAdTracker = () => {
   useEffect(() => {
@@ -11,7 +11,7 @@ const YouTubeAdTracker = () => {
       document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag(...args){dataLayer.push(args);} 
       gtag('js', new Date());
       gtag('config', 'AW-CONVERSION_ID');
     };

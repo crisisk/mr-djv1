@@ -9,7 +9,8 @@ services:
     container_name: mr-dj-eds-frontend
     restart: unless-stopped
     depends_on:
-      - mr-dj-backend
+      mr-dj-backend:
+        condition: service_healthy
     networks:
       - web # Use the existing 'web' network
     labels:
@@ -36,11 +37,21 @@ services:
       DATABASE_URL: postgresql://mrdj_user:mrdj_secure_password_2025@mr-dj-postgres:5432/mrdj_db
       JWT_SECRET: mrdj_jwt_secret_key_2025_very_secure
       CORS_ORIGIN: https://mr-dj.sevensa.nl
+      REDIS_URL: redis://:mrdj_redis_password_2025@mr-dj-redis:6379/0
+      REDIS_NAMESPACE: mr-dj
     depends_on:
       mr-dj-postgres:
         condition: service_healthy
+      mr-dj-redis:
+        condition: service_healthy
     networks:
       - web
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mrdj-backend.rule=Host(`mr-dj.sevensa.nl`) && PathPrefix(`/api`)"
@@ -63,7 +74,6 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - web
     healthcheck:
@@ -81,7 +91,7 @@ services:
     networks:
       - web
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "mrdj_redis_password_2025", "ping"]
       interval: 10s
       timeout: 3s
       retries: 5

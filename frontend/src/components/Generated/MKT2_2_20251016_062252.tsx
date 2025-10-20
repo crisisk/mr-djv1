@@ -1,6 +1,6 @@
 // src/components/VideoGallery.jsx
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './VideoGallery.module.css';
 
 const videoContent = [
@@ -10,6 +10,7 @@ const videoContent = [
     description: 'Watch how we set up our premium equipment for events',
     videoUrl: '/videos/setup-process.mp4',
     thumbnail: '/images/setup-thumbnail.jpg',
+    captions: '/captions/setup-process.vtt',
   },
   {
     id: 2,
@@ -17,6 +18,7 @@ const videoContent = [
     description: 'Get an exclusive look at our DJs in action',
     videoUrl: '/videos/behind-scenes.mp4',
     thumbnail: '/images/bts-thumbnail.jpg',
+    captions: '/captions/behind-scenes.vtt',
   },
   // Add more videos as needed
 ];
@@ -47,17 +49,26 @@ const VideoGallery = () => {
                   poster={video.thumbnail}
                 >
                   <source src={video.videoUrl} type="video/mp4" />
+                  <track
+                    kind="captions"
+                    src={video.captions}
+                    label="English captions"
+                    srclang="en"
+                    default
+                  />
                   Your browser does not support video playback.
                 </video>
               </div>
             ) : (
-              <div 
+              <button
                 className={styles.thumbnail}
                 onClick={() => setSelectedVideo(video.id)}
+                type="button"
+                aria-label={`Play ${video.title}`}
               >
                 <img src={video.thumbnail} alt={video.title} />
                 <div className={styles.playButton}>▶</div>
-              </div>
+              </button>
             )}
             <h3>{video.title}</h3>
             <p>{video.description}</p>

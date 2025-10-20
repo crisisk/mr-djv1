@@ -77,22 +77,53 @@
             aspect-ratio: 1 / 1;
             background: #F8FCFF;
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #666;
-            font-weight: 600;
             overflow: hidden;
             position: relative;
         }
-        
+
+        .grid-item::before {
+            content: '';
+            display: block;
+            padding-top: 100%;
+        }
+
         .grid-item.featured {
             grid-column: span 2;
             grid-row: span 2;
-            font-size: 18px;
             background: #1A2C4B;
             color: white;
+        }
+
+        .grid-item .media,
+        .grid-item .media video,
+        .grid-item .media img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .grid-item .media {
+            display: block;
+        }
+
+        .media-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(26, 44, 75, 0.9);
+            color: #FFFFFF;
+        }
+
+        .image-placeholder .media-label {
+            background: rgba(212, 175, 55, 0.9);
+            color: #1A2C4B;
         }
         
         .carousel-gallery {
@@ -115,6 +146,19 @@
             font-weight: 600;
             border: 1px solid #E5E5E5;
             position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-item video,
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-item .media-label {
+            bottom: 8px;
+            left: 8px;
         }
         
         .carousel-controls {
@@ -165,16 +209,77 @@
             <div class="gallery-section">
                 <div class="gallery-title">Masonry Grid Gallery (4x4)</div>
                 <div class="grid-gallery" style="height: 300px;">
-                    <div class="grid-item featured">Featured Video (16:9)</div>
-                    <div class="grid-item image-placeholder">Image 1</div>
-                    <div class="grid-item image-placeholder">Image 2</div>
-                    <div class="grid-item image-placeholder">Image 3</div>
-                    <div class="grid-item image-placeholder">Image 4</div>
-                    <div class="grid-item image-placeholder">Image 5</div>
-                    <div class="grid-item image-placeholder">Image 6</div>
-                    <div class="grid-item image-placeholder">Image 7</div>
-                    <div class="grid-item image-placeholder">Image 8</div>
-                    <div class="grid-item image-placeholder">Image 9</div>
+                    <div class="grid-item featured video-placeholder">
+                        <div class="media">
+                            <video
+                                class="autoplay-video"
+                                data-autoplay="true"
+                                muted
+                                playsinline
+                                loop
+                                preload="none"
+                                poster="https://via.placeholder.com/640x360.png?text=Featured+Video"
+                            >
+                                <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="media-label">Featured Video (16:9)</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+1" alt="Event highlight 1" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 1</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+2" alt="Event highlight 2" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 2</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+3" alt="Event highlight 3" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 3</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+4" alt="Event highlight 4" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 4</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+5" alt="Event highlight 5" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 5</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+6" alt="Event highlight 6" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 6</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+7" alt="Event highlight 7" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 7</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+8" alt="Event highlight 8" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 8</div>
+                    </div>
+                    <div class="grid-item image-placeholder">
+                        <div class="media">
+                            <img src="https://via.placeholder.com/300x300.png?text=Image+9" alt="Event highlight 9" loading="lazy">
+                        </div>
+                        <div class="media-label">Image 9</div>
+                    </div>
                 </div>
             </div>
             
@@ -182,11 +287,48 @@
             <div class="gallery-section" style="position: relative;">
                 <div class="gallery-title">Full-Width Carousel (Auto-Play)</div>
                 <div class="carousel-gallery">
-                    <div class="carousel-item video-placeholder">Video Item 1</div>
-                    <div class="carousel-item image-placeholder">Image Item 2</div>
-                    <div class="carousel-item image-placeholder">Image Item 3</div>
-                    <div class="carousel-item video-placeholder">Video Item 4</div>
-                    <div class="carousel-item image-placeholder">Image Item 5</div>
+                    <div class="carousel-item video-placeholder">
+                        <video
+                            class="autoplay-video"
+                            data-autoplay="true"
+                            muted
+                            playsinline
+                            loop
+                            preload="none"
+                            poster="https://via.placeholder.com/400x225.png?text=Video+1"
+                        >
+                            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="media-label">Video Item 1</div>
+                    </div>
+                    <div class="carousel-item image-placeholder">
+                        <img src="https://via.placeholder.com/400x225.png?text=Image+2" alt="Carousel highlight 2" loading="lazy">
+                        <div class="media-label">Image Item 2</div>
+                    </div>
+                    <div class="carousel-item image-placeholder">
+                        <img src="https://via.placeholder.com/400x225.png?text=Image+3" alt="Carousel highlight 3" loading="lazy">
+                        <div class="media-label">Image Item 3</div>
+                    </div>
+                    <div class="carousel-item video-placeholder">
+                        <video
+                            class="autoplay-video"
+                            data-autoplay="true"
+                            muted
+                            playsinline
+                            loop
+                            preload="none"
+                            poster="https://via.placeholder.com/400x225.png?text=Video+4"
+                        >
+                            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="media-label">Video Item 4</div>
+                    </div>
+                    <div class="carousel-item image-placeholder">
+                        <img src="https://via.placeholder.com/400x225.png?text=Image+5" alt="Carousel highlight 5" loading="lazy">
+                        <div class="media-label">Image Item 5</div>
+                    </div>
                 </div>
                 <div class="carousel-controls">
                     <div class="control-button" style="margin-left: -20px;">&lt;</div>
@@ -196,6 +338,48 @@
             
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var videos = Array.from(document.querySelectorAll('video.autoplay-video[data-autoplay="true"]'));
+
+            if (videos.length === 0) {
+                return;
+            }
+
+            var playVideo = function (video) {
+                var playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(function () {
+                        /* Ignore play promise rejections */
+                    });
+                }
+            };
+
+            if (!('IntersectionObserver' in window)) {
+                videos.forEach(function (video) { return playVideo(video); });
+                return;
+            }
+
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    var video = entry.target;
+                    if (entry.isIntersecting) {
+                        playVideo(video);
+                    } else {
+                        video.pause();
+                        video.currentTime = 0;
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            videos.forEach(function (video) { return observer.observe(video); });
+
+            window.addEventListener('beforeunload', function () {
+                observer.disconnect();
+            });
+        });
+    </script>
 </body>
 </html>
 

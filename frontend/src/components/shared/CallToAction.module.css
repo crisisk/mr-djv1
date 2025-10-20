@@ -1,0 +1,177 @@
+.callToAction {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg, 1.5rem);
+  align-items: center;
+  text-align: center;
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+  color: inherit;
+}
+
+.alignCenter {
+  text-align: center;
+  align-items: center;
+}
+
+.alignLeft {
+  text-align: left;
+  align-items: flex-start;
+}
+
+.alignRight {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.compactSpacing {
+  gap: var(--spacing-md, 1rem);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-secondary-gold, #D4AF37);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.75rem, 1.5vw + 1.25rem, 2.75rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: inherit;
+}
+
+.description {
+  margin: 0;
+  font-size: clamp(1rem, 0.45vw + 0.9rem, 1.25rem);
+  line-height: 1.6;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.75rem);
+  align-items: inherit;
+  text-align: inherit;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm, 0.75rem);
+  justify-content: center;
+}
+
+.alignLeft .buttonGroup {
+  justify-content: flex-start;
+}
+
+.alignRight .buttonGroup {
+  justify-content: flex-end;
+}
+
+.button {
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  padding: 0.85rem 2.25rem;
+  font-size: clamp(1rem, 0.35vw + 0.95rem, 1.125rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  min-width: 10.5rem;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.button:focus-visible {
+  outline: 3px solid rgba(212, 175, 55, 0.55);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.primaryButton {
+  background-color: var(--color-primary-blue, #00AEEF);
+  color: var(--color-neutral-light, #FFFFFF);
+  box-shadow: 0 12px 24px -12px rgba(0, 174, 239, 0.65);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: #0099d4;
+  box-shadow: 0 14px 32px -12px rgba(0, 174, 239, 0.7);
+}
+
+.secondaryButton {
+  background-color: var(--color-secondary-gold, #D4AF37);
+  color: var(--color-neutral-dark, #1A2C4B);
+  box-shadow: 0 12px 24px -12px rgba(212, 175, 55, 0.6);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background-color: #c49c2f;
+  box-shadow: 0 14px 32px -12px rgba(212, 175, 55, 0.65);
+}
+
+.outlineButton {
+  background-color: transparent;
+  color: var(--color-neutral-dark, #1A2C4B);
+  border-color: rgba(26, 44, 75, 0.6);
+}
+
+.outlineButton:hover:not(:disabled) {
+  background-color: rgba(26, 44, 75, 0.08);
+  border-color: rgba(26, 44, 75, 0.8);
+}
+
+.outlineLightButton {
+  background-color: transparent;
+  color: var(--color-neutral-light, #FFFFFF);
+  border-color: rgba(255, 255, 255, 0.65);
+}
+
+.outlineLightButton:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.ghostButton {
+  background-color: transparent;
+  color: inherit;
+}
+
+.ghostButton:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.stackOnMobile .buttonGroup {
+  width: 100%;
+}
+
+.stackOnMobile .buttonGroup > * {
+  flex: 1 1 100%;
+}
+
+@media (min-width: 640px) {
+  .stackOnMobile .buttonGroup > * {
+    flex: 0 0 auto;
+  }
+}

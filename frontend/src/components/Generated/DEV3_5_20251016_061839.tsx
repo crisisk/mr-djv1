@@ -1,5 +1,5 @@
 // src/components/UserBehaviorTracker.jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import posthog from 'posthog-js';
 
 const UserBehaviorTracker = () => {
@@ -15,31 +15,37 @@ const UserBehaviorTracker = () => {
     // Track page views
     posthog.capture('$pageview');
 
-    // Track clicks
-    document.addEventListener('click', (e) => {
+    const handleClick = (e) => {
       const target = e.target;
       if (target.tagName === 'A' || target.tagName === 'BUTTON') {
         posthog.capture('click', { element: target.tagName, text: target.innerText });
       }
-    });
+    };
 
-    // Track form submissions
-    document.addEventListener('submit', (e) => {
+    const handleSubmit = (e) => {
       const form = e.target;
       posthog.capture('form_submit', { formId: form.id });
-    });
+    };
 
-    // Track scroll events
-    document.addEventListener('scroll', () => {
+    const handleScroll = () => {
       const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
       posthog.capture('scroll', { scrollPercentage: Math.round(scrollPercentage) });
-    });
+    };
+
+    // Track clicks
+    document.addEventListener('click', handleClick);
+
+    // Track form submissions
+    document.addEventListener('submit', handleSubmit);
+
+    // Track scroll events
+    document.addEventListener('scroll', handleScroll);
 
     // Cleanup on unmount
     return () => {
-      document.removeEventListener('click', () => {});
-      document.removeEventListener('submit', () => {});
-      document.removeEventListener('scroll', () => {});
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('submit', handleSubmit);
+      document.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
