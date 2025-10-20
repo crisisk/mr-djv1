@@ -7,6 +7,8 @@ import ContactForm from '../Organisms/ContactForm.jsx';
 import { useHeroImage } from '../../hooks/useReplicateImage.js';
 import { localSeoData, getLocalSeoDataBySlug } from '../../data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from '../../data/local_seo_bruiloft_data.js';
+import { pricingPackages } from '../../data/pricingPackages.js';
+import { generateOfferCatalogSchema } from '../../utils/schemaOrg.js';
 import { getWindow } from '../../lib/environment.js';
 import { generateBreadcrumbSchema } from '../../utils/schemaOrg.js';
 import { createLocalSeoBreadcrumbs } from '../../utils/breadcrumbs.js';
@@ -46,6 +48,15 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
   const browser = getWindow();
   const origin = browser?.location?.origin ?? 'https://www.mrdj.nl';
   const canonicalUrl = `${origin}${canonicalPath}`;
+
+  const offerCatalogSchema = useMemo(
+    () =>
+      generateOfferCatalogSchema({
+        packages: pricingPackages,
+        pagePath: canonicalPath,
+      }),
+    [canonicalPath],
+  );
 
   const hasCounterpart = useMemo(() => {
     if (!hasData) {
@@ -147,8 +158,9 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
         url: origin,
       },
       url: canonicalUrl,
+      offers: offerCatalogSchema ? { '@id': offerCatalogSchema['@id'] } : undefined,
     });
-  }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, origin, province]);
+  }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, offerCatalogSchema, origin, province]);
 
   const breadcrumbs = useMemo(() => {
     if (!hasData) {

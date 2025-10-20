@@ -16,8 +16,10 @@ import {
   generateOrganizationSchema,
   generateServiceSchema,
   generateBreadcrumbSchema,
-  generateWebPageSchema
+  generateWebPageSchema,
+  generateOfferCatalogSchema,
 } from '../../utils/schemaOrg.js';
+import { pricingPackages } from '../../data/pricingPackages.js';
 
 
 
@@ -116,11 +118,21 @@ const DjSaxLanding = ({ variant = 'A' }) => {
 
   // Generate schemas
   const organizationSchema = generateOrganizationSchema();
-  const serviceSchema = generateServiceSchema({
-    serviceName: 'DJ + Saxofoon Service',
-    description: 'Professionele DJ gecombineerd met live saxofonist voor bruiloften, bedrijfsfeesten en privé-evenementen',
-    serviceType: 'Entertainment Service'
+  const offerCatalogSchema = generateOfferCatalogSchema({
+    packages: pricingPackages,
+    pagePath: '/',
   });
+  const serviceSchema = {
+    ...generateServiceSchema({
+      serviceName: 'DJ + Saxofoon Service',
+      description: 'Professionele DJ gecombineerd met live saxofonist voor bruiloften, bedrijfsfeesten en privé-evenementen',
+      serviceType: 'Entertainment Service',
+    }),
+    '@id': 'https://mr-dj.sevensa.nl/#service',
+    offers: {
+      '@id': offerCatalogSchema['@id'],
+    },
+  };
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbs);
   const webPageSchema = generateWebPageSchema({
     title: 'Mr. DJ - Dé Feestspecialist van het Zuiden',
@@ -141,6 +153,9 @@ const DjSaxLanding = ({ variant = 'A' }) => {
         </script>
         <script type="application/ld+json">
           {JSON.stringify(serviceSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(offerCatalogSchema)}
         </script>
         <script type="application/ld+json">
           {JSON.stringify(breadcrumbSchema)}
