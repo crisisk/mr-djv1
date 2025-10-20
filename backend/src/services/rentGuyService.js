@@ -173,6 +173,8 @@ function mapBookingPayload(booking) {
     status: booking.status,
     eventType: booking.eventType,
     eventDate: normalizeDate(booking.eventDate),
+    eventEndDate: normalizeDate(booking.eventEndDate),
+    eventTimeZone: booking.eventTimeZone || null,
     packageId: booking.packageId || null,
     contact: {
       name: booking.name,
