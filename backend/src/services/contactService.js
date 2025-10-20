@@ -3,7 +3,7 @@ const db = require('../lib/db');
 const config = require('../config');
 const rentGuyService = require('./rentGuyService');
 const sevensaService = require('./sevensaService');
-const { logger } = require('../lib/logger');
+const surveyService = require('./surveyService');
 
 /**
  * @typedef {Object} ContactPayload
@@ -490,10 +490,40 @@ async function saveContact(payload, options = {}) {
     sevensaService.submitLead(sevensaLead, { source: 'contact-form', ...metaOverrides })
   );
 
+  let surveyAutomation = {
+    survey: null,
+    automation: { delivered: false, reason: 'not-requested' }
+  };
+
+  try {
+    surveyAutomation = await surveyService.queueSurveyInvite(
+      {
+        id: result.id,
+        email: result.email,
+        name: result.name,
+        eventType: result.eventType,
+        eventDate: result.eventDate,
+        packageId: result.packageId,
+        source: 'contact-service'
+      },
+      {
+        rentGuy: rentGuySync,
+        sevensa: sevensaSync
+      }
+    );
+  } catch (error) {
+    console.error('[contactService] Failed to enqueue survey invite:', error.message);
+    surveyAutomation = {
+      survey: null,
+      automation: { delivered: false, reason: error.message }
+    };
+  }
+
   return {
     ...result,
     rentGuySync,
-    sevensaSync
+    sevensaSync,
+    surveyAutomation
   };
 }
 

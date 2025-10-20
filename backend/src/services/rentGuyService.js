@@ -1,6 +1,8 @@
 const { randomUUID, createHash } = require('crypto');
 const { createDurableQueue } = require('../lib/durableQueue');
 const { logger } = require('../lib/logger');
+const config = require('../config');
+const featureFlags = require('../lib/featureFlags');
 
 /**
  * @typedef {Object} RentGuyDeliveryMeta
@@ -95,7 +97,12 @@ function getTimeoutMs() {
 }
 
 function isConfigured() {
-  return Boolean(getBaseUrl() && getApiKey());
+  if (!featureFlags.isEnabled('rentguy-integration')) {
+    return false;
+  }
+
+  const enabled = Boolean(config.integrations?.rentGuy?.enabled);
+  return enabled && Boolean(getBaseUrl() && getApiKey());
 }
 
 function buildHeaders() {

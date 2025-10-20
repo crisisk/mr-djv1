@@ -25,6 +25,7 @@ COMPOSE_FILE=${COMPOSE_FILE:-docker-compose.yml}
 if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
   DOCKER_COMPOSE=(docker compose)
 elif command -v docker-compose >/dev/null 2>&1; then
+  echo "[backup] Warning: falling back to legacy docker-compose binary." >&2
   DOCKER_COMPOSE=(docker-compose)
 else
   echo "[backup] Error: docker compose is not installed." >&2
