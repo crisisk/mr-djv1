@@ -1,5 +1,6 @@
-import React, { useId } from 'react';
-import Button from './Buttons.jsx';
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import Button from './Buttons.jsx'
 
 const HeroSection = ({
   title,
@@ -11,44 +12,36 @@ const HeroSection = ({
   subtitleColor = 'text-neutral-light',
   children,
 }) => {
-  const headingId = useId();
+  const { t } = useTranslation()
+
+  const resolvedTitle = title ?? t('hero.title')
+  const resolvedSubtitle = subtitle ?? t('hero.subtitle')
+  const resolvedPrimaryCta = ctaPrimaryText ?? t('hero.ctaPrimaryText')
+  const resolvedSecondaryCta = ctaSecondaryText ?? t('hero.ctaSecondaryText')
 
   return (
-    <section
-      className={`${backgroundClass} py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}
-      data-component="hero-section"
-      data-hero-id="primary"
-      aria-labelledby={headingId}
-      role="region"
-    >
-      <div className="container mx-auto text-center" data-component="hero-container">
-        <h1
-          id={headingId}
-          className={`text-font-size-h1 font-extrabold ${titleColor} mb-spacing-md`}
-          data-component="hero-title"
-        >
-          {title}
+    <div className={`${backgroundClass} py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}>
+      <div className="container mx-auto text-center">
+        <h1 className={`text-font-size-h1 font-extrabold ${titleColor} mb-spacing-md`}>
+          {resolvedTitle}
         </h1>
-        <p
-          className={`text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto ${subtitleColor}`}
-          data-component="hero-subtitle"
-        >
-          {subtitle}
+        <p className={`text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto ${subtitleColor}`}>
+          {resolvedSubtitle}
         </p>
-        <div className="flex justify-center space-x-spacing-md" data-component="hero-cta-group">
-          <Button variant="secondary" size="lg" data-component="hero-cta-primary">
-            {ctaPrimaryText}
+        <div className="flex justify-center space-x-spacing-md">
+          <Button variant="secondary" size="lg">
+            {resolvedPrimaryCta}
           </Button>
-          {ctaSecondaryText && (
-            <Button variant="outline" size="lg" data-component="hero-cta-secondary">
-              {ctaSecondaryText}
+          {resolvedSecondaryCta && (
+            <Button variant="outline" size="lg">
+              {resolvedSecondaryCta}
             </Button>
           )}
         </div>
         {children}
       </div>
-    </section>
-  );
-};
+    </div>
+  )
+}
 
-export default HeroSection;
+export default HeroSection
