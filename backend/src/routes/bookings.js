@@ -58,16 +58,25 @@ router.put('/:id', updateValidations, async (req, res, next) => {
   }
 
   try {
-    const booking = await updateBooking(req.params.id, {
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      eventType: req.body.eventType,
-      eventDate: req.body.eventDate,
-      message: req.body.message,
-      packageId: req.body.packageId,
-      status: req.body.status
-    });
+    const updateFields = [
+      'name',
+      'email',
+      'phone',
+      'eventType',
+      'eventDate',
+      'message',
+      'packageId',
+      'status'
+    ];
+
+    const updates = updateFields.reduce((acc, field) => {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        acc[field] = req.body[field];
+      }
+      return acc;
+    }, {});
+
+    const booking = await updateBooking(req.params.id, updates);
 
     if (!booking) {
       return res.status(404).json({ error: 'Boeking niet gevonden' });
