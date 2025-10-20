@@ -186,6 +186,25 @@ const PricingTables = () => {
             <PricingCard key={`${pkg.name}-${index}`} pkg={pkg} billingMode={billingMode} />
           ))}
         </div>
+        <CallToAction
+          className="mt-spacing-2xl"
+          eyebrow="Flexibele opties"
+          title="Niet zeker welk pakket past?"
+          description="Plan een vrijblijvend adviesgesprek en we helpen u binnen enkele minuten het ideale pakket samen te stellen."
+          align="center"
+          primaryButton={{
+            label: 'Vraag Offerte Aan',
+            variant: 'secondary',
+            'data-conversion_type': 'pricing_cta',
+          }}
+          secondaryButton={{
+            as: 'a',
+            href: 'tel:+31851234567',
+            label: 'Bel Direct',
+            variant: 'outline',
+            'aria-label': 'Bel ons direct op +31 85 123 4567',
+          }}
+        />
       </div>
     </section>
   );

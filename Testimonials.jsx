@@ -102,6 +102,21 @@ const FeaturedTestimonial = () => (
                         <p className="text-font-size-small text-neutral-gray-100">{featuredTestimonial.event}</p>
                     </div>
                 </div>
+                <CallToAction
+                    className="mt-spacing-2xl"
+                    eyebrow="Plan uw feest"
+                    title="Ook een onvergetelijk evenement?"
+                    description="Neem vandaag nog contact op en wij zorgen voor muziek, sfeer en begeleiding op maat."
+                    align="center"
+                    primaryButton={{
+                        label: 'Check Beschikbaarheid',
+                        variant: 'secondary',
+                    }}
+                    secondaryButton={{
+                        label: 'Vraag Offerte Aan',
+                        variant: 'outline',
+                    }}
+                />
             </div>
             <div className="flex flex-col items-center justify-center gap-spacing-md text-center md:text-right">
                 <StarRating rating={featuredTestimonial.rating} label={`${featuredTestimonial.rating} van 5 sterren`} />
