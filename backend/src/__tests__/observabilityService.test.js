@@ -52,6 +52,22 @@ describe('observabilityService', () => {
     });
 
     await personalizationService.recordEvent({
+      type: 'form_start',
+      variantId,
+      keyword: 'bruiloft dj',
+      payload: {},
+      context: { source: 'unit-test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'form_submit',
+      variantId,
+      keyword: 'bruiloft dj',
+      payload: {},
+      context: { source: 'unit-test' }
+    });
+
+    await personalizationService.recordEvent({
       type: 'conversion',
       variantId,
       keyword: 'bruiloft dj',
@@ -65,6 +81,62 @@ describe('observabilityService', () => {
     expect(wedding).toBeDefined();
     expect(wedding.exposures).toBeGreaterThan(0);
     expect(wedding.conversions).toBeGreaterThanOrEqual(1);
+    expect(wedding.formStarts).toBeGreaterThanOrEqual(1);
+    expect(wedding.formSubmits).toBeGreaterThanOrEqual(1);
     expect(analytics.totals.conversions).toBeGreaterThanOrEqual(1);
+    expect(analytics.totals.formStarts).toBeGreaterThanOrEqual(1);
+    expect(analytics.totals.formSubmits).toBeGreaterThanOrEqual(1);
+  });
+
+  it('summarises conversion stats across funnel steps', async () => {
+    const match = await personalizationService.getVariantForRequest({
+      keywords: ['feest dj'],
+      keyword: 'feest dj'
+    });
+    const variantId = match.meta?.variantId || 'romantic_wedding';
+
+    await personalizationService.recordEvent({
+      type: 'cta_click',
+      variantId,
+      keyword: 'feest dj',
+      payload: {},
+      context: { source: 'unit-test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'form_start',
+      variantId,
+      keyword: 'feest dj',
+      payload: {},
+      context: { source: 'unit-test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'form_submit',
+      variantId,
+      keyword: 'feest dj',
+      payload: { step: 'final' },
+      context: { source: 'unit-test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'conversion',
+      variantId,
+      keyword: 'feest dj',
+      payload: { revenue: 975 },
+      context: { source: 'unit-test' }
+    });
+
+    const stats = await observabilityService.getConversionStats();
+    expect(stats).toHaveProperty('totals');
+    expect(stats.totals.conversionEvents).toBeGreaterThanOrEqual(1);
+    expect(stats.totals.formSubmitEvents).toBeGreaterThanOrEqual(1);
+    expect(Array.isArray(stats.funnel)).toBe(true);
+    expect(stats.funnel.find((step) => step.id === 'conversions').count).toBeGreaterThanOrEqual(1);
+    expect(Array.isArray(stats.topVariants)).toBe(true);
+    expect(stats.topVariants[0]).toEqual(
+      expect.objectContaining({ variantId, conversions: expect.any(Number) })
+    );
+    expect(Array.isArray(stats.recentConversions)).toBe(true);
   });
 });

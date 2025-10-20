@@ -456,6 +456,22 @@ describe('configuration dashboard', () => {
     });
 
     await personalizationService.recordEvent({
+      type: 'form_start',
+      variantId,
+      keyword: 'bruiloft dj',
+      payload: {},
+      context: { source: 'test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'form_submit',
+      variantId,
+      keyword: 'bruiloft dj',
+      payload: {},
+      context: { source: 'test' }
+    });
+
+    await personalizationService.recordEvent({
       type: 'conversion',
       variantId,
       keyword: 'bruiloft dj',
@@ -477,6 +493,65 @@ describe('configuration dashboard', () => {
     expect(wedding).toBeDefined();
     expect(wedding.exposures).toBeGreaterThan(0);
     expect(wedding.conversions).toBeGreaterThanOrEqual(1);
+    expect(wedding.formStarts).toBeGreaterThanOrEqual(1);
+    expect(wedding.formSubmits).toBeGreaterThanOrEqual(1);
+  });
+
+  it('exposes conversion metrics through the dashboard API', async () => {
+    const match = await personalizationService.getVariantForRequest({
+      keywords: ['feest dj'],
+      keyword: 'feest dj'
+    });
+    const variantId = match.meta?.variantId || 'romantic_wedding';
+
+    await personalizationService.recordEvent({
+      type: 'cta_click',
+      variantId,
+      keyword: 'feest dj',
+      payload: {},
+      context: { source: 'test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'form_start',
+      variantId,
+      keyword: 'feest dj',
+      payload: {},
+      context: { source: 'test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'form_submit',
+      variantId,
+      keyword: 'feest dj',
+      payload: {},
+      context: { source: 'test' }
+    });
+
+    await personalizationService.recordEvent({
+      type: 'conversion',
+      variantId,
+      keyword: 'feest dj',
+      payload: { revenue: 950 },
+      context: { source: 'test' }
+    });
+
+    const response = await fetch(`${baseUrl}/dashboard/api/observability/conversions`, {
+      headers: {
+        Authorization: authHeader,
+        Accept: 'application/json'
+      }
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload).toHaveProperty('totals');
+    expect(payload.totals.conversionEvents).toBeGreaterThanOrEqual(1);
+    expect(Array.isArray(payload.funnel)).toBe(true);
+    expect(Array.isArray(payload.recentConversions)).toBe(true);
+    expect(payload.topVariants[0]).toEqual(
+      expect.objectContaining({ variantId, conversions: expect.any(Number) })
+    );
   });
 
   it('flushes the sevensa queue via the dashboard API', async () => {

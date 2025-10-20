@@ -471,6 +471,8 @@ async function getVariantAnalytics() {
       impressions: bucket.impressions,
       ctaClicks: bucket.ctaClicks,
       conversions: bucket.conversions,
+      formStarts: bucket.formStarts,
+      formSubmits: bucket.formSubmits,
       conversionRate: normalizeRate(bucket.conversions, bucket.exposures || bucket.impressions || 0),
       ctaClickRate: normalizeRate(bucket.ctaClicks, bucket.exposures || bucket.impressions || 0),
       formCompletionRate: normalizeRate(bucket.formSubmits, bucket.formStarts || bucket.exposures || 0),
@@ -488,9 +490,11 @@ async function getVariantAnalytics() {
       acc.impressions += variant.impressions;
       acc.ctaClicks += variant.ctaClicks;
       acc.conversions += variant.conversions;
+      acc.formStarts += variant.formStarts;
+      acc.formSubmits += variant.formSubmits;
       return acc;
     },
-    { exposures: 0, impressions: 0, ctaClicks: 0, conversions: 0 }
+    { exposures: 0, impressions: 0, ctaClicks: 0, conversions: 0, formStarts: 0, formSubmits: 0 }
   );
 
   return {
@@ -501,8 +505,14 @@ async function getVariantAnalytics() {
       impressions: totals.impressions,
       ctaClicks: totals.ctaClicks,
       conversions: totals.conversions,
+      formStarts: totals.formStarts,
+      formSubmits: totals.formSubmits,
       conversionRate: normalizeRate(totals.conversions, totals.exposures || totals.impressions || 0),
-      ctaClickRate: normalizeRate(totals.ctaClicks, totals.exposures || totals.impressions || 0)
+      ctaClickRate: normalizeRate(totals.ctaClicks, totals.exposures || totals.impressions || 0),
+      formCompletionRate: normalizeRate(
+        totals.formSubmits,
+        totals.formStarts || totals.exposures || totals.impressions || 0
+      )
     }
   };
 }

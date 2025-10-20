@@ -438,6 +438,74 @@ function renderPage() {
         color: #1e293b;
       }
 
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.25rem;
+      }
+
+      .metric-grid div {
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 0.9rem 1rem;
+        background: rgba(248, 250, 252, 0.7);
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .metric-grid div .metric-title {
+        margin: 0;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #64748b;
+      }
+
+      .metric-grid div .metric-value {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .metric-grid div .metric-secondary {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #475569;
+      }
+
+      .funnel-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .funnel-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        background: rgba(241, 245, 249, 0.6);
+        border-radius: 8px;
+        padding: 0.55rem 0.75rem;
+      }
+
+      .funnel-list li span.value {
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .conversion-card footer {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: #64748b;
+      }
+
       .variant-table {
         margin-top: 1rem;
         display: grid;
@@ -643,6 +711,7 @@ om een waarde te wissen.</p>
       let rentGuyStatusControls = null;
       let sevensaStatusControls = null;
       let performanceStatusControls = null;
+      let conversionMetricsControls = null;
       let variantAnalyticsControls = null;
 
       function reportError(context, error) {
@@ -1109,6 +1178,23 @@ om een waarde te wissen.</p>
         setTimeout(() => {
           toastEl.dataset.visible = 'false';
         }, 3200);
+      }
+
+      const numberFormatter = new Intl.NumberFormat('nl-NL');
+      const percentFormatter = new Intl.NumberFormat('nl-NL', {
+        style: 'percent',
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+
+      function formatNumber(value) {
+        const numeric = Number.isFinite(value) ? value : 0;
+        return numberFormatter.format(numeric);
+      }
+
+      function formatPercent(value) {
+        const numeric = Number.isFinite(value) ? value : 0;
+        return percentFormatter.format(numeric / 100);
       }
 
       function setActiveGroup(groupId) {
@@ -1722,6 +1808,239 @@ om een waarde te wissen.</p>
         }
       }
 
+      function createConversionMetricsCard() {
+        const card = document.createElement('section');
+        card.className = 'field conversion-card';
+
+        const heading = document.createElement('h2');
+        heading.textContent = 'Conversies & funnel';
+        card.appendChild(heading);
+
+        const description = document.createElement('p');
+        description.className = 'hint';
+        description.textContent =
+          'Realtime funnel statistieken op basis van personalization events. Gebruik deze cijfers om varianten te optimaliseren.';
+        card.appendChild(description);
+
+        const totalsGrid = document.createElement('div');
+        totalsGrid.className = 'metric-grid';
+        card.appendChild(totalsGrid);
+
+        const metricDefinitions = [
+          { key: 'exposures', label: 'Variant exposures' },
+          { key: 'impressions', label: 'Hero impressions' },
+          { key: 'ctaClicks', label: 'CTA clicks', rateKey: 'ctaClickRate', rateLabel: 'Click-through' },
+          { key: 'formStarts', label: 'Form starts' },
+          {
+            key: 'formSubmits',
+            label: 'Form submits',
+            rateKey: 'formCompletionRate',
+            rateLabel: 'Completion'
+          },
+          { key: 'conversions', label: 'Conversions', rateKey: 'conversionRate', rateLabel: 'Conversion rate' }
+        ];
+
+        const metrics = new Map();
+
+        metricDefinitions.forEach((definition) => {
+          const wrapper = document.createElement('div');
+
+          const title = document.createElement('p');
+          title.className = 'metric-title';
+          title.textContent = definition.label;
+          wrapper.appendChild(title);
+
+          const value = document.createElement('p');
+          value.className = 'metric-value';
+          value.textContent = '0';
+          wrapper.appendChild(value);
+
+          let secondary = null;
+          if (definition.rateKey) {
+            secondary = document.createElement('span');
+            secondary.className = 'metric-secondary';
+            secondary.textContent = definition.rateLabel + ': —';
+            wrapper.appendChild(secondary);
+          }
+
+          totalsGrid.appendChild(wrapper);
+          metrics.set(definition.key, {
+            value,
+            secondary,
+            rateKey: definition.rateKey,
+            rateLabel: definition.rateLabel
+          });
+        });
+
+        const funnelHeading = document.createElement('p');
+        funnelHeading.className = 'hint';
+        funnelHeading.textContent = 'Funnel overzicht';
+        card.appendChild(funnelHeading);
+
+        const funnelList = document.createElement('ul');
+        funnelList.className = 'funnel-list';
+        card.appendChild(funnelList);
+
+        const variantHeading = document.createElement('p');
+        variantHeading.className = 'hint';
+        variantHeading.textContent = 'Top varianten op conversies';
+        card.appendChild(variantHeading);
+
+        const topVariantsList = document.createElement('ul');
+        topVariantsList.className = 'metric-list';
+        card.appendChild(topVariantsList);
+
+        const recentHeading = document.createElement('p');
+        recentHeading.className = 'hint';
+        recentHeading.textContent = 'Laatste conversies';
+        card.appendChild(recentHeading);
+
+        const recentList = document.createElement('ul');
+        recentList.className = 'metric-list';
+        card.appendChild(recentList);
+
+        const updatedAt = document.createElement('footer');
+        updatedAt.className = 'hint';
+        updatedAt.textContent = 'Laatste update: onbekend';
+        card.appendChild(updatedAt);
+
+        conversionMetricsControls = {
+          card,
+          metrics,
+          funnelList,
+          topVariantsList,
+          recentList,
+          updatedAt
+        };
+
+        return card;
+      }
+
+      function renderConversionMetrics(state) {
+        if (!conversionMetricsControls) {
+          return;
+        }
+
+        const totals = state?.totals || {};
+        conversionMetricsControls.metrics.forEach((controls, key) => {
+          const rawValue = Number.isFinite(totals[key]) ? totals[key] : 0;
+          controls.value.textContent = formatNumber(rawValue);
+          if (controls.secondary && controls.rateKey) {
+            const rateValue = Number.isFinite(totals[controls.rateKey]) ? totals[controls.rateKey] : null;
+            controls.secondary.textContent =
+              (controls.rateLabel || 'Ratio') + ': ' + (rateValue != null ? formatPercent(rateValue) : '—');
+          }
+        });
+
+        const funnelList = conversionMetricsControls.funnelList;
+        funnelList.innerHTML = '';
+        const funnel = Array.isArray(state?.funnel) ? state.funnel : [];
+        if (!funnel.length) {
+          const li = document.createElement('li');
+          li.textContent = 'Nog geen funnelgegevens beschikbaar.';
+          funnelList.appendChild(li);
+        } else {
+          funnel.forEach((step) => {
+            const li = document.createElement('li');
+            const label = document.createElement('span');
+            label.textContent = step.label || step.id;
+            const value = document.createElement('span');
+            value.className = 'value';
+            value.textContent = formatNumber(step.count || 0);
+            li.appendChild(label);
+            li.appendChild(value);
+            funnelList.appendChild(li);
+          });
+        }
+
+        const topVariantsList = conversionMetricsControls.topVariantsList;
+        topVariantsList.innerHTML = '';
+        const topVariants = Array.isArray(state?.topVariants) ? state.topVariants : [];
+        if (!topVariants.length) {
+          const empty = document.createElement('li');
+          empty.textContent = 'Nog geen varianten met conversies.';
+          topVariantsList.appendChild(empty);
+        } else {
+          topVariants.forEach((variant) => {
+            const li = document.createElement('li');
+            const rateText = Number.isFinite(variant.conversionRate)
+              ? formatPercent(variant.conversionRate)
+              : '—';
+            li.textContent =
+              variant.label +
+              ' • ' +
+              formatNumber(variant.conversions) +
+              ' conversies (CTA: ' +
+              formatNumber(variant.ctaClicks) +
+              ', rate: ' +
+              rateText +
+              ')';
+            topVariantsList.appendChild(li);
+          });
+        }
+
+        const recentList = conversionMetricsControls.recentList;
+        recentList.innerHTML = '';
+        const recentConversions = Array.isArray(state?.recentConversions) ? state.recentConversions : [];
+        if (!recentConversions.length) {
+          const li = document.createElement('li');
+          li.textContent = 'Nog geen conversie events geregistreerd.';
+          recentList.appendChild(li);
+        } else {
+          recentConversions.forEach((entry) => {
+            const li = document.createElement('li');
+            const timestamp = entry.createdAt ? formatDateTime(entry.createdAt) : 'Onbekend moment';
+            const keyword = entry.keyword ? ' • keyword: ' + entry.keyword : '';
+            let revenue = '';
+            if (entry.payload && typeof entry.payload === 'object') {
+              const rawAmount = entry.payload.amount || entry.payload.revenue || entry.payload.value;
+              const amount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount;
+              if (Number.isFinite(amount)) {
+                revenue = ' • omzet: €' + formatNumber(Math.round(amount));
+              }
+            }
+            li.textContent = timestamp + ' – ' + entry.variantLabel + keyword + revenue;
+            recentList.appendChild(li);
+          });
+        }
+
+        if (conversionMetricsControls.updatedAt) {
+          conversionMetricsControls.updatedAt.textContent = state?.updatedAt
+            ? 'Laatste update: ' + new Date(state.updatedAt).toLocaleString()
+            : 'Laatste update: onbekend';
+        }
+      }
+
+      async function refreshConversionMetrics(showToastOnSuccess = false) {
+        if (!conversionMetricsControls) {
+          return;
+        }
+
+        conversionMetricsControls.card.dataset.loading = 'true';
+
+        try {
+          const response = await fetch('./api/observability/conversions', {
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon conversiestatistieken niet laden');
+          }
+
+          const payload = await response.json();
+          renderConversionMetrics(payload);
+
+          if (showToastOnSuccess) {
+            showToast('Conversiestatistieken bijgewerkt');
+          }
+        } catch (error) {
+          console.error(error);
+          showToast(error.message || 'Conversiestatistieken niet beschikbaar');
+        } finally {
+          delete conversionMetricsControls.card.dataset.loading;
+        }
+      }
+
       function createVariantAnalyticsCard() {
         const card = document.createElement('section');
         card.className = 'field integration-card';
@@ -2202,6 +2521,7 @@ om een waarde te wissen.</p>
           section.appendChild(createSevensaStatusCard());
           section.appendChild(createPerformanceStatusCard());
         } else if (group.id === 'personalization') {
+          section.appendChild(createConversionMetricsCard());
           section.appendChild(createVariantAnalyticsCard());
         }
 
@@ -2219,6 +2539,7 @@ om een waarde te wissen.</p>
         rentGuyStatusControls = null;
         sevensaStatusControls = null;
         performanceStatusControls = null;
+        conversionMetricsControls = null;
         variantAnalyticsControls = null;
 
         if (!groups.length) {
@@ -2272,6 +2593,12 @@ om een waarde te wissen.</p>
           refreshPerformanceStatus().catch(
             withErrorLogging('performance:status:initial-load')
           );
+        }
+
+        if (conversionMetricsControls) {
+          refreshConversionMetrics().catch((error) => {
+            console.error(error);
+          });
         }
 
         if (variantAnalyticsControls) {
