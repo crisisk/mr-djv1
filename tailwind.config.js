@@ -1,43 +1,39 @@
 /** @type {import('tailwindcss').Config} */
-import tokens from './src/lib/design-tokens.json' assert { type: 'json' };
+import tokens from './frontend/src/theme/tokens.json' assert { type: 'json' };
 
 // Function to convert design tokens to Tailwind format
 const convertTokens = (tokens) => {
-  const colors = {};
-  const spacing = {};
-  const fontFamily = {};
-  const fontSize = {};
+  const toKebabCase = (value) => value
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/\s+/g, '-')
+    .toLowerCase();
 
-  // Color conversion
-  for (const [key, value] of Object.entries(tokens.color)) {
-    for (const [subKey, subValue] of Object.entries(value)) {
-      if (subValue.value) {
-        colors[`${key}-${subKey}`] = subValue.value;
-      } else {
-        for (const [shade, shadeValue] of Object.entries(subValue)) {
-          colors[`${key}-${subKey}-${shade}`] = shadeValue.value;
-        }
-      }
+  const colors = {};
+  const spacing = { ...tokens.spacing };
+  const fontFamily = {};
+  const fontSize = { ...tokens.typography.fontSize };
+  const fontWeight = { ...tokens.typography.fontWeight };
+  const lineHeight = { ...tokens.typography.lineHeight };
+
+  for (const [group, entries] of Object.entries(tokens.colors)) {
+    if (typeof entries === 'string') {
+      colors[group] = entries;
+      continue;
+    }
+
+    for (const [name, hex] of Object.entries(entries)) {
+      colors[`${group}-${toKebabCase(name)}`] = hex;
     }
   }
 
-  // Spacing conversion (using the 8pt system)
-  for (const [key, value] of Object.entries(tokens.spacing)) {
-    spacing[key] = value.value;
+  for (const [name, family] of Object.entries(tokens.typography.fontFamily)) {
+    fontFamily[name] = family.split(',').map((part) => part.trim().replace(/^['"]|['"]$/g, ''));
   }
 
-  // Font conversion
-  for (const [key, value] of Object.entries(tokens.font.family)) {
-    fontFamily[key] = [value.value.split(',')[0].trim(), ...value.value.split(',').slice(1).map(s => s.trim())];
-  }
-  for (const [key, value] of Object.entries(tokens.font.size)) {
-    fontSize[key] = value.value;
-  }
-
-  return { colors, spacing, fontFamily, fontSize };
+  return { colors, spacing, fontFamily, fontSize, fontWeight, lineHeight };
 };
 
-const { colors, spacing, fontFamily, fontSize } = convertTokens(tokens);
+const { colors, spacing, fontFamily, fontSize, fontWeight, lineHeight } = convertTokens(tokens);
 
 export default {
   content: [
@@ -48,12 +44,13 @@ export default {
     extend: {
       colors: {
         ...colors,
-        // Map the new tokens to the existing Tailwind color names for compatibility
-        'primary': 'var(--color-primary-blue)',
-        'secondary': 'var(--color-secondary-gold)',
-        'destructive': 'var(--color-semantic-error)',
-        'success': 'var(--color-semantic-success)',
-        'warning': 'var(--color-semantic-warning)',
+        primary: colors['primary-main'],
+        'primary-dark': colors['primary-dark'],
+        secondary: colors['secondary-main'],
+        success: colors['semantic-success'],
+        warning: colors['semantic-warning'],
+        destructive: colors['semantic-error'],
+        'neutral-gray-300': colors['neutral-gray300'],
       },
       spacing: {
         ...spacing,
@@ -63,6 +60,12 @@ export default {
       },
       fontSize: {
         ...fontSize,
+      },
+      fontWeight: {
+        ...fontWeight,
+      },
+      lineHeight: {
+        ...lineHeight,
       },
     },
   },

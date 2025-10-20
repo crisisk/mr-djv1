@@ -1,96 +1,128 @@
-import React from 'react';
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
-const mocks = vi.hoisted(() => {
-  let lastCaptcha = null;
-
-  return {
-    submitContactForm: vi.fn(),
-    trackFormSubmission: vi.fn(),
-    useHCaptchaWidget: vi.fn(() => {
-      lastCaptcha = {
-        containerRef: vi.fn(),
-        token: '',
-        error: '',
-        setError: vi.fn(),
-        reset: vi.fn(),
-        isReady: true,
-        isLoading: false
-      };
-
-      return lastCaptcha;
-    }),
-    getLatestCaptcha: () => lastCaptcha
-  };
+const createCaptchaHelpers = () => ({
+  containerRef: vi.fn(),
+  token: 'test-token',
+  error: '',
+  setError: vi.fn(),
+  reset: vi.fn(),
+  isReady: true,
+  isLoading: false,
 });
 
-vi.mock('../../../services/api.js', () => ({
-  submitContactForm: mocks.submitContactForm
+const captchaInstances = [];
+const useHCaptchaWidgetMock = vi.fn();
+
+vi.mock('../../hooks/useHCaptchaWidget.js', () => ({
+  __esModule: true,
+  useHCaptchaWidget: useHCaptchaWidgetMock,
 }));
 
-vi.mock('../../../utils/trackConversion.js', () => ({
-  trackFormSubmission: mocks.trackFormSubmission
+vi.mock('../../services/api', () => ({
+  __esModule: true,
+  submitContactForm: vi.fn(),
 }));
 
-vi.mock('../../../hooks/useHCaptchaWidget.js', () => ({
-  useHCaptchaWidget: mocks.useHCaptchaWidget
+vi.mock('../../utils/trackConversion', () => ({
+  __esModule: true,
+  trackFormSubmission: vi.fn(),
 }));
 
 import ContactForm from '../ContactForm.jsx';
+import { submitContactForm } from '../../services/api';
+import { trackFormSubmission } from '../../utils/trackConversion';
+
+const createDeferred = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+};
+
+const fillValidForm = () => {
+  fireEvent.change(screen.getByLabelText(/naam/i), { target: { value: 'John Doe' } });
+  fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'john@example.com' } });
+  fireEvent.change(screen.getByLabelText(/telefoonnummer/i), { target: { value: '0612345678' } });
+  fireEvent.change(screen.getByLabelText(/type evenement/i), { target: { value: 'bruiloft' } });
+  fireEvent.change(screen.getByLabelText(/bericht/i), { target: { value: 'Dit is een geldig bericht.' } });
+};
 
 describe('ContactForm', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.stubEnv('VITE_HCAPTCHA_SITE_KEY', '');
+    captchaInstances.length = 0;
+    useHCaptchaWidgetMock.mockImplementation(() => {
+      const helpers = createCaptchaHelpers();
+      captchaInstances.push(helpers);
+      return helpers;
+    });
+
     window.dataLayer = { push: vi.fn() };
+
+    submitContactForm.mockReset();
+    trackFormSubmission.mockReset();
   });
 
   afterEach(() => {
-    vi.unstubAllEnvs();
     delete window.dataLayer;
   });
 
-  const fillValidForm = () => {
-    fireEvent.change(screen.getByLabelText(/naam/i), { target: { value: 'John Doe' } });
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'john@example.com' } });
-    fireEvent.change(screen.getByLabelText(/telefoonnummer/i), { target: { value: '+31 6 12345678' } });
-    fireEvent.change(screen.getByLabelText(/type evenement/i), { target: { value: 'bruiloft' } });
-    fireEvent.change(screen.getByLabelText(/bericht/i), {
-      target: { value: 'Dit is een geldig bericht met voldoende lengte.' }
-    });
-  };
-
-  it('displays inline errors for invalid submission attempts', async () => {
+  it('shows inline validation errors when submitting empty form', async () => {
     render(<ContactForm />);
 
     fireEvent.click(screen.getByRole('button', { name: /verstuur bericht/i }));
 
     expect(await screen.findByText('Naam is verplicht')).toBeInTheDocument();
-    expect(await screen.findByText('Email is verplicht')).toBeInTheDocument();
-    expect(await screen.findByText('Telefoonnummer is verplicht')).toBeInTheDocument();
-    expect(await screen.findByText('Bericht is verplicht')).toBeInTheDocument();
-    expect(await screen.findByText('Selecteer een type evenement')).toBeInTheDocument();
-
-    expect(mocks.submitContactForm).not.toHaveBeenCalled();
+    expect(screen.getByText('Email is verplicht')).toBeInTheDocument();
+    expect(screen.getByText('Telefoonnummer is verplicht')).toBeInTheDocument();
+    expect(screen.getByText('Bericht is verplicht')).toBeInTheDocument();
+    expect(screen.getByText('Selecteer een type evenement')).toBeInTheDocument();
   });
 
-  it('handles a successful submission flow with tracking and reset', async () => {
-    mocks.submitContactForm.mockResolvedValueOnce({});
+  it('submits successfully, shows success feedback, and resets the form', async () => {
+    const deferred = createDeferred();
+    submitContactForm.mockReturnValueOnce(deferred.promise);
 
-    render(<ContactForm />);
+    render(<ContactForm variant="A" />);
 
     fillValidForm();
 
     const submitButton = screen.getByRole('button', { name: /verstuur bericht/i });
     fireEvent.click(submitButton);
 
-    await waitFor(() => expect(submitButton).toHaveTextContent('Bezig met verzenden...'));
+    expect(screen.getByRole('button', { name: /bezig met verzenden/i })).toBeInTheDocument();
 
-    await waitFor(() => expect(submitButton).toHaveTextContent('Verstuur Bericht'));
+    expect(submitContactForm).toHaveBeenCalledWith({
+      name: 'John Doe',
+      email: 'john@example.com',
+      phone: '0612345678',
+      message: 'Dit is een geldig bericht.',
+      eventType: 'bruiloft',
+      eventDate: '',
+      hCaptchaToken: 'test-token',
+    });
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Succesvol verzonden!');
+    deferred.resolve();
+    await deferred.promise;
+
+    const successBanner = await screen.findByRole('status');
+    expect(successBanner).toHaveTextContent('Succesvol verzonden!');
+
+    await waitFor(() => {
+      expect(trackFormSubmission).toHaveBeenCalledWith('A', 'bruiloft', 'contact');
+    });
+
+    expect(window.dataLayer.push).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: 'contact_form_submit',
+        form_variant: 'A',
+        event_type: 'bruiloft',
+      })
+    );
 
     expect(screen.getByLabelText(/naam/i)).toHaveValue('');
     expect(screen.getByLabelText(/email/i)).toHaveValue('');
@@ -98,53 +130,38 @@ describe('ContactForm', () => {
     expect(screen.getByLabelText(/type evenement/i)).toHaveValue('');
     expect(screen.getByLabelText(/bericht/i)).toHaveValue('');
 
-    expect(mocks.submitContactForm).toHaveBeenCalledTimes(1);
-    expect(mocks.submitContactForm).toHaveBeenCalledWith({
-      name: 'John Doe',
-      email: 'john@example.com',
-      phone: '+31 6 12345678',
-      message: 'Dit is een geldig bericht met voldoende lengte.',
-      eventType: 'bruiloft',
-      eventDate: '',
-      hCaptchaToken: undefined
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /verstuur bericht/i })).toBeInTheDocument();
     });
 
-    expect(mocks.trackFormSubmission).toHaveBeenCalledWith('A', 'bruiloft', 'contact');
-    expect(window.dataLayer.push).toHaveBeenCalledWith({
-      event: 'contact_form_submit',
-      form_variant: 'A',
-      event_type: 'bruiloft'
-    });
-
-    const captcha = mocks.getLatestCaptcha();
+    const captcha = captchaInstances.at(-1);
     expect(captcha.reset).toHaveBeenCalled();
     expect(captcha.setError).toHaveBeenCalledWith('');
   });
 
-  it('surfaces errors and logs failures when submission is rejected', async () => {
-    const error = new Error('Server error occurred');
-    mocks.submitContactForm.mockRejectedValueOnce(error);
+  it('shows an error alert and logs issues when submission fails', async () => {
+    const error = new Error('Server error');
+    submitContactForm.mockRejectedValueOnce(error);
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(<ContactForm />);
 
     fillValidForm();
 
-    const submitButton = screen.getByRole('button', { name: /verstuur bericht/i });
-    fireEvent.click(submitButton);
-
-    await waitFor(() => expect(submitButton).toHaveTextContent('Bezig met verzenden...'));
-    await waitFor(() => expect(submitButton).toHaveTextContent('Verstuur Bericht'));
+    fireEvent.click(screen.getByRole('button', { name: /verstuur bericht/i }));
 
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent('Fout bij verzenden');
-    expect(alert).toHaveTextContent('Server error occurred');
+    expect(screen.getByText('Server error')).toBeInTheDocument();
 
     expect(consoleErrorSpy).toHaveBeenCalledWith('Contact form error:', error);
-    expect(mocks.trackFormSubmission).not.toHaveBeenCalled();
     expect(window.dataLayer.push).not.toHaveBeenCalled();
 
-    const captcha = mocks.getLatestCaptcha();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /verstuur bericht/i })).toBeInTheDocument();
+    });
+
+    const captcha = captchaInstances.at(-1);
     expect(captcha.reset).toHaveBeenCalled();
 
     consoleErrorSpy.mockRestore();

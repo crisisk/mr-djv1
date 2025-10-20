@@ -1,43 +1,39 @@
 /** @type {import('tailwindcss').Config} */
-import tokens from './src/lib/design-tokens.json' assert { type: 'json' };
+import tokens from './src/theme/tokens.js';
+
+const toKebabCase = (value) => value
+  .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+  .replace(/\s+/g, '-')
+  .toLowerCase();
 
 // Function to convert design tokens to Tailwind format
 const convertTokens = (tokens) => {
   const colors = {};
-  const spacing = {};
+  const spacing = { ...tokens.spacing };
   const fontFamily = {};
-  const fontSize = {};
+  const fontSize = { ...tokens.typography.fontSize };
+  const lineHeight = { ...tokens.typography.lineHeight };
+  const fontWeight = { ...tokens.typography.fontWeight };
 
-  // Color conversion
-  for (const [key, value] of Object.entries(tokens.color)) {
-    for (const [subKey, subValue] of Object.entries(value)) {
-      if (subValue.value) {
-        colors[`${key}-${subKey}`] = subValue.value;
-      } else {
-        for (const [shade, shadeValue] of Object.entries(subValue)) {
-          colors[`${key}-${subKey}-${shade}`] = shadeValue.value;
-        }
-      }
+  for (const [group, entries] of Object.entries(tokens.colors)) {
+    if (typeof entries === 'string') {
+      colors[group] = entries;
+      continue;
+    }
+
+    for (const [name, hex] of Object.entries(entries)) {
+      colors[`${group}-${toKebabCase(name)}`] = hex;
     }
   }
 
-  // Spacing conversion (using the 8pt system)
-  for (const [key, value] of Object.entries(tokens.spacing)) {
-    spacing[key] = value.value;
+  for (const [name, family] of Object.entries(tokens.typography.fontFamily)) {
+    fontFamily[name] = family.split(',').map((part) => part.trim().replace(/^['"]|['"]$/g, ''));
   }
 
-  // Font conversion
-  for (const [key, value] of Object.entries(tokens.font.family)) {
-    fontFamily[key] = [value.value.split(',')[0].trim(), ...value.value.split(',').slice(1).map(s => s.trim())];
-  }
-  for (const [key, value] of Object.entries(tokens.font.size)) {
-    fontSize[key] = value.value;
-  }
-
-  return { colors, spacing, fontFamily, fontSize };
+  return { colors, spacing, fontFamily, fontSize, lineHeight, fontWeight };
 };
 
-const { colors, spacing, fontFamily, fontSize } = convertTokens(tokens);
+const { colors, spacing, fontFamily, fontSize, lineHeight, fontWeight } = convertTokens(tokens);
 
 export default {
   content: [
@@ -48,42 +44,37 @@ export default {
     extend: {
       colors: {
         ...colors,
-        // Map the new tokens to the existing Tailwind color names for compatibility
-        'primary': 'var(--color-primary-blue)',
-        'secondary': 'var(--color-secondary-gold)',
-        'destructive': 'var(--color-semantic-error)',
-        'success': 'var(--color-semantic-success)',
-        'warning': 'var(--color-semantic-warning)',
-        // Add specific color utilities
-        'neutral-dark': 'var(--color-neutral-dark)',
-        'neutral-light': 'var(--color-neutral-light)',
-        'neutral-gray-100': 'var(--color-neutral-gray-100)',
-        'neutral-gray-500': 'var(--color-neutral-gray-500)',
+        primary: colors['primary-main'],
+        'primary-dark': colors['primary-dark'],
+        secondary: colors['secondary-main'],
+        success: colors['semantic-success'],
+        warning: colors['semantic-warning'],
+        destructive: colors['semantic-error'],
+        'neutral-dark': colors['neutral-dark'],
+        'neutral-light': colors['neutral-light'],
+        'neutral-gray-100': colors['neutral-gray100'],
+        'neutral-gray-300': colors['neutral-gray300'],
+        'neutral-gray-500': colors['neutral-gray500'],
       },
       spacing: {
         ...spacing,
-        // Add specific spacing utilities with correct names
-        'spacing-xs': 'var(--spacing-xs)',
-        'spacing-sm': 'var(--spacing-sm)',
-        'spacing-md': 'var(--spacing-md)',
-        'spacing-lg': 'var(--spacing-lg)',
-        'spacing-xl': 'var(--spacing-xl)',
-        'spacing-2xl': 'var(--spacing-2xl)',
-        'spacing-3xl': 'var(--spacing-3xl)',
+      },
+      fontFamily: {
+        ...fontFamily,
       },
       fontSize: {
         ...fontSize,
-        // Add specific font-size utilities with correct names
-        'font-size-h1': 'var(--font-size-h1)',
-        'font-size-h2': 'var(--font-size-h2)',
-        'font-size-h3': 'var(--font-size-h3)',
-        'font-size-body': 'var(--font-size-body)',
-        'font-size-small': 'var(--font-size-small)',
+      },
+      lineHeight: {
+        ...lineHeight,
+      },
+      fontWeight: {
+        ...fontWeight,
       },
     },
   },
   plugins: [
-    function({ matchUtilities, theme }) {
+    function({ matchUtilities }) {
       // Generate custom spacing utilities (py-spacing-*, px-spacing-*, etc)
       matchUtilities(
         {
@@ -103,15 +94,7 @@ export default {
           'ml-spacing': (value) => ({ marginLeft: value }),
           'gap-spacing': (value) => ({ gap: value }),
         },
-        { values: {
-          'xs': 'var(--spacing-xs)',
-          'sm': 'var(--spacing-sm)',
-          'md': 'var(--spacing-md)',
-          'lg': 'var(--spacing-lg)',
-          'xl': 'var(--spacing-xl)',
-          '2xl': 'var(--spacing-2xl)',
-          '3xl': 'var(--spacing-3xl)',
-        }}
+        { values: spacing }
       );
 
       // Generate custom font-size utilities (text-font-size-*)
@@ -119,13 +102,7 @@ export default {
         {
           'text-font-size': (value) => ({ fontSize: value }),
         },
-        { values: {
-          'h1': 'var(--font-size-h1)',
-          'h2': 'var(--font-size-h2)',
-          'h3': 'var(--font-size-h3)',
-          'body': 'var(--font-size-body)',
-          'small': 'var(--font-size-small)',
-        }}
+        { values: fontSize }
       );
 
       // Generate space-x-spacing-* and space-y-spacing-* utilities
@@ -146,15 +123,7 @@ export default {
             },
           }),
         },
-        { values: {
-          'xs': 'var(--spacing-xs)',
-          'sm': 'var(--spacing-sm)',
-          'md': 'var(--spacing-md)',
-          'lg': 'var(--spacing-lg)',
-          'xl': 'var(--spacing-xl)',
-          '2xl': 'var(--spacing-2xl)',
-          '3xl': 'var(--spacing-3xl)',
-        }}
+        { values: spacing }
       );
     },
   ],

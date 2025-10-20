@@ -5,10 +5,26 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Request, Response, NextFunction } from 'express';
 
 // Environment variables for OAuth2 credentials
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'your_google_client_id';
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || 'your_google_client_secret';
-const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID || 'your_facebook_app_id';
-const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET || 'your_facebook_app_secret';
+const requiredOAuthEnvVars = [
+    'GOOGLE_CLIENT_ID',
+    'GOOGLE_CLIENT_SECRET',
+    'FACEBOOK_APP_ID',
+    'FACEBOOK_APP_SECRET',
+];
+
+const missingOAuthEnvVars = requiredOAuthEnvVars.filter((name) => !process.env[name]);
+
+if (missingOAuthEnvVars.length > 0) {
+    throw new Error(
+        `Missing required OAuth environment variables: ${missingOAuthEnvVars.join(', ')}.` +
+        ' Please set these values before starting the application.'
+    );
+}
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
+const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID as string;
+const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET as string;
 
 // Callback URLs for OAuth2
 const GOOGLE_CALLBACK_URL = '/auth/google/callback';
