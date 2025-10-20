@@ -9,12 +9,12 @@ exports[`HeroSection matches the default snapshot 1`] = `
   >
     <div>
       <h1
-        class="text-font-size-h1 font-extrabold text-secondary mb-spacing-md"
+        class="heading-1 text-secondary mb-spacing-md"
       >
         Ervaar de ultieme avond
       </h1>
       <p
-        class="text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto text-neutral-light"
+        class="lead mb-spacing-xl max-w-4xl mx-auto text-neutral-light"
       >
         Van ceremoniële momenten tot de laatste dans, wij verzorgen het muzikale hoogtepunt.
       </p>
@@ -23,13 +23,13 @@ exports[`HeroSection matches the default snapshot 1`] = `
       class="flex justify-center gap-spacing-md flex-wrap"
     >
       <button
-        class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md text-font-size-h4"
+        class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md body-lg"
         type="button"
       >
         Controleer beschikbaarheid
       </button>
       <button
-        class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 border border-neutral-dark text-neutral-dark hover:bg-neutral-light focus-visible:ring-neutral-dark/40 px-spacing-lg py-spacing-md text-font-size-h4"
+        class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 border border-neutral-dark text-neutral-dark hover:bg-neutral-light focus-visible:ring-neutral-dark/40 px-spacing-lg py-spacing-md body-lg"
         type="button"
       >
         Vraag een offerte aan

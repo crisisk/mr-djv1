@@ -14,10 +14,10 @@ exports.up = async (knex) => {
   );
 
   await knex.raw(
-    `INSERT INTO reviews (name, event_type, rating, review_text, approved) VALUES
-      ('Sarah & Tom', 'Bruiloft 2024', 5, 'Mister DJ maakte onze bruiloft onvergetelijk! De dansvloer was de hele avond vol en de muziekkeuze was perfect. Onze gasten praten er nog steeds over!', TRUE),
-      ('Mark van der Berg', 'Corporate Event 2024', 5, 'Professioneel, betrouwbaar en geweldig in het lezen van het publiek. Ons bedrijfsfeest was een groot succes dankzij Mister DJ!', TRUE),
-      ('Linda Janssen', '50 Jaar Jubileum 2024', 5, 'Van begin tot eind perfect geregeld. De 100% dansgarantie is geen loze belofte - iedereen stond op de dansvloer!', TRUE)
+    `INSERT INTO reviews (name, event_type, category, rating, review_text, approved) VALUES
+      ('Sarah & Tom', 'Bruiloft 2024', 'bruiloft', 5, 'Mister DJ maakte onze bruiloft onvergetelijk! De dansvloer was de hele avond vol en de muziekkeuze was perfect. Onze gasten praten er nog steeds over!', TRUE),
+      ('Mark van der Berg', 'Corporate Event 2024', 'bedrijfsfeest', 5, 'Professioneel, betrouwbaar en geweldig in het lezen van het publiek. Ons bedrijfsfeest was een groot succes dankzij Mister DJ!', TRUE),
+      ('Linda Janssen', '50 Jaar Jubileum 2024', 'private', 5, 'Van begin tot eind perfect geregeld. De 100% dansgarantie is geen loze belofte - iedereen stond op de dansvloer!', TRUE)
     ON CONFLICT DO NOTHING`
   );
 };
