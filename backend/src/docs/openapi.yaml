@@ -86,12 +86,22 @@ paths:
             schema:
               $ref: '#/components/schemas/ContactRequest'
       responses:
-        '201':
-          description: Contact saved successfully.
+        '200':
+          description: Contact saved successfully and partner sync completed.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ContactResponse'
+        '202':
+          description: Contact accepted and queued for partner delivery due to throttling or outages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        '403':
+          $ref: '#/components/responses/AutomationBlocked'
+        '429':
+          $ref: '#/components/responses/ThrottledError'
         '422':
           $ref: '#/components/responses/ValidationError'
   /callback-request:
@@ -314,11 +324,64 @@ components:
           type: string
           format: date-time
         rentGuySync:
-          type: object
-          nullable: true
+          $ref: '#/components/schemas/PartnerSyncStatus'
         sevensaSync:
+          $ref: '#/components/schemas/PartnerSyncStatus'
+        processingStatus:
+          type: string
+          description: Indicates whether partner integrations processed the request synchronously.
+          enum: [delivered, queued]
+        partnerIncidents:
+          type: array
+          description: List of partner integrations that deferred processing.
+          items:
+            type: string
+            enum: [rentguy, sevensa]
+      required:
+        - success
+        - message
+        - contactId
+        - status
+        - persisted
+        - submittedAt
+        - processingStatus
+        - partnerIncidents
+    PartnerSyncStatus:
+      type: object
+      nullable: true
+      properties:
+        delivered:
+          type: boolean
+        queued:
+          type: boolean
+        reason:
+          type: string
+          nullable: true
+        queueSize:
+          type: integer
+          nullable: true
+        lastError:
+          type: string
+          nullable: true
+        incidentId:
+          type: string
+          nullable: true
+        circuit:
           type: object
           nullable: true
+          properties:
+            open:
+              type: boolean
+            reopenAt:
+              type: string
+              format: date-time
+              nullable: true
+            failures:
+              type: integer
+              nullable: true
+            reopenInMs:
+              type: integer
+              nullable: true
     CallbackRequest:
       type: object
       required: [name, phone]
@@ -433,3 +496,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ValidationError'
+    ThrottledError:
+      description: Submission was rate limited or throttled.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              retryAfter:
+                type: integer
+                description: Seconds until the client may retry.
+              throttled:
+                type: boolean
+    AutomationBlocked:
+      description: Submission was blocked by bot detection safeguards.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              reason:
+                type: string

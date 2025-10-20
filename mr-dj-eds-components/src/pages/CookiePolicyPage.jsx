@@ -2,8 +2,13 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import Header from '../components/Molecules/Header.jsx';
 import Footer from '../components/Organisms/Footer.jsx';
+import { generateBreadcrumbSchema } from '../utils/schemaOrg.js';
+import { createSimpleBreadcrumbs } from '../utils/breadcrumbs.js';
 
 const CookiePolicyPage = () => {
+  const breadcrumbs = createSimpleBreadcrumbs('Cookie Policy', '/cookie-policy');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+
   return (
     <div className="CookiePolicyPage bg-gray-50">
       <Helmet>
@@ -12,6 +17,7 @@ const CookiePolicyPage = () => {
           name="description"
           content="Cookieverklaring van Mr. DJ. Lees hoe wij cookies gebruiken op onze website en hoe u uw cookievoorkeuren kunt beheren."
         />
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />
