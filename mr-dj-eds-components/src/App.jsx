@@ -1,6 +1,6 @@
 
 import { Routes, Route, useParams, useLocation } from 'react-router-dom';
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import CookieConsent from './components/Molecules/CookieConsent.jsx';
 import WhatsAppButton from './components/Atoms/WhatsAppButton.jsx';
 import { getOrAssignVariant, pushVariantToGTM } from './utils/abTesting.js';
@@ -25,37 +25,93 @@ const ContactPage = React.lazy(() => import('./pages/ContactPage.jsx'));
 const PrivacyPolicyPage = React.lazy(() => import('./pages/PrivacyPolicyPage.jsx'));
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage.jsx'));
 const TermsConditionsPage = React.lazy(() => import('./pages/TermsConditionsPage.jsx'));
-import { getLocalSeoDataBySlug } from './data/local_seo_data.js';
-import { getLocalSeoBruiloftDataBySlug } from './data/local_seo_bruiloft_data.js';
 import './App.css';
 
 // Component to handle dynamic data fetching and rendering for local SEO pages
 // T12: A/B Testing Framework - Automatic assignment with cookie persistence
 // Moved to utils/abTesting.js for better organization
 
+const LocalSeoPageSkeleton = () => (
+  <div className="p-10">
+    <div className="max-w-5xl mx-auto animate-pulse space-y-6">
+      <div className="h-10 bg-gray-200 rounded" />
+      <div className="h-4 bg-gray-200 rounded w-3/4" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="h-40 bg-gray-200 rounded" />
+        <div className="h-40 bg-gray-200 rounded" />
+        <div className="h-40 bg-gray-200 rounded" />
+      </div>
+      <div className="space-y-3">
+        <div className="h-4 bg-gray-200 rounded" />
+        <div className="h-4 bg-gray-200 rounded w-5/6" />
+        <div className="h-4 bg-gray-200 rounded w-2/3" />
+      </div>
+    </div>
+  </div>
+);
+
 const LocalSeoPageWrapper = () => {
   const { citySlug } = useParams();
   const location = useLocation();
+  const [data, setData] = useState(null);
+  const [status, setStatus] = useState('loading');
 
-  let data = null;
-  const normalizedSlug = citySlug ? citySlug.toLowerCase() : '';
-  const isBruiloftPage = location.pathname.startsWith('/bruiloft-dj-');
-  const fullSlug = isBruiloftPage ? `bruiloft-dj-${normalizedSlug}` : normalizedSlug;
+  useEffect(() => {
+    let isActive = true;
 
-  // T11: SEA Setup - Placeholder for tracking parameter logic
-  // In a real application, you would parse the URL for tracking parameters (e.g., utm_source, gclid)
-  // and potentially store them in a state management system or dataLayer.
-  const urlParams = new URLSearchParams(location.search);
-  if (isBruiloftPage) {
-    // For Bruiloft DJ pages, append the prefix expected by the dataset (e.g., bruiloft-dj-eindhoven)
-    data = getLocalSeoBruiloftDataBySlug(fullSlug);
-  } else {
-    // For general DJ pages, the slug is just the city name (e.g., eindhoven)
-    data = getLocalSeoDataBySlug(fullSlug);
+    const loadLocalSeoData = async () => {
+      setStatus('loading');
+
+      try {
+        const isBruiloftPage = location.pathname.startsWith('/bruiloft-dj-');
+        const normalizedSlug = (citySlug || '').toLowerCase();
+        const dataModule = isBruiloftPage
+          ? await import('./data/local_seo_bruiloft_data.js')
+          : await import('./data/local_seo_data.js');
+
+        const normalizeSlug = (slug) => slug.replace(/^bruiloft-dj-/, '');
+        const slugWithoutPrefix = normalizeSlug(normalizedSlug);
+        const lookupSlug = isBruiloftPage ? `bruiloft-dj-${slugWithoutPrefix}` : slugWithoutPrefix;
+
+        const lookupFn = isBruiloftPage
+          ? dataModule.getLocalSeoBruiloftDataBySlug
+          : dataModule.getLocalSeoDataBySlug;
+
+        const resolvedData = typeof lookupFn === 'function' ? lookupFn(lookupSlug) : null;
+
+        if (!isActive) {
+          return;
+        }
+
+        if (resolvedData) {
+          setData(resolvedData);
+          setStatus('ready');
+        } else {
+          setData(null);
+          setStatus('not-found');
+        }
+      } catch (error) {
+        console.error('Failed to load local SEO data', error);
+        if (!isActive) {
+          return;
+        }
+        setData(null);
+        setStatus('not-found');
+      }
+    };
+
+    loadLocalSeoData();
+
+    return () => {
+      isActive = false;
+    };
+  }, [citySlug, location.pathname]);
+
+  if (status === 'loading') {
+    return <LocalSeoPageSkeleton />;
   }
 
-  if (!data) {
-    // In a real app, this would be a 404 page
+  if (status === 'not-found') {
     return <div className="p-10 text-center text-red-500">404 - Pagina voor stad "{citySlug}" niet gevonden.</div>;
   }
 
