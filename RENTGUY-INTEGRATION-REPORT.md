@@ -396,8 +396,8 @@ cd /opt/rentguy/onboarding/mr-dj-onboarding-enhanced
 sed -i 's/onboarding.rentguy/mr-dj.rentguy.nl/g' docker-compose.yml
 
 # 2. Build and deploy
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 
 # 3. Verify deployment
 docker ps | grep mr-dj-onboarding
@@ -540,7 +540,7 @@ export const useBookingPrefill = () => {
 
 1. **Deploy Onboarding Portal** ✅ HIGH PRIORITY
    - Fix domain configuration (use correct domain: mr-dj.rentguy.nl)
-   - Deploy container using existing docker-compose
+   - Deploy container using the existing Docker Compose stack
    - Test all 10 wizard steps
    - **Estimated Time**: 2-3 hours
 
@@ -850,11 +850,11 @@ cd /opt/rentguy/onboarding/mr-dj-onboarding-enhanced
 sed -i 's/Host(`onboarding.rentguy`)/Host(`mr-dj.rentguy.nl`)/' docker-compose.yml
 
 # Build and deploy
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 
 # Check status
-docker-compose ps
+docker compose ps
 docker logs mr-dj-onboarding
 
 # Test deployment
@@ -866,7 +866,7 @@ curl -I https://mr-dj.rentguy.nl
 cd /opt/mr-dj
 
 # Check containers
-docker-compose ps
+docker compose ps
 
 # Check backend API
 curl https://mr-dj.sevensa.nl/api/health
