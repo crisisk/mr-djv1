@@ -1,25 +1,39 @@
+function setupLoggerMock() {
+  const childLogger = {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    child: jest.fn(() => childLogger)
+  };
+
+  const rootLogger = {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    child: jest.fn(() => childLogger)
+  };
+
+  jest.doMock('../lib/logger', () => ({
+    logger: rootLogger
+  }));
+
+  return { rootLogger, childLogger };
+}
+
 describe('rateLimiter middleware', () => {
-  let server;
-  let baseUrl;
+  let rateLimiter;
+  let loggerMocks;
 
   beforeEach(async () => {
     jest.resetModules();
-    process.env.RATE_LIMIT_WINDOW_MS = '100';
-    process.env.RATE_LIMIT_MAX = '2';
-
-    const express = require('express');
-    const http = require('http');
-    const rateLimiter = require('../middleware/rateLimiter');
-
-    const app = express();
-    app.get('/test', rateLimiter, (_req, res) => {
-      res.json({ ok: true });
-    });
-
-    server = http.createServer(app);
-    await new Promise((resolve) => server.listen(0, resolve));
-    const { port } = server.address();
-    baseUrl = `http://127.0.0.1:${port}`;
+    jest.useFakeTimers();
+    loggerMocks = setupLoggerMock();
+    jest.doMock('../config', () => ({
+      rateLimit: { windowMs: 100, max: 2 }
+    }));
+    rateLimiter = require('../middleware/rateLimiter');
   });
 
   afterEach(async () => {
@@ -59,6 +73,13 @@ describe('rateLimiter middleware', () => {
       error: 'Too many requests',
       retryAfter: expect.any(Number)
     });
+    expect(loggerMocks.rootLogger.child).toHaveBeenCalledWith(
+      expect.objectContaining({ middleware: 'rateLimiter', identifier: '10.0.0.1' })
+    );
+    expect(loggerMocks.childLogger.warn).toHaveBeenCalledWith(
+      'Rate limit exceeded',
+      expect.objectContaining({ retryAfterSeconds: expect.any(Number) })
+    );
 
     await new Promise((resolve) => setTimeout(resolve, 150));
 
@@ -74,9 +95,8 @@ describe('error handlers', () => {
   });
 
   it('returns JSON responses with stack traces outside production', () => {
+    const loggerMocks = setupLoggerMock();
     jest.doMock('../config', () => ({ env: 'development' }));
-    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const { errorHandler, notFoundHandler } = require('../middleware/errors');
 
@@ -97,13 +117,19 @@ describe('error handlers', () => {
       message: 'kapot',
       stack: expect.any(String)
     }));
-    expect(consoleWarn).toHaveBeenCalled();
-    expect(consoleError).not.toHaveBeenCalled();
+    expect(loggerMocks.rootLogger.child).toHaveBeenCalledWith(
+      expect.objectContaining({ middleware: 'errorHandler', method: 'GET', path: '/test' })
+    );
+    expect(loggerMocks.childLogger.warn).toHaveBeenCalledWith(
+      'Client error handled',
+      expect.objectContaining({ err })
+    );
+    expect(loggerMocks.childLogger.error).not.toHaveBeenCalled();
   });
 
   it('hides stack traces and logs server errors in production', () => {
+    const loggerMocks = setupLoggerMock();
     jest.doMock('../config', () => ({ env: 'production' }));
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const { errorHandler } = require('../middleware/errors');
 
@@ -115,12 +141,15 @@ describe('error handlers', () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
-    expect(consoleError).toHaveBeenCalled();
+    expect(loggerMocks.childLogger.error).toHaveBeenCalledWith(
+      'Unhandled server error',
+      expect.objectContaining({ err })
+    );
   });
 
   it('returns a helpful message for JSON parse errors', () => {
+    const loggerMocks = setupLoggerMock();
     jest.doMock('../config', () => ({ env: 'production' }));
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     const { errorHandler } = require('../middleware/errors');
 
     const err = new Error('Unexpected token');
@@ -134,7 +163,10 @@ describe('error handlers', () => {
       error: 'Ongeldige JSON payload',
       details: 'Controleer of de JSON body correct is geformatteerd.'
     });
-    expect(consoleError).toHaveBeenCalled();
+    expect(loggerMocks.childLogger.error).toHaveBeenCalledWith(
+      'Unhandled server error',
+      expect.objectContaining({ err })
+    );
   });
 });
 
@@ -152,6 +184,7 @@ describe('dashboard auth middleware', () => {
   });
 
   function loadMiddleware(overrides = {}) {
+    setupLoggerMock();
     jest.doMock('../config', () => ({
       dashboard: {
         enabled: true,

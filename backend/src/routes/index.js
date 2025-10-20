@@ -24,7 +24,8 @@ router.get('/', (_req, res) => {
     reviews: '/reviews',
     integrations: {
       rentGuy: '/integrations/rentguy/status',
-      sevensa: '/integrations/sevensa/status'
+      sevensa: '/integrations/sevensa/status',
+      crmExport: '/integrations/crm/export'
     },
     metrics: '/metrics/queues',
     personalization: {

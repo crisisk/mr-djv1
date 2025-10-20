@@ -105,8 +105,8 @@
 ---
 
 ### T2.4: Schema.org Structured Data Verificatie
-**Status**: ⚪ Te doen  
-**Beschrijving**: Verifieer dat Schema.org markup correct is geïmplementeerd  
+**Status**: ⚪ Te doen
+**Beschrijving**: Verifieer dat Schema.org markup correct is geïmplementeerd
 **Actie**:
 1. Test met Google Rich Results Test: https://search.google.com/test/rich-results
 2. Voeg LocalBusiness schema toe voor elke stad-pagina
@@ -114,8 +114,22 @@
 4. Event schema voor DJ services
 5. BreadcrumbList voor navigatie
 
-**Prioriteit**: 🟡 Medium (SEO)  
+**Prioriteit**: 🟡 Medium (SEO)
 **Geschatte tijd**: 2-3 uur
+
+---
+
+### T2.5: Testimonials Data Centraliseren & API-integratie
+**Status**: ⚪ Te doen
+**Beschrijving**: Testimonials component gebruikt momenteel hardcoded data; koppel aan backend of CMS zodat nieuwe reviews automatisch zichtbaar worden.
+**Actie**:
+1. Ontwerp API-endpoint `/api/testimonials` met velden: `quote`, `author`, `event`, `platform`, `rating`, `date`.
+2. Voeg fallback-laag toe zodat component blijft renderen bij API-fouten (loading, error states, retries).
+3. Synchroniseer featured testimonial met marketing database of CMS (handmatig toggle via `isFeatured` vlag).
+4. Schrijf unit tests om datamapping en toegankelijkheidslabels te controleren.
+
+**Prioriteit**: 🟡 Medium
+**Geschatte tijd**: 4 uur
 
 ---
 
