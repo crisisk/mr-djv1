@@ -1,0 +1,435 @@
+openapi: 3.0.3
+info:
+  title: Mister DJ API
+  version: 1.0.0
+  description: |
+    HTTP API for Mister DJ marketing site integrations, lead capture and personalization services.
+servers:
+  - url: /
+    description: Default server
+paths:
+  /:
+    get:
+      summary: List available API endpoints
+      tags: [Meta]
+      responses:
+        '200':
+          description: Overview of the API entry point.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  version:
+                    type: string
+                  endpoints:
+                    type: object
+                    description: Map of primary endpoint groups.
+  /health:
+    get:
+      summary: Service health details
+      tags: [Meta]
+      responses:
+        '200':
+          description: Current health state of the service and dependencies.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                  service:
+                    type: string
+                  version:
+                    type: string
+                  environment:
+                    type: string
+                  uptime:
+                    type: number
+                  dependencies:
+                    type: object
+  /packages:
+    get:
+      summary: Retrieve configured DJ packages
+      tags: [Content]
+      responses:
+        '200':
+          description: Packages returned successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  packages:
+                    type: array
+                    items:
+                      type: object
+                  source:
+                    type: string
+                  cacheStatus:
+                    type: string
+  /contact:
+    post:
+      summary: Submit a contact request
+      tags: [Leads]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactRequest'
+      responses:
+        '201':
+          description: Contact saved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /callback-request:
+    post:
+      summary: Request a callback
+      tags: [Leads]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallbackRequest'
+      responses:
+        '201':
+          description: Callback request stored successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /bookings:
+    get:
+      summary: List recently captured bookings
+      tags: [Leads]
+      responses:
+        '200':
+          description: Booking list retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookings:
+                    type: array
+                    items:
+                      type: object
+                  persisted:
+                    type: boolean
+    post:
+      summary: Submit a booking request
+      tags: [Leads]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Booking stored successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /reviews:
+    get:
+      summary: Retrieve approved customer reviews
+      tags: [Content]
+      responses:
+        '200':
+          description: Reviews returned successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      type: object
+                  source:
+                    type: string
+                  cacheStatus:
+                    type: string
+  /integrations/rentguy/status:
+    get:
+      summary: RentGuy integration status
+      tags: [Integrations]
+      responses:
+        '200':
+          description: RentGuy queue and connectivity information.
+          content:
+            application/json:
+              schema:
+                type: object
+  /integrations/sevensa/status:
+    get:
+      summary: Sevensa integration status
+      tags: [Integrations]
+      responses:
+        '200':
+          description: Sevensa queue and connectivity information.
+          content:
+            application/json:
+              schema:
+                type: object
+  /metrics/queues:
+    get:
+      summary: Background queue metrics
+      tags: [Operations]
+      responses:
+        '200':
+          description: Aggregated metrics for RentGuy and Sevensa queues.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  queues:
+                    type: object
+                  generatedAt:
+                    type: string
+                    format: date-time
+  /personalization/keyword:
+    get:
+      summary: Resolve personalization variant for a keyword query
+      tags: [Personalization]
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Primary keyword to resolve.
+        - in: query
+          name: keywords
+          schema:
+            type: string
+          description: Comma-separated list of keywords.
+        - in: query
+          name: persona
+          schema:
+            type: string
+        - in: query
+          name: intent
+          schema:
+            type: string
+        - in: query
+          name: landing
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Matching personalization variant and metadata.
+          content:
+            application/json:
+              schema:
+                type: object
+  /personalization/events:
+    post:
+      summary: Record personalization analytics event
+      tags: [Personalization]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalizationEvent'
+      responses:
+        '201':
+          description: Event captured successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  event:
+                    type: object
+        '422':
+          $ref: '#/components/responses/ValidationError'
+components:
+  schemas:
+    ContactRequest:
+      type: object
+      required: [name, email, phone, eventType]
+      properties:
+        name:
+          type: string
+          example: Jan Jansen
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        message:
+          type: string
+          maxLength: 2000
+        eventType:
+          type: string
+        eventDate:
+          type: string
+          format: date
+        packageId:
+          type: string
+    ContactResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        contactId:
+          type: string
+        status:
+          type: string
+        persisted:
+          type: boolean
+        eventType:
+          type: string
+        eventDate:
+          type: string
+          format: date-time
+        requestedPackage:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        rentGuySync:
+          type: object
+          nullable: true
+        sevensaSync:
+          type: object
+          nullable: true
+    CallbackRequest:
+      type: object
+      required: [name, phone]
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        eventType:
+          type: string
+    CallbackResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        callbackId:
+          type: string
+        status:
+          type: string
+        persisted:
+          type: boolean
+        eventType:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        rentGuySync:
+          type: object
+          nullable: true
+        sevensaSync:
+          type: object
+          nullable: true
+    BookingRequest:
+      type: object
+      required: [name, email, phone, eventType]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        eventType:
+          type: string
+        eventDate:
+          type: string
+          format: date
+        message:
+          type: string
+          maxLength: 4000
+        packageId:
+          type: string
+    BookingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        bookingId:
+          type: string
+        status:
+          type: string
+        persisted:
+          type: boolean
+        rentGuySync:
+          type: object
+          nullable: true
+    PersonalizationEvent:
+      type: object
+      required: [type, variantId]
+      properties:
+        type:
+          type: string
+          enum:
+            - impression
+            - cta_click
+            - conversion
+            - journey_step
+            - form_start
+            - form_submit
+        variantId:
+          type: string
+        keyword:
+          type: string
+          nullable: true
+        payload:
+          type: object
+        context:
+          type: object
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+  responses:
+    ValidationError:
+      description: Request validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'

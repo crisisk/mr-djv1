@@ -115,6 +115,49 @@ const renderPackages = (packages, analytics) => {
   });
 };
 
+const ensureReviewModerationStyles = () => {
+  if (document.getElementById('review-moderation-styles')) return;
+
+  const style = document.createElement('style');
+  style.id = 'review-moderation-styles';
+  style.textContent = `
+    .review-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.75rem;
+      padding: 0.15rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      background: rgba(255, 159, 28, 0.1);
+      color: #c56f00;
+    }
+
+    .review-status::before {
+      content: '';
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 999px;
+      background: currentColor;
+      display: inline-block;
+    }
+
+    .review-status.review-status--pending {
+      background: rgba(255, 159, 28, 0.18);
+      color: #c56f00;
+    }
+
+    .review-status.review-status--approved {
+      background: rgba(0, 176, 116, 0.12);
+      color: #007a55;
+    }
+  `;
+  document.head.appendChild(style);
+};
+
 const renderReviews = (reviews, analytics) => {
   const container = document.getElementById('reviews-container');
   if (!container) return;
@@ -123,6 +166,8 @@ const renderReviews = (reviews, analytics) => {
     container.innerHTML = '<p class="loading">Geen reviews beschikbaar</p>';
     return;
   }
+
+  ensureReviewModerationStyles();
 
   container.innerHTML = reviews
     .map(
@@ -134,6 +179,11 @@ const renderReviews = (reviews, analytics) => {
             <strong>${review.name || review.author}</strong>
             <span>${review.eventType || review.event_type || ''}</span>
           </div>
+          ${
+            review.moderationState && review.moderationState !== 'approved'
+              ? `<span class="review-status review-status--${review.moderationState}">In afwachting van moderatie</span>`
+              : ''
+          }
         </article>
       `
     )
@@ -218,6 +268,7 @@ export const initReviewSection = async (analytics) => {
       eventType: `${review.eventType} ${review.eventDate || ''}`.trim(),
       rating: review.rating,
       reviewText: review.quote,
+      moderationState: review.moderationState || 'approved',
     }));
     renderReviews(formatted, analytics);
     writeCache(CACHE_KEYS.reviews, formatted);

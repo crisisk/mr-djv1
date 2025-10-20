@@ -1,66 +1,90 @@
+function setupLoggerMock() {
+  const childLogger = {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    child: jest.fn(() => childLogger)
+  };
+
+  const rootLogger = {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    child: jest.fn(() => childLogger)
+  };
+
+  jest.doMock('../lib/logger', () => ({
+    logger: rootLogger
+  }));
+
+  return { rootLogger, childLogger };
+}
+
 describe('rateLimiter middleware', () => {
   let rateLimiter;
+  let loggerMocks;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetModules();
     jest.useFakeTimers();
+    loggerMocks = setupLoggerMock();
     jest.doMock('../config', () => ({
       rateLimit: { windowMs: 100, max: 2 }
     }));
     rateLimiter = require('../middleware/rateLimiter');
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
+  afterEach(async () => {
+    if (server) {
+      await new Promise((resolve, reject) => {
+        server.close((error) => (error ? reject(error) : resolve()));
+      });
+      server = null;
+    }
+
+    delete process.env.RATE_LIMIT_WINDOW_MS;
+    delete process.env.RATE_LIMIT_MAX;
     jest.resetModules();
-    jest.clearAllMocks();
   });
 
-  function createRequest(ip = '127.0.0.1') {
-    return { ip };
+  async function getTest() {
+    const response = await fetch(`${baseUrl}/test`);
+    const body = await response.json();
+    return { status: response.status, body };
   }
 
-  function createResponse() {
-    return {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
-    };
-  }
+  it('allows requests within the configured window', async () => {
+    const first = await getTest();
+    const second = await getTest();
 
-  it('allows requests within the configured window', () => {
-    const req = createRequest();
-    const res = createResponse();
-    const next = jest.fn();
-
-    rateLimiter(req, res, next);
-    rateLimiter(req, res, next);
-
-    expect(next).toHaveBeenCalledTimes(2);
-    expect(res.status).not.toHaveBeenCalled();
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
   });
 
-  it('blocks requests that exceed the limit and recovers after the window', () => {
-    const req = createRequest('10.0.0.1');
-    const res = createResponse();
-    const next = jest.fn();
+  it('blocks requests that exceed the limit and recovers after the window', async () => {
+    await getTest();
+    await getTest();
+    const limited = await getTest();
 
-    rateLimiter(req, res, next);
-    rateLimiter(req, res, next);
-    rateLimiter(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(429);
-    expect(res.json).toHaveBeenCalledWith({
+    expect(limited.status).toBe(429);
+    expect(limited.body).toEqual({
       error: 'Too many requests',
       retryAfter: expect.any(Number)
     });
+    expect(loggerMocks.rootLogger.child).toHaveBeenCalledWith(
+      expect.objectContaining({ middleware: 'rateLimiter', identifier: '10.0.0.1' })
+    );
+    expect(loggerMocks.childLogger.warn).toHaveBeenCalledWith(
+      'Rate limit exceeded',
+      expect.objectContaining({ retryAfterSeconds: expect.any(Number) })
+    );
 
-    jest.advanceTimersByTime(150);
-    res.status.mockClear();
-    res.json.mockClear();
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
-    rateLimiter(req, res, next);
-    expect(res.status).not.toHaveBeenCalled();
-    expect(next).toHaveBeenCalledTimes(3);
+    const afterReset = await getTest();
+    expect(afterReset.status).toBe(200);
   });
 });
 
@@ -71,9 +95,8 @@ describe('error handlers', () => {
   });
 
   it('returns JSON responses with stack traces outside production', () => {
+    const loggerMocks = setupLoggerMock();
     jest.doMock('../config', () => ({ env: 'development' }));
-    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const { errorHandler, notFoundHandler } = require('../middleware/errors');
 
@@ -94,13 +117,19 @@ describe('error handlers', () => {
       message: 'kapot',
       stack: expect.any(String)
     }));
-    expect(consoleWarn).toHaveBeenCalled();
-    expect(consoleError).not.toHaveBeenCalled();
+    expect(loggerMocks.rootLogger.child).toHaveBeenCalledWith(
+      expect.objectContaining({ middleware: 'errorHandler', method: 'GET', path: '/test' })
+    );
+    expect(loggerMocks.childLogger.warn).toHaveBeenCalledWith(
+      'Client error handled',
+      expect.objectContaining({ err })
+    );
+    expect(loggerMocks.childLogger.error).not.toHaveBeenCalled();
   });
 
   it('hides stack traces and logs server errors in production', () => {
+    const loggerMocks = setupLoggerMock();
     jest.doMock('../config', () => ({ env: 'production' }));
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const { errorHandler } = require('../middleware/errors');
 
@@ -112,12 +141,15 @@ describe('error handlers', () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
-    expect(consoleError).toHaveBeenCalled();
+    expect(loggerMocks.childLogger.error).toHaveBeenCalledWith(
+      'Unhandled server error',
+      expect.objectContaining({ err })
+    );
   });
 
   it('returns a helpful message for JSON parse errors', () => {
+    const loggerMocks = setupLoggerMock();
     jest.doMock('../config', () => ({ env: 'production' }));
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     const { errorHandler } = require('../middleware/errors');
 
     const err = new Error('Unexpected token');
@@ -131,7 +163,10 @@ describe('error handlers', () => {
       error: 'Ongeldige JSON payload',
       details: 'Controleer of de JSON body correct is geformatteerd.'
     });
-    expect(consoleError).toHaveBeenCalled();
+    expect(loggerMocks.childLogger.error).toHaveBeenCalledWith(
+      'Unhandled server error',
+      expect.objectContaining({ err })
+    );
   });
 });
 
@@ -152,19 +187,7 @@ describe('dashboard auth middleware', () => {
   });
 
   function loadMiddleware(overrides = {}) {
-    process.env = {
-      ...ORIGINAL_ENV,
-      CONFIG_DASHBOARD_USER: 'admin',
-      CONFIG_DASHBOARD_PASS: 'secret',
-      ...overrides.env
-    };
-
-    for (const [key, value] of Object.entries(process.env)) {
-      if (value === undefined) {
-        delete process.env[key];
-      }
-    }
-
+    setupLoggerMock();
     jest.doMock('../config', () => ({
       dashboard: {
         enabled: true,

@@ -1,0 +1,17 @@
+{
+  "name": "MR DJ Entertainment",
+  "short_name": "MR DJ",
+  "description": "Discover MR DJ's entertainment services and book unforgettable events offline or online.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0d17",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 24x24 32x32 48x48 64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

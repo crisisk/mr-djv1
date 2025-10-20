@@ -3,6 +3,98 @@ const path = require('path');
 const { spawn } = require('child_process');
 const { runQuery } = require('../lib/db');
 
+/**
+ * @typedef {Object} CityAutomationContext
+ * @property {string} repoRoot
+ * @property {Object} fs
+ * @property {?Function} fetchImpl
+ * @property {?string} seoApiUrl
+ * @property {?string} seoApiKey
+ * @property {?string} seoKeywordSetId
+ * @property {string} seoRegion
+ * @property {Array<string>} themeKeywords
+ * @property {string} llmProvider
+ * @property {string} llmModel
+ * @property {?string} llmApiKey
+ * @property {?string} approvalEmail
+ * @property {boolean} dryRun
+ * @property {Array<string>} bannedClaims
+ * @property {string} reviewFilePath
+ * @property {string} reportFilePath
+ * @property {string} citiesFilePath
+ * @property {string} generatorScriptPath
+ * @property {number} limit
+ */
+
+/**
+ * @typedef {Object} KeywordEntry
+ * @property {string} keyword
+ * @property {?string} [city]
+ * @property {?number} [searchVolume]
+ * @property {Array<string>} [serpFeatures]
+ * @property {?string} [region]
+ * @property {?string} [country]
+ * @property {?string} [geo]
+ */
+
+/**
+ * @typedef {Object} FilteredKeywordEntry
+ * @property {string} keyword
+ * @property {?string} [city]
+ * @property {?number} [searchVolume]
+ * @property {Array<string>} [serpFeatures]
+ * @property {?string} [region]
+ * @property {?string} [country]
+ * @property {?string} [geo]
+ * @property {string} slug
+ */
+
+/**
+ * @typedef {Object} GeneratedCityContent
+ * @property {string} slug
+ * @property {string} city
+ * @property {string} intro
+ * @property {Array<Object>} cases
+ * @property {Array<string>} venues
+ * @property {Array<Object>} faqs
+ */
+
+/**
+ * @typedef {Object} TemplateContentParams
+ * @property {string} keyword
+ * @property {string} city
+ * @property {?number} [searchVolume]
+ * @property {Array<string>} [serpFeatures]
+ */
+
+/**
+ * @typedef {Object} WorkflowResultItem
+ * @property {string} slug
+ * @property {string} keyword
+ * @property {?string} city
+ * @property {?number} [searchVolume]
+ * @property {Array<string>} [serpFeatures]
+ * @property {GeneratedCityContent} content
+ * @property {Array<string>} [issues]
+ */
+
+/**
+ * @typedef {Object} GeneratorSummary
+ * @property {boolean} success
+ * @property {boolean} skipped
+ * @property {string} script
+ * @property {?string} error
+ */
+
+/**
+ * @typedef {Object} WorkflowSummary
+ * @property {number} processed
+ * @property {Array<WorkflowResultItem>} approved
+ * @property {Array<WorkflowResultItem>} flagged
+ * @property {number} skipped
+ * @property {?GeneratorSummary} [generator]
+ */
+
 const DEFAULT_THEME_KEYWORDS = [
   'dj',
   'sax',
@@ -30,6 +122,12 @@ const DEFAULT_BANNED_CLAIMS = [
 const REVIEW_FILE_HEADER =
   '# City content automation review queue\n\nDit document bevat content die handmatige controle vereist voordat de update kan worden gepusht naar productie.\n\n';
 
+/**
+ * Creates a normalized execution context that can be overridden during tests.
+ *
+ * @param {Object} [overrides]
+ * @returns {CityAutomationContext}
+ */
 function resolveContext(overrides = {}) {
   const repoRoot = overrides.repoRoot || path.join(__dirname, '../../..');
   const defaultContext = {
@@ -70,6 +168,16 @@ function resolveContext(overrides = {}) {
   );
 
   return context;
+}
+
+function ping(contextOverrides = {}) {
+  const context = resolveContext(contextOverrides);
+  return {
+    ok: true,
+    seoAutomationConfigured: Boolean(context.seoApiUrl),
+    llmProvider: context.llmProvider,
+    dryRun: Boolean(context.dryRun)
+  };
 }
 
 function normalize(value) {
@@ -117,6 +225,12 @@ function extractCityFromKeyword(keyword) {
   return candidate.length >= 3 ? candidate : null;
 }
 
+/**
+ * Builds a deterministic slug for a keyword or city entry.
+ *
+ * @param {KeywordEntry} item
+ * @returns {string|null}
+ */
 function buildSlugFromKeyword(item) {
   if (!item) {
     return null;
@@ -146,6 +260,12 @@ function buildSlugFromKeyword(item) {
   return null;
 }
 
+/**
+ * Fetches keyword candidates from the SEO automation API.
+ *
+ * @param {Object} [contextOverrides]
+ * @returns {Promise<{ keywords: KeywordEntry[] }>}
+ */
 async function fetchKeywordSet(contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   const fetchFn = context.fetchImpl;
@@ -198,6 +318,13 @@ function matchesRegion(entry, region) {
   return fields.some((field) => typeof field === 'string' && normalize(field).includes(regionNormalized));
 }
 
+/**
+ * Filters the inbound keyword list so only relevant, unique slugs remain.
+ *
+ * @param {Array<KeywordEntry>} [keywords]
+ * @param {Object} [contextOverrides]
+ * @returns {Array<FilteredKeywordEntry>}
+ */
 function filterKeywords(keywords = [], contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   const seenSlugs = new Set();
@@ -230,6 +357,13 @@ function filterKeywords(keywords = [], contextOverrides = {}) {
     }));
 }
 
+/**
+ * Resolves which slugs already exist in Postgres or the local JSON cache.
+ *
+ * @param {Array<string>} slugs
+ * @param {Object} [contextOverrides]
+ * @returns {Promise<Set<string>>}
+ */
 async function lookupExistingSlugs(slugs, contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   const existing = new Set();
@@ -268,6 +402,13 @@ async function lookupExistingSlugs(slugs, contextOverrides = {}) {
   return existing;
 }
 
+/**
+ * Requests generated copy from the configured LLM provider.
+ *
+ * @param {string} prompt
+ * @param {CityAutomationContext} context
+ * @returns {Promise<string|null>}
+ */
 async function callLlm(prompt, context) {
   if (!context.llmApiKey || context.llmProvider === 'template') {
     return null;
@@ -315,6 +456,12 @@ async function callLlm(prompt, context) {
   return null;
 }
 
+/**
+ * Builds templated content when the LLM cannot be used or returns invalid JSON.
+ *
+ * @param {TemplateContentParams} params
+ * @returns {GeneratedCityContent}
+ */
 function buildTemplateContent({ keyword, city, searchVolume, serpFeatures = [] }) {
   const cityName = city || extractCityFromKeyword(keyword) || 'de regio';
   const heroHook = serpFeatures.includes('local pack')
@@ -352,6 +499,13 @@ function buildTemplateContent({ keyword, city, searchVolume, serpFeatures = [] }
   };
 }
 
+/**
+ * Generates SEO landing page content for a city keyword.
+ *
+ * @param {KeywordEntry} entry
+ * @param {Object} [contextOverrides]
+ * @returns {Promise<GeneratedCityContent>}
+ */
 async function generateCityContent(entry, contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   const slug = buildSlugFromKeyword(entry);
@@ -399,6 +553,13 @@ async function generateCityContent(entry, contextOverrides = {}) {
   };
 }
 
+/**
+ * Runs basic QC checks to ensure the generated copy meets editorial standards.
+ *
+ * @param {GeneratedCityContent} content
+ * @param {Object} [contextOverrides]
+ * @returns {{ passed: boolean, issues: string[] }}
+ */
 function qualityCheck(content, contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   const issues = [];
@@ -432,6 +593,13 @@ function qualityCheck(content, contextOverrides = {}) {
   };
 }
 
+/**
+ * Persists approved content into the `cities.json` dataset.
+ *
+ * @param {Array<GeneratedCityContent>} entries
+ * @param {Object} [contextOverrides]
+ * @returns {Promise<{ updated: number }>}
+ */
 async function upsertCityContent(entries, contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   if (!entries.length) {
@@ -459,6 +627,13 @@ async function upsertCityContent(entries, contextOverrides = {}) {
   return { updated: entries.length };
 }
 
+/**
+ * Appends flagged entries to the manual review queue markdown file.
+ *
+ * @param {Array<WorkflowResultItem>} flagged
+ * @param {Object} [contextOverrides]
+ * @returns {Promise<void>}
+ */
 async function appendReviewQueue(flagged, contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   if (!flagged.length) {
@@ -485,6 +660,13 @@ async function appendReviewQueue(flagged, contextOverrides = {}) {
   await context.fs.writeFile(context.reviewFilePath, output.join('\n'), 'utf8');
 }
 
+/**
+ * Writes a run summary for the automation workflow.
+ *
+ * @param {WorkflowSummary} summary
+ * @param {Object} [contextOverrides]
+ * @returns {Promise<void>}
+ */
 async function writeReport(summary, contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   const lines = [
@@ -523,6 +705,12 @@ async function writeReport(summary, contextOverrides = {}) {
   await context.fs.writeFile(context.reportFilePath, `${lines.join('\n')}\n`, 'utf8');
 }
 
+/**
+ * Executes the static site generator after new content is approved.
+ *
+ * @param {Object} [contextOverrides]
+ * @returns {Promise<{ success: boolean, skipped: boolean, script: string, error: string|null }>}
+ */
 async function runStaticGenerator(contextOverrides = {}) {
   const context = resolveContext(contextOverrides);
   if (!context.generatorScriptPath) {
@@ -549,6 +737,15 @@ async function runStaticGenerator(contextOverrides = {}) {
   });
 }
 
+/**
+ * Coordinates the full city content automation pipeline.
+ *
+ * @param {Object} [options]
+ * @param {number} [options.limit]
+ * @param {boolean} [options.dryRun]
+ * @param {Object} [options.contextOverrides]
+ * @returns {Promise<WorkflowSummary>}
+ */
 async function runWorkflow(options = {}) {
   const { limit = 5, dryRun, contextOverrides = {} } = options;
   const context = resolveContext({ ...contextOverrides });
@@ -626,5 +823,6 @@ module.exports = {
   qualityCheck,
   lookupExistingSlugs,
   upsertCityContent,
-  runWorkflow
+  runWorkflow,
+  ping
 };

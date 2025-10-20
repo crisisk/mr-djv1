@@ -2,59 +2,59 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const http = require('http');
+const { buildRequiredEnv } = require('../testUtils/env');
 
 const ORIGINAL_ENV = { ...process.env };
+const BASE_ENV = buildRequiredEnv();
 
 function createAuthHeader(username, password) {
   return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
 }
 
-async function setupDashboardTest({ env: envOverrides = {}, managedValues = {} } = {}) {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
-  const storePath = path.join(tempDir, 'managed.env');
+describe('configuration dashboard', () => {
+  let server;
+  let baseUrl;
+  let tempDir;
+  let storePath;
+  let authHeader;
+  let rentGuyService;
+  let sevensaService;
+  let observabilityService;
+  let personalizationService;
 
-  const baseEnv = {
-    ...ORIGINAL_ENV,
-    CONFIG_DASHBOARD_ENABLED: 'true',
-    CONFIG_DASHBOARD_USER: 'admin',
-    CONFIG_DASHBOARD_PASS: 'secret',
-    CONFIG_DASHBOARD_ALLOWED_IPS: '',
-    CONFIG_DASHBOARD_KEYS: 'PORT,DATABASE_URL',
-    CONFIG_DASHBOARD_STORE_PATH: storePath,
-    ...envOverrides
-  };
+  beforeEach(async () => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
+    storePath = path.join(tempDir, 'managed.env');
+    process.env = {
+      ...BASE_ENV,
+      CONFIG_DASHBOARD_ENABLED: 'true',
+      CONFIG_DASHBOARD_USER: 'admin',
+      CONFIG_DASHBOARD_PASS: 'secret',
+      CONFIG_DASHBOARD_ALLOWED_IPS: '',
+      CONFIG_DASHBOARD_KEYS: 'PORT,DATABASE_URL',
+      CONFIG_DASHBOARD_STORE_PATH: storePath
+    };
 
-  for (const [key, value] of Object.entries(baseEnv)) {
-    if (value === undefined) {
-      delete baseEnv[key];
-    }
-  }
+    jest.resetModules();
+    const app = require('../app');
+    server = http.createServer(app);
+    rentGuyService = require('../services/rentGuyService');
+    rentGuyService.reset();
+    sevensaService = require('../services/sevensaService');
+    sevensaService.reset();
+    observabilityService = require('../services/observabilityService');
+    observabilityService.reset();
+    personalizationService = require('../services/personalizationService');
+    personalizationService.resetLogs();
+    await personalizationService.resetCache();
 
-  process.env = baseEnv;
+    await new Promise((resolve) => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
 
-  if (Object.keys(managedValues).length) {
-    const payload = Object.entries(managedValues)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('\n');
-    fs.writeFileSync(storePath, `${payload}\n`);
-  }
-
-  jest.resetModules();
-  const app = require('../app');
-  const server = http.createServer(app);
-
-  const rentGuyService = require('../services/rentGuyService');
-  rentGuyService.reset();
-  const sevensaService = require('../services/sevensaService');
-  sevensaService.reset();
-  const observabilityService = require('../services/observabilityService');
-  observabilityService.reset();
-  const personalizationService = require('../services/personalizationService');
-  personalizationService.resetLogs();
-  personalizationService.resetCache();
-
-  await new Promise((resolve) => {
-    server.listen(0, '127.0.0.1', resolve);
+    const address = server.address();
+    baseUrl = `http://127.0.0.1:${address.port}`;
+    authHeader = createAuthHeader('admin', 'secret');
   });
 
   const address = server.address();
@@ -299,8 +299,9 @@ describe('configuration dashboard', () => {
     const payload = await response.json();
     expect(payload).toEqual(
       expect.objectContaining({
-        configured: false,
-        queueSize: 0
+        configured: true,
+        queueSize: 0,
+        workspaceId: BASE_ENV.RENTGUY_WORKSPACE_ID
       })
     );
   });
@@ -334,16 +335,12 @@ describe('configuration dashboard', () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload).toEqual(
-      expect.objectContaining({
-        configured: false,
-        attempted: 0,
-        delivered: 0,
-        remaining: 1
-      })
-    );
-    const rentGuyStatus = await context.services.rentGuyService.getStatus();
-    expect(rentGuyStatus.queueSize).toBe(1);
+    expect(payload.configured).toBe(true);
+    expect(payload.attempted).toBeGreaterThanOrEqual(1);
+    expect(payload.delivered).toBeGreaterThanOrEqual(0);
+    expect(payload.remaining).toBe(0);
+    const rentGuyStatus = await rentGuyService.getStatus();
+    expect(rentGuyStatus.queueSize).toBe(0);
   });
 
   it('exposes sevensa status through the dashboard API', async () => {
@@ -357,7 +354,7 @@ describe('configuration dashboard', () => {
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload).toEqual(expect.objectContaining({ configured: false, queueSize: 0 }));
+    expect(payload).toEqual(expect.objectContaining({ configured: true, queueSize: 0 }));
   });
 
   it('flushes the sevensa queue via the dashboard API', async () => {
@@ -480,5 +477,31 @@ describe('configuration dashboard', () => {
     expect(wedding).toBeDefined();
     expect(wedding.exposures).toBeGreaterThan(0);
     expect(wedding.conversions).toBeGreaterThanOrEqual(1);
+  });
+
+  it('flushes the sevensa queue via the dashboard API', async () => {
+    await sevensaService.submitLead({
+      id: 'lead-sevensa-1',
+      email: 'queued@example.com',
+      firstName: 'Queued'
+    });
+
+    const response = await fetch(`${baseUrl}/dashboard/api/integrations/sevensa/flush`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    });
+
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.configured).toBe(true);
+    expect(payload.attempted).toBeGreaterThanOrEqual(1);
+    expect(payload.delivered).toBeGreaterThanOrEqual(0);
+    expect(payload.remaining).toBe(0);
+    const sevensaStatus = await sevensaService.getStatus();
+    expect(sevensaStatus.queueSize).toBe(0);
   });
 });

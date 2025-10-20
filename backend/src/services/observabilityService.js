@@ -2,6 +2,78 @@ const fs = require('fs/promises');
 const path = require('path');
 const { loadVariantsConfig, getExposureLog, getEventLog } = require('./personalizationService');
 
+/**
+ * @typedef {Object} QueueEntry
+ * @property {string} id
+ * @property {string} url
+ * @property {string} device
+ * @property {string} trigger
+ * @property {string[]} tools
+ * @property {string|null} [variantId]
+ * @property {string} status
+ * @property {string} requestedAt
+ * @property {string} [startedAt]
+ * @property {string} [completedAt]
+ */
+
+/**
+ * @typedef {Object} MonitoringRun
+ * @property {string} id
+ * @property {string} url
+ * @property {string} device
+ * @property {string} trigger
+ * @property {string} status
+ * @property {{ performance: number, accessibility: number, bestPractices: number, seo: number }} metrics
+ * @property {{ violations: number, lastScanAt: string }} axe
+ * @property {string} requestedAt
+ * @property {string} startedAt
+ * @property {string} completedAt
+ * @property {string|null} [variantId]
+ */
+
+/**
+ * @typedef {Object} MonitoringSummary
+ * @property {string|null} lastRunAt
+ * @property {{ performance: number, accessibility: number, bestPractices: number, seo: number }|null} averageScores
+ * @property {number} degradedRuns
+ */
+
+/**
+ * @typedef {Object} MonitoringState
+ * @property {string|null} updatedAt
+ * @property {Array<QueueEntry>} queue
+ * @property {Array<MonitoringRun>} runs
+ * @property {Array<Object>} targets
+ * @property {MonitoringSummary} summary
+ */
+
+/**
+ * @typedef {Object} VariantAnalytics
+ * @property {string} variantId
+ * @property {string} label
+ * @property {string|null} experimentId
+ * @property {number} exposures
+ * @property {number} impressions
+ * @property {number} ctaClicks
+ * @property {number} conversions
+ * @property {number} conversionRate
+ * @property {number} ctaClickRate
+ * @property {number} formCompletionRate
+ * @property {Object<string, number>} matchTypes
+ * @property {Array<{ keyword: string, count: number }>} topKeywords
+ * @property {Array<{ type: string, createdAt: string }>} recentEvents
+ */
+
+/**
+ * @typedef {Object} VariantAnalyticsTotals
+ * @property {number} exposures
+ * @property {number} impressions
+ * @property {number} ctaClicks
+ * @property {number} conversions
+ * @property {number} conversionRate
+ * @property {number} ctaClickRate
+ */
+
 const HISTORY_FILE = path.join(__dirname, '../../logs/performance-monitoring.json');
 const HISTORY_LIMIT = 50;
 const DEFAULT_TARGETS = [
@@ -45,6 +117,11 @@ function nowIso() {
   return new Date().toISOString();
 }
 
+/**
+ * Lazily loads persisted monitoring history and ensures in-memory structures are ready.
+ *
+ * @returns {Promise<void>}
+ */
 async function ensureInitialized() {
   if (initialized) {
     return;
@@ -77,6 +154,11 @@ async function ensureInitialized() {
   initialized = true;
 }
 
+/**
+ * Writes monitoring history to disk for durability.
+ *
+ * @returns {Promise<void>}
+ */
 async function persistHistory() {
   try {
     await fs.mkdir(path.dirname(HISTORY_FILE), { recursive: true });
@@ -97,6 +179,17 @@ async function persistHistory() {
   }
 }
 
+/**
+ * Builds a queue entry describing a scheduled monitoring run.
+ *
+ * @param {Object} [options]
+ * @param {string} [options.url]
+ * @param {string} [options.device]
+ * @param {string|null} [options.variantId]
+ * @param {string} [options.trigger]
+ * @param {Array<string>} [options.tools]
+ * @returns {QueueEntry}
+ */
 function createQueueEntry({ url, device = 'desktop', variantId = null, trigger = 'manual', tools } = {}) {
   const normalizedTools = Array.isArray(tools) && tools.length ? tools : ['lighthouse', 'axe'];
   return {
@@ -192,6 +285,17 @@ async function processQueue() {
   }
 }
 
+/**
+ * Queues a new monitoring task and triggers background processing.
+ *
+ * @param {Object} [options]
+ * @param {string} [options.url]
+ * @param {string} [options.device]
+ * @param {string|null} [options.variantId]
+ * @param {string} [options.trigger]
+ * @param {Array<string>} [options.tools]
+ * @returns {Promise<QueueEntry>}
+ */
 async function scheduleRun(options = {}) {
   await ensureInitialized();
   const entry = createQueueEntry(options);
@@ -251,6 +355,11 @@ function computeSummary() {
   };
 }
 
+/**
+ * Retrieves the current monitoring queue, recent runs and summary statistics.
+ *
+ * @returns {Promise<MonitoringState>}
+ */
 async function getMonitoringState() {
   await ensureInitialized();
   return {
@@ -277,6 +386,11 @@ function normalizeRate(numerator, denominator) {
   return Number(((numerator / denominator) * 100).toFixed(2));
 }
 
+/**
+ * Aggregates personalization variant engagement metrics.
+ *
+ * @returns {Promise<{ updatedAt: string, variants: Array<VariantAnalytics>, totals: VariantAnalyticsTotals }>}
+ */
 async function getVariantAnalytics() {
   const [{ variants }] = await Promise.all([loadVariantsConfig(), ensureInitialized()]);
   const exposureLog = getExposureLog();
@@ -392,6 +506,11 @@ async function getVariantAnalytics() {
   };
 }
 
+/**
+ * Clears all runtime state (used during tests).
+ *
+ * @returns {void}
+ */
 function reset() {
   initialized = false;
   history = [];
@@ -400,9 +519,20 @@ function reset() {
   lastUpdated = null;
 }
 
+async function ping() {
+  await ensureInitialized();
+  return {
+    ok: true,
+    queueSize: queue.length,
+    historySize: history.length,
+    lastUpdated
+  };
+}
+
 module.exports = {
   scheduleRun,
   getMonitoringState,
   getVariantAnalytics,
-  reset
+  reset,
+  ping
 };
