@@ -1,5 +1,6 @@
 const app = require('../app');
 const { resetInMemoryStore: resetContactStore } = require('../services/contactService');
+const { resetInMemoryStore: resetCallbackStore } = require('../services/callbackRequestService');
 const { resetInMemoryStore: resetBookingStore } = require('../services/bookingService');
 const {
   resetLogs: resetPersonalizationLogs,
@@ -62,6 +63,7 @@ describe('Mister DJ API', () => {
 
   afterEach(() => {
     resetContactStore();
+    resetCallbackStore();
     resetBookingStore();
     resetPersonalizationLogs();
     resetPersonalizationCache();
@@ -76,6 +78,7 @@ describe('Mister DJ API', () => {
       endpoints: expect.objectContaining({
         health: '/health',
         contact: '/contact',
+        callbackRequest: '/callback-request',
         packages: '/packages',
         bookings: '/bookings',
         reviews: '/reviews'
@@ -110,6 +113,7 @@ describe('Mister DJ API', () => {
         }),
         storage: expect.objectContaining({
           contact: expect.objectContaining({ strategy: expect.any(String) }),
+          callbackRequests: expect.objectContaining({ strategy: expect.any(String) }),
           bookings: expect.objectContaining({ strategy: expect.any(String) })
         })
       })
@@ -152,6 +156,13 @@ describe('Mister DJ API', () => {
     });
   });
 
+  it('rejects invalid callback requests', async () => {
+    const response = await request('POST', '/callback-request', {});
+
+    expect(response.status).toBe(422);
+    expect(response.body).toMatchObject({ error: 'Validatie mislukt' });
+  });
+
   it('returns a helpful error when the JSON payload cannot be parsed', async () => {
     const response = await request('POST', '/contact', '{"name": "Test"', {
       'Content-Type': 'application/json'
@@ -185,6 +196,25 @@ describe('Mister DJ API', () => {
     expect(response.body.contactId).toBeDefined();
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
+    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
+  });
+
+  it('accepts callback requests and queues integrations when no DB is configured', async () => {
+    const response = await request('POST', '/callback-request', {
+      name: 'Bel mij terug',
+      phone: '0612345678',
+      eventType: 'bedrijfsfeest'
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      success: true,
+      persisted: false,
+      status: 'pending',
+      eventType: 'bedrijfsfeest'
+    });
+    expect(response.body.callbackId).toBeDefined();
     expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
     expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
   });

@@ -32,6 +32,7 @@ jest.mock('../services/sevensaService', () => ({
 
 const db = require('../lib/db');
 const contactService = require('../services/contactService');
+const callbackRequestService = require('../services/callbackRequestService');
 const bookingService = require('../services/bookingService');
 const packageService = require('../services/packageService');
 const reviewService = require('../services/reviewService');
@@ -138,6 +139,90 @@ describe('contactService', () => {
       storageStrategy: 'in-memory',
       fallbackQueueSize: 0,
       lastError: 'boom'
+    });
+  });
+});
+
+describe('callbackRequestService', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    callbackRequestService.resetInMemoryStore();
+  });
+
+  it('persists callback requests via the database when available', async () => {
+    const createdAt = new Date('2024-03-01T12:00:00Z');
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 'callback-id',
+          status: 'new',
+          createdAt,
+          eventType: 'Bruiloft'
+        }
+      ]
+    });
+
+    const result = await callbackRequestService.saveCallbackRequest({
+      name: 'Callback Tester',
+      phone: '0612345678',
+      eventType: 'Bruiloft'
+    });
+
+    expect(result).toMatchObject({
+      id: 'callback-id',
+      status: 'new',
+      persisted: true,
+      eventType: 'Bruiloft'
+    });
+    expect(rentGuyService.syncLead).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'callback-id',
+        name: 'Callback Tester',
+        phone: '0612345678',
+        eventType: 'Bruiloft'
+      }),
+      { source: 'callback-request' }
+    );
+    expect(sevensaService.submitLead).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'callback-id',
+        phone: '0612345678',
+        eventType: 'Bruiloft'
+      }),
+      { source: 'callback-request' }
+    );
+  });
+
+  it('falls back to in-memory storage when persistence fails', async () => {
+    db.isConfigured.mockReturnValueOnce(true);
+    db.runQuery.mockRejectedValueOnce(new Error('insert failed'));
+    const errorSpy = mockConsole('error');
+
+    const result = await callbackRequestService.saveCallbackRequest({
+      name: 'Fallback Caller',
+      phone: '0687654321',
+      eventType: 'Bedrijfsfeest'
+    });
+
+    expect(errorSpy).toHaveBeenCalled();
+    expect(result).toMatchObject({
+      status: 'pending',
+      persisted: false,
+      eventType: 'Bedrijfsfeest'
+    });
+    expect(rentGuyService.syncLead).toHaveBeenCalled();
+    expect(sevensaService.submitLead).toHaveBeenCalled();
+  });
+
+  it('exposes the current service status', () => {
+    db.getStatus.mockReturnValueOnce({ connected: true, lastError: null });
+
+    expect(callbackRequestService.getCallbackRequestServiceStatus()).toEqual({
+      databaseConnected: true,
+      storageStrategy: 'postgres',
+      fallbackQueueSize: 0,
+      lastError: null
     });
   });
 });

@@ -3,6 +3,7 @@ const config = require('../config');
 const healthRouter = require('./health');
 const packagesRouter = require('./packages');
 const contactRouter = require('./contact');
+const callbackRequestRouter = require('./callbackRequest');
 const bookingsRouter = require('./bookings');
 const reviewsRouter = require('./reviews');
 const integrationsRouter = require('./integrations');
@@ -16,6 +17,7 @@ router.get('/', (_req, res) => {
   const endpoints = {
     health: '/health',
     contact: '/contact',
+    callbackRequest: '/callback-request',
     bookings: '/bookings',
     packages: '/packages',
     reviews: '/reviews',
@@ -44,6 +46,7 @@ router.get('/', (_req, res) => {
 router.use('/health', healthRouter);
 router.use('/packages', packagesRouter);
 router.use('/contact', contactRouter);
+router.use('/callback-request', callbackRequestRouter);
 router.use('/bookings', bookingsRouter);
 router.use('/reviews', reviewsRouter);
 router.use('/integrations', integrationsRouter);

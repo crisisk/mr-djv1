@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { submitCallbackRequest } from '../../services/api';
 import { trackFormSubmission } from '../../utils/trackConversion';
 
 /**
@@ -14,6 +15,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,41 +27,34 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError(null);
     setIsSubmitting(true);
 
     try {
-      // Track form submission
-      trackFormSubmission(variant, formData.eventType);
+      const response = await submitCallbackRequest(formData);
 
-      // Push to GTM dataLayer
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: 'quick_callback_submit',
-        form_variant: variant,
-        event_type: formData.eventType,
-        form_type: 'callback',
-      });
+      trackFormSubmission(variant, formData.eventType, 'callback');
 
-      // TODO: Replace with actual API endpoint
-      const response = await fetch('/api/callback-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setIsSubmitted(true);
-        // Reset form after 3 seconds
-        setTimeout(() => {
-          setFormData({ name: '', phone: '', eventType: '' });
-          setIsSubmitted(false);
-        }, 3000);
+      if (typeof window !== 'undefined') {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'quick_callback_submit',
+          form_variant: variant,
+          event_type: formData.eventType,
+          form_type: 'callback',
+          callback_id: response.callbackId,
+        });
       }
+
+      setIsSubmitted(true);
+
+      setTimeout(() => {
+        setFormData({ name: '', phone: '', eventType: '' });
+        setIsSubmitted(false);
+      }, 3000);
     } catch (error) {
       console.error('Form submission error:', error);
-      alert('Er ging iets mis. Bel ons direct: 040 - 842 2594');
+      setSubmitError(error.message || 'Er ging iets mis. Probeer het opnieuw.');
     } finally {
       setIsSubmitting(false);
     }
@@ -88,7 +83,14 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         Vul je gegevens in en wij bellen je vandaag nog!
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {submitError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-spacing-md" role="alert" aria-live="assertive">
+          <strong className="font-semibold block mb-1">Oops!</strong>
+          <span>{submitError}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {/* Name Field */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-neutral-dark mb-1">
