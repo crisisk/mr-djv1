@@ -36,7 +36,8 @@ describe('config', () => {
           enabled: false,
           baseUrl: null,
           workspaceId: null,
-          timeoutMs: 5000
+          timeoutMs: 5000,
+          webhookSecrets: []
         },
         sevensa: {
           enabled: false,
@@ -46,7 +47,10 @@ describe('config', () => {
         }
       })
     );
-    expect(config.personalization).toEqual({ automationWebhook: null });
+    expect(config.personalization).toEqual({
+      automationWebhook: null,
+      incomingWebhookSecrets: []
+    });
     expect(config.alerts).toEqual({
       webhooks: [],
       throttleMs: 2 * 60 * 1000,
@@ -90,10 +94,12 @@ describe('config', () => {
         'RENTGUY_API_KEY',
         'RENTGUY_WORKSPACE_ID',
         'RENTGUY_TIMEOUT_MS',
+        'RENTGUY_WEBHOOK_SECRETS',
         'SEVENSA_SUBMIT_URL',
         'SEVENSA_QUEUE_RETRY_DELAY_MS',
         'SEVENSA_QUEUE_MAX_ATTEMPTS',
         'N8N_PERSONALIZATION_WEBHOOK_URL',
+        'PERSONALIZATION_WEBHOOK_SECRETS',
         'SEO_AUTOMATION_API_URL',
         'SEO_AUTOMATION_API_KEY',
         'SEO_AUTOMATION_KEYWORDSET_ID',
@@ -146,7 +152,8 @@ describe('config', () => {
           'RENTGUY_API_BASE_URL',
           'RENTGUY_API_KEY',
           'RENTGUY_WORKSPACE_ID',
-          'RENTGUY_TIMEOUT_MS'
+          'RENTGUY_TIMEOUT_MS',
+          'RENTGUY_WEBHOOK_SECRETS'
         ]
       }),
       expect.objectContaining({
@@ -164,7 +171,7 @@ describe('config', () => {
         label: 'Personalization & CRO',
         description:
           'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
-        keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
+        keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'PERSONALIZATION_WEBHOOK_SECRETS']
       }),
       expect.objectContaining({
         id: 'automation',
@@ -242,7 +249,8 @@ describe('config', () => {
           enabled: false,
           baseUrl: null,
           workspaceId: null,
-          timeoutMs: 5000
+          timeoutMs: 5000,
+          webhookSecrets: []
         },
         sevensa: {
           enabled: false,
@@ -288,13 +296,15 @@ describe('config', () => {
     const config = loadConfig();
 
     expect(config.personalization).toEqual({
-      automationWebhook: 'https://n8n.test/webhook/personalization'
+      automationWebhook: 'https://n8n.test/webhook/personalization',
+      incomingWebhookSecrets: []
     });
     const personalizationSection = config.dashboard.sections.find(
       (section) => section.id === 'personalization'
     );
     expect(personalizationSection).toBeDefined();
     expect(personalizationSection.keys).toContain('N8N_PERSONALIZATION_WEBHOOK_URL');
+    expect(personalizationSection.keys).toContain('PERSONALIZATION_WEBHOOK_SECRETS');
   });
 
   it('supports wildcard CORS configuration', () => {
