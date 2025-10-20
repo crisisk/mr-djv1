@@ -1,0 +1,11 @@
+{
+  "name": "mr-dj-assets-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "optimize-images": "node scripts/optimize-images.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.33.4"
+  }
+}
