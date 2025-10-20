@@ -152,7 +152,7 @@ function cloneVariant(variant) {
  */
 async function loadVariantsConfig(force = false) {
   if (!force) {
-    const cached = cache.get(VARIANT_CACHE_KEY);
+    const cached = await cache.get(VARIANT_CACHE_KEY);
     if (cached) {
       return cached;
     }
@@ -180,7 +180,7 @@ async function loadVariantsConfig(force = false) {
     defaultVariantId: defaultVariant ? defaultVariant.id : null
   };
 
-  cache.set(VARIANT_CACHE_KEY, configObject, VARIANT_CACHE_TTL);
+  await cache.set(VARIANT_CACHE_KEY, configObject, VARIANT_CACHE_TTL);
   return configObject;
 }
 
@@ -192,7 +192,7 @@ async function loadVariantsConfig(force = false) {
  */
 async function loadCities(force = false) {
   if (!force) {
-    const cached = cache.get(CITY_CACHE_KEY);
+    const cached = await cache.get(CITY_CACHE_KEY);
     if (cached) {
       return cached;
     }
@@ -223,7 +223,7 @@ async function loadCities(force = false) {
     };
   });
 
-  cache.set(CITY_CACHE_KEY, cities, VARIANT_CACHE_TTL);
+  await cache.set(CITY_CACHE_KEY, cities, VARIANT_CACHE_TTL);
   return cities;
 }
 
@@ -722,14 +722,17 @@ function resetLogs() {
   eventLog.splice(0, eventLog.length);
 }
 
-/**
- * Clears in-memory caches used by personalization lookups.
- *
- * @returns {void}
- */
-function resetCache() {
-  cache.del(VARIANT_CACHE_KEY);
-  cache.del(CITY_CACHE_KEY);
+async function resetCache() {
+  await Promise.all([cache.del(VARIANT_CACHE_KEY), cache.del(CITY_CACHE_KEY)]);
+}
+
+function ping() {
+  return {
+    ok: true,
+    automationWebhookConfigured: Boolean(config.personalization?.automationWebhook),
+    rentGuyConfigured: Boolean(config.integrations?.rentGuy?.enabled),
+    variantsCached: Boolean(cache.get(VARIANT_CACHE_KEY))
+  };
 }
 
 module.exports = {
@@ -740,5 +743,6 @@ module.exports = {
   resetLogs,
   resetCache,
   loadVariantsConfig,
-  loadCities
+  loadCities,
+  ping
 };

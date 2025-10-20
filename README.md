@@ -19,6 +19,14 @@ chmod +x deploy.sh
 **Website**: https://staging.sevensa.nl
 
 
+## 🧰 Vereisten
+
+- **Node.js**: versie **20 LTS** (20.11 of hoger) voor lokale scripts (`scripts/automation/*`, `scripts/generate-city-pages.mjs`) en tooling.
+  - Verifieer lokaal met `node -v`. Gebruik [nvm](https://github.com/nvm-sh/nvm) om eenvoudig naar Node 20 te wisselen.
+- **npm**: versie **10.x** (meegeleverd bij Node 20). Controleer met `npm -v` en voer `npm install -g npm@10` uit indien nodig.
+- **Package installaties**: voer in de `frontend/` map `npm install` uit na het wisselen naar de juiste Node-versie zodat native modules tegen de juiste ABI worden gebouwd.
+
+
 ## ✅ Production Readiness Q4 2025
 
 - **Score**: **100 %** – alle regressietests (88/88) groen, OTEL-tracing actief en webhook-alerting naar Slack/Teams met throttling.

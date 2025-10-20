@@ -102,7 +102,7 @@ function mapDatabasePackages(result) {
  */
 async function getPackages({ forceRefresh = false } = {}) {
   if (!forceRefresh) {
-    const cached = cache.get(CACHE_KEY);
+    const cached = await cache.get(CACHE_KEY);
     if (cached) {
       return { ...cached, cacheStatus: 'hit' };
     }
@@ -170,20 +170,24 @@ async function getPackages({ forceRefresh = false } = {}) {
     }
   }
 
-  cache.set(CACHE_KEY, response, CACHE_TTL);
+  await cache.set(CACHE_KEY, response, CACHE_TTL);
   return { ...response, cacheStatus: 'refreshed' };
 }
 
-/**
- * Clears the package cache forcing the next call to re-fetch data.
- *
- * @returns {void}
- */
-function resetCache() {
-  cache.del(CACHE_KEY);
+async function resetCache() {
+  await cache.del(CACHE_KEY);
+}
+
+function ping() {
+  return {
+    ok: true,
+    cacheWarm: Boolean(cache.get(CACHE_KEY)),
+    databaseConfigured: db.isConfigured()
+  };
 }
 
 module.exports = {
   getPackages,
-  resetCache
+  resetCache,
+  ping
 };

@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest",
-    "types": "jsdoc -r src/services -t node_modules/tsd-jsdoc/dist -d types"
+    "migrate": "node -e \"require('./src/lib/migrations').migrateToLatest()\""
   },
   "keywords": [
     "dj",
@@ -30,12 +30,17 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-rate-limit": "^7.5.1",
     "express-validator": "^7.0.1",
+    "joi": "^17.13.1",
     "helmet": "^7.1.0",
     "ioredis": "^5.3.2",
+    "knex": "^3.1.0",
     "morgan": "^1.10.0",
     "pg": "^8.11.3",
-    "pino": "^8.16.1"
+    "pino": "^8.16.1",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

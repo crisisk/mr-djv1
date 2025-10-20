@@ -169,11 +169,16 @@ function getCallbackRequestServiceStatus() {
   };
 }
 
-/**
- * Clears all pending callback requests stored in memory.
- *
- * @returns {void}
- */
+function ping() {
+  const status = getCallbackRequestServiceStatus();
+  return {
+    ok: true,
+    databaseConnected: status.databaseConnected,
+    storageStrategy: status.storageStrategy,
+    fallbackQueueSize: status.fallbackQueueSize
+  };
+}
+
 function resetInMemoryStore() {
   inMemoryCallbackRequests.clear();
 }
@@ -181,5 +186,6 @@ function resetInMemoryStore() {
 module.exports = {
   saveCallbackRequest,
   getCallbackRequestServiceStatus,
-  resetInMemoryStore
+  resetInMemoryStore,
+  ping
 };

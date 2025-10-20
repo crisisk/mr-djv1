@@ -18,7 +18,8 @@ const fallbackReviews = [
     eventType: 'Bruiloft 2024',
     rating: 5,
     reviewText:
-      'Mister DJ maakte onze bruiloft onvergetelijk! De dansvloer was de hele avond vol en de muziekkeuze was perfect. Onze gasten praten er nog steeds over!'
+      'Mister DJ maakte onze bruiloft onvergetelijk! De dansvloer was de hele avond vol en de muziekkeuze was perfect. Onze gasten praten er nog steeds over!',
+    moderationState: 'approved'
   },
   {
     id: 'mark-van-der-berg',
@@ -26,7 +27,8 @@ const fallbackReviews = [
     eventType: 'Corporate Event 2024',
     rating: 5,
     reviewText:
-      'Professioneel, betrouwbaar en geweldig in het lezen van het publiek. Ons bedrijfsfeest was een groot succes dankzij Mister DJ!'
+      'Professioneel, betrouwbaar en geweldig in het lezen van het publiek. Ons bedrijfsfeest was een groot succes dankzij Mister DJ!',
+    moderationState: 'approved'
   },
   {
     id: 'linda-janssen',
@@ -34,7 +36,8 @@ const fallbackReviews = [
     eventType: '50 Jaar Jubileum 2024',
     rating: 5,
     reviewText:
-      'Van begin tot eind perfect geregeld. De 100% dansgarantie is geen loze belofte - iedereen stond op de dansvloer!'
+      'Van begin tot eind perfect geregeld. De 100% dansgarantie is geen loze belofte - iedereen stond op de dansvloer!',
+    moderationState: 'approved'
   }
 ];
 
@@ -51,7 +54,7 @@ const CACHE_TTL = 5 * 60 * 1000;
  */
 async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
   if (!forceRefresh) {
-    const cached = cache.get(CACHE_KEY);
+    const cached = await cache.get(CACHE_KEY);
     if (cached) {
       return { ...cached, cacheStatus: 'hit' };
     }
@@ -65,7 +68,7 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
   if (db.isConfigured()) {
     try {
       const result = await db.runQuery(
-        `SELECT id, name, event_type AS "eventType", rating, review_text AS "reviewText", created_at AS "createdAt"
+        `SELECT id, name, event_type AS "eventType", rating, review_text AS "reviewText", created_at AS "createdAt", approved
          FROM reviews
          WHERE approved = TRUE
          ORDER BY created_at DESC
@@ -75,7 +78,13 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
 
       if (result && Array.isArray(result.rows) && result.rows.length > 0) {
         response = {
-          reviews: result.rows,
+          reviews: result.rows.map((row) => {
+            const { approved, ...rest } = row;
+            return {
+              ...rest,
+              moderationState: approved ? 'approved' : 'pending'
+            };
+          }),
           source: 'database'
         };
       }
@@ -84,20 +93,24 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
     }
   }
 
-  cache.set(CACHE_KEY, response, CACHE_TTL);
+  await cache.set(CACHE_KEY, response, CACHE_TTL);
   return { ...response, cacheStatus: 'refreshed' };
 }
 
-/**
- * Clears the review cache to force a refresh on next call.
- *
- * @returns {void}
- */
-function resetCache() {
-  cache.del(CACHE_KEY);
+async function resetCache() {
+  await cache.del(CACHE_KEY);
+}
+
+function ping() {
+  return {
+    ok: true,
+    cacheWarm: Boolean(cache.get(CACHE_KEY)),
+    databaseConfigured: db.isConfigured()
+  };
 }
 
 module.exports = {
   getApprovedReviews,
-  resetCache
+  resetCache,
+  ping
 };

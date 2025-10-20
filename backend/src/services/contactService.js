@@ -1,5 +1,6 @@
 const { randomUUID } = require('crypto');
 const db = require('../lib/db');
+const config = require('../config');
 const rentGuyService = require('./rentGuyService');
 const sevensaService = require('./sevensaService');
 
@@ -64,6 +65,99 @@ const sevensaService = require('./sevensaService');
  */
 
 const inMemoryContacts = new Map();
+const HCAPTCHA_DEFAULT_VERIFY_URL = 'https://hcaptcha.com/siteverify';
+
+function getCaptchaSettings() {
+  return config.integrations?.hcaptcha || {};
+}
+
+function createCaptchaError(message, publicMessage, status = 400, details) {
+  const error = new Error(message);
+  error.status = status;
+  error.publicMessage = publicMessage;
+  if (details) {
+    error.details = details;
+  }
+  return error;
+}
+
+async function verifyCaptchaToken(token, remoteIp) {
+  const settings = getCaptchaSettings();
+  if (!settings.enabled) {
+    return { skipped: true };
+  }
+
+  const trimmedToken = typeof token === 'string' ? token.trim() : '';
+  if (!trimmedToken) {
+    throw createCaptchaError('Missing hCaptcha token', 'Captcha validatie is vereist.');
+  }
+
+  if (!settings.secretKey) {
+    console.warn('[contactService] hCaptcha ingeschakeld maar secret ontbreekt. Verificatie overgeslagen.');
+    return { skipped: true, reason: 'missing-secret' };
+  }
+
+  const verifyUrl = settings.verifyUrl || HCAPTCHA_DEFAULT_VERIFY_URL;
+  const params = new URLSearchParams();
+  params.set('secret', settings.secretKey);
+  params.set('response', trimmedToken);
+  if (remoteIp) {
+    params.set('remoteip', remoteIp);
+  }
+
+  let response;
+  try {
+    response = await fetch(verifyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: params
+    });
+  } catch (error) {
+    console.error('[contactService] hCaptcha verificatie mislukt (netwerk):', error.message);
+    throw createCaptchaError(
+      `hCaptcha verification request failed: ${error.message}`,
+      'Captcha validatie is tijdelijk niet beschikbaar. Probeer het later opnieuw.',
+      503
+    );
+  }
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    console.error('[contactService] hCaptcha verificatie antwoord ongeldig:', response.status, body);
+    throw createCaptchaError(
+      `hCaptcha verification failed with status ${response.status}`,
+      'Captcha validatie is tijdelijk niet beschikbaar. Probeer het later opnieuw.',
+      503
+    );
+  }
+
+  let verification;
+  try {
+    verification = await response.json();
+  } catch (error) {
+    console.error('[contactService] hCaptcha gaf een ongeldig JSON antwoord:', error.message);
+    throw createCaptchaError(
+      'Invalid hCaptcha verification payload',
+      'Captcha validatie is tijdelijk niet beschikbaar. Probeer het later opnieuw.',
+      503
+    );
+  }
+
+  if (!verification.success) {
+    const errorCodes = verification['error-codes'] || [];
+    console.warn('[contactService] hCaptcha token niet geverifieerd:', errorCodes);
+    throw createCaptchaError(
+      `hCaptcha verification failed: ${errorCodes.join(', ') || 'unknown-error'}`,
+      'Captcha validatie is mislukt. Probeer het opnieuw.',
+      400,
+      { errorCodes }
+    );
+  }
+
+  return { skipped: false, verification };
+}
 
 /**
  * Normalizes incoming event dates into valid Date objects when possible.
@@ -80,13 +174,9 @@ function normalizeEventDate(value) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-/**
- * Stores a contact form submission and synchronizes it with external systems.
- *
- * @param {ContactPayload} payload
- * @returns {Promise<SaveContactResult>}
- */
-async function saveContact(payload) {
+async function saveContact(payload, options = {}) {
+  await verifyCaptchaToken(options.captchaToken, options.remoteIp);
+
   const timestamp = new Date();
   const eventDate = normalizeEventDate(payload.eventDate);
   let result;
@@ -228,11 +318,16 @@ function getContactServiceStatus() {
   };
 }
 
-/**
- * Clears the in-memory contact cache.
- *
- * @returns {void}
- */
+function ping() {
+  const status = getContactServiceStatus();
+  return {
+    ok: true,
+    databaseConnected: status.databaseConnected,
+    storageStrategy: status.storageStrategy,
+    fallbackQueueSize: status.fallbackQueueSize
+  };
+}
+
 function resetInMemoryStore() {
   inMemoryContacts.clear();
 }
@@ -240,5 +335,6 @@ function resetInMemoryStore() {
 module.exports = {
   saveContact,
   getContactServiceStatus,
-  resetInMemoryStore
+  resetInMemoryStore,
+  ping
 };
