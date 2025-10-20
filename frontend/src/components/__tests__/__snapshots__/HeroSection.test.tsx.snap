@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HeroSection matches the default snapshot 1`] = `
+<section
+  class="bg-neutral-dark py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center"
+>
+  <div
+    class="container mx-auto text-center space-y-spacing-xl"
+  >
+    <div>
+      <h1
+        class="text-font-size-h1 font-extrabold text-secondary mb-spacing-md"
+      >
+        Ervaar de ultieme avond
+      </h1>
+      <p
+        class="text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto text-neutral-light"
+      >
+        Van ceremoniële momenten tot de laatste dans, wij verzorgen het muzikale hoogtepunt.
+      </p>
+    </div>
+    <div
+      class="flex justify-center gap-spacing-md flex-wrap"
+    >
+      <button
+        class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md text-font-size-h4"
+        type="button"
+      >
+        Controleer beschikbaarheid
+      </button>
+      <button
+        class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 border border-neutral-dark text-neutral-dark hover:bg-neutral-light focus-visible:ring-neutral-dark/40 px-spacing-lg py-spacing-md text-font-size-h4"
+        type="button"
+      >
+        Vraag een offerte aan
+      </button>
+    </div>
+    <p>
+      Inclusief licht- en geluidspakket op maat.
+    </p>
+  </div>
+</section>
+`;
