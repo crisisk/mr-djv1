@@ -3,6 +3,7 @@ const managedEnv = require('./lib/managedEnv');
 
 managedEnv.loadToProcessEnv();
 require('dotenv').config();
+const featureFlags = require('./lib/featureFlags');
 
 function logStructured(level, message, meta = {}) {
   const payload = JSON.stringify({ level, message, ...meta });
@@ -226,6 +227,12 @@ const DEFAULT_SECTION_CONFIG = [
     keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'PERSONALIZATION_WEBHOOK_SECRETS']
   },
   {
+    id: 'feedback',
+    label: 'Feedback & surveys',
+    description: 'Surveyautomatisering en post-event klantfeedback workflows.',
+    keys: ['N8N_SURVEY_WEBHOOK_URL', 'SURVEY_RESPONSE_BASE_URL']
+  },
+  {
     id: 'automation',
     label: 'Content automatisering',
     description:
@@ -374,9 +381,11 @@ function buildConfig() {
   const corsOrigin = parseCorsOrigin(process.env.CORS_ORIGIN, tracker);
   const dashboardAllowedIps = parseList(process.env.CONFIG_DASHBOARD_ALLOWED_IPS);
   const configuredDashboardKeys = parseList(process.env.CONFIG_DASHBOARD_KEYS);
-  const managedKeys = configuredDashboardKeys.length
-    ? configuredDashboardKeys
-    : (tracker.record('CONFIG_DASHBOARD_KEYS', DEFAULT_MANAGED_KEYS, 'missing'), DEFAULT_MANAGED_KEYS);
+  const managedKeys = configuredDashboardKeys.length ? configuredDashboardKeys : DEFAULT_MANAGED_KEYS;
+  const rentGuyConfigured = Boolean(process.env.RENTGUY_API_BASE_URL && process.env.RENTGUY_API_KEY);
+  const sevensaConfigured = Boolean(process.env.SEVENSA_SUBMIT_URL);
+  const rentGuyFlagEnabled = featureFlags.isEnabled('rentguy-integration');
+  const sevensaFlagEnabled = featureFlags.isEnabled('sevensa-integration');
   const dashboardEnabled =
     process.env.CONFIG_DASHBOARD_ENABLED !== 'false' &&
     Boolean(process.env.CONFIG_DASHBOARD_USER) &&
@@ -428,7 +437,7 @@ function buildConfig() {
     version: withDefault(process.env.npm_package_version, '1.0.0', 'npm_package_version', tracker),
     integrations: {
       rentGuy: {
-        enabled: Boolean(process.env.RENTGUY_API_BASE_URL && process.env.RENTGUY_API_KEY),
+        enabled: rentGuyConfigured && rentGuyFlagEnabled,
         baseUrl: process.env.RENTGUY_API_BASE_URL || null,
         workspaceId: process.env.RENTGUY_WORKSPACE_ID || null,
         timeoutMs: parseNumber(
@@ -440,7 +449,7 @@ function buildConfig() {
         webhookSecrets: parseList(process.env.RENTGUY_WEBHOOK_SECRETS)
       },
       sevensa: {
-        enabled: Boolean(process.env.SEVENSA_SUBMIT_URL),
+        enabled: sevensaConfigured && sevensaFlagEnabled,
         submitUrl: process.env.SEVENSA_SUBMIT_URL || null,
         retryDelayMs: parseNumber(
           process.env.SEVENSA_QUEUE_RETRY_DELAY_MS,
@@ -468,6 +477,10 @@ function buildConfig() {
     personalization: {
       automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null,
       incomingWebhookSecrets: parseList(process.env.PERSONALIZATION_WEBHOOK_SECRETS)
+    },
+    feedback: {
+      automationWebhook: process.env.N8N_SURVEY_WEBHOOK_URL || null,
+      responseBaseUrl: process.env.SURVEY_RESPONSE_BASE_URL || null
     },
     automation: {
       seo: {
@@ -574,7 +587,7 @@ const config = buildConfig();
 function reload() {
   managedEnv.loadToProcessEnv();
   require('dotenv').config({ override: false });
-  validateEnvironment();
+  featureFlags.clearCache();
   const next = buildConfig();
 
   for (const [key, value] of Object.entries(next)) {

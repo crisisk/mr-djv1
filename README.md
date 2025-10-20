@@ -67,6 +67,7 @@ Publiceer alle secrets via het dashboard, controleer dat `CITY_AUTOMATION_DRY_RU
 - **Metrics endpoint** – `GET /metrics/queues` retourneert backlog, actieve jobs, retry-age (`retry_age_p95`) en dead-letter tellingen voor RentGuy en Sevensa. Gebruik deze endpoint voor Grafana dashboards of uptime-checks.
 - **Webhook alerting** – configureer Slack/Teams webhooks via `ALERT_WEBHOOK_URLS` en stel drempels in met `ALERT_QUEUE_WARNING_BACKLOG`, `ALERT_QUEUE_CRITICAL_BACKLOG`, `ALERT_QUEUE_WARNING_RETRY_AGE_MS`, enz. Alerts bevatten altijd de queue, ernst, backlog en laatste foutreden.
 - **Playbook** – volg [docs/operations/observability_playbook.md](docs/operations/observability_playbook.md) voor stap-voor-stap instructies rond OTEL, webhook tuning en runbooks tijdens incidenten.
+- **KPI matrix** – raadpleeg [docs/performance/kpi-matrix.md](docs/performance/kpi-matrix.md) voor doelen, formules en owners zodat operations alerts kan koppelen aan business impact.
 
 ## ♻️ Lighthouse SEO-optimalisaties (november 2025)
 
