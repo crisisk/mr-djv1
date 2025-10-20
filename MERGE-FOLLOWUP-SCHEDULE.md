@@ -17,7 +17,7 @@ This tracker captures follow-up items identified in the merge documentation and 
 
 ### Infrastructure & Operations
 - Verify PostgreSQL availability, schema state, and readiness for new contact records.
-- Monitor Docker services (backend, frontend, supporting infrastructure) with `docker-compose ps` and `docker-compose logs -f` post-deployment.
+- Monitor Docker services (backend, frontend, supporting infrastructure) with `docker compose ps` and `docker compose logs -f` post-deployment.
 - Check telemetry dashboards, alerts, and metrics emitted by the observability stack once environments are live.
 - Confirm Traefik/CORS/domain configuration continues to function in staging and production.
 

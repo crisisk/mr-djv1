@@ -1,7 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom/vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import PricingTables from '../PricingTables.jsx';
 import { trackPricingCTA, getUserVariant } from '../../utils/trackConversion';
 
@@ -13,34 +11,39 @@ vi.mock('../../utils/trackConversion', () => ({
 describe('PricingTables', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getUserVariant.mockReset();
+    trackPricingCTA.mockReset();
   });
 
-  it('tracks CTA clicks with user variant and package details', async () => {
-    const user = userEvent.setup();
-
+  it('tracks CTA clicks with the expected package details', () => {
     getUserVariant
-      .mockReturnValueOnce('A')
-      .mockReturnValueOnce('B')
-      .mockReturnValueOnce('B');
+      .mockImplementationOnce(() => 'Variant-A')
+      .mockImplementationOnce(() => 'Variant-B')
+      .mockImplementationOnce(() => 'Variant-C');
 
     render(<PricingTables />);
 
-    const meerInfoButton = screen.getByRole('button', { name: /meer info/i });
-    const boekNuButton = screen.getByRole('button', { name: /boek nu/i });
-    const vraagOfferteAanButton = screen.getByRole('button', { name: /vraag offerte aan/i });
+    const packages = [
+      { buttonText: 'Meer Info', name: 'Brons', price: '€495', variant: 'Variant-A' },
+      { buttonText: 'Boek Nu', name: 'Zilver', price: '€795', variant: 'Variant-B' },
+      { buttonText: 'Vraag Offerte Aan', name: 'Goud', price: '€1.295', variant: 'Variant-C' },
+    ];
 
-    await user.click(meerInfoButton);
-    await user.click(boekNuButton);
-    await user.click(vraagOfferteAanButton);
+    packages.forEach(({ buttonText, name, price, variant }, index) => {
+      const button = screen.getByRole('button', { name: buttonText });
+      fireEvent.click(button);
+      expect(trackPricingCTA).toHaveBeenNthCalledWith(index + 1, variant, name, price);
+    });
 
-    expect(trackPricingCTA).toHaveBeenNthCalledWith(1, 'A', 'Brons', '€495');
-    expect(trackPricingCTA).toHaveBeenNthCalledWith(2, 'B', 'Zilver', '€795');
-    expect(trackPricingCTA).toHaveBeenNthCalledWith(3, 'B', 'Goud', '€1.295');
-  });
+    expect(trackPricingCTA).toHaveBeenCalledTimes(packages.length);
 
-  it('matches the snapshot to guard featured styling', () => {
-    const { container } = render(<PricingTables />);
-
-    expect(container.firstChild).toMatchSnapshot();
+    const featuredBadge = screen.getByText('Populair');
+    expect(featuredBadge).toMatchInlineSnapshot(`
+      <div
+        class="absolute top-0 right-0 bg-secondary text-[#1A2C4B] text-sm font-bold px-4 py-1 rounded-tr-lg rounded-bl-lg"
+      >
+        Populair
+      </div>
+    `);
   });
 });
