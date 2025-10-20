@@ -207,6 +207,25 @@ function parseList(value) {
     .filter(Boolean);
 }
 
+function parseKeyValueMap(value) {
+  if (!value) {
+    return {};
+  }
+
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .reduce((acc, entry) => {
+      const [key, ...rest] = entry.split(':');
+      const mapValue = rest.join(':').trim();
+      if (key && mapValue) {
+        acc[key.trim()] = mapValue;
+      }
+      return acc;
+    }, {});
+}
+
 function parseCorsOrigin(value) {
   if (!value) {
     return '*';
@@ -277,6 +296,17 @@ function buildConfig() {
       max: parseNumber(process.env.RATE_LIMIT_MAX, DEFAULT_RATE_LIMIT_MAX)
     },
     databaseUrl: process.env.DATABASE_URL,
+    mail: {
+      provider: process.env.MAIL_PROVIDER || null,
+      apiKey: process.env.MAIL_API_KEY || null,
+      from: process.env.MAIL_FROM_ADDRESS || null,
+      replyTo: process.env.MAIL_REPLY_TO || null,
+      stream: process.env.MAIL_STREAM || null,
+      templates: {
+        contact: parseKeyValueMap(process.env.MAIL_TEMPLATES_CONTACT),
+        booking: parseKeyValueMap(process.env.MAIL_TEMPLATES_BOOKING)
+      }
+    },
     redis: {
       url: process.env.REDIS_URL || null,
       tls: process.env.REDIS_TLS === 'true',

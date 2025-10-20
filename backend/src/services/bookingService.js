@@ -1,6 +1,10 @@
 const { randomUUID } = require('crypto');
 const db = require('../lib/db');
+const config = require('../config');
 const rentGuyService = require('./rentGuyService');
+const mailService = require('./mailService');
+const packageService = require('./packageService');
+const personalizationService = require('./personalizationService');
 
 /**
  * @typedef {Object} BookingPayload
@@ -242,6 +246,45 @@ async function createBooking(payload) {
       source: 'booking-flow'
     }
   );
+
+  let mailDelivery = {
+    delivered: false,
+    queued: false,
+    skipped: true,
+    reason: 'missing-recipient'
+  };
+  let personalizationMeta = {
+    variantId: null,
+    matchType: 'default',
+    keywords: [],
+    city: null
+  };
+
+  try {
+    const { tokens, personalization } = await buildBookingEmailContext(payload, result);
+    personalizationMeta = personalization;
+
+    if (result.email) {
+      mailDelivery = await mailService.sendBookingConfirmation({
+        to: result.email,
+        tokens,
+        meta: {
+          bookingId: result.id,
+          matchType: personalization.matchType,
+          variantId: personalization.variantId,
+          packageId: result.packageId || payload.packageId || null,
+          eventType: result.eventType || payload.eventType || null
+        }
+      });
+    }
+  } catch (error) {
+    console.error('[bookingService] Failed to send booking confirmation email:', error.message);
+    mailDelivery = {
+      delivered: false,
+      queued: false,
+      error: error.message
+    };
+  }
 
   return {
     id: result.id,

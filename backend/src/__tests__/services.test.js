@@ -317,6 +317,7 @@ describe('bookingService', () => {
   afterEach(() => {
     jest.clearAllMocks();
     bookingService.resetInMemoryStore();
+    packageService.resetCache();
   });
 
   it('creates bookings via the database when available', async () => {
@@ -448,6 +449,9 @@ describe('bookingService', () => {
 
     expect(created.persisted).toBe(false);
     expect(created.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
+    expect(created.mailDelivery).toEqual(
+      expect.objectContaining({ skipped: true, reason: 'mail-not-configured' })
+    );
 
     const result = await bookingService.getRecentBookings(5);
     expect(result.persisted).toBe(false);

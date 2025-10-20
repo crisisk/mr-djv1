@@ -30,6 +30,17 @@ describe('config', () => {
     expect(config.rateLimit).toEqual({ windowMs: 15 * 60 * 1000, max: 100 });
     expect(config.logging).toBe('dev');
     expect(config.databaseUrl).toBeUndefined();
+    expect(config.mail).toEqual({
+      provider: null,
+      apiKey: null,
+      from: null,
+      replyTo: null,
+      stream: null,
+      templates: {
+        contact: {},
+        booking: {}
+      }
+    });
     expect(config.serviceName).toBe('mr-dj-backend');
     expect(config.version).toBe('1.0.0');
     expect(config.integrations).toEqual(
@@ -261,6 +272,22 @@ describe('config', () => {
         namespace: 'mr-dj'
       })
     );
+    expect(config.mail).toEqual({
+      provider: 'postmark',
+      apiKey: 'pm-key',
+      from: 'Mister DJ <noreply@misterdj.nl>',
+      replyTo: 'crew@misterdj.nl',
+      stream: 'transactional',
+      templates: {
+        contact: {
+          confirmation: 'tmpl-contact',
+          internal: 'tmpl-internal'
+        },
+        booking: {
+          customer: 'tmpl-booking'
+        }
+      }
+    });
     expect(config.serviceName).toBe('custom-service');
     expect(config.version).toBe('2.3.4');
     expect(config.integrations).toEqual(
