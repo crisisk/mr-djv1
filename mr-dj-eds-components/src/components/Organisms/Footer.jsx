@@ -37,11 +37,7 @@ const Footer = () => {
       });
   };
 
-  const {
-    facebook = 'https://www.facebook.com/',
-    instagram = 'https://www.instagram.com/',
-    linkedin = 'https://www.linkedin.com/'
-  } = socialLinks ?? {};
+  const { facebook, instagram, linkedin } = socialLinks;
 
   return (
     <footer className="bg-gradient-to-br from-[#1A2C4B] via-[#2A3C5B] to-[#1A2C4B] text-white">
