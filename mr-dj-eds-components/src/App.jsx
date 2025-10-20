@@ -1,7 +1,6 @@
 
-import { Routes, Route, useParams } from 'react-router-dom';
+import { Routes, Route, useParams, useLocation } from 'react-router-dom';
 import React, { Suspense, useEffect } from 'react';
-import Button from './components/Atoms/Buttons.jsx';
 import CookieConsent from './components/Molecules/CookieConsent.jsx';
 import WhatsAppButton from './components/Atoms/WhatsAppButton.jsx';
 import { getOrAssignVariant, pushVariantToGTM } from './utils/abTesting.js';
@@ -26,8 +25,8 @@ const ContactPage = React.lazy(() => import('./pages/ContactPage.jsx'));
 const PrivacyPolicyPage = React.lazy(() => import('./pages/PrivacyPolicyPage.jsx'));
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage.jsx'));
 const TermsConditionsPage = React.lazy(() => import('./pages/TermsConditionsPage.jsx'));
-import { localSeoData, getLocalSeoDataBySlug } from './data/local_seo_data.js';
-import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from './data/local_seo_bruiloft_data.js';
+import { getLocalSeoDataBySlug } from './data/local_seo_data.js';
+import { getLocalSeoBruiloftDataBySlug } from './data/local_seo_bruiloft_data.js';
 import './App.css';
 
 // Component to handle dynamic data fetching and rendering for local SEO pages
@@ -36,25 +35,17 @@ import './App.css';
 
 const LocalSeoPageWrapper = () => {
   const { citySlug } = useParams();
-  const { pathname } = window.location;
+  const location = useLocation();
 
   let data = null;
-  let isBruiloftPage = pathname.startsWith('/bruiloft-dj-');
   const normalizedSlug = citySlug ? citySlug.toLowerCase() : '';
+  const isBruiloftPage = location.pathname.startsWith('/bruiloft-dj-');
   const fullSlug = isBruiloftPage ? `bruiloft-dj-${normalizedSlug}` : normalizedSlug;
 
   // T11: SEA Setup - Placeholder for tracking parameter logic
   // In a real application, you would parse the URL for tracking parameters (e.g., utm_source, gclid)
   // and potentially store them in a state management system or dataLayer.
-  const urlParams = new URLSearchParams(window.location.search);
-  const trackingData = {
-    utm_source: urlParams.get('utm_source'),
-    gclid: urlParams.get('gclid'),
-    // Add more tracking parameters as needed
-  };
-  console.log('SEA Tracking Data:', trackingData); // For demonstration
-
-
+  const urlParams = new URLSearchParams(location.search);
   if (isBruiloftPage) {
     // For Bruiloft DJ pages, append the prefix expected by the dataset (e.g., bruiloft-dj-eindhoven)
     data = getLocalSeoBruiloftDataBySlug(fullSlug);
