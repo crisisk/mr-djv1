@@ -9,7 +9,8 @@ services:
     container_name: mr-dj-eds-frontend
     restart: unless-stopped
     depends_on:
-      - mr-dj-backend
+      mr-dj-backend:
+        condition: service_healthy
     networks:
       - web # Use the existing 'web' network
     labels:
@@ -41,6 +42,12 @@ services:
         condition: service_healthy
     networks:
       - web
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mrdj-backend.rule=Host(`mr-dj.sevensa.nl`) && PathPrefix(`/api`)"
