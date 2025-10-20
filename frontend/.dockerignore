@@ -1,0 +1,15 @@
+node_modules
+build
+dist
+.next
+.storybook
+storybook-static
+coverage
+*.log
+.env
+.env.*
+.tmp
+.tmp*
+.vite
+.vscode
+

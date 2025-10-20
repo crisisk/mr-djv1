@@ -2,8 +2,13 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import Header from '../components/Molecules/Header.jsx';
 import Footer from '../components/Organisms/Footer.jsx';
+import { generateBreadcrumbSchema } from '../utils/schemaOrg.js';
+import { createSimpleBreadcrumbs } from '../utils/breadcrumbs.js';
 
 const TermsConditionsPage = () => {
+  const breadcrumbs = createSimpleBreadcrumbs('Algemene Voorwaarden', '/algemene-voorwaarden');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
+
   return (
     <div className="TermsConditionsPage bg-gray-50">
       <Helmet>
@@ -12,6 +17,7 @@ const TermsConditionsPage = () => {
           name="description"
           content="Algemene voorwaarden van Mr. DJ. Lees hier alle voorwaarden voor het boeken van een DJ voor uw bruiloft, bedrijfsfeest of feest."
         />
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />

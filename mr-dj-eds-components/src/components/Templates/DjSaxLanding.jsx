@@ -11,20 +11,23 @@ import QuickCallbackForm from '../Organisms/QuickCallbackForm.jsx';
 import AboutUs from '../Organisms/AboutUs.jsx';
 import Footer from '../Organisms/Footer.jsx';
 import TrustBadges from '../Molecules/TrustBadges.jsx';
+import { Icon } from '../../icons/index.jsx';
 import {
   generateOrganizationSchema,
   generateServiceSchema,
   generateBreadcrumbSchema,
-  generateWebPageSchema
+  generateWebPageSchema,
+  generateOfferCatalogSchema,
 } from '../../utils/schemaOrg.js';
+import { pricingPackages } from '../../data/pricingPackages.js';
 
 
 
 // Stats/Achievements Section
 const StatsSection = () => {
     const stats = [
-        { number: "15", label: "jaar met 100% dansgarantie", icon: "🎉" },
-        { number: "2500+", label: "geslaagde feesten verzorgd", icon: "✨" },
+        { number: "15", label: "jaar met 100% dansgarantie", icon: "icon-private-party" },
+        { number: "2500+", label: "geslaagde feesten verzorgd", icon: "icon-sparkles" },
     ];
 
     return (
@@ -33,7 +36,9 @@ const StatsSection = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-spacing-xl text-center">
                     {stats.map((stat, index) => (
                         <div key={index} className="text-neutral-light">
-                            <span className="text-font-size-h1 block mb-spacing-sm">{stat.icon}</span>
+                            <span className="text-font-size-h1 block mb-spacing-sm">
+                                <Icon name={stat.icon} size={64} className="mx-auto text-neutral-light" />
+                            </span>
                             <div className="text-font-size-h1 font-bold mb-spacing-xs">Al {stat.number}</div>
                             <div className="text-font-size-h3">{stat.label}</div>
                         </div>
@@ -65,17 +70,17 @@ const DjSaxFeatures = () => {
     const features = [
         {
             title: "Persoonlijk en op maat",
-            icon: "🎵",
+            icon: "icon-music",
             description: "Elk feest is uniek, en daarom krijg je bij ons een op maat gemaakt programma. We luisteren naar jouw wensen en zorgen ervoor dat de muziek en sfeer precies passen bij jouw feest en gasten."
         },
         {
             title: "Professioneel tot in de puntjes",
-            icon: "⭐",
+            icon: "icon-star",
             description: "Met ruim 15 jaar ervaring weten we precies hoe we jouw feest tot een succes maken. Van de apparatuur tot de uitvoering, alles is van topkwaliteit. Je hoeft je nergens zorgen over te maken!"
         },
         {
             title: "Keigezellig en 100% dansgarantie",
-            icon: "💃",
+            icon: "icon-dancer",
             description: "Bij ons staat gezelligheid voorop! We zorgen voor de juiste vibes, zodat iedereen de dansvloer op gaat. Met onze jarenlange ervaring garanderen we dat jouw feest een hit wordt waar iedereen nog lang over napraat."
         },
     ];
@@ -87,7 +92,9 @@ const DjSaxFeatures = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl">
                     {features.map((feature, index) => (
                         <div key={index} className="p-spacing-lg shadow-lg rounded-lg bg-neutral-light">
-                            <span className="text-font-size-h1 block mb-spacing-md">{feature.icon}</span>
+                            <span className="text-font-size-h1 block mb-spacing-md">
+                                <Icon name={feature.icon} size={56} className="text-primary" />
+                            </span>
                             <h3 className="text-font-size-h3 font-bold text-neutral-dark mb-spacing-sm">{feature.title}</h3>
                             <p className="text-font-size-body text-neutral-dark">{feature.description}</p>
                         </div>
@@ -111,11 +118,21 @@ const DjSaxLanding = ({ variant = 'A' }) => {
 
   // Generate schemas
   const organizationSchema = generateOrganizationSchema();
-  const serviceSchema = generateServiceSchema({
-    serviceName: 'DJ + Saxofoon Service',
-    description: 'Professionele DJ gecombineerd met live saxofonist voor bruiloften, bedrijfsfeesten en privé-evenementen',
-    serviceType: 'Entertainment Service'
+  const offerCatalogSchema = generateOfferCatalogSchema({
+    packages: pricingPackages,
+    pagePath: '/',
   });
+  const serviceSchema = {
+    ...generateServiceSchema({
+      serviceName: 'DJ + Saxofoon Service',
+      description: 'Professionele DJ gecombineerd met live saxofonist voor bruiloften, bedrijfsfeesten en privé-evenementen',
+      serviceType: 'Entertainment Service',
+    }),
+    '@id': 'https://mr-dj.sevensa.nl/#service',
+    offers: {
+      '@id': offerCatalogSchema['@id'],
+    },
+  };
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbs);
   const webPageSchema = generateWebPageSchema({
     title: 'Mr. DJ - Dé Feestspecialist van het Zuiden',
@@ -136,6 +153,9 @@ const DjSaxLanding = ({ variant = 'A' }) => {
         </script>
         <script type="application/ld+json">
           {JSON.stringify(serviceSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(offerCatalogSchema)}
         </script>
         <script type="application/ld+json">
           {JSON.stringify(breadcrumbSchema)}

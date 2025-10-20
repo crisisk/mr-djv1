@@ -15,16 +15,32 @@ describe('Footer', () => {
     expect(emailLink).toHaveAttribute('href', 'mailto:info@mr-dj.nl');
   });
 
-  it('renders social links from content data', () => {
+  it('renders social links from content data when provided', () => {
     render(<Footer />);
 
-    const facebookLink = screen.getByRole('link', { name: /facebook/i });
-    expect(facebookLink).toHaveAttribute('href', socialLinks.facebook);
+    const labelMap = {
+      facebook: /facebook/i,
+      instagram: /instagram/i,
+      linkedin: /linkedin/i,
+      youtube: /you\s*tube/i,
+      tiktok: /tiktok/i,
+      twitter: /twitter/i
+    };
 
-    const instagramLink = screen.getByRole('link', { name: /instagram/i });
-    expect(instagramLink).toHaveAttribute('href', socialLinks.instagram);
+    const configuredPlatforms = Object.entries(socialLinks).filter(([, url]) => typeof url === 'string' && url.trim() !== '');
 
-    const linkedinLink = screen.getByRole('link', { name: /linkedin/i });
-    expect(linkedinLink).toHaveAttribute('href', socialLinks.linkedin);
+    configuredPlatforms.forEach(([platform, url]) => {
+      const matcher = labelMap[platform];
+      expect(matcher).toBeDefined();
+
+      const link = screen.getByRole('link', { name: matcher });
+      expect(link).toHaveAttribute('href', url);
+    });
+
+    Object.entries(labelMap).forEach(([platform, matcher]) => {
+      if (!configuredPlatforms.some(([configured]) => configured === platform)) {
+        expect(screen.queryByRole('link', { name: matcher })).not.toBeInTheDocument();
+      }
+    });
   });
 });
