@@ -5,9 +5,9 @@
 # Redeploy instructions:
 #   1. Make your code changes locally and commit them if desired.
 #   2. From the project root, run ./deploy.sh to build, package, and upload the latest version.
-#   3. The script recreates containers on the VPS using docker-compose up -d, so the new build
+#   3. The script recreates containers on the VPS using docker compose up -d, so the new build
 #      is live once the health checks pass. For a quick remote redeploy, SSH into the VPS and run
-#      "docker-compose pull && docker-compose up -d" inside /opt/mr-dj.
+#      "docker compose pull && docker compose up -d" inside /opt/mr-dj.
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -70,10 +70,33 @@ DEPLOY_DIR="/opt/mr-dj"
 mkdir -p "$DEPLOY_DIR"
 cd "$DEPLOY_DIR"
 
+# Resolve the Docker Compose command, preferring the plugin
+if docker compose version >/dev/null 2>&1; then
+    echo "Docker Compose plugin detected."
+    DOCKER_COMPOSE=(docker compose)
+else
+    echo "Docker Compose plugin not detected. Attempting to install..."
+    if command -v apt-get >/dev/null 2>&1; then
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update >/dev/null 2>&1 && apt-get install -y docker-compose-plugin >/dev/null 2>&1 || true
+    fi
+
+    if docker compose version >/dev/null 2>&1; then
+        echo "Docker Compose plugin installed successfully."
+        DOCKER_COMPOSE=(docker compose)
+    elif command -v docker-compose >/dev/null 2>&1; then
+        echo "Warning: falling back to legacy docker-compose binary." >&2
+        DOCKER_COMPOSE=(docker-compose)
+    else
+        echo "Error: Docker Compose is not available on this host." >&2
+        exit 1
+    fi
+fi
+
 # Stop and remove old containers if they exist, to prevent conflicts
-# The original script's 'docker-compose down' is sufficient if the project name is unique.
+# The original script's 'docker compose down' is sufficient if the project name is unique.
 # Since we are using unique container names, a simple down/up is fine.
-docker-compose down || true
+"${DOCKER_COMPOSE[@]}" down || true
 
 # Extract new version
 tar -xzf /tmp/mr-dj-deploy.tar.gz
@@ -88,11 +111,11 @@ chmod 600 letsencrypt
 # Build and start containers
 echo "Building Docker images..."
 # Skipping cache for a fresh build, as is common in deployment scripts
-docker-compose build --no-cache
+"${DOCKER_COMPOSE[@]}" build --no-cache
 
 echo "Starting containers..."
 # Use -d for detached mode
-docker-compose up -d
+"${DOCKER_COMPOSE[@]}" up -d
 
 # Wait for services to be ready
 echo "Waiting for services to start..."
@@ -100,24 +123,24 @@ sleep 10
 
 # Ensure database migrations are up to date
 echo "Running database migrations..."
-docker-compose exec -T mr-dj-backend npm run migrate
+"${DOCKER_COMPOSE[@]}" exec -T mr-dj-backend npm run migrate
 
 # Check container status
 echo "Container Status:"
-docker-compose ps
+"${DOCKER_COMPOSE[@]}" ps
 
 # Show logs for the frontend service (eds-frontend)
 echo "Recent logs for eds-frontend:"
-docker-compose logs eds-frontend --tail=50
+"${DOCKER_COMPOSE[@]}" logs eds-frontend --tail=50
 
 echo "✅ Deployment complete!"
 echo "🌐 Website should be available at: https://staging.sevensa.nl/eds"
 echo ""
 echo "Useful commands (inside /opt/mr-dj on VPS):"
-echo "  docker-compose logs -f eds-frontend # View frontend logs"
-echo "  docker-compose ps                   # Check status"
-echo "  docker-compose restart eds-frontend # Restart frontend"
-echo "  docker-compose down                 # Stop all services"
+echo "  docker compose logs -f eds-frontend # View frontend logs"
+echo "  docker compose ps                   # Check status"
+echo "  docker compose restart eds-frontend # Restart frontend"
+echo "  docker compose down                 # Stop all services"
 
 ENDSSH
 
