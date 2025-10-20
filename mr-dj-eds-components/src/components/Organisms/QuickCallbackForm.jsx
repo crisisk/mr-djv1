@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { submitCallbackRequest } from '../../services/api.js';
 import { trackFormSubmission } from '../../utils/trackConversion';
+import { getWindow } from '../../lib/environment.js';
 
 /**
  * QuickCallbackForm - Simplified callback request form
@@ -17,6 +18,15 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const resetTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimeoutRef.current) {
+        clearTimeout(resetTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const validateForm = () => {
     const errors = {};
@@ -70,21 +80,22 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     setIsSubmitting(true);
 
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
+    const payload = {
+      name: formData.name.trim(),
+      phone: formData.phone.trim(),
+      eventType: formData.eventType,
+    };
 
     try {
-      await submitCallbackRequest(formData);
+      await submitCallbackRequest(payload);
 
       // Track successful submission
-      trackFormSubmission(variant, formData.eventType, 'callback');
+      trackFormSubmission(variant, payload.eventType, 'callback');
 
-      if (typeof window !== 'undefined') {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
+      const browser = getWindow();
+      if (browser) {
+        browser.dataLayer = browser.dataLayer || [];
+        browser.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
           event_type: payload.eventType,
@@ -95,7 +106,10 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       setFieldErrors({});
       setIsSubmitted(true);
       // Reset form after 3 seconds
-      setTimeout(() => {
+      if (resetTimeoutRef.current) {
+        clearTimeout(resetTimeoutRef.current);
+      }
+      resetTimeoutRef.current = setTimeout(() => {
         setFormData({ name: '', phone: '', eventType: '' });
         setFieldErrors({});
         setIsSubmitted(false);
