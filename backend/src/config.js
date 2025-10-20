@@ -474,6 +474,30 @@ function buildConfig() {
             DEFAULT_HCAPTCHA_VERIFY_URL)
       }
     },
+    contactForm: {
+      rateLimit: {
+        windowMs: parseNumber(
+          process.env.CONTACT_RATE_LIMIT_WINDOW_MS,
+          10 * 60 * 1000
+        ),
+        max: parseNumber(process.env.CONTACT_RATE_LIMIT_MAX, 20)
+      },
+      ipThrottle: {
+        windowMs: parseNumber(
+          process.env.CONTACT_IP_THROTTLE_WINDOW_MS,
+          60 * 60 * 1000
+        ),
+        max: parseNumber(process.env.CONTACT_IP_THROTTLE_MAX, 50),
+        blockDurationMs: parseNumber(
+          process.env.CONTACT_IP_BLOCK_DURATION_MS,
+          30 * 60 * 1000
+        )
+      },
+      bot: {
+        blockedAgents: parseList(process.env.CONTACT_BLOCKED_AGENTS),
+        suspiciousAgents: parseList(process.env.CONTACT_SUSPECT_AGENTS)
+      }
+    },
     personalization: {
       automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null,
       incomingWebhookSecrets: parseList(process.env.PERSONALIZATION_WEBHOOK_SECRETS)

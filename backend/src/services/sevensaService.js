@@ -139,13 +139,27 @@ function computeQueueSize(counts) {
  * @param {SevensaDeliveryMeta} [meta]
  * @returns {Promise<number>} queue size after enqueueing
  */
+function sanitizeMeta(meta = {}) {
+  if (!meta || typeof meta !== 'object') {
+    return {};
+  }
+
+  const { forceQueue, forceQueueReason, ...rest } = meta;
+  if (forceQueueReason && !rest.queueReason) {
+    rest.queueReason = forceQueueReason;
+  }
+
+  return rest;
+}
+
 async function enqueue(payload, meta = {}) {
-  const dedupeKey = meta.dedupeKey || buildDedupeKey(payload);
+  const sanitizedMeta = sanitizeMeta(meta);
+  const dedupeKey = sanitizedMeta.dedupeKey || buildDedupeKey(payload);
   await queue.addJob(
     {
-      id: meta.id || randomUUID(),
+      id: sanitizedMeta.id || randomUUID(),
       payload,
-      meta
+      meta: sanitizedMeta
     },
     {
       dedupeKey,
@@ -165,8 +179,20 @@ async function enqueue(payload, meta = {}) {
  * @returns {Promise<SevensaDeliveryResult>}
  */
 async function tryImmediateDelivery(payload, meta = {}) {
+  const sanitizedMeta = sanitizeMeta(meta);
+
+  if (meta.forceQueue) {
+    const queueSize = await enqueue(payload, sanitizedMeta);
+    return {
+      delivered: false,
+      queued: true,
+      reason: meta.forceQueueReason || 'forced-queue',
+      queueSize
+    };
+  }
+
   if (!isConfigured()) {
-    const queueSize = await enqueue(payload, meta);
+    const queueSize = await enqueue(payload, sanitizedMeta);
     return { delivered: false, queued: true, reason: 'not-configured', queueSize };
   }
 
@@ -187,7 +213,7 @@ async function tryImmediateDelivery(payload, meta = {}) {
       attempts: 1
     };
     logger.warn({ err: error }, 'Sevensa delivery deferred to queue');
-    const queueSize = await enqueue(payload, meta);
+    const queueSize = await enqueue(payload, sanitizedMeta);
     return { delivered: false, queued: true, reason: 'delivery-failed', queueSize, lastError: error.message };
   }
 }

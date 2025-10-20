@@ -254,19 +254,21 @@ describe('Mister DJ API', () => {
       packageId: 'gold'
     });
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(202);
     expect(response.body).toMatchObject({
       success: true,
       persisted: false,
       status: 'pending',
       eventType: 'Bruiloft',
-      requestedPackage: 'gold'
+      requestedPackage: 'gold',
+      processingStatus: 'queued'
     });
     expect(response.body.contactId).toBeDefined();
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
     expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
     expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.partnerIncidents).toEqual(expect.arrayContaining(['rentguy', 'sevensa']));
   });
 
   it('accepts callback requests and queues integrations when no DB is configured', async () => {

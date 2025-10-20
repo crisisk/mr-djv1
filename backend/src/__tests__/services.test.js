@@ -111,7 +111,10 @@ describe('contactService', () => {
         name: 'Test',
         email: 'test@example.com'
       }),
-      { source: 'contact-form' }
+      expect.objectContaining({
+        source: 'contact-form',
+        attemptId: expect.any(String)
+      })
     );
     expect(sevensaService.submitLead).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -119,7 +122,10 @@ describe('contactService', () => {
         email: 'test@example.com',
         eventType: 'Bruiloft'
       }),
-      { source: 'contact-form' }
+      expect.objectContaining({
+        source: 'contact-form',
+        attemptId: expect.any(String)
+      })
     );
   });
 
