@@ -8,6 +8,13 @@ import { useHeroImage } from '../../hooks/useReplicateImage.js';
 import { localSeoData, getLocalSeoDataBySlug } from '../../data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from '../../data/local_seo_bruiloft_data.js';
 import { getWindow } from '../../lib/environment.js';
+import {
+  generateOrganizationSchema,
+  generateLocalBusinessSchema,
+  generateEventSchema,
+  generateBreadcrumbSchema,
+  generateWebPageSchema,
+} from '../../utils/schemaOrg.js';
 
 const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) => {
   const hasData = Boolean(data);
@@ -54,6 +61,17 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
       : Boolean(getLocalSeoBruiloftDataBySlug(counterpartSlug));
   }, [counterpartSlug, hasData, isBruiloftPage]);
 
+  const breadcrumbs = useMemo(() => {
+    if (!hasData) {
+      return [];
+    }
+
+    return [
+      { name: 'Home', url: '/' },
+      { name: `DJ in ${city}`, url: canonicalPath },
+    ];
+  }, [canonicalPath, city, hasData]);
+
   const relatedPages = useMemo(() => {
     if (!hasData) {
       return [];
@@ -79,74 +97,54 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
     return mapped;
   }, [city, counterpartSlug, generalSlug, hasCounterpart, hasData, isBruiloftPage, province, slug]);
 
-  const localBusinessSchema = useMemo(() => {
+  const schemaJson = useMemo(() => {
     if (!hasData) {
-      return null;
+      return {};
     }
 
-    return JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'LocalBusiness',
-      '@id': `${canonicalUrl}#business`,
-      name: `Mr. DJ - Uw DJ in ${city}`,
-      image: `${origin}/images/logo.webp`,
-      url: canonicalUrl,
-      telephone: '+31850601234',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: city,
-        addressRegion: province,
-        addressCountry: 'NL',
-      },
-      priceRange: '€€€',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        reviewCount: '250',
-      },
-      areaServed: {
-        '@type': 'City',
-        name: city,
-      },
-      sameAs: [
-        'https://www.facebook.com/mrdj',
-        'https://www.instagram.com/misterdj',
-      ],
+    const organization = generateOrganizationSchema();
+    const localBusiness = generateLocalBusinessSchema({
+      city,
+      province,
+      slug,
+      path: canonicalPath,
     });
-  }, [canonicalUrl, city, hasData, origin, province]);
-
-  const eventSchema = useMemo(() => {
-    if (!hasData) {
-      return null;
-    }
-
-    return JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Event',
+    const event = generateEventSchema({
       name: `${isBruiloftPage ? 'Bruiloft' : 'Feest'} met DJ in ${city}`,
+      description: localUSP,
+      city,
+      province,
       startDate: '2025-12-31T20:00',
       endDate: '2026-01-01T04:00',
-      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      eventStatus: 'https://schema.org/EventScheduled',
-      location: {
-        '@type': 'Place',
-        name: `Diverse locaties in ${city}`,
-        address: {
-          '@type': 'PostalAddress',
-          addressLocality: city,
-          addressRegion: province,
-          addressCountry: 'NL',
-        },
-      },
-      description: localUSP,
-      organizer: {
-        '@type': 'Organization',
-        name: 'Mr. DJ',
-        url: origin,
-      },
-      url: canonicalUrl,
     });
-  }, [canonicalUrl, city, hasData, isBruiloftPage, localUSP, origin, province]);
+    const breadcrumb = generateBreadcrumbSchema(breadcrumbs);
+    const webPage = generateWebPageSchema({
+      title: seoTitle,
+      description: seoDescription,
+      url: canonicalUrl,
+      breadcrumbs,
+    });
+
+    return {
+      organization: JSON.stringify(organization),
+      localBusiness: JSON.stringify(localBusiness),
+      event: JSON.stringify(event),
+      breadcrumb: JSON.stringify(breadcrumb),
+      webPage: JSON.stringify(webPage),
+    };
+  }, [
+    breadcrumbs,
+    canonicalPath,
+    canonicalUrl,
+    city,
+    hasData,
+    isBruiloftPage,
+    localUSP,
+    province,
+    seoDescription,
+    seoTitle,
+    slug,
+  ]);
 
   if (!hasData) {
     return <div className="p-10 text-center text-red-500">Geen lokale SEO data gevonden.</div>;
@@ -160,8 +158,11 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <link rel="canonical" href={canonicalUrl} />
-        {localBusinessSchema && <script type="application/ld+json">{localBusinessSchema}</script>}
-        {eventSchema && <script type="application/ld+json">{eventSchema}</script>}
+        {schemaJson.organization && <script type="application/ld+json">{schemaJson.organization}</script>}
+        {schemaJson.localBusiness && <script type="application/ld+json">{schemaJson.localBusiness}</script>}
+        {schemaJson.event && <script type="application/ld+json">{schemaJson.event}</script>}
+        {schemaJson.breadcrumb && <script type="application/ld+json">{schemaJson.breadcrumb}</script>}
+        {schemaJson.webPage && <script type="application/ld+json">{schemaJson.webPage}</script>}
       </Helmet>
 
       <HeroSection
