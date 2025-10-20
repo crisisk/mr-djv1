@@ -11,39 +11,45 @@ const integrationsRouter = require('./integrations');
 const personalizationRouter = require('./personalization');
 const dashboardRouter = require('./dashboard');
 const metricsRouter = require('./metrics');
+const sessionRouter = require('./session');
 const featureFlags = require('../lib/featureFlags');
 
 const router = express.Router();
 
-router.get('/', (_req, res) => {
-  const endpoints = {
-    health: '/health',
-    contact: '/contact',
-    callbackRequest: '/callback-request',
-    bookings: '/bookings',
-    packages: '/packages',
-    reviews: '/reviews',
-    integrations: {
-      rentGuy: '/integrations/rentguy/status',
-      sevensa: '/integrations/sevensa/status',
-      crmExport: '/integrations/crm/export'
-    },
-    metrics: '/metrics/queues',
-    personalization: {
-      keyword: '/personalization/keyword',
-      events: '/personalization/events'
-    }
+router.get('/', async (_req, res, next) => {
+  try {
+    const endpoints = {
+      health: '/health',
+      contact: '/contact',
+      callbackRequest: '/callback-request',
+      bookings: '/bookings',
+      packages: '/packages',
+      reviews: '/reviews',
+      session: '/session',
+      integrations: {
+        rentGuy: '/integrations/rentguy/status',
+        sevensa: '/integrations/sevensa/status',
+        crmExport: '/integrations/crm/export'
+      },
+      metrics: '/metrics/queues',
+      personalization: {
+        keyword: '/personalization/keyword',
+        events: '/personalization/events'
+      }
+    };
 
     if (config.dashboard.enabled) {
       endpoints.dashboard = '/dashboard';
     }
+
+    const activeFeatureFlags = await featureFlags.getActive();
 
     res.json({
       message: 'Mister DJ API',
       version: config.version,
       endpoints,
       featureFlags: {
-        active: await featureFlags.getActive()
+        active: activeFeatureFlags
       }
     });
   } catch (error) {
@@ -57,6 +63,7 @@ router.use('/contact', rateLimiter, contactRouter);
 router.use('/callback-request', rateLimiter, callbackRequestsRouter);
 router.use('/bookings', rateLimiter, bookingsRouter);
 router.use('/reviews', reviewsRouter);
+router.use('/session', sessionRouter);
 router.use('/integrations', integrationsRouter);
 router.use('/personalization', featureFlags.guard('personalization'), personalizationRouter);
 router.use('/metrics', metricsRouter);
