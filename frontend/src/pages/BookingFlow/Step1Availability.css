@@ -1,0 +1,237 @@
+.booking-step {
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  padding: 2.5rem;
+  margin: 3rem auto;
+  max-width: 1080px;
+  color: #0f172a;
+}
+
+.booking-step__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.booking-step__title {
+  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.booking-step__subtitle {
+  font-size: 1rem;
+  color: #475569;
+  max-width: 720px;
+}
+
+.booking-step__content {
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.booking-step__calendar {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.booking-step__location {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.booking-step__location label {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.booking-step__location select {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background: rgba(248, 250, 252, 0.8);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-step__location select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.booking-step__status {
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #475569;
+}
+
+.booking-step__status--error {
+  color: #b91c1c;
+}
+
+.booking-step__status::before {
+  content: '';
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+.booking-step__status--loading::before {
+  background: #6366f1;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.booking-step__status--error::before {
+  background: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.4;
+  }
+}
+
+.booking-step__calendar .rdp-day {
+  border-radius: 12px;
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.booking-step__calendar .rdp-day:hover {
+  transform: translateY(-1px);
+}
+
+.booking-step__calendar .rdp-day_selected,
+.booking-step__calendar .rdp-day_selected:focus-visible {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.25);
+}
+
+.booking-step__calendar .rdp-day_disabled {
+  color: #cbd5f5;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.booking-step__calendar .rdp-day_booked {
+  background: rgba(248, 113, 113, 0.12);
+  color: #b91c1c;
+  border-radius: 12px;
+}
+
+.booking-step__calendar .rdp-day_blackout {
+  background: rgba(59, 130, 246, 0.12);
+  color: #1d4ed8;
+  border-radius: 12px;
+}
+
+.booking-step__calendar .rdp-caption_label {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.booking-step__calendar .rdp-nav_button {
+  color: #4f46e5;
+}
+
+.booking-step__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.booking-step__panel {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.booking-step__panel h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.booking-step__panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.booking-step__panel li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-left: 1.5rem;
+  position: relative;
+  color: #475569;
+}
+
+.booking-step__panel li::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #6366f1;
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.1);
+}
+
+.booking-step__panel time {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.booking-step__validation {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: rgba(248, 113, 113, 0.12);
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+.booking-step__selected-date {
+  font-weight: 600;
+  color: #111827;
+}
+
+@media (max-width: 640px) {
+  .booking-step {
+    padding: 1.75rem;
+  }
+
+  .booking-step__content {
+    grid-template-columns: 1fr;
+  }
+}

@@ -7,6 +7,7 @@ import './App.css'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import HeroSection from '../../HeroSection.jsx'
 import Testimonials from '../../Testimonials.jsx'
+import Step1Availability from './pages/BookingFlow/Step1Availability'
 
 type HeroContent = {
   title: string
@@ -55,6 +56,8 @@ function App() {
         />
 
         <Testimonials />
+
+        <Step1Availability />
       </main>
     </div>
   )

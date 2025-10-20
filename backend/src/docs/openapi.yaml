@@ -149,6 +149,52 @@ paths:
                 $ref: '#/components/schemas/BookingResponse'
         '422':
           $ref: '#/components/responses/ValidationError'
+  /availability:
+    get:
+      summary: Retrieve availability for a date range and location
+      tags: [Leads]
+      parameters:
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Inclusive start date for the availability window (YYYY-MM-DD).
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Inclusive end date for the availability window (YYYY-MM-DD).
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: Optional location slug such as `amsterdam`, `rotterdam` or `utrecht`.
+      responses:
+        '200':
+          description: Availability data for the requested range.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityResponse'
+        '400':
+          description: Invalid query parameters were supplied.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    nullable: true
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: {}
   /reviews:
     get:
       summary: Retrieve approved customer reviews
@@ -390,6 +436,107 @@ components:
         rentGuySync:
           type: object
           nullable: true
+    AvailabilitySlot:
+      type: object
+      required: [date, startTime, endTime, eventType, status, travel]
+      properties:
+        date:
+          type: string
+          format: date
+        startTime:
+          type: string
+        endTime:
+          type: string
+        eventType:
+          type: string
+        venue:
+          type: string
+        status:
+          type: string
+          enum: [confirmed, pending]
+        travel:
+          type: object
+          properties:
+            distanceKm:
+              type: number
+            estimatedTravelMinutes:
+              type: number
+            surcharge:
+              type: boolean
+    BlackoutDate:
+      type: object
+      required: [date, reason]
+      properties:
+        date:
+          type: string
+          format: date
+        reason:
+          type: string
+    TravelConstraints:
+      type: object
+      required: [baseLocation, maxDistanceKm, bufferHours, weekendTravelPremium]
+      properties:
+        baseLocation:
+          type: string
+        maxDistanceKm:
+          type: number
+        bufferHours:
+          type: number
+        weekendTravelPremium:
+          type: boolean
+        unavailableRegions:
+          type: array
+          items:
+            type: string
+        notes:
+          type: string
+        extraBufferHours:
+          type: number
+          nullable: true
+        trafficAdvisory:
+          type: string
+    AvailabilityResponse:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date
+            end:
+              type: string
+              format: date
+        timezone:
+          type: string
+        location:
+          type: string
+        requestedLocation:
+          type: string
+          nullable: true
+        bookedSlots:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilitySlot'
+        blackoutDates:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlackoutDate'
+        travelConstraints:
+          $ref: '#/components/schemas/TravelConstraints'
+        unavailableDates:
+          type: array
+          items:
+            type: string
+            format: date
+        metadata:
+          type: object
+          properties:
+            generatedAt:
+              type: string
+              format: date-time
+            datasetVersion:
+              type: string
     PersonalizationEvent:
       type: object
       required: [type, variantId]
