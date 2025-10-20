@@ -8,10 +8,30 @@
     "reactLogoAlt": "React logo"
   },
   "hero": {
-    "title": "High-Energy Music for Unforgettable Events",
-    "subtitle": "Book our DJ and saxophonist duo to keep the dance floor full all night long.",
-    "ctaPrimaryText": "Book Now",
-    "ctaSecondaryText": "Learn More"
+    "badge": "✨ 4.9/5 from 180+ reviews",
+    "title": "DJ + Sax that packs your dance floor in two tracks",
+    "subtitle": "Live mashups, a saxophonist on the dance floor, and realtime playlists tuned to your crowd.",
+    "supportingCopy": "120+ events each year, a 4.9/5 rating across 180+ reviews, and a dedicated event manager preparing your intake.",
+    "ctaPrimaryText": "Schedule your intake",
+    "ctaSecondaryText": "Request a mix demo",
+    "stats": [
+      {
+        "label": "Average rating",
+        "value": "4.9/5"
+      },
+      {
+        "label": "Events per year",
+        "value": "120+"
+      },
+      {
+        "label": "Dance floor activation",
+        "value": "98%"
+      }
+    ],
+    "testimonial": {
+      "quote": "Within ten minutes our wedding dance floor was full and they kept the energy going all night.",
+      "author": "Lisa & Robert – Wedding Utrecht"
+    }
   },
   "testimonials": {
     "title": "What Clients Say",
