@@ -25,6 +25,8 @@ async function fetchAPI(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config);
+    let rawBody = '';
+    let data = null;
 
     let parsedBody = null;
     if (response.status !== 204) {
@@ -49,6 +51,9 @@ async function fetchAPI(endpoint, options = {}) {
   } catch (error) {
     if (error instanceof TypeError) {
       throw new Error('Netwerkfout: Kan geen verbinding maken met de server');
+    }
+    if (error instanceof SyntaxError) {
+      throw new Error('Server antwoordde met ongeldige data');
     }
     throw error;
   }
