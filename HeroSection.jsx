@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '../Atoms/Buttons.jsx';
+import Button from './Buttons.jsx';
 
 const HeroSection = ({
   title,

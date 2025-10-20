@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '../Atoms/Buttons.jsx';
+import Button from './Buttons.jsx';
 
 // Data structure for the three packages
 const packages = [
