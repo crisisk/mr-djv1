@@ -4,6 +4,102 @@ const cache = require('../lib/cache');
 const config = require('../config');
 const rentGuyService = require('./rentGuyService');
 
+/**
+ * @typedef {Object} PersonalizationVariant
+ * @property {string} id
+ * @property {string} label
+ * @property {Array<string>} [keywords]
+ * @property {Array<string>} [intentTags]
+ * @property {Array<string>} [keywordsNormalized]
+ * @property {Array<string>} [intentTagsNormalized]
+ * @property {string} [labelNormalized]
+ * @property {Object} [hero]
+ * @property {Object} [cro]
+ * @property {Object} [features]
+ * @property {Object} [testimonials]
+ * @property {Object} [pricing]
+ * @property {Object} [leadCapture]
+ * @property {Object} [automation]
+ */
+
+/**
+ * @typedef {Object} PersonalizationConfig
+ * @property {Array<PersonalizationVariant>} variants
+ * @property {PersonalizationVariant|null} defaultVariant
+ * @property {string|null} defaultVariantId
+ */
+
+/**
+ * @typedef {Object} CityEntry
+ * @property {string} slug
+ * @property {string} city
+ * @property {string} intro
+ * @property {Array<Object>} [cases]
+ * @property {Array<string>} [venues]
+ * @property {Array<Object>} [faqs]
+ * @property {string} [normalizedCity]
+ * @property {Set.<string>} [tokens]
+ */
+
+/**
+ * @typedef {Object} PersonalizationContext
+ * @property {Array<string>} [keywords]
+ * @property {string} [keyword]
+ * @property {string} [utmTerm]
+ * @property {string} [search]
+ * @property {string} [query]
+ * @property {string} [personaHint]
+ * @property {Array<string>} [additionalHints]
+ * @property {string} [landing]
+ * @property {string} [utmCampaign]
+ * @property {string} [utmSource]
+ * @property {string} [referrer]
+ */
+
+/**
+ * @typedef {Object} VariantSelectionMeta
+ * @property {string} variantId
+ * @property {string} matchType
+ * @property {Array<string>} matchedKeywords
+ * @property {Array<string>} keywordInput
+ * @property {Array<string>} normalizedKeywords
+ * @property {boolean} automationTriggered
+ * @property {string|null} experimentId
+ * @property {string|null} city
+ */
+
+/**
+ * @typedef {Object} VariantSelection
+ * @property {PersonalizationVariant} variant
+ * @property {VariantSelectionMeta} meta
+ */
+
+/**
+ * @typedef {Object} PersonalizationEvent
+ * @property {string} id
+ * @property {string} type
+ * @property {string} variantId
+ * @property {string|null} keyword
+ * @property {Object<string, *>} payload
+ * @property {Object<string, *>} context
+ * @property {string} createdAt
+ * @property {boolean} automationTriggered
+ */
+
+/**
+ * @typedef {Object} ExposureLogEntry
+ * @property {string} id
+ * @property {string} variantId
+ * @property {string} matchType
+ * @property {Array<string>} matchedKeywords
+ * @property {Array<string>} keywordInput
+ * @property {string|null} landing
+ * @property {string|null} utmCampaign
+ * @property {string|null} utmSource
+ * @property {string|null} city
+ * @property {string} createdAt
+ */
+
 const VARIANT_CACHE_KEY = 'personalization:variants';
 const VARIANT_CACHE_TTL = 5 * 60 * 1000;
 const CITY_CACHE_KEY = 'personalization:cities';
@@ -48,9 +144,15 @@ function cloneVariant(variant) {
   return JSON.parse(JSON.stringify(variant));
 }
 
+/**
+ * Loads personalization variant definitions from disk (with caching).
+ *
+ * @param {boolean} [force=false]
+ * @returns {Promise<PersonalizationConfig>}
+ */
 async function loadVariantsConfig(force = false) {
   if (!force) {
-    const cached = cache.get(VARIANT_CACHE_KEY);
+    const cached = await cache.get(VARIANT_CACHE_KEY);
     if (cached) {
       return cached;
     }
@@ -78,13 +180,19 @@ async function loadVariantsConfig(force = false) {
     defaultVariantId: defaultVariant ? defaultVariant.id : null
   };
 
-  cache.set(VARIANT_CACHE_KEY, configObject, VARIANT_CACHE_TTL);
+  await cache.set(VARIANT_CACHE_KEY, configObject, VARIANT_CACHE_TTL);
   return configObject;
 }
 
+/**
+ * Loads known city entries to support location-based personalization.
+ *
+ * @param {boolean} [force=false]
+ * @returns {Promise<Array<CityEntry>>}
+ */
 async function loadCities(force = false) {
   if (!force) {
-    const cached = cache.get(CITY_CACHE_KEY);
+    const cached = await cache.get(CITY_CACHE_KEY);
     if (cached) {
       return cached;
     }
@@ -115,7 +223,7 @@ async function loadCities(force = false) {
     };
   });
 
-  cache.set(CITY_CACHE_KEY, cities, VARIANT_CACHE_TTL);
+  await cache.set(CITY_CACHE_KEY, cities, VARIANT_CACHE_TTL);
   return cities;
 }
 
@@ -473,6 +581,12 @@ async function notifyAutomation(payload) {
   return results.some(Boolean);
 }
 
+/**
+ * Selects the best-fit personalization variant for an incoming request.
+ *
+ * @param {PersonalizationContext} [context]
+ * @returns {Promise<VariantSelection>}
+ */
 async function getVariantForRequest(context = {}) {
   const configObject = await loadVariantsConfig();
   const keywordData = extractKeywordData(context);
@@ -543,6 +657,17 @@ async function getVariantForRequest(context = {}) {
   };
 }
 
+/**
+ * Records engagement events for analytics and triggers downstream automations.
+ *
+ * @param {Object} params
+ * @param {string} params.type
+ * @param {string} params.variantId
+ * @param {string|null} [params.keyword]
+ * @param {Object<string, *>} [params.payload]
+ * @param {Object<string, *>} [params.context]
+ * @returns {Promise<PersonalizationEvent>}
+ */
 async function recordEvent({ type, variantId, keyword, payload = {}, context = {} }) {
   const entry = {
     id: createId('evt'),
@@ -569,22 +694,45 @@ async function recordEvent({ type, variantId, keyword, payload = {}, context = {
   return entry;
 }
 
+/**
+ * Returns a snapshot of the in-memory exposure log.
+ *
+ * @returns {Array<ExposureLogEntry>}
+ */
 function getExposureLog() {
   return [...exposureLog];
 }
 
+/**
+ * Returns a snapshot of the in-memory event log.
+ *
+ * @returns {Array<PersonalizationEvent>}
+ */
 function getEventLog() {
   return [...eventLog];
 }
 
+/**
+ * Clears the exposure and event logs.
+ *
+ * @returns {void}
+ */
 function resetLogs() {
   exposureLog.splice(0, exposureLog.length);
   eventLog.splice(0, eventLog.length);
 }
 
-function resetCache() {
-  cache.del(VARIANT_CACHE_KEY);
-  cache.del(CITY_CACHE_KEY);
+async function resetCache() {
+  await Promise.all([cache.del(VARIANT_CACHE_KEY), cache.del(CITY_CACHE_KEY)]);
+}
+
+function ping() {
+  return {
+    ok: true,
+    automationWebhookConfigured: Boolean(config.personalization?.automationWebhook),
+    rentGuyConfigured: Boolean(config.integrations?.rentGuy?.enabled),
+    variantsCached: Boolean(cache.get(VARIANT_CACHE_KEY))
+  };
 }
 
 module.exports = {
@@ -595,5 +743,6 @@ module.exports = {
   resetLogs,
   resetCache,
   loadVariantsConfig,
-  loadCities
+  loadCities,
+  ping
 };

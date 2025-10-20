@@ -1,31 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import styles from './InstagramReelsSection.module.css';
 
-const InstagramReelsSection = () => {
-  const [reels, setReels] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+type ReelAudioSource = {
+  src: string;
+  type: string;
+};
 
-  // Mock data - Replace with actual Instagram API integration
-  const mockReels = [
-    {
-      id: '1',
-      videoUrl: '/videos/dj-event-1.mp4',
-      audioTitle: 'Trending Song 1',
-      likes: 1200,
-      views: 5000,
-      description: 'Amazing wedding party! 🎵 #DJLife'
-    },
-    // Add more mock reels
-  ];
+type Reel = {
+  id: string;
+  videoUrl: string;
+  audioTitle: string;
+  audioSources: ReelAudioSource[];
+  downloadUrl: string;
+  likes: number;
+  views: number;
+  description: string;
+};
+
+const MOCK_REELS: Reel[] = [
+  {
+    id: '1',
+    videoUrl: '/videos/dj-event-1.mp4',
+    audioTitle: 'Trending Song 1',
+    audioSources: [
+      {
+        src: 'https://cdn.pixabay.com/download/audio/2023/10/12/audio_4a4d2d51cb.mp3?filename=future-bass-hip-hop-169380.mp3',
+        type: 'audio/mpeg'
+      },
+      {
+        src: 'https://cdn.pixabay.com/download/audio/2023/10/12/audio_a0ecb26227.ogg?filename=future-bass-hip-hop-169380.ogg',
+        type: 'audio/ogg'
+      }
+    ],
+    downloadUrl:
+      'https://cdn.pixabay.com/download/audio/2023/10/12/audio_4a4d2d51cb.mp3?filename=future-bass-hip-hop-169380.mp3',
+    likes: 1200,
+    views: 5000,
+    description: 'Amazing wedding party! 🎵 #DJLife'
+  }
+  // Add more mock reels
+];
+
+const InstagramReelsSection = () => {
+  const [reels, setReels] = useState<Reel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchReels = async () => {
       try {
         // TODO: Replace with actual Instagram API call
-        setReels(mockReels);
+        setReels(MOCK_REELS);
         setIsLoading(false);
-      } catch (err) {
+      } catch (fetchError) {
+        console.error(fetchError);
         setError('Failed to load Instagram Reels');
         setIsLoading(false);
       }
@@ -35,7 +63,7 @@ const InstagramReelsSection = () => {
   }, []);
 
   if (isLoading) return <div className={styles.loader}>Loading...</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
+  if (error) return <div className={styles.error} role="alert">{error}</div>;
 
   return (
     <section className={styles.reelsSection}>
@@ -56,6 +84,34 @@ const InstagramReelsSection = () => {
             </div>
             <div className={styles.reelInfo}>
               <p className={styles.audioTitle}>🎵 {reel.audioTitle}</p>
+              {reel.audioSources?.length ? (
+                <div className={styles.audioPlayer}>
+                  <audio
+                    className={styles.audioElement}
+                    controls
+                    preload="metadata"
+                    aria-label={`Audio track for ${reel.audioTitle}`}
+                  >
+                    {reel.audioSources.map((source) => (
+                      <source key={source.type} src={source.src} type={source.type} />
+                    ))}
+                    <span>
+                      Your browser does not support embedded audio.{' '}
+                      <a href={reel.downloadUrl} download>
+                        Download {reel.audioTitle}
+                      </a>
+                    </span>
+                  </audio>
+                  <a
+                    className={styles.audioDownload}
+                    href={reel.downloadUrl}
+                    download
+                    aria-label={`Download ${reel.audioTitle}`}
+                  >
+                    Download track
+                  </a>
+                </div>
+              ) : null}
               <div className={styles.stats}>
                 <span>❤️ {reel.likes}</span>
                 <span>👁️ {reel.views}</span>

@@ -16,13 +16,16 @@ function resolvePageContext() {
   };
 }
 
+// Deduplication cache to prevent overlapping Sevensa requests
+const pendingSevensaRequests = new Map();
+
 // Sevensa Form Submission Logic (Placeholder)
 const submitToSevensa = async (formData) => {
   const accountId = 'YOUR_SEVENSA_ACCOUNT_ID'; // VERVANGEN
   const formId = 'YOUR_SEVENSA_FORM_ID'; // VERVANGEN
   const url = `https://api.sevensa.com/forms/${accountId}/${formId}/submit`;
 
-  const fields = Object.keys(formData).map(key => ({
+  const fields = Object.keys(formData).map((key) => ({
     name: key,
     value: formData[key]
   }));
@@ -32,24 +35,47 @@ const submitToSevensa = async (formData) => {
     context: resolvePageContext()
   };
 
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+  const dedupeKey = JSON.stringify({
+    eventDate: formData.event_date,
+    email: formData.email
+  });
 
-    if (response.ok) {
-      return { success: true, message: 'Aanvraag succesvol verzonden!' };
-    } else {
-      const errorData = await response.json();
-      return { success: false, message: `Fout bij verzenden: ${errorData.message || 'Onbekende fout'}` };
-    }
-  } catch (error) {
-    return { success: false, message: `Netwerkfout: ${error.message}` };
+  if (pendingSevensaRequests.has(dedupeKey)) {
+    return pendingSevensaRequests.get(dedupeKey);
   }
+
+  const requestPromise = (async () => {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        return { success: true, message: 'Aanvraag succesvol verzonden!' };
+      }
+
+      let errorMessage = 'Onbekende fout';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (parseError) {
+        errorMessage = parseError.message || errorMessage;
+      }
+
+      return { success: false, message: `Fout bij verzenden: ${errorMessage}` };
+    } catch (error) {
+      return { success: false, message: `Netwerkfout: ${error.message}` };
+    } finally {
+      pendingSevensaRequests.delete(dedupeKey);
+    }
+  })();
+
+  pendingSevensaRequests.set(dedupeKey, requestPromise);
+  return requestPromise;
 };
 
 const AvailabilityChecker = () => {

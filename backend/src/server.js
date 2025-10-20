@@ -2,11 +2,13 @@ const app = require('./app');
 const config = require('./config');
 const { logger } = require('./lib/logger');
 const { startTelemetry, shutdownTelemetry } = require('./lib/telemetry');
+const { migrateToLatest } = require('./lib/migrations');
 const { closeAllQueues } = require('./lib/durableQueue');
 const { closeAllRedisConnections } = require('./lib/redis');
 
 async function bootstrap() {
   await startTelemetry();
+  await migrateToLatest();
 
   return new Promise((resolve) => {
     const httpServer = app.listen(config.port, config.host, () => {
