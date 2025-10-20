@@ -347,10 +347,9 @@ describe('bookingService', () => {
 });
 
 describe('catalog services', () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
-    packageService.resetCache();
-    reviewService.resetCache();
+    await Promise.all([packageService.resetCache(), reviewService.resetCache()]);
   });
 
   it('returns database backed packages when available', async () => {
