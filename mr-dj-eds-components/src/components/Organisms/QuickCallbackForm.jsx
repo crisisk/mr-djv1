@@ -18,12 +18,12 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
-  const resetTimeoutRef = useRef(null);
+  const successResetTimeoutRef = useRef(null);
 
   useEffect(() => {
     return () => {
-      if (resetTimeoutRef.current) {
-        clearTimeout(resetTimeoutRef.current);
+      if (successResetTimeoutRef.current) {
+        clearTimeout(successResetTimeoutRef.current);
       }
     };
   }, []);
@@ -80,12 +80,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     setIsSubmitting(true);
 
-    const payload = {
-      name: formData.name.trim(),
-      phone: formData.phone.trim(),
-      eventType: formData.eventType,
-    };
-
     try {
       await submitCallbackRequest(payload);
 
@@ -98,7 +92,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         browser.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
-          event_type: payload.eventType,
+          event_type: formData.eventType,
           form_type: 'callback',
         });
       }
@@ -106,10 +100,10 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       setFieldErrors({});
       setIsSubmitted(true);
       // Reset form after 3 seconds
-      if (resetTimeoutRef.current) {
-        clearTimeout(resetTimeoutRef.current);
+      if (successResetTimeoutRef.current) {
+        clearTimeout(successResetTimeoutRef.current);
       }
-      resetTimeoutRef.current = setTimeout(() => {
+      successResetTimeoutRef.current = setTimeout(() => {
         setFormData({ name: '', phone: '', eventType: '' });
         setFieldErrors({});
         setIsSubmitted(false);

@@ -5,6 +5,8 @@
  * Used for hero images, event visuals, and dynamic content creation
  */
 
+import { getWindow, isBrowser } from '../lib/environment.js';
+
 const REPLICATE_API_KEY = 'r8_F37uDRCZQ92lMBuJKJ5b5EM0xHH9vnZ2EDXMN';
 const REPLICATE_API_URL = 'https://api.replicate.com/v1';
 
@@ -76,7 +78,8 @@ export async function generateHeroImage({ city, eventType = 'feest', style = 'pr
     feest: `Professional DJ performing at an upscale event venue in ${city}, Netherlands, with dynamic lighting effects, modern equipment, enthusiastic crowd, cinematic shot, 8k resolution`,
   };
 
-  const prompt = prompts[eventType] || prompts.feest;
+  const basePrompt = prompts[eventType] || prompts.feest;
+  const prompt = style ? `${basePrompt}, styled as ${style}` : basePrompt;
 
   const input = {
     prompt: prompt,
@@ -204,7 +207,7 @@ async function waitForPrediction(predictionId, maxAttempts = 60) {
  * @param {Object} params - Page parameters
  * @returns {Promise<Object>} - Object with hero, gallery, and promo images
  */
-export async function generateCityLandingPageImages({ city, eventType = 'feest', province }) {
+export async function generateCityLandingPageImages({ city, eventType = 'feest' }) {
   try {
     const [heroImage, galleryImage1, galleryImage2, galleryImage3] = await Promise.all([
       generateHeroImage({ city, eventType, style: 'professional' }),
@@ -240,24 +243,38 @@ export async function generateCityLandingPageImages({ city, eventType = 'feest',
  * Checks localStorage cache before generating new images
  */
 export async function getCachedOrGenerateImage(cacheKey, generatorFn) {
-  // Check cache first
-  const cached = localStorage.getItem(`replicate_${cacheKey}`);
-  if (cached) {
-    const { url, timestamp } = JSON.parse(cached);
-    // Cache valid for 7 days
-    if (Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000) {
-      return url;
+  const win = getWindow();
+  const canUseStorage = isBrowser() && win?.localStorage;
+
+  if (canUseStorage) {
+    try {
+      const cached = win.localStorage.getItem(`replicate_${cacheKey}`);
+      if (cached) {
+        const { url, timestamp } = JSON.parse(cached);
+        if (url && timestamp && Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000) {
+          return url;
+        }
+      }
+    } catch (error) {
+      console.warn('Kon Replicate cache niet lezen, genereer nieuwe afbeelding', error);
     }
   }
 
-  // Generate new image
   const url = await generatorFn();
 
-  // Cache result
-  localStorage.setItem(`replicate_${cacheKey}`, JSON.stringify({
-    url,
-    timestamp: Date.now(),
-  }));
+  if (canUseStorage && url) {
+    try {
+      win.localStorage.setItem(
+        `replicate_${cacheKey}`,
+        JSON.stringify({
+          url,
+          timestamp: Date.now(),
+        }),
+      );
+    } catch (error) {
+      console.warn('Kon Replicate afbeelding niet cachen', error);
+    }
+  }
 
   return url;
 }

@@ -152,6 +152,10 @@ export async function initializeWidget(containerId, widgetType = 'booking') {
   const config = getWidgetConfig(widgetType);
 
   try {
+    if (!TPW_API_KEY) {
+      throw new Error('TPW API key ontbreekt. Stel VITE_TPW_API_KEY in om de TPW widget te laden.');
+    }
+
     await loadTPWWidget(config.id);
 
     const container = document.getElementById(containerId);
