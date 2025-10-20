@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { saveContact } = require('../services/contactService');
+const { createResponse } = require('../lib/response');
 
 const router = express.Router();
 
@@ -22,13 +23,18 @@ router.post('/', validations, async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      error: 'Validatie mislukt',
-      details: errors.array().map((err) => ({
-        field: err.param,
-        message: err.msg
-      }))
-    });
+    const details = errors.array().map((err) => ({
+      field: err.param,
+      message: err.msg
+    }));
+
+    return res.status(422).json(
+      createResponse(
+        { details },
+        { message: 'Validatie mislukt' },
+        false
+      )
+    );
   }
 
   try {
@@ -46,9 +52,7 @@ router.post('/', validations, async (req, res, next) => {
       ? new Date(contactRecord.eventDate).toISOString()
       : req.body.eventDate || null;
 
-    res.status(201).json({
-      success: true,
-      message: 'Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.',
+    const data = {
       contactId: contactRecord.id,
       status: contactRecord.status,
       persisted: contactRecord.persisted,
@@ -58,7 +62,12 @@ router.post('/', validations, async (req, res, next) => {
       submittedAt: contactRecord.createdAt,
       rentGuySync: contactRecord.rentGuySync,
       sevensaSync: contactRecord.sevensaSync
-    });
+    };
+    const meta = {
+      message: 'Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.'
+    };
+
+    res.status(201).json(createResponse(data, meta));
   } catch (error) {
     next(error);
   }

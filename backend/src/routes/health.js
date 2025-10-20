@@ -5,6 +5,7 @@ const { getContactServiceStatus } = require('../services/contactService');
 const { getCallbackRequestServiceStatus } = require('../services/callbackRequestService');
 const { getBookingServiceStatus } = require('../services/bookingService');
 const { getStatus: getRentGuyStatus } = require('../services/rentGuyService');
+const { createResponse } = require('../lib/response');
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get('/', async (_req, res, next) => {
   try {
     const rentGuyStatus = await getRentGuyStatus();
 
-    res.json({
+    const data = {
       status: 'ok',
       timestamp: new Date().toISOString(),
       service: config.serviceName,
@@ -52,7 +53,9 @@ router.get('/', async (_req, res, next) => {
           }
         }
       }
-    });
+    };
+
+    res.json(createResponse(data));
   } catch (error) {
     next(error);
   }

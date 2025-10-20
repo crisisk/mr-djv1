@@ -42,8 +42,16 @@ async function fetchAPI(endpoint, options = {}) {
 
     if (!response.ok) {
       const message =
-        (parsedBody && typeof parsedBody === 'object' && (parsedBody.message || parsedBody.error)) ||
+        (parsedBody &&
+          typeof parsedBody === 'object' &&
+          (parsedBody.meta?.message || parsedBody.data?.message || parsedBody.data?.error || parsedBody.message || parsedBody.error)) ||
         `HTTP Error: ${response.status}`;
+      throw new Error(message);
+    }
+
+    if (parsedBody && typeof parsedBody === 'object' && parsedBody.success === false) {
+      const message =
+        parsedBody.meta?.message || parsedBody.data?.message || parsedBody.data?.error || 'Onbekende fout';
       throw new Error(message);
     }
 
@@ -95,7 +103,7 @@ export async function submitCallbackRequest(formData) {
  */
 export async function getPackages() {
   const response = await fetchAPI('/packages');
-  return response?.packages ?? [];
+  return response?.data?.packages ?? [];
 }
 
 /**
@@ -103,7 +111,8 @@ export async function getPackages() {
  * @returns {Promise<Object|null>} Health status
  */
 export async function checkHealth() {
-  return fetchAPI('/health');
+  const response = await fetchAPI('/health');
+  return response?.data ?? response;
 }
 
 /**

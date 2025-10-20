@@ -1,6 +1,7 @@
 const express = require('express');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
+const { createResponse } = require('../lib/response');
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get('/queues', async (_req, res, next) => {
       sevensaService.getStatus()
     ]);
 
-    const payload = {
+    const data = {
       queues: {
         rentguy: {
           configured: rentGuy.configured,
@@ -33,7 +34,7 @@ router.get('/queues', async (_req, res, next) => {
       generatedAt: new Date().toISOString()
     };
 
-    res.json(payload);
+    res.json(createResponse(data));
   } catch (error) {
     next(error);
   }

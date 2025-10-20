@@ -73,7 +73,8 @@ describe('Mister DJ API', () => {
     const response = await request('GET', '/');
 
     expect(response.status).toBe(200);
-    expect(response.body).toMatchObject({
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toMatchObject({
       message: 'Mister DJ API',
       endpoints: expect.objectContaining({
         health: '/health',
@@ -84,14 +85,15 @@ describe('Mister DJ API', () => {
         reviews: '/reviews'
       })
     });
-    expect(response.body.endpoints.integrations).toEqual(
+    const endpoints = response.body.data.endpoints;
+    expect(endpoints.integrations).toEqual(
       expect.objectContaining({
         rentGuy: '/integrations/rentguy/status',
         sevensa: '/integrations/sevensa/status'
       })
     );
-    expect(response.body.endpoints.metrics).toBe('/metrics/queues');
-    expect(response.body.endpoints.personalization).toEqual(
+    expect(endpoints.metrics).toBe('/metrics/queues');
+    expect(endpoints.personalization).toEqual(
       expect.objectContaining({
         keyword: '/personalization/keyword',
         events: '/personalization/events'
@@ -103,7 +105,8 @@ describe('Mister DJ API', () => {
     const response = await request('GET', '/health');
 
     expect(response.status).toBe(200);
-    expect(response.body).toMatchObject({
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toMatchObject({
       status: 'ok',
       service: expect.any(String),
       dependencies: expect.objectContaining({
@@ -128,23 +131,27 @@ describe('Mister DJ API', () => {
     });
 
     expect(response.status).toBe(201);
-    expect(response.body).toMatchObject({
-      success: true,
+    expect(response.body.success).toBe(true);
+    expect(response.body.meta).toMatchObject({
+      message: expect.stringContaining('Bedankt')
+    });
+    expect(response.body.data).toMatchObject({
       persisted: false,
       status: 'pending',
       eventType: 'bruiloft',
       rentGuySync: expect.objectContaining({ queued: true }),
       sevensaSync: expect.objectContaining({ queued: true })
     });
-    expect(response.body.callbackId).toBeDefined();
-    expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
+    expect(response.body.data.callbackId).toBeDefined();
+    expect(new Date(response.body.data.submittedAt).getTime()).toBeGreaterThan(0);
   });
 
   it('provides queue metrics for observability tooling', async () => {
     const response = await request('GET', '/metrics/queues');
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual(
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toEqual(
       expect.objectContaining({
         generatedAt: expect.any(String),
         queues: expect.objectContaining({
@@ -171,16 +178,18 @@ describe('Mister DJ API', () => {
     const response = await request('POST', '/contact', {});
 
     expect(response.status).toBe(422);
-    expect(response.body).toMatchObject({
-      error: 'Validatie mislukt'
-    });
+    expect(response.body.success).toBe(false);
+    expect(response.body.meta).toMatchObject({ message: 'Validatie mislukt' });
+    expect(Array.isArray(response.body.data.details)).toBe(true);
   });
 
   it('rejects invalid callback requests', async () => {
     const response = await request('POST', '/callback-request', {});
 
     expect(response.status).toBe(422);
-    expect(response.body).toMatchObject({ error: 'Validatie mislukt' });
+    expect(response.body.success).toBe(false);
+    expect(response.body.meta).toMatchObject({ message: 'Validatie mislukt' });
+    expect(Array.isArray(response.body.data.details)).toBe(true);
   });
 
   it('returns a helpful error when the JSON payload cannot be parsed', async () => {
@@ -206,18 +215,21 @@ describe('Mister DJ API', () => {
     });
 
     expect(response.status).toBe(201);
-    expect(response.body).toMatchObject({
-      success: true,
+    expect(response.body.success).toBe(true);
+    expect(response.body.meta).toMatchObject({
+      message: expect.stringContaining('Bedankt')
+    });
+    expect(response.body.data).toMatchObject({
       persisted: false,
       status: 'pending',
       eventType: 'Bruiloft',
-      requestedPackage: 'gold'
+      requestedPackage: 'gold',
+      rentGuySync: expect.objectContaining({ queued: true }),
+      sevensaSync: expect.objectContaining({ queued: true })
     });
-    expect(response.body.contactId).toBeDefined();
-    expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
-    expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
-    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
-    expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.data.contactId).toBeDefined();
+    expect(new Date(response.body.data.submittedAt).getTime()).toBeGreaterThan(0);
+    expect(new Date(response.body.data.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
   });
 
   it('accepts callback requests and queues integrations when no DB is configured', async () => {
@@ -228,31 +240,34 @@ describe('Mister DJ API', () => {
     });
 
     expect(response.status).toBe(201);
-    expect(response.body).toMatchObject({
-      success: true,
+    expect(response.body.success).toBe(true);
+    expect(response.body.meta).toMatchObject({ message: expect.any(String) });
+    expect(response.body.data).toMatchObject({
       persisted: false,
       status: 'pending',
-      eventType: 'bedrijfsfeest'
+      eventType: 'bedrijfsfeest',
+      rentGuySync: expect.objectContaining({ queued: true }),
+      sevensaSync: expect.objectContaining({ queued: true })
     });
-    expect(response.body.callbackId).toBeDefined();
-    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
-    expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.data.callbackId).toBeDefined();
   });
 
   it('provides a curated set of fallback packages when no database is available', async () => {
     const response = await request('GET', '/packages');
 
     expect(response.status).toBe(200);
-    expect(Array.isArray(response.body.packages)).toBe(true);
-    expect(response.body.packages.length).toBeGreaterThan(0);
-    expect(['static', 'content']).toContain(response.body.source);
+    expect(Array.isArray(response.body.data.packages)).toBe(true);
+    expect(response.body.data.packages.length).toBeGreaterThan(0);
+    expect(['static', 'content']).toContain(response.body.meta.source);
   });
 
   it('rejects invalid booking submissions', async () => {
     const response = await request('POST', '/bookings', {});
 
     expect(response.status).toBe(422);
-    expect(response.body).toMatchObject({ error: 'Validatie mislukt' });
+    expect(response.body.success).toBe(false);
+    expect(response.body.meta).toMatchObject({ message: 'Validatie mislukt' });
+    expect(Array.isArray(response.body.data.details)).toBe(true);
   });
 
   it('creates bookings and tracks them in memory when the database is unavailable', async () => {
@@ -267,19 +282,23 @@ describe('Mister DJ API', () => {
     });
 
     expect(response.status).toBe(201);
-    expect(response.body).toMatchObject({
-      success: true,
-      persisted: false,
-      status: 'pending'
+    expect(response.body.success).toBe(true);
+    expect(response.body.meta).toMatchObject({
+      message: expect.stringContaining('Bedankt')
     });
-    expect(response.body.bookingId).toBeDefined();
-    expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.data).toMatchObject({
+      persisted: false,
+      status: 'pending',
+      rentGuySync: expect.objectContaining({ queued: true })
+    });
+    expect(response.body.data.bookingId).toBeDefined();
 
     const listResponse = await request('GET', '/bookings');
     expect(listResponse.status).toBe(200);
-    expect(listResponse.body).toMatchObject({ persisted: false });
-    expect(Array.isArray(listResponse.body.bookings)).toBe(true);
-    expect(listResponse.body.bookings[0]).toMatchObject({
+    expect(listResponse.body.success).toBe(true);
+    expect(listResponse.body.meta).toMatchObject({ persisted: false });
+    expect(Array.isArray(listResponse.body.data.bookings)).toBe(true);
+    expect(listResponse.body.data.bookings[0]).toMatchObject({
       name: 'Test Booker',
       eventType: 'Jubileum',
       packageId: 'silver'
@@ -290,16 +309,17 @@ describe('Mister DJ API', () => {
     const response = await request('GET', '/reviews');
 
     expect(response.status).toBe(200);
-    expect(Array.isArray(response.body.reviews)).toBe(true);
-    expect(response.body.reviews.length).toBeGreaterThan(0);
-    expect(response.body).toMatchObject({ source: 'static' });
+    expect(Array.isArray(response.body.data.reviews)).toBe(true);
+    expect(response.body.data.reviews.length).toBeGreaterThan(0);
+    expect(response.body.meta).toMatchObject({ source: expect.any(String) });
   });
 
   it('provides integration status for RentGuy', async () => {
     const response = await request('GET', '/integrations/rentguy/status');
 
     expect(response.status).toBe(200);
-    expect(response.body).toMatchObject({
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toMatchObject({
       configured: expect.any(Boolean),
       queueSize: expect.any(Number)
     });
@@ -309,7 +329,8 @@ describe('Mister DJ API', () => {
     const response = await request('GET', '/integrations/sevensa/status');
 
     expect(response.status).toBe(200);
-    expect(response.body).toMatchObject({
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toMatchObject({
       configured: expect.any(Boolean),
       queueSize: expect.any(Number)
     });
@@ -319,15 +340,14 @@ describe('Mister DJ API', () => {
     const response = await request('GET', '/personalization/keyword?keyword=bruiloft+dj');
 
     expect(response.status).toBe(200);
-    expect(response.body).toMatchObject({
-      meta: expect.objectContaining({
-        variantId: 'romantic_wedding',
-        matchType: 'manual'
-      }),
-      variant: expect.objectContaining({
-        hero: expect.objectContaining({ title: expect.any(String) }),
-        pricing: expect.objectContaining({ highlightPackage: 'Zilver' })
-      })
+    expect(response.body.success).toBe(true);
+    expect(response.body.meta).toMatchObject({
+      variantId: 'romantic_wedding',
+      matchType: 'manual'
+    });
+    expect(response.body.data).toMatchObject({
+      hero: expect.objectContaining({ title: expect.any(String) }),
+      pricing: expect.objectContaining({ highlightPackage: 'Zilver' })
     });
   });
 
@@ -340,8 +360,8 @@ describe('Mister DJ API', () => {
     });
 
     expect(response.status).toBe(201);
-    expect(response.body).toMatchObject({
-      success: true,
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toMatchObject({
       event: expect.objectContaining({
         variantId: 'romantic_wedding',
         type: 'cta_click',

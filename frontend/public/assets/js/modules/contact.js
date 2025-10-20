@@ -51,17 +51,20 @@ export const initContactForm = (analytics) => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const payload = await response.json();
 
-      if (!response.ok || !data.success) {
-        const validationMessage = Array.isArray(data.details)
-          ? data.details.map((detail) => `${detail.field}: ${detail.message}`).join(' ')
-          : data.message || data.error;
+      if (!response.ok || payload?.success === false) {
+        const details = Array.isArray(payload?.data?.details)
+          ? payload.data.details.map((detail) => `${detail.field}: ${detail.message}`).join(' ')
+          : null;
+        const validationMessage =
+          details || payload?.meta?.message || payload?.data?.message || payload?.data?.error;
+
         throw new Error(validationMessage || 'Er is iets misgegaan');
       }
 
       formMessage.className = 'form-message success';
-      formMessage.textContent = data.message;
+      formMessage.textContent = payload?.meta?.message || 'Bedankt! We nemen snel contact op.';
       prepareRevealElement(formMessage);
       contactForm.reset();
       availabilityStarted = false;

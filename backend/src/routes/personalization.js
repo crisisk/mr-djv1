@@ -4,6 +4,7 @@ const {
   getVariantForRequest,
   recordEvent
 } = require('../services/personalizationService');
+const { createResponse } = require('../lib/response');
 
 const router = express.Router();
 
@@ -48,10 +49,13 @@ const eventValidations = [
 function handleValidation(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      error: 'Validatie mislukt',
-      details: errors.array()
-    });
+    return res.status(422).json(
+      createResponse(
+        { details: errors.array() },
+        { message: 'Validatie mislukt' },
+        false
+      )
+    );
   }
 
   return next();
@@ -83,7 +87,7 @@ router.get('/keyword', keywordValidations, handleValidation, async (req, res, ne
       referrer: req.query.referrer
     });
 
-    res.json(result);
+    res.json(createResponse(result.variant, { ...result.meta }));
   } catch (error) {
     next(error);
   }
@@ -99,10 +103,11 @@ router.post('/events', eventValidations, handleValidation, async (req, res, next
       context: req.body.context || {}
     });
 
-    res.status(201).json({
-      success: true,
+    const data = {
       event: entry
-    });
+    };
+
+    res.status(201).json(createResponse(data));
   } catch (error) {
     next(error);
   }

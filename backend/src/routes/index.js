@@ -1,5 +1,6 @@
 const express = require('express');
 const config = require('../config');
+const { createResponse } = require('../lib/response');
 const healthRouter = require('./health');
 const packagesRouter = require('./packages');
 const contactRouter = require('./contact');
@@ -36,11 +37,13 @@ router.get('/', (_req, res) => {
     endpoints.dashboard = '/dashboard';
   }
 
-  res.json({
+  const data = {
     message: 'Mister DJ API',
     version: config.version,
     endpoints
-  });
+  };
+
+  res.json(createResponse(data));
 });
 
 router.use('/health', healthRouter);

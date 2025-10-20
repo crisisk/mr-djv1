@@ -188,9 +188,12 @@ const fetchPackages = async () => {
   try {
     const response = await fetch('/api/packages', { headers: { Accept: 'application/json' } });
     if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data.packages) && data.packages.length) {
-        return data.packages;
+      const payload = await response.json();
+      if (payload?.success) {
+        const packages = payload?.data?.packages;
+        if (Array.isArray(packages) && packages.length) {
+          return packages;
+        }
       }
     }
   } catch (error) {

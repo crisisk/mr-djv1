@@ -10,8 +10,15 @@ const GoogleReviews = () => {
       try {
         // Implementation would use actual Google Business API
         const response = await fetch('/api/google-reviews');
-        const data = await response.json();
-        setReviews(data);
+        const payload = await response.json();
+        if (payload?.success) {
+          const normalized = Array.isArray(payload?.data?.reviews)
+            ? payload.data.reviews
+            : payload.data;
+          setReviews(Array.isArray(normalized) ? normalized : []);
+        } else {
+          setReviews(Array.isArray(payload) ? payload : []);
+        }
       } catch (error) {
         console.error('Error fetching reviews:', error);
       }

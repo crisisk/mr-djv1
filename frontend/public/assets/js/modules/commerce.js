@@ -168,8 +168,11 @@ export const initPackageSection = async (analytics) => {
   }
 
   try {
-    const apiData = await fetchJson('/api/packages');
-    const packages = Array.isArray(apiData.packages) && apiData.packages.length ? apiData.packages : null;
+    const apiPayload = await fetchJson('/api/packages');
+    const packages =
+      apiPayload?.success && Array.isArray(apiPayload?.data?.packages) && apiPayload.data.packages.length
+        ? apiPayload.data.packages
+        : null;
     if (packages) {
       renderPackages(packages, analytics);
       writeCache(CACHE_KEYS.packages, packages);
@@ -199,8 +202,11 @@ export const initReviewSection = async (analytics) => {
   }
 
   try {
-    const apiData = await fetchJson('/api/reviews');
-    const reviews = Array.isArray(apiData.reviews) && apiData.reviews.length ? apiData.reviews : null;
+    const apiPayload = await fetchJson('/api/reviews');
+    const reviews =
+      apiPayload?.success && Array.isArray(apiPayload?.data?.reviews) && apiPayload.data.reviews.length
+        ? apiPayload.data.reviews
+        : null;
     if (reviews) {
       renderReviews(reviews, analytics);
       writeCache(CACHE_KEYS.reviews, reviews);

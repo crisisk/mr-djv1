@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { saveCallbackRequest } = require('../services/callbackRequestService');
+const { createResponse } = require('../lib/response');
 
 const router = express.Router();
 
@@ -19,13 +20,18 @@ router.post('/', validations, async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      error: 'Validatie mislukt',
-      details: errors.array().map((err) => ({
-        field: err.param,
-        message: err.msg
-      }))
-    });
+    const details = errors.array().map((err) => ({
+      field: err.param,
+      message: err.msg
+    }));
+
+    return res.status(422).json(
+      createResponse(
+        { details },
+        { message: 'Validatie mislukt' },
+        false
+      )
+    );
   }
 
   try {
@@ -35,9 +41,7 @@ router.post('/', validations, async (req, res, next) => {
       eventType: req.body.eventType
     });
 
-    res.status(201).json({
-      success: true,
-      message: 'Bedankt! We bellen je zo snel mogelijk terug.',
+    const data = {
       callbackId: callbackRequest.id,
       status: callbackRequest.status,
       persisted: callbackRequest.persisted,
@@ -46,7 +50,12 @@ router.post('/', validations, async (req, res, next) => {
       submittedAt: callbackRequest.createdAt,
       rentGuySync: callbackRequest.rentGuySync,
       sevensaSync: callbackRequest.sevensaSync
-    });
+    };
+    const meta = {
+      message: 'Bedankt! We bellen je zo snel mogelijk terug.'
+    };
+
+    res.status(201).json(createResponse(data, meta));
   } catch (error) {
     next(error);
   }
