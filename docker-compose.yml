@@ -64,7 +64,7 @@ services:
 
   # PostgreSQL Database - Renamed to mr-dj-postgres
   mr-dj-postgres:
-    image: postgres:15-alpine
+    image: postgres:16.3-alpine
     container_name: mr-dj-postgres
     restart: unless-stopped
     environment:
@@ -84,7 +84,7 @@ services:
 
   # Redis Cache (optional, voor sessions/caching) - Renamed to mr-dj-redis
   mr-dj-redis:
-    image: redis:7-alpine
+    image: redis:7.2-alpine
     container_name: mr-dj-redis
     restart: unless-stopped
     command: redis-server --requirepass mrdj_redis_password_2025
