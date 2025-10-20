@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from './Buttons.jsx';
 import usePricingToggle from './usePricingToggle';
+import { getLocalSeoDataBySlug } from './local_seo_data.js';
 
 const BILLING_MODES = {
   EVENT: 'event',
@@ -10,6 +11,7 @@ const BILLING_MODES = {
 // Data structure for the three packages with pricing variations
 const packages = [
   {
+    id: 'brons',
     name: 'Brons',
     subtitle: 'Entry-level pakket',
     pricing: {
@@ -32,8 +34,12 @@ const packages = [
     ],
     isFeatured: false,
     buttonText: 'Meer Info',
+    localHighlights: {
+      label: 'Lokale favoriet',
+    },
   },
   {
+    id: 'zilver',
     name: 'Zilver',
     subtitle: 'Meest gekozen',
     pricing: {
@@ -57,8 +63,12 @@ const packages = [
     ],
     isFeatured: true,
     buttonText: 'Boek Nu',
+    localHighlights: {
+      label: 'Regionale topper',
+    },
   },
   {
+    id: 'goud',
     name: 'Goud',
     subtitle: 'Premium All-Inclusive',
     pricing: {
@@ -82,11 +92,14 @@ const packages = [
     ],
     isFeatured: false,
     buttonText: 'Vraag Offerte Aan',
+    localHighlights: {
+      label: 'Iconische locaties',
+    },
   },
 ];
 
-const PricingCard = ({ pkg, billingMode }) => {
-  const { name, subtitle, pricing, features, isFeatured, buttonText } = pkg;
+const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
+  const { name, subtitle, pricing, features, isFeatured, buttonText, localHighlights } = pkg;
   const pricingDetails = pricing[billingMode];
 
   // Use token-based classes
@@ -101,7 +114,10 @@ const PricingCard = ({ pkg, billingMode }) => {
   const buttonVariant = isFeatured ? "secondary" : "primary";
 
   return (
-    <div className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}>
+    <div
+      className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}
+      data-active-city={activeCitySlug || undefined}
+    >
       {isFeatured && (
         <div className="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
           Populair
@@ -117,6 +133,19 @@ const PricingCard = ({ pkg, billingMode }) => {
           <span className="text-font-size-body ml-spacing-xs">{pricingDetails.suffix}</span>
         </div>
         <p className="text-font-size-small opacity-80">{pricingDetails.description}</p>
+        {localHighlight && (
+          <div
+            className="mt-spacing-xs rounded-md border border-secondary/30 bg-secondary/10 p-spacing-sm space-y-1"
+            data-testid={`pricing-local-highlight-${pkg.id}`}
+          >
+            {localHighlights?.label && (
+              <p className="text-font-size-small font-semibold uppercase tracking-wide text-secondary">
+                {localHighlights.label}
+              </p>
+            )}
+            <p className="text-font-size-small text-secondary leading-relaxed">{localHighlight}</p>
+          </div>
+        )}
       </div>
       <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
         {features.map((feature, index) => (
@@ -135,7 +164,7 @@ const PricingCard = ({ pkg, billingMode }) => {
   );
 };
 
-const PricingTables = () => {
+const PricingTables = ({ citySlug, localSeo }) => {
   const {
     billingMode,
     isMonthly,
@@ -143,6 +172,30 @@ const PricingTables = () => {
     selectMonthly,
     selectEvent,
   } = usePricingToggle(BILLING_MODES.EVENT);
+
+  const resolvedLocalSeo = React.useMemo(() => {
+    if (localSeo) {
+      if (localSeo.pricingHighlights) {
+        return localSeo;
+      }
+
+      if (localSeo.slug) {
+        const datasetEntry = getLocalSeoDataBySlug(localSeo.slug);
+        return datasetEntry ? { ...datasetEntry, ...localSeo } : localSeo;
+      }
+
+      return localSeo;
+    }
+
+    if (citySlug) {
+      return getLocalSeoDataBySlug(citySlug);
+    }
+
+    return null;
+  }, [citySlug, localSeo]);
+
+  const highlightMap = resolvedLocalSeo?.pricingHighlights;
+  const activeCitySlug = resolvedLocalSeo?.slug;
 
   return (
     <section className="py-spacing-3xl bg-neutral-gray-100">
@@ -182,8 +235,14 @@ const PricingTables = () => {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-center">
-          {packages.map((pkg, index) => (
-            <PricingCard key={`${pkg.name}-${index}`} pkg={pkg} billingMode={billingMode} />
+          {packages.map((pkg) => (
+            <PricingCard
+              key={pkg.id}
+              pkg={pkg}
+              billingMode={billingMode}
+              localHighlight={highlightMap?.[pkg.id] ?? pkg.localHighlights?.default ?? null}
+              activeCitySlug={activeCitySlug}
+            />
           ))}
         </div>
         <CallToAction

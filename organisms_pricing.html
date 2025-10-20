@@ -62,6 +62,31 @@
             position: relative;
             transition: all 0.3s ease;
         }
+
+        .pricing-card .local-highlight {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 214, 102, 0.45);
+            background: rgba(255, 214, 102, 0.15);
+            color: #7A5400;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .pricing-card .local-highlight .label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            color: #9b6600;
+        }
+
+        .pricing-card .local-highlight[data-active="false"] {
+            display: none;
+        }
         
         .pricing-card:hover {
             transform: translateY(-4px);
@@ -241,7 +266,13 @@
                     <div class="price">€495</div>
                     <div class="price-period">per evenement</div>
                 </div>
-                
+
+                <!-- Toggle data-active to true when the selected city matches this highlight -->
+                <div class="local-highlight" data-package="brons" data-city="eindhoven" data-active="false">
+                    <span class="label">Lokale favoriet</span>
+                    <p>Ideaal voor intieme feesten bij het Evoluon of de Effenaar.</p>
+                </div>
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -282,7 +313,12 @@
                     <div class="price">€795</div>
                     <div class="price-period">per evenement</div>
                 </div>
-                
+
+                <div class="local-highlight" data-package="zilver" data-city="eindhoven" data-active="false">
+                    <span class="label">Regionale topper</span>
+                    <p>Dé beste DJ voor Eindhoven. Perfect voor bruiloften op Strijp-S of zakelijke events in het Evoluon.</p>
+                </div>
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -327,7 +363,12 @@
                     <div class="price">€1.295</div>
                     <div class="price-period">per evenement</div>
                 </div>
-                
+
+                <div class="local-highlight" data-package="goud" data-city="eindhoven" data-active="false">
+                    <span class="label">Iconische locaties</span>
+                    <p>Premium showbeleving voor iconische Eindhovense locaties zoals het Klokgebouw of Strijp-S.</p>
+                </div>
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
