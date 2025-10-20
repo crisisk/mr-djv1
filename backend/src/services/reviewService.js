@@ -1,5 +1,6 @@
 const db = require('../lib/db');
 const cache = require('../lib/cache');
+const { getApprovedFeedback } = require('./surveyService');
 
 /**
  * @typedef {Object} Review
@@ -65,6 +66,8 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
     source: 'static'
   };
 
+  const surveyFeedback = await getApprovedFeedback(limit);
+
   if (db.isConfigured()) {
     try {
       const result = await db.runQuery(
@@ -91,6 +94,38 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
     } catch (error) {
       console.error('[reviewService] Failed to load reviews from database:', error.message);
     }
+  }
+
+  if (surveyFeedback.length) {
+    const mappedSurvey = surveyFeedback.map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      eventType: entry.eventType,
+      rating: entry.rating,
+      reviewText: entry.reviewText,
+      createdAt: entry.createdAt,
+      moderationState: 'approved',
+      source: entry.source || 'survey'
+    }));
+
+    const combined = [...mappedSurvey, ...response.reviews].sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    response = {
+      reviews: combined.slice(0, limit).map((item) => ({
+        id: item.id,
+        name: item.name,
+        eventType: item.eventType,
+        rating: item.rating,
+        reviewText: item.reviewText,
+        createdAt: item.createdAt,
+        moderationState: item.moderationState || 'approved'
+      })),
+      source: response.source === 'database' ? 'database+survey' : 'static+survey'
+    };
   }
 
   await cache.set(CACHE_KEY, response, CACHE_TTL);

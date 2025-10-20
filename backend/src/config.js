@@ -168,6 +168,12 @@ const DEFAULT_SECTION_CONFIG = [
     keys: ['N8N_PERSONALIZATION_WEBHOOK_URL', 'PERSONALIZATION_WEBHOOK_SECRETS']
   },
   {
+    id: 'feedback',
+    label: 'Feedback & surveys',
+    description: 'Surveyautomatisering en post-event klantfeedback workflows.',
+    keys: ['N8N_SURVEY_WEBHOOK_URL', 'SURVEY_RESPONSE_BASE_URL']
+  },
+  {
     id: 'automation',
     label: 'Content automatisering',
     description:
@@ -346,6 +352,10 @@ function buildConfig() {
     personalization: {
       automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL || null,
       incomingWebhookSecrets: parseList(process.env.PERSONALIZATION_WEBHOOK_SECRETS)
+    },
+    feedback: {
+      automationWebhook: process.env.N8N_SURVEY_WEBHOOK_URL || null,
+      responseBaseUrl: process.env.SURVEY_RESPONSE_BASE_URL || null
     },
     automation: {
       seo: {
