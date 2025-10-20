@@ -17,6 +17,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const successResetTimeoutRef = useRef(null);
 
@@ -78,13 +79,19 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       return;
     }
 
+    const payload = {
+      name: formData.name.trim(),
+      phone: formData.phone.trim(),
+      eventType: formData.eventType || undefined,
+    };
+
     setIsSubmitting(true);
 
     try {
-      await submitCallbackRequest(payload);
+      const response = await submitCallbackRequest(payload);
 
       // Track successful submission
-      trackFormSubmission(variant, payload.eventType, 'callback');
+      trackFormSubmission(variant, payload.eventType || '', 'callback');
 
       const browser = getWindow();
       if (browser) {
@@ -92,14 +99,15 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         browser.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
-          event_type: formData.eventType,
+          event_type: payload.eventType || '',
           form_type: 'callback',
         });
       }
 
       setFieldErrors({});
+      setSuccessMessage(response?.message || 'Bedankt! We bellen je zo snel mogelijk terug.');
       setIsSubmitted(true);
-      // Reset form after 3 seconds
+      // Reset form after 5 seconds
       if (successResetTimeoutRef.current) {
         clearTimeout(successResetTimeoutRef.current);
       }
@@ -107,7 +115,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         setFormData({ name: '', phone: '', eventType: '' });
         setFieldErrors({});
         setIsSubmitted(false);
-      }, 3000);
+        setSuccessMessage('');
+      }, 5000);
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitError(error.message || 'Er ging iets mis. Bel ons direct: 040 - 842 2594');
@@ -124,7 +133,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           Bedankt!
         </h3>
         <p className="text-neutral-dark">
-          We bellen je zo snel mogelijk terug!
+          {successMessage || 'We bellen je zo snel mogelijk terug!'}
         </p>
       </div>
     );
