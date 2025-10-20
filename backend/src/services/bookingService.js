@@ -31,6 +31,7 @@ async function createBooking(payload) {
         id: row.id,
         status: row.status,
         createdAt: row.created_at,
+        updatedAt: row.created_at,
         persisted: true,
         name: payload.name,
         email: payload.email,
@@ -51,6 +52,7 @@ async function createBooking(payload) {
       id,
       status: 'pending',
       createdAt: timestamp,
+      updatedAt: timestamp,
       persisted: false,
       name: payload.name,
       email: payload.email,
@@ -136,6 +138,178 @@ async function getRecentBookings(limit = 10) {
   };
 }
 
+async function updateBooking(id, updates = {}) {
+  const timestamp = new Date();
+  let record = null;
+
+  if (db.isConfigured()) {
+    try {
+      const columnMap = {
+        name: 'name',
+        email: 'email',
+        phone: 'phone',
+        eventType: 'event_type',
+        eventDate: 'event_date',
+        message: 'message',
+        packageId: 'package_id',
+        status: 'status'
+      };
+      const assignments = [];
+      const values = [];
+
+      Object.entries(columnMap).forEach(([key, column]) => {
+        if (Object.prototype.hasOwnProperty.call(updates, key)) {
+          let value = updates[key];
+
+          if (key === 'eventDate') {
+            value = value ? new Date(value) : null;
+          }
+
+          if (key === 'packageId') {
+            value = value || null;
+          }
+
+          assignments.push(`${column} = $${assignments.length + 2}`);
+          values.push(value);
+        }
+      });
+
+      const assignmentCount = assignments.length;
+      const updatedAtPlaceholder = `$${assignmentCount + 2}`;
+      const setClause = assignmentCount > 0 ? `${assignments.join(', ')}, updated_at = ${updatedAtPlaceholder}` : `updated_at = ${updatedAtPlaceholder}`;
+      const query = `UPDATE bookings SET ${setClause} WHERE id = $1 RETURNING id, name, email, phone, event_type AS "eventType", event_date AS "eventDate", package_id AS "packageId", status, message, created_at AS "createdAt", updated_at AS "updatedAt"`;
+      const dbResult = await db.runQuery(query, [id, ...values, timestamp]);
+
+      if (dbResult && dbResult.rows.length > 0) {
+        const row = dbResult.rows[0];
+        record = {
+          id: row.id,
+          status: row.status,
+          createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
+          persisted: true,
+          name: row.name,
+          email: row.email,
+          phone: row.phone,
+          eventType: row.eventType,
+          eventDate: row.eventDate ? new Date(row.eventDate) : null,
+          packageId: row.packageId || null,
+          message: row.message || null
+        };
+      }
+    } catch (error) {
+      console.error('[bookingService] Failed to update booking in database:', error.message);
+    }
+  }
+
+  const existing = inMemoryBookings.get(id);
+  if (existing) {
+    const nextRecord = {
+      ...existing,
+      updatedAt: timestamp
+    };
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'name')) {
+      nextRecord.name = updates.name;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'email')) {
+      nextRecord.email = updates.email;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'phone')) {
+      nextRecord.phone = updates.phone;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'eventType')) {
+      nextRecord.eventType = updates.eventType;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'eventDate')) {
+      nextRecord.eventDate = updates.eventDate ? new Date(updates.eventDate) : null;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'packageId')) {
+      nextRecord.packageId = updates.packageId || null;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'message')) {
+      nextRecord.message = updates.message || null;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'status')) {
+      nextRecord.status = updates.status;
+    }
+
+    inMemoryBookings.set(id, nextRecord);
+
+    if (!record) {
+      record = nextRecord;
+    }
+  }
+
+  if (!record) {
+    return null;
+  }
+
+  const rentGuySync = await rentGuyService.syncBooking(
+    {
+      id: record.id,
+      status: record.status,
+      createdAt: record.createdAt,
+      persisted: record.persisted,
+      name: record.name,
+      email: record.email,
+      phone: record.phone,
+      eventType: record.eventType,
+      eventDate: record.eventDate,
+      packageId: record.packageId,
+      message: record.message
+    },
+    {
+      source: 'booking-flow',
+      action: 'update'
+    }
+  );
+
+  return {
+    id: record.id,
+    status: record.status,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt || timestamp,
+    persisted: record.persisted,
+    rentGuySync,
+    name: record.name,
+    email: record.email,
+    phone: record.phone,
+    eventType: record.eventType,
+    eventDate: record.eventDate,
+    packageId: record.packageId,
+    message: record.message
+  };
+}
+
+async function deleteBooking(id) {
+  let removed = false;
+
+  if (db.isConfigured()) {
+    try {
+      const result = await db.runQuery('DELETE FROM bookings WHERE id = $1', [id]);
+      if (result && result.rowCount > 0) {
+        removed = true;
+      }
+    } catch (error) {
+      console.error('[bookingService] Failed to delete booking from database:', error.message);
+    }
+  }
+
+  if (inMemoryBookings.delete(id)) {
+    removed = true;
+  }
+
+  return removed;
+}
+
 function resetInMemoryStore() {
   inMemoryBookings.clear();
 }
@@ -154,6 +328,8 @@ function getBookingServiceStatus() {
 module.exports = {
   createBooking,
   getRecentBookings,
+  updateBooking,
+  deleteBooking,
   resetInMemoryStore,
   getBookingServiceStatus
 };
