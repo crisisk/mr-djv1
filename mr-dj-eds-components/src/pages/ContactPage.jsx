@@ -5,39 +5,22 @@ import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
 import BookingWidget from '../components/Organisms/BookingWidget.jsx';
-import {
-  SITE_BASE_URL,
-  generateBreadcrumbSchema,
-  generateWebPageSchema,
-} from '../utils/schemaOrg.js';
+import { generateBreadcrumbSchema } from '../utils/schemaOrg.js';
+import { createSimpleBreadcrumbs } from '../utils/breadcrumbs.js';
 
 const ContactPage = () => {
-  const pageTitle = 'Contact | Mr. DJ | Vraag Direct Een Offerte Aan';
-  const pageDescription =
-    'Neem contact op met Mr. DJ voor een vrijblijvende offerte. Telefonisch, via WhatsApp of het contactformulier. Reactie binnen 24 uur!';
-  const breadcrumbItems = [
-    { name: 'Home', url: '/' },
-    { name: 'Contact', url: '/contact' },
-  ];
-  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
-  const webPageSchema = generateWebPageSchema({
-    title: pageTitle,
-    description: pageDescription,
-    url: `${SITE_BASE_URL}/contact`,
-    breadcrumbs: breadcrumbItems,
-  });
+  const breadcrumbs = createSimpleBreadcrumbs('Contact', '/contact');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
 
   return (
     <div className="ContactPage">
       <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(webPageSchema)}
-        </script>
+        <title>Contact | Mr. DJ | Vraag Direct Een Offerte Aan</title>
+        <meta
+          name="description"
+          content="Neem contact op met Mr. DJ voor een vrijblijvende offerte. Telefonisch, via WhatsApp of het contactformulier. Reactie binnen 24 uur!"
+        />
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />
