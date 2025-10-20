@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import Button from './Buttons.jsx';
+import { getJSON, removeItem, setJSON } from './frontend/src/lib/storage.ts';
 
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const STORAGE_KEY = 'availabilityCheckerForm';
 
 function resolvePageContext() {
   if (!isBrowser) {
@@ -83,6 +85,44 @@ const AvailabilityChecker = () => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(null); // 'success', 'error', 'loading'
 
+  useEffect(() => {
+    if (!isBrowser) {
+      return;
+    }
+
+    const savedState = getJSON(STORAGE_KEY);
+    if (!savedState) {
+      return;
+    }
+
+    if (typeof savedState.email === 'string') {
+      setEmail(savedState.email);
+    }
+
+    if (typeof savedState.selectedDate === 'string') {
+      const parsedDate = new Date(savedState.selectedDate);
+      if (!Number.isNaN(parsedDate.getTime())) {
+        setSelectedDate(parsedDate);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isBrowser) {
+      return;
+    }
+
+    if (!selectedDate && !email) {
+      removeItem(STORAGE_KEY);
+      return;
+    }
+
+    setJSON(STORAGE_KEY, {
+      email,
+      selectedDate: selectedDate ? selectedDate.toISOString() : null,
+    });
+  }, [selectedDate, email]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedDate || !email) {
@@ -103,6 +143,9 @@ const AvailabilityChecker = () => {
 
     if (result.success) {
       setStatus({ type: 'success', message: 'Beschikbaarheid gecontroleerd! We nemen contact op via e-mail.' });
+      setSelectedDate(null);
+      setEmail('');
+      removeItem(STORAGE_KEY);
     } else {
       setStatus({ type: 'error', message: result.message });
     }
