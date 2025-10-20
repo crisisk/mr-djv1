@@ -18,6 +18,17 @@ export default defineConfig({
       '@': path.resolve(dirname, './src')
     }
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          recharts: ['recharts'],
+          embla: ['embla-carousel-react'],
+          'framer-motion': ['framer-motion']
+        }
+      }
+    }
+  },
   test: {
     projects: [{
       extends: true,
