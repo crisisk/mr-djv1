@@ -48,7 +48,12 @@ function getSettings() {
 }
 
 function isConfigured() {
-  return Boolean(getSettings().submitUrl);
+  const settings = getSettings();
+  if (!settings.enabled) {
+    return false;
+  }
+
+  return Boolean(settings.submitUrl);
 }
 
 function resolveRetryDelay() {
