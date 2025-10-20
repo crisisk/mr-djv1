@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import Button from './Buttons.jsx'
 
@@ -18,6 +18,10 @@ const HeroSection = ({
   const resolvedSubtitle = subtitle ?? t('hero.subtitle')
   const resolvedPrimaryCta = ctaPrimaryText ?? t('hero.ctaPrimaryText')
   const resolvedSecondaryCta = ctaSecondaryText ?? t('hero.ctaSecondaryText')
+
+  const ctaGroupLabelId = useId()
+  const ctaGroupDescriptionId = useId()
+  const statsGroupLabelId = useId()
 
   return (
     <div
