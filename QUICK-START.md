@@ -122,7 +122,10 @@ docker exec mr-dj-eds-frontend curl -s http://localhost/api/health
 - `PORT=3000`
 - `DATABASE_URL=postgresql://mrdj_user:password@mr-dj-postgres:5432/mrdj_db`
 - `JWT_SECRET=...`
-- `CORS_ORIGIN=https://mr-dj.sevensa.nl`
+- `CORS_ORIGIN_LIST=https://mr-dj.sevensa.nl`
+- `CORS_PUBLIC_ORIGINS=https://*.netlify.app`
+- `CSP_DIRECTIVES="connect-src 'self' https://mr-dj.sevensa.nl"`
+- `REFERRER_POLICY=strict-origin-when-cross-origin`
 
 ### Frontend
 - `VITE_API_URL=/api` (uses nginx proxy)
@@ -148,8 +151,8 @@ docker exec mr-dj-backend node -e "const pg=require('pg'); const c=new pg.Client
 ```
 
 ### CORS error in browser
-- Verify request is coming from `https://mr-dj.sevensa.nl`
-- Check CORS_ORIGIN environment variable in backend
+- Verify the request originates from an allowed domain in `CORS_ORIGIN_LIST`
+- Confirm public read-only endpoints are covered by `CORS_PUBLIC_ORIGINS`
 
 ## Quick Reference
 

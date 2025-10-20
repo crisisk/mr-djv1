@@ -87,6 +87,15 @@ const DEFAULT_RENTGUY_TIMEOUT_MS = 5000;
 const DEFAULT_SEVENSA_RETRY_DELAY_MS = 15000;
 const DEFAULT_SEVENSA_MAX_ATTEMPTS = 5;
 const DEFAULT_ALERT_THROTTLE_MS = 2 * 60 * 1000;
+const DEFAULT_PUBLIC_CORS_ORIGINS = [
+  'https://*.netlify.app',
+  'https://*.netlify.com',
+  'https://netlify.app',
+  'https://app.netlify.com',
+  'https://api.netlify.com'
+];
+const DEFAULT_REFERRER_POLICY = 'strict-origin-when-cross-origin';
+const DEFAULT_HSTS_MAX_AGE = 60 * 60 * 24 * 180; // 180 days
 const DEFAULT_ALERT_QUEUE_THRESHOLDS = {
   warningBacklog: 25,
   criticalBacklog: 75,
@@ -109,7 +118,7 @@ const DEFAULT_SECTION_CONFIG = [
       'PORT',
       'SERVICE_NAME',
       'LOG_FORMAT',
-      'CORS_ORIGIN',
+      'CORS_PUBLIC_ORIGINS',
       'RATE_LIMIT_WINDOW_MS',
       'RATE_LIMIT_MAX',
       'DATABASE_URL',
@@ -138,7 +147,18 @@ const DEFAULT_SECTION_CONFIG = [
     id: 'security',
     label: 'Beveiliging',
     description: 'Instellingen voor hCaptcha-validatie van formulieren en spam-preventie.',
-    keys: ['HCAPTCHA_SITE_KEY', 'HCAPTCHA_SECRET_KEY', 'HCAPTCHA_VERIFY_URL']
+    keys: [
+      'HCAPTCHA_SITE_KEY',
+      'HCAPTCHA_SECRET_KEY',
+      'HCAPTCHA_VERIFY_URL',
+      'CORS_ORIGIN',
+      'CORS_ORIGIN_LIST',
+      'CSP_DIRECTIVES',
+      'REFERRER_POLICY',
+      'HSTS_MAX_AGE',
+      'HSTS_INCLUDE_SUBDOMAINS',
+      'HSTS_PRELOAD'
+    ]
   },
   {
     id: 'rentguy',
@@ -197,6 +217,25 @@ function parseNumber(value, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+function parseBoolean(value, fallback) {
+  if (value === undefined || value === null || value === '') {
+    return fallback;
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.toLowerCase();
+    if (normalized === 'true') {
+      return true;
+    }
+
+    if (normalized === 'false') {
+      return false;
+    }
+  }
+
+  return Boolean(value);
+}
+
 function parseList(value) {
   if (!value) {
     return [];
@@ -206,6 +245,68 @@ function parseList(value) {
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function parseCredentialOrigins(value) {
+  return parseList(value).filter((entry) => entry && entry !== '*');
+}
+
+function parsePublicOrigins(value) {
+  const entries = parseList(value);
+
+  if (entries.some((entry) => entry === '*')) {
+    return '*';
+  }
+
+  return entries.filter(Boolean);
+}
+
+function buildCorsConfig() {
+  const credentialOrigins = parseCredentialOrigins(
+    process.env.CORS_ORIGIN_LIST || process.env.CORS_ORIGIN
+  );
+
+  const publicOriginsRaw = parsePublicOrigins(process.env.CORS_PUBLIC_ORIGINS);
+  const publicOrigins =
+    publicOriginsRaw === '*'
+      ? '*'
+      : publicOriginsRaw.length
+        ? publicOriginsRaw
+        : DEFAULT_PUBLIC_CORS_ORIGINS;
+
+  const origin = credentialOrigins.length ? credentialOrigins : publicOrigins;
+  const credentials = credentialOrigins.length > 0;
+  const methods = credentials
+    ? ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+    : ['GET', 'HEAD', 'OPTIONS'];
+
+  return {
+    origin,
+    credentials,
+    methods,
+    allowCredentialsOrigins: credentialOrigins,
+    publicOrigins
+  };
+}
+
+function parseCspDirectives(value) {
+  if (!value) {
+    return {};
+  }
+
+  return value
+    .split(';')
+    .map((directive) => directive.trim())
+    .filter(Boolean)
+    .reduce((acc, directive) => {
+      const [name, ...sources] = directive.split(/\s+/);
+      if (!name) {
+        return acc;
+      }
+
+      acc[name] = sources.length ? sources : ["'none'"];
+      return acc;
+    }, {});
 }
 
 function parseKeyValueMap(value) {
@@ -225,20 +326,6 @@ function parseKeyValueMap(value) {
       }
       return acc;
     }, {});
-}
-
-function parseCorsOrigin(value) {
-  if (!value) {
-    return '*';
-  }
-
-  const entries = parseList(value);
-
-  if (!entries.length) {
-    return '*';
-  }
-
-  return entries.length === 1 ? entries[0] : entries;
 }
 
 function buildDashboardSections(managedKeys) {
@@ -273,7 +360,7 @@ function buildDashboardSections(managedKeys) {
 }
 
 function buildConfig() {
-  const corsOrigin = parseCorsOrigin(process.env.CORS_ORIGIN);
+  const cors = buildCorsConfig();
   const dashboardAllowedIps = parseList(process.env.CONFIG_DASHBOARD_ALLOWED_IPS);
   const configuredDashboardKeys = parseList(process.env.CONFIG_DASHBOARD_KEYS);
   const managedKeys = configuredDashboardKeys.length ? configuredDashboardKeys : DEFAULT_MANAGED_KEYS;
@@ -287,9 +374,17 @@ function buildConfig() {
     env: process.env.NODE_ENV || 'development',
     port: parseNumber(process.env.PORT, DEFAULT_PORT),
     host: process.env.HOST || DEFAULT_HOST,
-    cors: {
-      origin: corsOrigin,
-      credentials: corsOrigin !== '*'
+    cors,
+    security: {
+      referrerPolicy: process.env.REFERRER_POLICY || DEFAULT_REFERRER_POLICY,
+      csp: {
+        directives: parseCspDirectives(process.env.CSP_DIRECTIVES)
+      },
+      hsts: {
+        maxAge: parseNumber(process.env.HSTS_MAX_AGE, DEFAULT_HSTS_MAX_AGE),
+        includeSubDomains: parseBoolean(process.env.HSTS_INCLUDE_SUBDOMAINS, true),
+        preload: parseBoolean(process.env.HSTS_PRELOAD, false)
+      }
     },
     logging: process.env.LOG_FORMAT || (process.env.NODE_ENV === 'production' ? 'combined' : 'dev'),
     rateLimit: {

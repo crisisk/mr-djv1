@@ -491,7 +491,7 @@ Peer Dependency Issues: Resolved with legacy mode
   - Verify .env files are up to date
   - Check DATABASE_URL
   - Verify JWT_SECRET
-  - Confirm CORS_ORIGIN
+  - Confirm `CORS_ORIGIN_LIST` and `CORS_PUBLIC_ORIGINS`
 
 - [ ] **Database migrations:**
   ```bash

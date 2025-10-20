@@ -1,5 +1,6 @@
 const path = require('path');
 const { buildRequiredEnv } = require('../testUtils/env');
+const { DEFAULT_STORE_PATH } = require('../lib/managedEnv');
 
 const ORIGINAL_ENV = { ...process.env };
 const BASE_ENV = buildRequiredEnv();
@@ -24,17 +25,42 @@ describe('config', () => {
     delete env.RENTGUY_API_BASE_URL;
     process.env = env;
 
+    expect(() => loadConfig()).toThrow(
+      "Missing required environment variable \"RENTGUY_API_BASE_URL\" for RentGuy integration (RENTGUY_API_BASE_URL and RENTGUY_API_KEY)."
+    );
+  });
+
+  it('loads configuration with defaults', () => {
+    process.env = { ...BASE_ENV };
+
+    const config = loadConfig();
+
     expect(config.port).toBe(3000);
     expect(config.host).toBe('0.0.0.0');
-    expect(config.cors).toEqual({ origin: '*', credentials: false });
+    expect(config.cors.origin).toEqual([
+      'https://*.netlify.app',
+      'https://*.netlify.com',
+      'https://netlify.app',
+      'https://app.netlify.com',
+      'https://api.netlify.com'
+    ]);
+    expect(config.cors.credentials).toBe(false);
+    expect(config.cors.methods).toEqual(['GET', 'HEAD', 'OPTIONS']);
+    expect(config.cors.allowCredentialsOrigins).toEqual([]);
+    expect(config.cors.publicOrigins).toEqual(config.cors.origin);
+    expect(config.security).toEqual({
+      referrerPolicy: 'strict-origin-when-cross-origin',
+      csp: { directives: {} },
+      hsts: { maxAge: 60 * 60 * 24 * 180, includeSubDomains: true, preload: false }
+    });
     expect(config.rateLimit).toEqual({ windowMs: 15 * 60 * 1000, max: 100 });
     expect(config.logging).toBe('dev');
-    expect(config.databaseUrl).toBeUndefined();
+    expect(config.databaseUrl).toBe('postgres://test-user:test-pass@localhost:5432/mrdj');
     expect(config.mail).toEqual({
-      provider: null,
-      apiKey: null,
-      from: null,
-      replyTo: null,
+      provider: 'postmark',
+      apiKey: 'test-mail-key',
+      from: 'noreply@example.com',
+      replyTo: 'support@example.com',
       stream: null,
       templates: {
         contact: {},
@@ -46,15 +72,15 @@ describe('config', () => {
     expect(config.integrations).toEqual(
       expect.objectContaining({
         rentGuy: {
-          enabled: false,
-          baseUrl: null,
-          workspaceId: null,
+          enabled: true,
+          baseUrl: 'https://rentguy.example/api',
+          workspaceId: 'workspace-test',
           timeoutMs: 5000,
           webhookSecrets: []
         },
         sevensa: {
-          enabled: false,
-          submitUrl: null,
+          enabled: true,
+          submitUrl: 'https://sevensa.example/submit',
           retryDelayMs: 15000,
           maxAttempts: 5
         },
@@ -67,7 +93,7 @@ describe('config', () => {
       })
     );
     expect(config.personalization).toEqual({
-      automationWebhook: null,
+      automationWebhook: 'https://n8n.example/webhook',
       incomingWebhookSecrets: []
     });
     expect(config.alerts).toEqual({
@@ -94,7 +120,7 @@ describe('config', () => {
         'PORT',
         'SERVICE_NAME',
         'LOG_FORMAT',
-        'CORS_ORIGIN',
+        'CORS_PUBLIC_ORIGINS',
         'RATE_LIMIT_WINDOW_MS',
         'RATE_LIMIT_MAX',
         'DATABASE_URL',
@@ -112,6 +138,13 @@ describe('config', () => {
         'HCAPTCHA_SITE_KEY',
         'HCAPTCHA_SECRET_KEY',
         'HCAPTCHA_VERIFY_URL',
+        'CORS_ORIGIN',
+        'CORS_ORIGIN_LIST',
+        'CSP_DIRECTIVES',
+        'REFERRER_POLICY',
+        'HSTS_MAX_AGE',
+        'HSTS_INCLUDE_SUBDOMAINS',
+        'HSTS_PRELOAD',
         'RENTGUY_API_BASE_URL',
         'RENTGUY_API_KEY',
         'RENTGUY_WORKSPACE_ID',
@@ -141,7 +174,7 @@ describe('config', () => {
           'PORT',
           'SERVICE_NAME',
           'LOG_FORMAT',
-          'CORS_ORIGIN',
+          'CORS_PUBLIC_ORIGINS',
           'RATE_LIMIT_WINDOW_MS',
           'RATE_LIMIT_MAX',
           'DATABASE_URL',
@@ -170,7 +203,18 @@ describe('config', () => {
         id: 'security',
         label: 'Beveiliging',
         description: 'Instellingen voor hCaptcha-validatie van formulieren en spam-preventie.',
-        keys: ['HCAPTCHA_SITE_KEY', 'HCAPTCHA_SECRET_KEY', 'HCAPTCHA_VERIFY_URL']
+        keys: [
+          'HCAPTCHA_SITE_KEY',
+          'HCAPTCHA_SECRET_KEY',
+          'HCAPTCHA_VERIFY_URL',
+          'CORS_ORIGIN',
+          'CORS_ORIGIN_LIST',
+          'CSP_DIRECTIVES',
+          'REFERRER_POLICY',
+          'HSTS_MAX_AGE',
+          'HSTS_INCLUDE_SUBDOMAINS',
+          'HSTS_PRELOAD'
+        ]
       }),
       expect.objectContaining({
         id: 'rentguy',
@@ -188,12 +232,9 @@ describe('config', () => {
       expect.objectContaining({
         id: 'content-automation',
         label: 'Automation & CRM',
-        description: 'Instellingen voor Sevensa submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
-        keys: [
-          'SEVENSA_SUBMIT_URL',
-          'SEVENSA_QUEUE_RETRY_DELAY_MS',
-          'SEVENSA_QUEUE_MAX_ATTEMPTS'
-        ]
+        description:
+          'Instellingen voor Sevensa submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
+        keys: ['SEVENSA_SUBMIT_URL', 'SEVENSA_QUEUE_RETRY_DELAY_MS', 'SEVENSA_QUEUE_MAX_ATTEMPTS']
       }),
       expect.objectContaining({
         id: 'personalization',
@@ -229,7 +270,7 @@ describe('config', () => {
     process.env = buildRequiredEnv({
       PORT: '8080',
       HOST: '127.0.0.1',
-      CORS_ORIGIN: 'https://example.com, https://studio.test',
+      CORS_ORIGIN_LIST: 'https://example.com, https://studio.test',
       RATE_LIMIT_WINDOW_MS: '60000',
       RATE_LIMIT_MAX: '5',
       LOG_FORMAT: 'combined',
@@ -237,6 +278,13 @@ describe('config', () => {
       REDIS_URL: 'redis://cache',
       SERVICE_NAME: 'custom-service',
       npm_package_version: '2.3.4',
+      MAIL_PROVIDER: 'postmark',
+      MAIL_API_KEY: 'pm-key',
+      MAIL_FROM_ADDRESS: 'Mister DJ <noreply@misterdj.nl>',
+      MAIL_REPLY_TO: 'crew@misterdj.nl',
+      MAIL_STREAM: 'transactional',
+      MAIL_TEMPLATES_CONTACT: 'confirmation:tmpl-contact,internal:tmpl-internal',
+      MAIL_TEMPLATES_BOOKING: 'customer:tmpl-booking',
       CONFIG_DASHBOARD_ENABLED: 'true',
       CONFIG_DASHBOARD_USER: 'admin',
       CONFIG_DASHBOARD_PASS: 'secret',
@@ -263,6 +311,11 @@ describe('config', () => {
     expect(config.host).toBe('127.0.0.1');
     expect(config.cors.origin).toEqual(['https://example.com', 'https://studio.test']);
     expect(config.cors.credentials).toBe(true);
+    expect(config.cors.methods).toEqual(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+    expect(config.cors.allowCredentialsOrigins).toEqual([
+      'https://example.com',
+      'https://studio.test'
+    ]);
     expect(config.rateLimit.windowMs).toBe(60000);
     expect(config.rateLimit.max).toBe(5);
     expect(config.logging).toBe('combined');
@@ -295,17 +348,17 @@ describe('config', () => {
     expect(config.integrations).toEqual(
       expect.objectContaining({
         rentGuy: {
-          enabled: false,
-          baseUrl: null,
-          workspaceId: null,
-          timeoutMs: 5000,
+          enabled: true,
+          baseUrl: 'https://rentguy.example/api',
+          workspaceId: 'workspace-test',
+          timeoutMs: 7000,
           webhookSecrets: []
         },
         sevensa: {
-          enabled: false,
-          submitUrl: null,
-          retryDelayMs: 15000,
-          maxAttempts: 5
+          enabled: true,
+          submitUrl: 'https://sevensa.example/submit',
+          retryDelayMs: 45000,
+          maxAttempts: 7
         },
         hcaptcha: {
           enabled: false,
@@ -316,7 +369,8 @@ describe('config', () => {
       })
     );
     expect(config.personalization).toEqual({
-      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL
+      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL,
+      incomingWebhookSecrets: []
     });
     expect(config.alerts.webhooks).toEqual([
       'https://hooks.example/alert',
@@ -343,7 +397,10 @@ describe('config', () => {
   });
 
   it('exposes personalization automation webhook when configured', () => {
-    process.env = { ...BASE_ENV };
+    process.env = {
+      ...BASE_ENV,
+      N8N_PERSONALIZATION_WEBHOOK_URL: 'https://n8n.test/webhook/personalization'
+    };
 
     const config = loadConfig();
 
@@ -359,9 +416,36 @@ describe('config', () => {
     expect(personalizationSection.keys).toContain('PERSONALIZATION_WEBHOOK_SECRETS');
   });
 
-  it('supports wildcard CORS configuration', () => {
+  it('allows overriding security headers through environment variables', () => {
     process.env = buildRequiredEnv({
-      CORS_ORIGIN: ' * ',
+      CORS_ORIGIN_LIST: 'https://secure.example',
+      REFERRER_POLICY: 'no-referrer',
+      CSP_DIRECTIVES:
+        "connect-src 'self' https://secure.example; img-src 'self' https://cdn.example",
+      HSTS_MAX_AGE: '31536000',
+      HSTS_INCLUDE_SUBDOMAINS: 'false',
+      HSTS_PRELOAD: 'true'
+    });
+
+    const config = loadConfig();
+
+    expect(config.cors.credentials).toBe(true);
+    expect(config.cors.methods).toEqual(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+    expect(config.security.referrerPolicy).toBe('no-referrer');
+    expect(config.security.csp.directives).toEqual({
+      'connect-src': ["'self'", 'https://secure.example'],
+      'img-src': ["'self'", 'https://cdn.example']
+    });
+    expect(config.security.hsts).toEqual({
+      maxAge: 31536000,
+      includeSubDomains: false,
+      preload: true
+    });
+  });
+
+  it('supports wildcard CORS configuration for public requests', () => {
+    process.env = buildRequiredEnv({
+      CORS_PUBLIC_ORIGINS: ' * ',
       RATE_LIMIT_WINDOW_MS: 'not-a-number',
       RATE_LIMIT_MAX: '-1'
     });
@@ -369,7 +453,10 @@ describe('config', () => {
     const config = loadConfig();
 
     expect(config.cors.origin).toBe('*');
+    expect(config.cors.publicOrigins).toBe('*');
     expect(config.cors.credentials).toBe(false);
+    expect(config.cors.methods).toEqual(['GET', 'HEAD', 'OPTIONS']);
+    expect(config.cors.allowCredentialsOrigins).toEqual([]);
     expect(config.rateLimit.windowMs).toBe(15 * 60 * 1000);
     expect(config.rateLimit.max).toBe(100);
   });
@@ -421,11 +508,17 @@ describe('config', () => {
       CONFIG_DASHBOARD_PASS: 'secret',
       CONFIG_DASHBOARD_KEYS: 'PORT,CUSTOM_KEY',
       CUSTOM_KEY: 'value',
-      CORS_ORIGIN: ' , , '
+      CORS_PUBLIC_ORIGINS: ' , , '
     });
 
     const config = loadConfig();
-    expect(config.cors.origin).toBe('*');
+    expect(config.cors.origin).toEqual([
+      'https://*.netlify.app',
+      'https://*.netlify.com',
+      'https://netlify.app',
+      'https://app.netlify.com',
+      'https://api.netlify.com'
+    ]);
     const customSection = config.dashboard.sections.find((section) => section.id === 'custom');
     expect(customSection).toBeDefined();
     expect(customSection.keys).toEqual(['CUSTOM_KEY']);
@@ -439,7 +532,13 @@ describe('config', () => {
 
     expect(reloaded.dashboard.managedKeys).toEqual(['PORT']);
     expect(reloaded.dashboard.sections.find((section) => section.id === 'custom')).toBeUndefined();
-    expect(reloaded.cors.origin).toBe('*');
+    expect(reloaded.cors.origin).toEqual([
+      'https://*.netlify.app',
+      'https://*.netlify.com',
+      'https://netlify.app',
+      'https://app.netlify.com',
+      'https://api.netlify.com'
+    ]);
     expect(reloaded.temporary).toBeUndefined();
   });
 
