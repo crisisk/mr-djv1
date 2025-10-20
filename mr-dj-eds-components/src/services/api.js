@@ -5,7 +5,7 @@
  * Handles all backend API calls with error handling and CORS
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
 /**
  * Generic fetch wrapper with error handling
@@ -24,15 +24,37 @@ async function fetchAPI(endpoint, options = {}) {
   try {
     const response = await fetch(url, config);
 
-    // Parse JSON response
-    const data = await response.json();
+    const contentType = response.headers.get('content-type') || '';
+    let data = null;
 
-    // Check for HTTP errors
-    if (!response.ok) {
-      throw new Error(data.message || data.error || `HTTP Error: ${response.status}`);
+    if (contentType.includes('application/json')) {
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        data = null;
+      }
+    } else if (response.status !== 204) {
+      const text = await response.text();
+      if (text) {
+        data = { message: text };
+      }
     }
 
-    return data;
+    if (!response.ok) {
+      const error = new Error(
+        data?.message || data?.error || `HTTP Error: ${response.status}`,
+      );
+
+      error.status = response.status;
+
+      if (data?.details) {
+        error.details = data.details;
+      }
+
+      throw error;
+    }
+
+    return data ?? {};
   } catch (error) {
     // Network errors or JSON parse errors
     if (error instanceof TypeError) {
@@ -78,7 +100,7 @@ export async function submitCallbackRequest(formData) {
  */
 export async function getPackages() {
   const response = await fetchAPI('/packages');
-  return response.packages;
+  return response?.packages ?? [];
 }
 
 /**
@@ -101,23 +123,10 @@ export async function submitBooking(bookingData) {
   });
 }
 
-/**
- * Submit quick callback request
- * @param {Object} callbackData - Callback request data
- * @returns {Promise<Object>} API response
- */
-export async function submitCallbackRequest(callbackData) {
-  return fetchAPI('/callback-request', {
-    method: 'POST',
-    body: JSON.stringify(callbackData),
-  });
-}
-
 export default {
   submitContactForm,
   submitCallbackRequest,
   getPackages,
   checkHealth,
   submitBooking,
-  submitCallbackRequest,
 };
