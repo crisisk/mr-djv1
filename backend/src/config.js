@@ -322,7 +322,17 @@ function buildConfig() {
         baseUrl: process.env.RENTGUY_API_BASE_URL || null,
         workspaceId: process.env.RENTGUY_WORKSPACE_ID || null,
         timeoutMs: parseNumber(process.env.RENTGUY_TIMEOUT_MS, DEFAULT_RENTGUY_TIMEOUT_MS),
-        webhookSecrets: parseList(process.env.RENTGUY_WEBHOOK_SECRETS)
+        webhookSecrets: parseList(process.env.RENTGUY_WEBHOOK_SECRETS),
+        circuitBreaker: {
+          failureThreshold: parseNumber(
+            process.env.RENTGUY_CIRCUIT_BREAKER_FAILURES,
+            3
+          ),
+          cooldownMs: parseNumber(
+            process.env.RENTGUY_CIRCUIT_BREAKER_COOLDOWN_MS,
+            2 * 60 * 1000
+          )
+        }
       },
       sevensa: {
         enabled: Boolean(process.env.SEVENSA_SUBMIT_URL),
@@ -334,13 +344,47 @@ function buildConfig() {
         maxAttempts: parseNumber(
           process.env.SEVENSA_QUEUE_MAX_ATTEMPTS,
           DEFAULT_SEVENSA_MAX_ATTEMPTS
-        )
+        ),
+        circuitBreaker: {
+          failureThreshold: parseNumber(
+            process.env.SEVENSA_CIRCUIT_BREAKER_FAILURES,
+            3
+          ),
+          cooldownMs: parseNumber(
+            process.env.SEVENSA_CIRCUIT_BREAKER_COOLDOWN_MS,
+            2 * 60 * 1000
+          )
+        }
       },
       hcaptcha: {
         enabled: Boolean(process.env.HCAPTCHA_SECRET_KEY),
         siteKey: process.env.HCAPTCHA_SITE_KEY || null,
         secretKey: process.env.HCAPTCHA_SECRET_KEY || null,
         verifyUrl: process.env.HCAPTCHA_VERIFY_URL || DEFAULT_HCAPTCHA_VERIFY_URL
+      }
+    },
+    contactForm: {
+      rateLimit: {
+        windowMs: parseNumber(
+          process.env.CONTACT_RATE_LIMIT_WINDOW_MS,
+          10 * 60 * 1000
+        ),
+        max: parseNumber(process.env.CONTACT_RATE_LIMIT_MAX, 20)
+      },
+      ipThrottle: {
+        windowMs: parseNumber(
+          process.env.CONTACT_IP_THROTTLE_WINDOW_MS,
+          60 * 60 * 1000
+        ),
+        max: parseNumber(process.env.CONTACT_IP_THROTTLE_MAX, 50),
+        blockDurationMs: parseNumber(
+          process.env.CONTACT_IP_BLOCK_DURATION_MS,
+          30 * 60 * 1000
+        )
+      },
+      bot: {
+        blockedAgents: parseList(process.env.CONTACT_BLOCKED_AGENTS),
+        suspiciousAgents: parseList(process.env.CONTACT_SUSPECT_AGENTS)
       }
     },
     personalization: {

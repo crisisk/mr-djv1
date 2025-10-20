@@ -68,6 +68,14 @@ Publiceer alle secrets via het dashboard, controleer dat `CITY_AUTOMATION_DRY_RU
 - **Webhook alerting** – configureer Slack/Teams webhooks via `ALERT_WEBHOOK_URLS` en stel drempels in met `ALERT_QUEUE_WARNING_BACKLOG`, `ALERT_QUEUE_CRITICAL_BACKLOG`, `ALERT_QUEUE_WARNING_RETRY_AGE_MS`, enz. Alerts bevatten altijd de queue, ernst, backlog en laatste foutreden.
 - **Playbook** – volg [docs/operations/observability_playbook.md](docs/operations/observability_playbook.md) voor stap-voor-stap instructies rond OTEL, webhook tuning en runbooks tijdens incidenten.
 
+## 🛡️ Contactformulier safeguards
+
+- **Rate limiting & IP-throttling** – `/contact` heeft nu een dedicated limiter (standaard 20 verzoeken per 10 minuten) plus een IP-throttle venster (50 verzoeken per uur). Bij overschrijding antwoordt de API met **HTTP 429** inclusief `Retry-After` header zodat de frontend bezoekers vriendelijk kan laten pauzeren.
+- **Bot detectie** – bekende automation user-agents (curl, python-requests, enz.) worden met **HTTP 403** geweigerd. Requests zonder betrouwbare referer worden gelogd als `suspectedBot` zodat ops verdachte patronen kan monitoren.
+- **hCaptcha handhaving** – wanneer `HCAPTCHA_SECRET_KEY` is ingesteld wordt een ontbrekende token nu voor de middleware onderschept met een duidelijke 400-response (`field: hCaptchaToken`).
+- **Circuit breaker voor partners** – RentGuy en Sevensa syncs zijn wrapped in een circuit breaker + queue fallback. Tijdens degradatie reageert de API met **HTTP 202** en `processingStatus: queued`; bij directe levering blijft het **HTTP 200** met `processingStatus: delivered`.
+- **Front-end gedrag** – toon bij 202 een wachtnotificatie (“we verwerken je aanvraag zodra de koppeling weer beschikbaar is”) en herhaal polling niet agressief. Bij 429 hergebruik de `retryAfter` waarde voordat je opnieuw submit. 403 betekent blokkade en vereist handmatige review door ops.
+
 ## ♻️ Lighthouse SEO-optimalisaties (november 2025)
 
 - **Verbeterde LCP & fonts** – het hoofd-HTML-document preconnect nu naar Google Fonts en laadt de Poppins-set via `media="print"` lazy loading, wat netwerkblokkades tijdens first paint elimineert.

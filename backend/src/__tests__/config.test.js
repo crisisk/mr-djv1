@@ -45,19 +45,21 @@ describe('config', () => {
     expect(config.version).toBe('1.0.0');
     expect(config.integrations).toEqual(
       expect.objectContaining({
-        rentGuy: {
+        rentGuy: expect.objectContaining({
           enabled: false,
           baseUrl: null,
           workspaceId: null,
           timeoutMs: 5000,
-          webhookSecrets: []
-        },
-        sevensa: {
+          webhookSecrets: [],
+          circuitBreaker: { failureThreshold: 3, cooldownMs: 120000 }
+        }),
+        sevensa: expect.objectContaining({
           enabled: false,
           submitUrl: null,
           retryDelayMs: 15000,
-          maxAttempts: 5
-        },
+          maxAttempts: 5,
+          circuitBreaker: { failureThreshold: 3, cooldownMs: 120000 }
+        }),
         hcaptcha: {
           enabled: false,
           siteKey: null,
@@ -66,6 +68,11 @@ describe('config', () => {
         }
       })
     );
+    expect(config.contactForm).toEqual({
+      rateLimit: { windowMs: 600000, max: 20 },
+      ipThrottle: { windowMs: 3600000, max: 50, blockDurationMs: 1800000 },
+      bot: { blockedAgents: [], suspiciousAgents: [] }
+    });
     expect(config.personalization).toEqual({
       automationWebhook: null,
       incomingWebhookSecrets: []
@@ -294,19 +301,21 @@ describe('config', () => {
     expect(config.version).toBe('2.3.4');
     expect(config.integrations).toEqual(
       expect.objectContaining({
-        rentGuy: {
+        rentGuy: expect.objectContaining({
           enabled: false,
           baseUrl: null,
           workspaceId: null,
           timeoutMs: 5000,
-          webhookSecrets: []
-        },
-        sevensa: {
+          webhookSecrets: [],
+          circuitBreaker: { failureThreshold: 3, cooldownMs: 120000 }
+        }),
+        sevensa: expect.objectContaining({
           enabled: false,
           submitUrl: null,
           retryDelayMs: 15000,
-          maxAttempts: 5
-        },
+          maxAttempts: 5,
+          circuitBreaker: { failureThreshold: 3, cooldownMs: 120000 }
+        }),
         hcaptcha: {
           enabled: false,
           siteKey: null,
@@ -315,6 +324,11 @@ describe('config', () => {
         }
       })
     );
+    expect(config.contactForm).toEqual({
+      rateLimit: { windowMs: 600000, max: 20 },
+      ipThrottle: { windowMs: 3600000, max: 50, blockDurationMs: 1800000 },
+      bot: { blockedAgents: [], suspiciousAgents: [] }
+    });
     expect(config.personalization).toEqual({
       automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL
     });
