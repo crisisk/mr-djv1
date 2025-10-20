@@ -10,6 +10,19 @@ const DEFAULT_CTAS = {
   booking: 'https://misterdj.nl/bedankt'
 };
 
+function escapeHtml(value) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function getTemplatePath(templateName) {
   return path.join(__dirname, '../../app/templates', templateName);
 }
@@ -151,10 +164,33 @@ async function sendBookingConfirmation({ to, tokens = {}, meta = {} }) {
     throw new Error('Recipient address is required for booking confirmation');
   }
 
+  const replyToCandidates = [
+    tokens.replyToHeader,
+    tokens.replyToMailbox,
+    tokens.replyToRaw,
+    tokens.replyToAddressRaw,
+    tokens.replyTo
+  ];
+  let replyToMailbox = replyToCandidates.find(
+    (candidate) => typeof candidate === 'string' && candidate.trim()
+  );
+
+  if (!replyToMailbox) {
+    replyToMailbox = config.mail.replyTo || config.mail.from || null;
+  }
+
+  const htmlReplyToAddress =
+    tokens.replyToAddress !== undefined && tokens.replyToAddress !== null
+      ? tokens.replyToAddress
+      : replyToMailbox
+        ? escapeHtml(replyToMailbox)
+        : undefined;
+
   const template = await loadTemplate('bookingConfirmation.html');
   const enrichedTokens = {
     ctaUrl: tokens.ctaUrl || getDefaultCta('booking'),
-    ...tokens
+    ...tokens,
+    ...(htmlReplyToAddress !== undefined ? { replyToAddress: htmlReplyToAddress } : {})
   };
   const html = renderTemplateString(template, enrichedTokens);
   const text = enrichedTokens.textBody || htmlToText(html);
@@ -177,7 +213,7 @@ async function sendBookingConfirmation({ to, tokens = {}, meta = {} }) {
       html,
       text,
       metadata,
-      replyTo: tokens.replyToAddress
+      replyTo: replyToMailbox || undefined
     });
 
     if (!result.delivered) {
