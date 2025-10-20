@@ -14,6 +14,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     phone: '',
     eventType: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -55,11 +56,36 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     return Object.keys(errors).length === 0;
   };
 
+  const validateForm = () => {
+    const errors = {};
+    const trimmedName = formData.name.trim();
+    const trimmedPhone = formData.phone.trim();
+
+    if (!trimmedName) {
+      errors.name = 'Naam is verplicht';
+    } else if (trimmedName.length < 2) {
+      errors.name = 'Naam moet minimaal 2 tekens bevatten';
+    }
+
+    if (!trimmedPhone) {
+      errors.phone = 'Telefoonnummer is verplicht';
+    } else if (!/^[\d\s()+-]{10,15}$/.test(trimmedPhone)) {
+      errors.phone = 'Voer een geldig telefoonnummer in';
+    }
+
+    if (!formData.eventType) {
+      errors.eventType = 'Kies een type feest';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     if (fieldErrors[name]) {
