@@ -67,22 +67,22 @@ const Header = ({ transparent = false }) => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
-            <a href="/bruiloft-dj" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium">
+            <a href="/bruiloft-dj" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium">
               Bruiloft DJ
             </a>
-            <a href="/zakelijk" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium">
+            <a href="/zakelijk" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium">
               Zakelijk
             </a>
-            <a href="/feest-dj" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium">
+            <a href="/feest-dj" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium">
               Feest DJ
             </a>
-            <a href="/verhuur" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium">
+            <a href="/verhuur" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium">
               Verhuur
             </a>
-            <a href="/over-ons" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium">
+            <a href="/over-ons" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium">
               Over Ons
             </a>
-            <a href="/faq" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium">
+            <a href="/faq" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium">
               FAQ
             </a>
             <a href="/contact" onClick={handleContactClick} className="text-base bg-gradient-to-r from-primary to-primary-dark text-neutral-light px-6 py-2.5 rounded-full hover:shadow-lg transition-all font-bold">
@@ -116,22 +116,22 @@ const Header = ({ transparent = false }) => {
         {isMobileMenuOpen && (
           <nav className="lg:hidden mt-4 py-4 border-t border-gray-200 animate-fade-in">
             <div className="flex flex-col gap-3">
-              <a href="/bruiloft-dj" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium py-2">
+              <a href="/bruiloft-dj" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium py-2">
                 Bruiloft DJ
               </a>
-              <a href="/zakelijk" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium py-2">
+              <a href="/zakelijk" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium py-2">
                 Zakelijk
               </a>
-              <a href="/feest-dj" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium py-2">
+              <a href="/feest-dj" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium py-2">
                 Feest DJ
               </a>
-              <a href="/verhuur" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium py-2">
+              <a href="/verhuur" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium py-2">
                 Verhuur
               </a>
-              <a href="/over-ons" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium py-2">
+              <a href="/over-ons" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium py-2">
                 Over Ons
               </a>
-              <a href="/faq" className="text-base text-[#1A2C4B] hover:text-[#00AEEF] transition font-medium py-2">
+              <a href="/faq" className="text-base text-[#1A2C4B] hover:text-[#005B99] transition font-medium py-2">
                 FAQ
               </a>
               <a href="/contact" onClick={handleContactClick} className="text-base bg-primary text-neutral-light px-6 py-3 rounded-lg hover:bg-primary-dark transition font-bold text-center mt-2">
