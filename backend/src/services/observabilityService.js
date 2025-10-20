@@ -40,6 +40,7 @@ let history = [];
 let queue = [];
 let processing = false;
 let lastUpdated = null;
+const requestMetrics = new Map();
 
 function nowIso() {
   return new Date().toISOString();
@@ -190,6 +191,64 @@ async function processQueue() {
   } finally {
     processing = false;
   }
+}
+
+function buildTagKey(tags) {
+  if (!tags) {
+    return '';
+  }
+  return Object.entries(tags)
+    .filter(([key, value]) => key && value !== undefined && value !== null)
+    .sort(([a], [b]) => (a > b ? 1 : a < b ? -1 : 0))
+    .map(([key, value]) => `${key}:${String(value)}`)
+    .join('|');
+}
+
+function recordRequestMetric(serviceName, latencyMs, extraTags = {}) {
+  if (!serviceName) {
+    return;
+  }
+
+  const numericLatency = Number(latencyMs);
+  if (!Number.isFinite(numericLatency) || numericLatency < 0) {
+    return;
+  }
+
+  const tags = { service: serviceName, ...extraTags };
+  const key = buildTagKey(tags);
+
+  if (!requestMetrics.has(key)) {
+    requestMetrics.set(key, {
+      tags,
+      count: 0,
+      totalLatencyMs: 0,
+      minLatencyMs: null,
+      maxLatencyMs: null
+    });
+  }
+
+  const bucket = requestMetrics.get(key);
+  bucket.count += 1;
+  bucket.totalLatencyMs += numericLatency;
+  bucket.minLatencyMs = bucket.minLatencyMs === null ? numericLatency : Math.min(bucket.minLatencyMs, numericLatency);
+  bucket.maxLatencyMs = bucket.maxLatencyMs === null ? numericLatency : Math.max(bucket.maxLatencyMs, numericLatency);
+}
+
+function formatLatency(value) {
+  if (!Number.isFinite(value)) {
+    return null;
+  }
+  return Number(value.toFixed(2));
+}
+
+function getRequestMetricsSummary() {
+  return Array.from(requestMetrics.values()).map((bucket) => ({
+    tags: bucket.tags,
+    count: bucket.count,
+    averageLatencyMs: bucket.count ? formatLatency(bucket.totalLatencyMs / bucket.count) : null,
+    minLatencyMs: bucket.minLatencyMs === null ? null : formatLatency(bucket.minLatencyMs),
+    maxLatencyMs: bucket.maxLatencyMs === null ? null : formatLatency(bucket.maxLatencyMs)
+  }));
 }
 
 async function scheduleRun(options = {}) {
@@ -398,11 +457,14 @@ function reset() {
   queue = [];
   processing = false;
   lastUpdated = null;
+  requestMetrics.clear();
 }
 
 module.exports = {
   scheduleRun,
   getMonitoringState,
   getVariantAnalytics,
+  recordRequestMetric,
+  getRequestMetricsSummary,
   reset
 };
