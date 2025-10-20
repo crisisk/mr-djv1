@@ -1,5 +1,6 @@
 const db = require('../lib/db');
 const cache = require('../lib/cache');
+const { getApprovedFeedback } = require('./surveyService');
 
 /**
  * @typedef {Object} Review
@@ -83,6 +84,30 @@ const fallbackReviews = [
 const CACHE_KEY = 'reviews-service';
 const CACHE_TTL = 5 * 60 * 1000;
 
+function normalizeReviewRow(row, fallbackState = 'pending') {
+  if (!row) {
+    return null;
+  }
+
+  const numericRating = Number.isFinite(row.rating)
+    ? row.rating
+    : Number.parseInt(row.rating, 10);
+  const createdAt = row.createdAt || row.created_at || null;
+  const approved = typeof row.approved === 'boolean' ? row.approved : undefined;
+
+  return {
+    id: row.id,
+    name: row.name || null,
+    eventType: row.eventType || row.event_type || null,
+    city: row.city || null,
+    rating: Number.isFinite(numericRating) ? numericRating : null,
+    reviewText: row.reviewText || row.review_text || null,
+    createdAt,
+    moderationState:
+      approved === true ? 'approved' : approved === false ? 'pending' : fallbackState
+  };
+}
+
 /**
  * Retrieves approved reviews with caching and fallback data.
  *
@@ -104,6 +129,8 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
     source: 'static'
   };
 
+  const surveyFeedback = await getApprovedFeedback(limit);
+
   if (db.isConfigured()) {
     try {
       const result = await db.runQuery(
@@ -117,13 +144,7 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
 
       if (result && Array.isArray(result.rows) && result.rows.length > 0) {
         response = {
-          reviews: result.rows.map((row) => {
-            const { approved, ...rest } = row;
-            return {
-              ...rest,
-              moderationState: approved ? 'approved' : 'pending'
-            };
-          }),
+          reviews: result.rows.map((row) => normalizeReviewRow(row, 'approved')),
           source: 'database'
         };
       }
@@ -132,13 +153,144 @@ async function getApprovedReviews(limit = 12, { forceRefresh = false } = {}) {
     }
   }
 
-  const normalizedResponse = {
-    ...response,
-    reviews: response.reviews.map(normalizeReview)
-  };
+  if (surveyFeedback.length) {
+    const mappedSurvey = surveyFeedback.map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      eventType: entry.eventType,
+      rating: entry.rating,
+      reviewText: entry.reviewText,
+      createdAt: entry.createdAt,
+      moderationState: 'approved',
+      source: entry.source || 'survey'
+    }));
 
-  await cache.set(CACHE_KEY, normalizedResponse, CACHE_TTL);
-  return { ...normalizedResponse, cacheStatus: 'refreshed' };
+    const combined = [...mappedSurvey, ...response.reviews].sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    response = {
+      reviews: combined.slice(0, limit).map((item) => ({
+        id: item.id,
+        name: item.name,
+        eventType: item.eventType,
+        rating: item.rating,
+        reviewText: item.reviewText,
+        createdAt: item.createdAt,
+        moderationState: item.moderationState || 'approved'
+      })),
+      source: response.source === 'database' ? 'database+survey' : 'static+survey'
+    };
+  }
+
+  await cache.set(CACHE_KEY, response, CACHE_TTL);
+  return { ...response, cacheStatus: 'refreshed' };
+}
+
+async function getPendingReviews(limit = 50) {
+  if (!db.isConfigured()) {
+    return [];
+  }
+
+  const result = await db.runQuery(
+    `SELECT
+        id,
+        name,
+        event_type AS "eventType",
+        to_jsonb(reviews)->>'city' AS "city",
+        rating,
+        review_text AS "reviewText",
+        created_at AS "createdAt",
+        approved
+      FROM reviews
+      WHERE approved = FALSE
+      ORDER BY created_at DESC
+      LIMIT $1`,
+    [limit]
+  );
+
+  if (!result || !Array.isArray(result.rows)) {
+    return [];
+  }
+
+  return result.rows.map((row) => normalizeReviewRow(row, 'pending'));
+}
+
+function normalizeReviewId(reviewId) {
+  if (reviewId === undefined || reviewId === null || String(reviewId).trim() === '') {
+    throw new Error('Review identifier is required');
+  }
+
+  const parsed = Number.parseInt(String(reviewId), 10);
+  if (!Number.isFinite(parsed)) {
+    throw new Error('Invalid review identifier');
+  }
+
+  return parsed;
+}
+
+async function approveReview(reviewId) {
+  const normalizedId = normalizeReviewId(reviewId);
+
+  if (!db.isConfigured()) {
+    throw new Error('Database not configured');
+  }
+
+  const result = await db.runQuery(
+    `UPDATE reviews
+      SET approved = TRUE
+      WHERE id = $1
+      RETURNING
+        id,
+        name,
+        event_type AS "eventType",
+        to_jsonb(reviews)->>'city' AS "city",
+        rating,
+        review_text AS "reviewText",
+        created_at AS "createdAt",
+        approved`,
+    [normalizedId]
+  );
+
+  if (!result || result.rowCount === 0) {
+    throw new Error('Review not found');
+  }
+
+  const review = normalizeReviewRow(result.rows[0], 'approved');
+  await resetCache();
+  return review;
+}
+
+async function rejectReview(reviewId) {
+  const normalizedId = normalizeReviewId(reviewId);
+
+  if (!db.isConfigured()) {
+    throw new Error('Database not configured');
+  }
+
+  const result = await db.runQuery(
+    `DELETE FROM reviews
+      WHERE id = $1
+      RETURNING
+        id,
+        name,
+        event_type AS "eventType",
+        to_jsonb(reviews)->>'city' AS "city",
+        rating,
+        review_text AS "reviewText",
+        created_at AS "createdAt"`,
+    [normalizedId]
+  );
+
+  if (!result || result.rowCount === 0) {
+    throw new Error('Review not found');
+  }
+
+  const review = normalizeReviewRow(result.rows[0], 'rejected');
+  await resetCache();
+  return review;
 }
 
 async function resetCache() {
@@ -155,6 +307,9 @@ function ping() {
 
 module.exports = {
   getApprovedReviews,
+  getPendingReviews,
+  approveReview,
+  rejectReview,
   resetCache,
   ping
 };
