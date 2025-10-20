@@ -356,6 +356,8 @@ async function getVariantAnalytics() {
       impressions: bucket.impressions,
       ctaClicks: bucket.ctaClicks,
       conversions: bucket.conversions,
+      formStarts: bucket.formStarts,
+      formSubmits: bucket.formSubmits,
       conversionRate: normalizeRate(bucket.conversions, bucket.exposures || bucket.impressions || 0),
       ctaClickRate: normalizeRate(bucket.ctaClicks, bucket.exposures || bucket.impressions || 0),
       formCompletionRate: normalizeRate(bucket.formSubmits, bucket.formStarts || bucket.exposures || 0),
@@ -373,9 +375,11 @@ async function getVariantAnalytics() {
       acc.impressions += variant.impressions;
       acc.ctaClicks += variant.ctaClicks;
       acc.conversions += variant.conversions;
+      acc.formStarts += variant.formStarts;
+      acc.formSubmits += variant.formSubmits;
       return acc;
     },
-    { exposures: 0, impressions: 0, ctaClicks: 0, conversions: 0 }
+    { exposures: 0, impressions: 0, ctaClicks: 0, conversions: 0, formStarts: 0, formSubmits: 0 }
   );
 
   return {
@@ -386,9 +390,81 @@ async function getVariantAnalytics() {
       impressions: totals.impressions,
       ctaClicks: totals.ctaClicks,
       conversions: totals.conversions,
+      formStarts: totals.formStarts,
+      formSubmits: totals.formSubmits,
       conversionRate: normalizeRate(totals.conversions, totals.exposures || totals.impressions || 0),
-      ctaClickRate: normalizeRate(totals.ctaClicks, totals.exposures || totals.impressions || 0)
+      ctaClickRate: normalizeRate(totals.ctaClicks, totals.exposures || totals.impressions || 0),
+      formCompletionRate: normalizeRate(
+        totals.formSubmits,
+        totals.formStarts || totals.exposures || totals.impressions || 0
+      )
     }
+  };
+}
+
+async function getConversionStats() {
+  const analytics = await getVariantAnalytics();
+  const exposureLog = getExposureLog();
+  const eventLog = getEventLog();
+
+  const conversionEvents = eventLog.filter((entry) => entry.type === 'conversion');
+  const formStartEvents = eventLog.filter((entry) => entry.type === 'form_start');
+  const formSubmitEvents = eventLog.filter((entry) => entry.type === 'form_submit');
+
+  const funnel = [
+    { id: 'exposures', label: 'Variant exposures', count: analytics.totals.exposures },
+    { id: 'impressions', label: 'Hero impressions', count: analytics.totals.impressions },
+    { id: 'ctaClicks', label: 'CTA clicks', count: analytics.totals.ctaClicks },
+    { id: 'formStarts', label: 'Form starts', count: analytics.totals.formStarts },
+    { id: 'formSubmits', label: 'Form submits', count: analytics.totals.formSubmits },
+    { id: 'conversions', label: 'Conversions', count: analytics.totals.conversions }
+  ];
+
+  const topVariants = analytics.variants
+    .slice()
+    .sort((a, b) => b.conversions - a.conversions)
+    .slice(0, 5)
+    .map((variant) => ({
+      variantId: variant.variantId,
+      label: variant.label,
+      conversions: variant.conversions,
+      conversionRate: variant.conversionRate,
+      ctaClicks: variant.ctaClicks,
+      exposures: variant.exposures,
+      formStarts: variant.formStarts,
+      formSubmits: variant.formSubmits
+    }));
+
+  const variantLabelMap = analytics.variants.reduce((acc, variant) => {
+    acc.set(variant.variantId, variant.label);
+    return acc;
+  }, new Map());
+
+  const recentConversions = conversionEvents
+    .slice(-10)
+    .reverse()
+    .map((entry) => ({
+      id: entry.id,
+      variantId: entry.variantId,
+      variantLabel: variantLabelMap.get(entry.variantId) || entry.variantId,
+      keyword: entry.keyword || null,
+      createdAt: entry.createdAt,
+      payload: entry.payload || null
+    }));
+
+  return {
+    updatedAt: analytics.updatedAt,
+    totals: {
+      ...analytics.totals,
+      exposureLogSize: exposureLog.length,
+      eventLogSize: eventLog.length,
+      conversionEvents: conversionEvents.length,
+      formStartEvents: formStartEvents.length,
+      formSubmitEvents: formSubmitEvents.length
+    },
+    funnel,
+    topVariants,
+    recentConversions
   };
 }
 
@@ -404,5 +480,6 @@ module.exports = {
   scheduleRun,
   getMonitoringState,
   getVariantAnalytics,
+  getConversionStats,
   reset
 };
