@@ -168,7 +168,11 @@ function mapLeadToPayload(lead) {
 
 async function submitLead(lead, meta = {}) {
   const payload = mapLeadToPayload(lead);
-  return tryImmediateDelivery(payload, meta);
+  const enrichedMeta = { ...meta };
+  if (lead?.id && !enrichedMeta.id) {
+    enrichedMeta.id = lead.id;
+  }
+  return tryImmediateDelivery(payload, enrichedMeta);
 }
 
 async function flushQueue(limit = 50) {
@@ -212,6 +216,130 @@ async function flushQueue(limit = 50) {
     delivered,
     remaining: computeQueueSize(metrics.counts)
   };
+}
+
+function toIsoString(value) {
+  if (!value) {
+    return '';
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return date.toISOString();
+}
+
+function mapFieldsToRecord(fields = []) {
+  return fields.reduce((acc, field) => {
+    if (!field || !field.name) {
+      return acc;
+    }
+
+    acc[field.name] = field.value ?? '';
+    return acc;
+  }, {});
+}
+
+function buildCrmRecord(entry) {
+  const { job, state, source } = entry;
+  const jobPayload = job?.data && job.data.payload ? job.data : job?.data?.data ? job.data.data : job?.data || {};
+  const jobMeta = jobPayload.meta || {};
+  const payload = jobPayload.payload || {};
+  const fieldMap = mapFieldsToRecord(payload.fields);
+  const context = payload.context || {};
+  const jobAttempts = job?.attemptsMade ?? job?.data?.attemptsMade ?? 0;
+  const lastError = job?.failedReason || job?.data?.failedReason || '';
+  const queuedAt = (() => {
+    if (job?.timestamp) {
+      return toIsoString(job.timestamp);
+    }
+    if (job?.data?.failedAt) {
+      return toIsoString(job.data.failedAt);
+    }
+    return '';
+  })();
+
+  return {
+    lead_id: jobPayload.id || job?.id || job?.data?.jobId || '',
+    queue_status: state,
+    queued_at: queuedAt,
+    attempts: jobAttempts,
+    last_error: lastError,
+    firstname: fieldMap.firstname || '',
+    lastname: fieldMap.lastname || '',
+    email: fieldMap.email || '',
+    phone: fieldMap.phone || '',
+    company: fieldMap.company || '',
+    message: fieldMap.message || '',
+    event_date: fieldMap.event_date || '',
+    event_type: fieldMap.event_type || '',
+    budget: fieldMap.budget || '',
+    page_uri: context.pageUri || '',
+    page_name: context.pageName || '',
+    source: source || jobMeta.source || ''
+  };
+}
+
+async function collectQueueEntries(limit) {
+  const states = ['waiting', 'delayed', 'failed'];
+  const entries = [];
+  const seenIds = new Set();
+
+  for (const state of states) {
+    if (entries.length >= limit) {
+      break;
+    }
+
+    const jobs = await queue.queue.getJobs([state], 0, limit - 1, true);
+    for (const job of jobs) {
+      const identifier = job?.id || job?.data?.jobId || job?.data?.id;
+      if (seenIds.has(identifier)) {
+        continue;
+      }
+      entries.push({ job, state, source: job?.data?.meta?.source || job?.data?.source || null });
+      if (identifier) {
+        seenIds.add(identifier);
+      }
+      if (entries.length >= limit) {
+        break;
+      }
+    }
+  }
+
+  return entries;
+}
+
+async function collectDeadLetterEntries(limit, seenIds) {
+  const jobs = await queue.deadLetterQueue.getJobs(['waiting', 'delayed', 'failed'], 0, limit - 1, true);
+  const entries = [];
+
+  for (const job of jobs) {
+    const identifier = job?.data?.jobId || job?.data?.data?.id;
+    if (identifier && seenIds.has(identifier)) {
+      continue;
+    }
+    entries.push({ job, state: 'dead-letter', source: job?.data?.data?.meta?.source || null });
+    if (identifier) {
+      seenIds.add(identifier);
+    }
+    if (entries.length >= limit) {
+      break;
+    }
+  }
+
+  return entries;
+}
+
+async function getCrmExportRows({ limit = 500 } = {}) {
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 500;
+  const queueEntries = await collectQueueEntries(safeLimit);
+  const seenIds = new Set(queueEntries.map((entry) => entry.job?.id || entry.job?.data?.jobId || entry.job?.data?.id));
+  const deadLetterEntries = await collectDeadLetterEntries(safeLimit, seenIds);
+  const combined = queueEntries.concat(deadLetterEntries).slice(0, safeLimit);
+
+  return combined.map((entry) => buildCrmRecord(entry));
 }
 
 async function getStatus() {
@@ -273,6 +401,7 @@ module.exports = {
   submitLead,
   flushQueue,
   replayDeadLetters,
+  getCrmExportRows,
   getStatus,
   reset
 };

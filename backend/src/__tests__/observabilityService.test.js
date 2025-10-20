@@ -2,10 +2,10 @@ const observabilityService = require('../services/observabilityService');
 const personalizationService = require('../services/personalizationService');
 
 describe('observabilityService', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     observabilityService.reset();
     personalizationService.resetLogs();
-    personalizationService.resetCache();
+    await personalizationService.resetCache();
   });
 
   afterEach(() => {

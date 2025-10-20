@@ -7,23 +7,43 @@ const { assertValidSignature, SignatureVerificationError } = require('../lib/sig
 
 const router = express.Router();
 
-const WEBHOOK_SIGNATURE_HEADER = 'x-mrdj-signature';
+const CRM_EXPORT_COLUMNS = [
+  'lead_id',
+  'queue_status',
+  'queued_at',
+  'attempts',
+  'last_error',
+  'firstname',
+  'lastname',
+  'email',
+  'phone',
+  'company',
+  'message',
+  'event_date',
+  'event_type',
+  'budget',
+  'page_uri',
+  'page_name',
+  'source'
+];
 
-function getRawPayload(req) {
-  if (Buffer.isBuffer(req.rawBody)) {
-    return req.rawBody;
+function toCsvValue(value) {
+  if (value === null || value === undefined) {
+    return '';
   }
 
-  if (req.body && Object.keys(req.body).length) {
-    return Buffer.from(JSON.stringify(req.body), 'utf8');
+  const stringValue = String(value);
+  if (/["\n,]/.test(stringValue)) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
   }
 
-  return Buffer.alloc(0);
+  return stringValue;
 }
 
-function verifyWebhookRequest(req, secrets) {
-  const header = req.get(WEBHOOK_SIGNATURE_HEADER);
-  return assertValidSignature({ header, payload: getRawPayload(req), secrets });
+function buildCsv(columns, rows) {
+  const header = columns.join(',');
+  const body = rows.map((row) => columns.map((column) => toCsvValue(row[column])).join(','));
+  return [header].concat(body).join('\n');
 }
 
 router.get('/rentguy/status', async (_req, res, next) => {
@@ -44,54 +64,15 @@ router.get('/sevensa/status', async (_req, res, next) => {
   }
 });
 
-router.post('/rentguy/webhook', async (req, res, next) => {
+router.get('/crm/export', async (_req, res, next) => {
   try {
-    const secrets = config.integrations?.rentGuy?.webhookSecrets || [];
-    const verification = verifyWebhookRequest(req, secrets);
-
-    logger.info(
-      {
-        source: 'rentguy-webhook',
-        matchedSecretIndex: secrets.findIndex((secret) => secret === verification.secret),
-        eventType: req.body?.type || req.body?.event || 'unknown'
-      },
-      'Received authenticated RentGuy webhook'
-    );
-
-    res.status(204).end();
+    const rows = await sevensaService.getCrmExportRows();
+    const csv = buildCsv(CRM_EXPORT_COLUMNS, rows);
+    res.set('Content-Type', 'text/csv; charset=utf-8');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    res.set('Content-Disposition', `attachment; filename="crm-export-${timestamp}.csv"`);
+    res.send(csv);
   } catch (error) {
-    if (error instanceof SignatureVerificationError) {
-      logger.warn({ err: error, source: 'rentguy-webhook' }, 'Rejected RentGuy webhook');
-      res.status(error.statusCode || 401).json({ error: 'Invalid webhook signature', code: error.code });
-      return;
-    }
-
-    next(error);
-  }
-});
-
-router.post('/personalization/webhook', async (req, res, next) => {
-  try {
-    const secrets = config.personalization?.incomingWebhookSecrets || [];
-    const verification = verifyWebhookRequest(req, secrets);
-
-    logger.info(
-      {
-        source: 'personalization-webhook',
-        matchedSecretIndex: secrets.findIndex((secret) => secret === verification.secret),
-        eventType: req.body?.type || req.body?.event || 'unknown'
-      },
-      'Received authenticated personalization webhook'
-    );
-
-    res.status(204).end();
-  } catch (error) {
-    if (error instanceof SignatureVerificationError) {
-      logger.warn({ err: error, source: 'personalization-webhook' }, 'Rejected personalization webhook');
-      res.status(error.statusCode || 401).json({ error: 'Invalid webhook signature', code: error.code });
-      return;
-    }
-
     next(error);
   }
 });
