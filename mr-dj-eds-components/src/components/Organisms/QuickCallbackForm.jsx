@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { submitCallbackRequest } from '../../services/api';
+import { submitCallbackRequest } from '../../services/api.js';
 import { trackFormSubmission } from '../../utils/trackConversion';
 
 /**
