@@ -9,9 +9,9 @@ const VARIANT_STYLES = {
 } as const;
 
 const SIZE_STYLES = {
-  sm: 'px-spacing-sm py-spacing-xs text-font-size-small',
-  md: 'px-spacing-md py-spacing-sm text-font-size-body',
-  lg: 'px-spacing-lg py-spacing-md text-font-size-h4',
+  sm: 'px-spacing-sm py-spacing-xs body-sm',
+  md: 'px-spacing-md py-spacing-sm body-md',
+  lg: 'px-spacing-lg py-spacing-md body-lg',
 } as const;
 
 type Variant = keyof typeof VARIANT_STYLES;
@@ -24,7 +24,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const baseStyles =
-  'inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
+  'inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
 
 export const Button = forwardRef(function Button(
   { variant = 'primary', size = 'md', className = '', type = 'button', ...props }: ButtonProps,

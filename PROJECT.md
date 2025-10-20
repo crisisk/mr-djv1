@@ -461,10 +461,10 @@ cp -r dist/* /opt/mr-dj/frontend/public/
 
 # 3. Rebuild Docker image
 cd /opt/mr-dj
-docker-compose build eds-frontend
+docker compose build eds-frontend
 
 # 4. Restart container
-docker-compose up -d eds-frontend
+docker compose up -d eds-frontend
 
 # 5. Verify deployment
 curl -I https://staging.sevensa.nl/

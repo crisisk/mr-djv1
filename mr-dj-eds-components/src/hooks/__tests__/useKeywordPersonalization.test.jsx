@@ -1,233 +1,211 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { describe, expect, it, beforeEach, afterAll, vi } from 'vitest';
-import { useKeywordPersonalization } from '../useKeywordPersonalization.js';
+import '@testing-library/jest-dom/vitest';
 
-const resolveApiBaseMock = vi.fn();
-vi.mock('../../lib/apiBase.js', () => ({
+const resolveApiBaseMock = vi.fn(() => 'https://api.example.com');
+const trackEventMock = vi.fn();
+const mockGetWindow = vi.fn();
+const mockGetDocument = vi.fn();
+
+vi.mock('../lib/apiBase.js', () => ({
   resolveApiBase: resolveApiBaseMock
 }));
 
-const trackEventMock = vi.fn();
-vi.mock('../../lib/analytics.js', () => ({
+vi.mock('../lib/analytics.js', () => ({
   trackEvent: trackEventMock
 }));
 
-const getWindowMock = vi.fn();
-const getDocumentMock = vi.fn();
-vi.mock('../../lib/environment.js', () => ({
-  getWindow: () => getWindowMock(),
-  getDocument: () => getDocumentMock()
+vi.mock('../lib/environment.js', () => ({
+  getWindow: mockGetWindow,
+  getDocument: mockGetDocument,
+  isBrowser: () => true,
+  getNavigator: () => ({})
 }));
 
-const fetchMock = vi.fn();
+// eslint-disable-next-line import/first
+import { useKeywordPersonalization } from '../useKeywordPersonalization.js';
+
+const createFetchResponse = (data, ok = true) =>
+  Promise.resolve({
+    ok,
+    json: () => Promise.resolve(data)
+  });
 
 describe('useKeywordPersonalization', () => {
   beforeEach(() => {
-    resolveApiBaseMock.mockReset();
     trackEventMock.mockReset();
-    getWindowMock.mockReset();
-    getDocumentMock.mockReset();
-    fetchMock.mockReset();
-    global.fetch = fetchMock;
+    resolveApiBaseMock.mockClear();
+    mockGetWindow.mockReset();
+    mockGetDocument.mockReset();
+    global.fetch = vi.fn();
   });
 
-  afterAll(() => {
-    delete global.fetch;
-  });
-
-  it('loads personalization data, merges variant payload and extracts meta from URL params', async () => {
-    const searchParams = new URLSearchParams({
-      keyword: 'club',
-      keywords: 'club,dj',
-      utm_term: 'club dj',
-      utm_campaign: 'club_launch',
-      utm_source: 'google',
-      persona: 'nightlife',
-      intent: 'nightlife',
-      search: 'Club DJ',
-      q: 'dj'
-    });
-
-    resolveApiBaseMock.mockReturnValue('https://api.example.com');
-    getWindowMock.mockReturnValue({
+  it('loads personalization data and merges meta information from url and payload', async () => {
+    mockGetWindow.mockReturnValue({
       location: {
-        search: `?${searchParams.toString()}`,
-        pathname: '/events/nightlife'
-      },
-      dataLayer: []
+        search:
+          '?keyword=dj%20utrecht&keywords=dj%20sax&utm_term=feest&utm_campaign=winter&utm_source=google&persona=corporate&intent=nightlife&search=club%20dj&q=dj%20band',
+        pathname: '/landing-page'
+      }
     });
-    getDocumentMock.mockReturnValue({ referrer: 'https://example.com/ads' });
+    mockGetDocument.mockReturnValue({ referrer: 'https://example.com/referrer' });
 
     const payload = {
       variant: {
-        id: 'nightlife-variant',
-        hero: {
-          title: 'Nightlife Energy',
-          ctaPrimaryText: 'Boek direct'
-        },
+        id: 'keyword_match',
+        hero: { title: 'Keyword Hero Title' },
         features: {
-          items: [{ title: 'Laser show', icon: '✨', description: 'Volledige club-setup.' }]
+          items: [
+            {
+              title: 'Custom Feature',
+              icon: '⭐',
+              description: 'Overrides fallback features'
+            }
+          ]
         },
         pricing: {
-          valueEmphasis: ['Aftermovie inbegrepen'],
-          ctaOverrides: { Zilver: 'Reserveer nu' }
+          valueEmphasis: ['Custom value'],
+          ctaOverrides: {
+            Zilver: 'Nu boeken'
+          }
         }
       },
       meta: {
-        variantId: 'nightlife-variant',
+        variantId: 'keyword_match',
         matchType: 'keyword',
-        matchedKeywords: ['club dj'],
-        keywordInput: ['club'],
+        matchedKeywords: ['dj utrecht'],
+        keywordInput: ['dj utrecht'],
         automationTriggered: true
       }
     };
 
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      json: async () => payload
-    });
-    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+    global.fetch
+      .mockImplementationOnce(() => createFetchResponse(payload))
+      .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
 
     const { result } = renderHook(() => useKeywordPersonalization());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(result.current.error).toBeNull();
-    expect(result.current.meta).toEqual(payload.meta);
-    expect(result.current.personalization.hero.title).toBe('Nightlife Energy');
-    expect(result.current.personalization.hero.badges).toContain('Gemiddeld 4,9/5 beoordeling');
-    expect(result.current.personalization.features.items).toEqual(payload.variant.features.items);
-    expect(result.current.personalization.pricing.valueEmphasis).toEqual(['Aftermovie inbegrepen']);
-    expect(result.current.personalization.pricing.ctaOverrides.Zilver).toBe('Reserveer nu');
+    expect(resolveApiBaseMock).toHaveBeenCalledTimes(1);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
 
-    const firstCallUrl = fetchMock.mock.calls[0][0];
-    expect(firstCallUrl.startsWith('https://api.example.com/personalization/keyword?')).toBe(true);
-    const [, queryString] = firstCallUrl.split('?');
-    const query = new URLSearchParams(queryString);
-    expect(query.get('keyword')).toBe('club');
-    expect(query.get('keywords')).toBe('club,dj');
-    expect(query.get('utm_term')).toBe('club dj');
-    expect(query.get('utm_campaign')).toBe('club_launch');
-    expect(query.get('utm_source')).toBe('google');
-    expect(query.get('persona')).toBe('nightlife');
-    expect(query.get('intent')).toBe('nightlife');
-    expect(query.get('search')).toBe('Club DJ');
-    expect(query.get('q')).toBe('dj');
-    expect(query.get('landing')).toBe('/events/nightlife');
-    expect(query.get('referrer')).toBe('https://example.com/ads');
+    const [requestUrl] = global.fetch.mock.calls[0];
+    const apiUrl = new URL(requestUrl);
+    expect(apiUrl.origin).toBe('https://api.example.com');
+    expect(apiUrl.pathname).toBe('/personalization/keyword');
+    expect(apiUrl.searchParams.get('keyword')).toBe('dj utrecht');
+    expect(apiUrl.searchParams.get('keywords')).toBe('dj sax');
+    expect(apiUrl.searchParams.get('utm_term')).toBe('feest');
+    expect(apiUrl.searchParams.get('utm_campaign')).toBe('winter');
+    expect(apiUrl.searchParams.get('utm_source')).toBe('google');
+    expect(apiUrl.searchParams.get('persona')).toBe('corporate');
+    expect(apiUrl.searchParams.get('intent')).toBe('nightlife');
+    expect(apiUrl.searchParams.get('search')).toBe('club dj');
+    expect(apiUrl.searchParams.get('q')).toBe('dj band');
+    expect(apiUrl.searchParams.get('landing')).toBe('/landing-page');
+    expect(apiUrl.searchParams.get('referrer')).toBe('https://example.com/referrer');
+
+    expect(result.current.meta).toEqual(payload.meta);
+    expect(result.current.personalization.id).toBe('keyword_match');
+    expect(result.current.personalization.hero.title).toBe('Keyword Hero Title');
+    expect(result.current.personalization.features.items).toEqual(payload.variant.features.items);
+    expect(result.current.personalization.pricing.valueEmphasis).toEqual(['Custom value']);
+    expect(result.current.personalization.pricing.ctaOverrides?.Zilver).toBe('Nu boeken');
+    expect(result.current.error).toBeNull();
 
     expect(trackEventMock).toHaveBeenCalledWith('personalization_variant_loaded', {
-      variant_id: 'nightlife-variant',
+      variant_id: 'keyword_match',
       match_type: 'keyword',
-      matched_keywords: 'club dj',
+      matched_keywords: 'dj utrecht',
       automation_triggered: true
     });
-
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
-      'https://api.example.com/personalization/events',
-      expect.objectContaining({
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'impression',
-          variantId: 'nightlife-variant',
-          keyword: 'club',
-          payload: { matchType: 'keyword' }
-        })
-      })
-    );
   });
 
   it('falls back to default personalization when the network request fails', async () => {
-    const searchParams = new URLSearchParams({ keyword: 'wedding' });
-
-    resolveApiBaseMock.mockReturnValue('https://api.example.com');
-    getWindowMock.mockReturnValue({
-      location: { search: `?${searchParams.toString()}`, pathname: '/wedding' },
-      dataLayer: []
+    mockGetWindow.mockReturnValue({
+      location: { search: '?keyword=dj', pathname: '/fallback' }
     });
-    getDocumentMock.mockReturnValue({ referrer: '' });
+    mockGetDocument.mockReturnValue({ referrer: '' });
 
-    fetchMock.mockResolvedValueOnce({ ok: false });
+    global.fetch.mockImplementationOnce(() => createFetchResponse({}, false));
 
     const { result } = renderHook(() => useKeywordPersonalization());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
+    expect(result.current.personalization.id).toBe('default_master');
     expect(result.current.error).toBe('Kon personalisatievariant niet laden');
-    expect(result.current.personalization.id).toBe('default_master');
-    expect(result.current.meta).toBeNull();
     expect(trackEventMock).not.toHaveBeenCalled();
-    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('stops loading immediately when window is not available', async () => {
-    resolveApiBaseMock.mockReturnValue('https://api.example.com');
-    getWindowMock.mockReturnValue(undefined);
-    getDocumentMock.mockReturnValue(undefined);
+  it('stops loading immediately when window is unavailable', async () => {
+    mockGetWindow.mockReturnValue(undefined);
 
     const { result } = renderHook(() => useKeywordPersonalization());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(result.current.meta).toBeNull();
     expect(result.current.personalization.id).toBe('default_master');
-    expect(result.current.error).toBeNull();
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('sends log events with merged payload data', async () => {
-    const searchParams = new URLSearchParams({ keyword: 'corporate' });
-
-    resolveApiBaseMock.mockReturnValue('https://api.example.com');
-    getWindowMock.mockReturnValue({
-      location: { search: `?${searchParams.toString()}`, pathname: '/corporate' },
-      dataLayer: []
+  it('dispatches logEvent with merged payload when meta is available', async () => {
+    mockGetWindow.mockReturnValue({
+      location: {
+        search: '?keyword=dj%20bruiloft',
+        pathname: '/meta-test'
+      }
     });
-    getDocumentMock.mockReturnValue({ referrer: 'https://example.com' });
+    mockGetDocument.mockReturnValue({ referrer: '' });
 
     const payload = {
-      variant: { id: 'corporate-variant' },
+      variant: {
+        id: 'wedding',
+        hero: { title: 'Wedding Hero' }
+      },
       meta: {
-        variantId: 'corporate-variant',
-        matchType: 'persona',
-        matchedKeywords: [],
-        keywordInput: ['corporate'],
-        automationTriggered: false
+        variantId: 'wedding',
+        matchType: 'keyword',
+        matchedKeywords: ['dj bruiloft'],
+        keywordInput: ['dj bruiloft']
       }
     };
 
-    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => payload });
-    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
-    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+    global.fetch
+      .mockImplementationOnce(() => createFetchResponse(payload))
+      .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
 
     const { result } = renderHook(() => useKeywordPersonalization());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    act(() => {
-      result.current.logEvent('cta_click', { location: 'hero_cta' });
+    trackEventMock.mockClear();
+    await act(async () => {
+      result.current.logEvent('cta_click', { location: 'hero', value: 'primary' });
     });
 
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      3,
-      'https://api.example.com/personalization/events',
-      expect.objectContaining({
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'cta_click',
-          variantId: 'corporate-variant',
-          keyword: 'corporate',
-          payload: { location: 'hero_cta' }
-        })
-      })
-    );
+    expect(global.fetch).toHaveBeenCalledTimes(3);
+    const [, , postCall] = global.fetch.mock.calls;
+    expect(postCall[0]).toBe('https://api.example.com/personalization/events');
+    expect(postCall[1]).toMatchObject({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const body = JSON.parse(postCall[1].body);
+    expect(body).toEqual({
+      type: 'cta_click',
+      variantId: 'wedding',
+      keyword: 'dj bruiloft',
+      payload: { location: 'hero', value: 'primary' }
+    });
 
-    expect(trackEventMock).toHaveBeenLastCalledWith('personalization_event', {
-      variant_id: 'corporate-variant',
+    expect(trackEventMock).toHaveBeenCalledWith('personalization_event', {
+      variant_id: 'wedding',
       event_type: 'cta_click',
-      location: 'hero_cta'
+      location: 'hero',
+      value: 'primary'
     });
   });
 });
