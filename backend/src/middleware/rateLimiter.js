@@ -1,4 +1,5 @@
 const config = require('../config');
+const { logger } = require('../lib/logger');
 
 const requests = new Map();
 
@@ -21,6 +22,18 @@ function rateLimiter(req, res, next) {
 
   const entry = requests.get(identifier) || { count: 0, startTime: now };
 
+  const requestLogger = logger.child({
+    middleware: 'rateLimiter',
+    method: req.method,
+    path: req.originalUrl,
+    identifier
+  });
+
+  requestLogger.debug('Processing rate limit window', {
+    count: entry.count,
+    startTime: entry.startTime
+  });
+
   if (now - entry.startTime > windowMs) {
     entry.count = 0;
     entry.startTime = now;
@@ -31,6 +44,7 @@ function rateLimiter(req, res, next) {
 
   if (entry.count > max) {
     const retryAfterSeconds = Math.ceil((windowMs - (now - entry.startTime)) / 1000);
+    requestLogger.warn('Rate limit exceeded', { retryAfterSeconds });
     res.status(429).json({
       error: 'Too many requests',
       retryAfter: retryAfterSeconds
@@ -38,6 +52,7 @@ function rateLimiter(req, res, next) {
     return;
   }
 
+  requestLogger.debug('Rate limit check passed');
   next();
 }
 

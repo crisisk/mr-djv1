@@ -1,4 +1,5 @@
 const config = require('../config');
+const { logger } = require('../lib/logger');
 
 function normalizeIp(value) {
   if (!value) {
@@ -18,7 +19,16 @@ function forbidden(res) {
 }
 
 function dashboardAuth(req, res, next) {
+  const requestLogger = logger.child({
+    middleware: 'dashboardAuth',
+    method: req.method,
+    path: req.originalUrl
+  });
+
+  requestLogger.debug('Validating dashboard request');
+
   if (!config.dashboard.enabled) {
+    requestLogger.info('Dashboard requested while disabled');
     res.status(404).json({ error: 'Config dashboard disabled' });
     return;
   }
@@ -26,6 +36,7 @@ function dashboardAuth(req, res, next) {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Basic ')) {
+    requestLogger.warn('Dashboard authorization header missing');
     unauthorized(res);
     return;
   }
@@ -36,6 +47,7 @@ function dashboardAuth(req, res, next) {
   try {
     decoded = Buffer.from(base64Credentials, 'base64').toString('utf8');
   } catch (_error) {
+    requestLogger.warn('Dashboard authorization header not valid base64');
     unauthorized(res);
     return;
   }
@@ -43,6 +55,7 @@ function dashboardAuth(req, res, next) {
   const separatorIndex = decoded.indexOf(':');
 
   if (separatorIndex === -1) {
+    requestLogger.warn('Dashboard authorization header missing separator');
     unauthorized(res);
     return;
   }
@@ -51,6 +64,7 @@ function dashboardAuth(req, res, next) {
   const password = decoded.slice(separatorIndex + 1);
 
   if (username !== config.dashboard.username || password !== config.dashboard.password) {
+    requestLogger.warn('Dashboard authentication failed');
     unauthorized(res);
     return;
   }
@@ -59,11 +73,13 @@ function dashboardAuth(req, res, next) {
     const requestIp = normalizeIp(req.ip || req.connection?.remoteAddress);
     const allowedIps = config.dashboard.allowedIps.map(normalizeIp);
     if (!allowedIps.includes(requestIp)) {
+      requestLogger.warn('Dashboard access denied due to IP restriction', { requestIp });
       forbidden(res);
       return;
     }
   }
 
+  requestLogger.debug('Dashboard authentication succeeded');
   next();
 }
 
