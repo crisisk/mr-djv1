@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { submitContactForm } from '../../services/api';
 import Button from '../Atoms/Buttons';
 import { trackFormSubmission } from '../../utils/trackConversion';
@@ -29,6 +29,15 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const successTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, []);
 
   /**
    * Validate form fields
@@ -51,9 +60,17 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       errors.email = 'Ongeldig emailadres';
     }
 
-    // Phone validation (optional but format check if provided)
-    if (formData.phone && !/^[\d\s\-\+\(\)]{10,}$/.test(formData.phone)) {
-      errors.phone = 'Ongeldig telefoonnummer';
+    // Phone validation (backend requires a phone number with minimum length)
+    const trimmedPhone = formData.phone.trim();
+    if (!trimmedPhone) {
+      errors.phone = 'Telefoonnummer is verplicht';
+    } else {
+      const digitsOnly = trimmedPhone.replace(/\D/g, '');
+      if (digitsOnly.length < 6) {
+        errors.phone = 'Telefoonnummer moet minimaal 6 cijfers bevatten';
+      } else if (!/^[\d\s\-+()]+$/.test(trimmedPhone)) {
+        errors.phone = 'Ongeldig telefoonnummer';
+      }
     }
 
     // Message validation
@@ -110,7 +127,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
     setIsSubmitting(true);
 
     try {
-      const response = await submitContactForm(formData);
+      await submitContactForm(formData);
 
       // Success
       setSubmitSuccess(true);
@@ -119,7 +136,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       trackFormSubmission(variant, formData.eventType, 'contact');
 
       // Legacy GTM tracking (keeping for backwards compatibility)
-      if (window.dataLayer) {
+      if (typeof window !== 'undefined' && window.dataLayer) {
         window.dataLayer.push({
           event: 'contact_form_submit',
           form_variant: variant,
@@ -137,7 +154,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       });
 
       // Auto-hide success message after 5 seconds
-      setTimeout(() => setSubmitSuccess(false), 5000);
+      successTimeoutRef.current = setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
       // Error handling
       setSubmitError(error.message || 'Er is een fout opgetreden. Probeer het later opnieuw.');
@@ -158,7 +175,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
       {/* Success Message */}
       {submitSuccess && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div
+          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"
+          role="status"
+          aria-live="polite"
+        >
           <strong>Succesvol verzonden!</strong>
           <p>Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op.</p>
         </div>
@@ -166,7 +187,11 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
 
       {/* Error Message */}
       {submitError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+          role="alert"
+          aria-live="assertive"
+        >
           <strong>Fout bij verzenden</strong>
           <p>{submitError}</p>
         </div>
@@ -222,12 +247,20 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
+            required
+            minLength={6}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none ${
               fieldErrors.phone ? 'border-red-500' : 'border-neutral-gray-300'
             }`}
             placeholder="+31 6 12345678"
+            aria-invalid={Boolean(fieldErrors.phone)}
+            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
           />
-          {fieldErrors.phone && <p className="text-red-500 text-sm mt-1">{fieldErrors.phone}</p>}
+          {fieldErrors.phone && (
+            <p id="phone-error" className="text-red-500 text-sm mt-1">
+              {fieldErrors.phone}
+            </p>
+          )}
         </div>
 
         {/* Event Type */}
@@ -306,7 +339,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
         {/* Privacy Notice */}
         <p className="text-xs text-gray-500 mt-4">
           Door dit formulier te versturen ga je akkoord met ons{' '}
-          <a href="/privacy" className="text-primary-500 hover:underline">
+          <a href="/privacy-policy" className="text-primary-500 hover:underline">
             privacybeleid
           </a>
           . We gebruiken je gegevens alleen om contact met je op te nemen over je evenement.

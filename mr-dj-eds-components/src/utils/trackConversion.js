@@ -8,6 +8,8 @@
  * Google Analytics: info@mr-dj.nl
  */
 
+import { getCookie } from './abTesting';
+
 /**
  * Base function to push conversion events to dataLayer
  * @param {Object} eventData - Event data to push
@@ -182,8 +184,23 @@ export const setUserVariant = (variant) => {
  */
 export const getUserVariant = () => {
   if (typeof window !== 'undefined') {
-    return sessionStorage.getItem('ab_variant') || 'A';
+    const sessionVariant = window.sessionStorage?.getItem('ab_variant');
+
+    if (sessionVariant === 'A' || sessionVariant === 'B') {
+      return sessionVariant;
+    }
+
+    const cookieVariant = getCookie('mr_dj_ab_variant');
+
+    if (cookieVariant === 'A' || cookieVariant === 'B') {
+      if (window.sessionStorage) {
+        window.sessionStorage.setItem('ab_variant', cookieVariant);
+      }
+
+      return cookieVariant;
+    }
   }
+
   return 'A';
 };
 
