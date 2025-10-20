@@ -68,16 +68,66 @@
                 "type": "fontSize"
             },
             "h3": {
-                "value": "24px",
+                "value": "28px",
+                "type": "fontSize"
+            },
+            "h4": {
+                "value": "20px",
+                "type": "fontSize"
+            },
+            "h5": {
+                "value": "16px",
+                "type": "fontSize"
+            },
+            "bodyLarge": {
+                "value": "18px",
                 "type": "fontSize"
             },
             "body": {
                 "value": "16px",
                 "type": "fontSize"
             },
+            "caption": {
+                "value": "12px",
+                "type": "fontSize"
+            },
             "small": {
                 "value": "14px",
                 "type": "fontSize"
+            }
+        },
+        "weight": {
+            "h1": {
+                "value": "900",
+                "type": "fontWeight"
+            },
+            "h2": {
+                "value": "800",
+                "type": "fontWeight"
+            },
+            "h3": {
+                "value": "800",
+                "type": "fontWeight"
+            },
+            "h4": {
+                "value": "700",
+                "type": "fontWeight"
+            },
+            "h5": {
+                "value": "700",
+                "type": "fontWeight"
+            },
+            "bodyLarge": {
+                "value": "400",
+                "type": "fontWeight"
+            },
+            "body": {
+                "value": "400",
+                "type": "fontWeight"
+            },
+            "caption": {
+                "value": "600",
+                "type": "fontWeight"
             }
         }
     },
