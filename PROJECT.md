@@ -461,10 +461,10 @@ cp -r dist/* /opt/mr-dj/frontend/public/
 
 # 3. Rebuild Docker image
 cd /opt/mr-dj
-docker-compose build eds-frontend
+docker compose build eds-frontend
 
 # 4. Restart container
-docker-compose up -d eds-frontend
+docker compose up -d eds-frontend
 
 # 5. Verify deployment
 curl -I https://staging.sevensa.nl/
@@ -475,7 +475,7 @@ curl -I https://staging.sevensa.nl/
 **Target Domain**: www.mr-dj.nl
 **Requirements**:
 1. Update Traefik Host rules: `staging.sevensa.nl` → `www.mr-dj.nl`
-2. Update CORS_ORIGIN in backend environment
+2. Update `CORS_ORIGIN_LIST`/`CORS_PUBLIC_ORIGINS` in backend environment
 3. Configure GTM container ID (replace GTM-PLACEHOLDER)
 4. Setup Complianz/Cookiebot site ID
 5. Update sitemap.xml met production URLs

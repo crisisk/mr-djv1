@@ -491,7 +491,7 @@ Peer Dependency Issues: Resolved with legacy mode
   - Verify .env files are up to date
   - Check DATABASE_URL
   - Verify JWT_SECRET
-  - Confirm CORS_ORIGIN
+  - Confirm `CORS_ORIGIN_LIST` and `CORS_PUBLIC_ORIGINS`
 
 - [ ] **Database migrations:**
   ```bash
@@ -508,14 +508,14 @@ Peer Dependency Issues: Resolved with legacy mode
 - [ ] **Deploy with Docker:**
   ```bash
   cd /opt/mr-dj
-  docker-compose build
-  docker-compose up -d
+  docker compose build
+  docker compose up -d
   ```
 
 - [ ] **Verify containers:**
   ```bash
-  docker-compose ps
-  docker-compose logs -f
+  docker compose ps
+  docker compose logs -f
   ```
 
 #### 3. Post-Deployment:
@@ -527,8 +527,8 @@ Peer Dependency Issues: Resolved with legacy mode
 
 - [ ] **Monitor logs:**
   ```bash
-  docker-compose logs -f mr-dj-backend
-  docker-compose logs -f mr-dj-frontend
+  docker compose logs -f mr-dj-backend
+  docker compose logs -f mr-dj-frontend
   ```
 
 - [ ] **Check metrics:**
