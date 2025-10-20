@@ -154,4 +154,5 @@ _Laatst bijgewerkt: 2025-10-15_
 - Reserveer capaciteit in development backlog voor frontend personalisatie adapter en backend webhook endpoints.
 - Zet n8n staging omgeving op om workflows te testen voordat productiecredentials gekoppeld worden.
 - Maak alignment met marketing/sales over reviewproces AI-content en SLA's op leadopvolging.
+- Koppel privacy owner aan de n8n consent-export flow en volg het [Consent Compliance Audit Runbook](operations/consent-audit.md) voor auditvoorbereiding.
 

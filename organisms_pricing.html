@@ -22,12 +22,13 @@
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .slide-container {
-            width: 1280px;
+            width: 100%;
+            max-width: 1280px;
             min-height: 720px;
             background: #FFFFFF;
-            padding: 30px 40px;
+            padding: 32px 48px;
             display: flex;
             flex-direction: column;
         }
@@ -47,8 +48,8 @@
         
         .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 24px;
             flex: 1;
         }
         
@@ -56,11 +57,36 @@
             background: white;
             border: 2px solid #E5E5E5;
             border-radius: 16px;
-            padding: 28px 24px;
+            padding: 32px 28px;
             display: flex;
             flex-direction: column;
             position: relative;
             transition: all 0.3s ease;
+        }
+
+        .pricing-card .local-highlight {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 214, 102, 0.45);
+            background: rgba(255, 214, 102, 0.15);
+            color: #7A5400;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .pricing-card .local-highlight .label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            color: #9b6600;
+        }
+
+        .pricing-card .local-highlight[data-active="false"] {
+            display: none;
         }
         
         .pricing-card:hover {
@@ -116,11 +142,11 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
             border-radius: 12px;
             font-size: 24px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
@@ -185,14 +211,20 @@
         
         .cta-button {
             width: 100%;
-            padding: 12px 20px;
-            border-radius: 10px;
+            min-height: 48px;
+            padding: 14px 24px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
             text-align: center;
+        }
+
+        .cta-button:focus-visible {
+            outline: 3px solid #0088CC;
+            outline-offset: 3px;
         }
         
         .cta-primary {
@@ -200,7 +232,8 @@
             color: white;
         }
         
-        .cta-primary:hover {
+        .cta-primary:hover,
+        .cta-primary:focus-visible {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 174, 239, 0.4);
         }
@@ -210,8 +243,9 @@
             color: #1A2C4B;
             border-color: #E5E5E5;
         }
-        
-        .cta-secondary:hover {
+
+        .cta-secondary:hover,
+        .cta-secondary:focus-visible {
             border-color: #00AEEF;
             background: #F8FCFF;
         }
@@ -223,6 +257,60 @@
             color: #999;
             font-style: italic;
         }
+        @media (max-width: 1200px) {
+            .slide-container {
+                padding: 28px 32px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                padding: 16px;
+            }
+
+            .slide-container {
+                min-height: auto;
+                padding: 24px 28px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 34px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+            }
+
+            .pricing-card {
+                padding: 28px 24px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            .slide-container {
+                padding: 20px 16px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .pricing-card {
+                padding: 24px 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -230,22 +318,23 @@
         <h1>Organisms: Pricing Tables</h1>
         <p class="subtitle">Conversie-geoptimaliseerde pricing components met duidelijke waardepropositie</p>
         
+        <!-- Content gesynchroniseerd met src/data/pricing_packages.js -->
         <div class="pricing-grid">
             <!-- Bronze Package -->
             <div class="pricing-card bronze">
-                <div class="tier-badge">🥉</div>
+                <div class="tier-badge" role="img" aria-label="Bronzen pakket badge">🥉</div>
                 <h3 class="tier-name">Brons Pakket</h3>
                 <p class="tier-description">Perfect voor kleinere feesten en intieme bijeenkomsten</p>
-                
+
                 <div class="price-wrapper">
                     <div class="price">€495</div>
-                    <div class="price-period">per evenement</div>
+                    <div class="price-period">per event</div>
                 </div>
-                
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text">4 uur DJ service</span>
+                        <span class="feature-text">4 uur DJ-service</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -268,25 +357,25 @@
                         <span class="feature-text">Standaard setup</span>
                     </div>
                 </div>
-                
+
                 <button class="cta-button cta-secondary">Vraag Offerte Aan</button>
             </div>
-            
+
             <!-- Silver Package - Featured -->
             <div class="pricing-card silver">
-                <div class="tier-badge">🥈</div>
+                <div class="tier-badge" role="img" aria-label="Zilveren pakket badge">🥈</div>
                 <h3 class="tier-name">Zilver Pakket</h3>
                 <p class="tier-description">De complete ervaring voor onvergetelijke feesten</p>
-                
+
                 <div class="price-wrapper">
                     <div class="price">€795</div>
-                    <div class="price-period">per evenement</div>
+                    <div class="price-period">per event</div>
                 </div>
-                
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>6 uur DJ service</strong></span>
+                        <span class="feature-text">6 uur DJ-service</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -294,11 +383,15 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>Uitgebreide lichtshow</strong></span>
+                        <span class="feature-text">Uitgebreide lichtshow</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
                         <span class="feature-text">Persoonlijk intakegesprek</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">DJ + Saxofonist optie</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -310,28 +403,28 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>100% Dansgarantie</strong></span>
+                        <span class="feature-text">100% dansgarantie</span>
                     </div>
                 </div>
-                
-                <button class="cta-button cta-primary">Direct Boeken</button>
+
+                <button class="cta-button cta-primary">Boek Nu</button>
             </div>
-            
+
             <!-- Gold Package -->
             <div class="pricing-card gold">
-                <div class="tier-badge">🥇</div>
+                <div class="tier-badge" role="img" aria-label="Gouden pakket badge">🥇</div>
                 <h3 class="tier-name">Goud Pakket</h3>
                 <p class="tier-description">De ultieme all-inclusive entertainment ervaring</p>
-                
+
                 <div class="price-wrapper">
                     <div class="price">€1.295</div>
-                    <div class="price-period">per evenement</div>
+                    <div class="price-period">per event</div>
                 </div>
-                
+
                 <div class="features-list">
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>8 uur DJ service</strong></span>
+                        <span class="feature-text">8 uur DJ-service</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -339,7 +432,7 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>Spectaculaire lichtshow</strong></span>
+                        <span class="feature-text">Spectaculaire lichtshow</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -347,7 +440,11 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text">Onbeperkt gasten</span>
+                        <span class="feature-text">Ceremonie &amp; receptie muziek</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Onbeperkt aantal gasten</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
@@ -355,14 +452,14 @@
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text">Persoonlijke playlist curation</span>
+                        <span class="feature-text">Persoonlijke playlist curatie</span>
                     </div>
                     <div class="feature-item">
                         <span class="feature-icon">✓</span>
-                        <span class="feature-text"><strong>VIP behandeling</strong></span>
+                        <span class="feature-text">VIP behandeling</span>
                     </div>
                 </div>
-                
+
                 <button class="cta-button cta-secondary">Vraag Offerte Aan</button>
             </div>
         </div>

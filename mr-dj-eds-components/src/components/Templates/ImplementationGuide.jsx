@@ -49,7 +49,7 @@ const ImplementationGuide = () => (
     Molecules/
     Organisms/
     Templates/
-  lib/design-tokens.json
+  theme/tokens.js
   styles/
 `}
         </pre>
