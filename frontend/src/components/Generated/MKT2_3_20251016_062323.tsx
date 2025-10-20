@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './InstagramReelsSection.module.css';
 
 type ReelAudioSource = {
@@ -72,13 +72,20 @@ const InstagramReelsSection = () => {
         {reels.map((reel) => (
           <div key={reel.id} className={styles.reelCard}>
             <div className={styles.videoContainer}>
-              <video 
-                controls 
+              <video
+                controls
                 playsInline
                 poster="/images/reel-thumbnail.jpg"
                 className={styles.video}
               >
                 <source src={reel.videoUrl} type="video/mp4" />
+                <track
+                  kind="captions"
+                  src={reel.captions}
+                  label="English captions"
+                  srclang="en"
+                  default
+                />
                 Your browser does not support video playback.
               </video>
             </div>

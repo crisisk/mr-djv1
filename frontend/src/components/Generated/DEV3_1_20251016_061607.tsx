@@ -25,7 +25,7 @@ const HeatmapTracker = ({ hotjarId, hotjarSnippetVersion }) => {
     try {
       // Hotjar tracking code
       (function(h,o,t,j,a,r){
-        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h.hj=h.hj||function(...args){(h.hj.q=h.hj.q||[]).push(args)};
         h._hjSettings={hjid:hotjarId,hjsv:hotjarSnippetVersion};
         a=o.getElementsByTagName('head')[0];
         r=o.createElement('script');r.async=1;

@@ -1,7 +1,6 @@
 // PricingPage.jsx
 
-import React, { useState } from 'react';
-import VideoTestimonial from './components/VideoTestimonial';
+import { useState } from 'react';
 
 const testimonials = [
   {
@@ -10,7 +9,8 @@ const testimonials = [
     thumbnail: '/images/testimonial-thumb-1.jpg',
     name: 'John & Sarah',
     event: 'Wedding Reception',
-    quote: "Best DJ we could have hoped for!"
+    quote: "Best DJ we could have hoped for!",
+    captions: '/captions/testimonial-wedding-john.vtt'
   },
   {
     id: 2,
@@ -18,7 +18,8 @@ const testimonials = [
     thumbnail: '/images/testimonial-thumb-2.jpg',
     name: 'Lisa Martinez',
     event: 'Corporate Event',
-    quote: "Incredibly professional service"
+    quote: "Incredibly professional service",
+    captions: '/captions/testimonial-corporate-lisa.vtt'
   },
   // Add more testimonials as needed
 ];
@@ -48,6 +49,7 @@ const TestimonialsSection = () => {
 // VideoTestimonial.jsx component
 const VideoTestimonial = ({ testimonial, isActive, onPlay }) => {
   const [error, setError] = useState(false);
+  const statusId = `testimonial-${testimonial.id}-status`;
 
   const handleError = () => {
     setError(true);
@@ -55,7 +57,10 @@ const VideoTestimonial = ({ testimonial, isActive, onPlay }) => {
   };
 
   return (
-    <div className="video-testimonial rounded-lg shadow-lg overflow-hidden">
+    <div
+      className="video-testimonial rounded-lg shadow-lg overflow-hidden"
+      data-active={isActive}
+    >
       {!error ? (
         <div className="relative aspect-video">
           <video
@@ -65,8 +70,16 @@ const VideoTestimonial = ({ testimonial, isActive, onPlay }) => {
             className="w-full h-full object-cover"
             onError={handleError}
             onClick={onPlay}
+            aria-describedby={statusId}
           >
             <source src={testimonial.videoUrl} type="video/mp4" />
+            <track
+              kind="captions"
+              src={testimonial.captions}
+              label="English captions"
+              srclang="en"
+              default
+            />
             Your browser does not support the video tag.
           </video>
         </div>
@@ -75,10 +88,13 @@ const VideoTestimonial = ({ testimonial, isActive, onPlay }) => {
           <p>Video unavailable</p>
         </div>
       )}
-      <div className="p-4">
+      <div className="p-4" id={statusId} aria-live="polite">
         <h3 className="font-semibold text-xl">{testimonial.name}</h3>
         <p className="text-gray-600">{testimonial.event}</p>
         <p className="mt-2 italic">"{testimonial.quote}"</p>
+        {isActive && (
+          <p className="sr-only">Now playing testimonial video</p>
+        )}
       </div>
     </div>
   );
