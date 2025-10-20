@@ -1,102 +1,7 @@
 import React from 'react';
 import Button from './Buttons.jsx';
 import usePricingToggle from './usePricingToggle';
-import { getLocalSeoDataBySlug } from './local_seo_data.js';
-
-const BILLING_MODES = {
-  EVENT: 'event',
-  MONTHLY: 'monthly',
-};
-
-// Data structure for the three packages with pricing variations
-const packages = [
-  {
-    id: 'brons',
-    name: 'Brons',
-    subtitle: 'Entry-level pakket',
-    pricing: {
-      [BILLING_MODES.EVENT]: {
-        amount: '€495',
-        suffix: '/ event',
-        description: 'Eenmalige betaling per event.',
-      },
-      [BILLING_MODES.MONTHLY]: {
-        amount: '€99',
-        suffix: '/ maand',
-        description: 'Flexibel maandelijks plan voor terugkerende events.',
-      },
-    },
-    features: [
-      '4 uur DJ-set',
-      'Basis licht- en geluidsset',
-      'Persoonlijk intakegesprek',
-      'Muziekvoorkeuren formulier',
-    ],
-    isFeatured: false,
-    buttonText: 'Meer Info',
-    localHighlights: {
-      label: 'Lokale favoriet',
-    },
-  },
-  {
-    id: 'zilver',
-    name: 'Zilver',
-    subtitle: 'Meest gekozen',
-    pricing: {
-      [BILLING_MODES.EVENT]: {
-        amount: '€795',
-        suffix: '/ event',
-        description: 'Populairste keuze voor bruiloften en bedrijfsevents.',
-      },
-      [BILLING_MODES.MONTHLY]: {
-        amount: '€149',
-        suffix: '/ maand',
-        description: 'Vaste maandprijs inclusief 2 events per kwartaal.',
-      },
-    },
-    features: [
-      '6 uur DJ-set',
-      'Uitgebreide lichtshow',
-      'DJ + Saxofonist optie',
-      '100% dansgarantie',
-      'Onbeperkt aantal gasten',
-    ],
-    isFeatured: true,
-    buttonText: 'Boek Nu',
-    localHighlights: {
-      label: 'Regionale topper',
-    },
-  },
-  {
-    id: 'goud',
-    name: 'Goud',
-    subtitle: 'Premium All-Inclusive',
-    pricing: {
-      [BILLING_MODES.EVENT]: {
-        amount: '€1.295',
-        suffix: '/ event',
-        description: 'All-in pakket voor luxe en grootschalige events.',
-      },
-      [BILLING_MODES.MONTHLY]: {
-        amount: '€199',
-        suffix: '/ maand',
-        description: 'Premium abonnement met planning- & aftermovie-services.',
-      },
-    },
-    features: [
-      '8 uur DJ-set',
-      'Luxe licht- en geluidsset',
-      'DJ + Saxofonist (inbegrepen)',
-      'Ceremonie & receptie muziek',
-      'Professionele apparatuur',
-    ],
-    isFeatured: false,
-    buttonText: 'Vraag Offerte Aan',
-    localHighlights: {
-      label: 'Iconische locaties',
-    },
-  },
-];
+import { BILLING_MODES, pricingPackages } from './src/data/pricing_packages.js';
 
 const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
   const { name, subtitle, pricing, features, isFeatured, buttonText, localHighlights } = pkg;
@@ -235,14 +140,8 @@ const PricingTables = ({ citySlug, localSeo }) => {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-center">
-          {packages.map((pkg) => (
-            <PricingCard
-              key={pkg.id}
-              pkg={pkg}
-              billingMode={billingMode}
-              localHighlight={highlightMap?.[pkg.id] ?? pkg.localHighlights?.default ?? null}
-              activeCitySlug={activeCitySlug}
-            />
+          {pricingPackages.map((pkg, index) => (
+            <PricingCard key={`${pkg.name}-${index}`} pkg={pkg} billingMode={billingMode} />
           ))}
         </div>
         <CallToAction
