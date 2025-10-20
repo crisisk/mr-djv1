@@ -6,11 +6,32 @@ import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
 import PricingTables from '../components/Organisms/PricingTables.jsx';
 import Button from '../components/Atoms/Buttons.jsx';
+import { pricingPackages } from '../data/pricingPackages.js';
+import { generateOfferCatalogSchema, generateServiceSchema } from '../utils/schemaOrg.js';
 
 const BruiloftDJPage = ({ variant = 'A' }) => {
   // Variant-specific CTA text
   const ctaPrimaryText = variant === 'B' ? 'Boek Nu' : 'Bekijk Video';
   const ctaSecondaryText = variant === 'B' ? 'Check Beschikbaarheid' : 'Vraag Prijs Aan';
+
+  const offerCatalogSchema = generateOfferCatalogSchema({
+    packages: pricingPackages,
+    pagePath: '/bruiloft-dj',
+  });
+
+  const serviceSchema = {
+    ...generateServiceSchema({
+      serviceName: 'Bruiloft DJ Service',
+      description:
+        'Op zoek naar een bruiloft DJ? Zeg ook ja tegen Mister DJ en je bent gegarandeerd van een perfect geregeld knallend trouwfeest. Niets is te gek!',
+      serviceType: 'DJ Services',
+    }),
+    '@id': 'https://mr-dj.sevensa.nl/bruiloft-dj#service',
+    areaServed: 'Nederland',
+    offers: {
+      '@id': offerCatalogSchema['@id'],
+    },
+  };
 
   return (
     <div className="BruiloftDJPage">
@@ -22,26 +43,8 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
         />
         <meta name="keywords" content="bruiloft dj, wedding dj, dj met saxofoon, bruiloft entertainment, live muziek bruiloft, trouwfeest dj" />
 
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "Service",
-              "name": "Bruiloft DJ Service",
-              "provider": {
-                "@type": "Organization",
-                "name": "Mr. DJ",
-                "url": "https://mr-dj.sevensa.nl"
-              },
-              "serviceType": "DJ Services",
-              "areaServed": "Nederland",
-              "offers": {
-                "@type": "Offer",
-                "priceRange": "€495-€1295"
-              }
-            }
-          `}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(offerCatalogSchema)}</script>
       </Helmet>
 
       <Header />

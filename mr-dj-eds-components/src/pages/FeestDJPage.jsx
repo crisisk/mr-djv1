@@ -5,11 +5,32 @@ import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
 import PricingTables from '../components/Organisms/PricingTables.jsx';
+import { pricingPackages } from '../data/pricingPackages.js';
+import { generateOfferCatalogSchema, generateServiceSchema } from '../utils/schemaOrg.js';
 
 const FeestDJPage = ({ variant = 'A' }) => {
   // Variant-specific CTA text
   const ctaPrimaryText = variant === 'B' ? 'Boek Nu' : 'Bekijk Video';
   const ctaSecondaryText = variant === 'B' ? 'Check Beschikbaarheid' : 'Vraag Prijs Aan';
+
+  const offerCatalogSchema = generateOfferCatalogSchema({
+    packages: pricingPackages,
+    pagePath: '/feest-dj',
+  });
+
+  const serviceSchema = {
+    ...generateServiceSchema({
+      serviceName: 'Feest DJ Service',
+      description:
+        'DJ inhuren voor je verjaardag? Boek dan de complete drive in show van Mr. DJ en ga heel de avond los met je vrienden op de meest dampende beats.',
+      serviceType: 'Party DJ Services',
+    }),
+    '@id': 'https://mr-dj.sevensa.nl/feest-dj#service',
+    areaServed: 'Nederland',
+    offers: {
+      '@id': offerCatalogSchema['@id'],
+    },
+  };
 
   return (
     <div className="FeestDJPage">
@@ -21,26 +42,8 @@ const FeestDJPage = ({ variant = 'A' }) => {
         />
         <meta name="keywords" content="feest dj, verjaardag dj, jubileum dj, party dj, dj huren, carnaval dj, schoolfeest dj, drive in show" />
 
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "Service",
-              "name": "Feest DJ Service",
-              "provider": {
-                "@type": "Organization",
-                "name": "Mr. DJ",
-                "url": "https://mr-dj.sevensa.nl"
-              },
-              "serviceType": "Party DJ Services",
-              "areaServed": "Nederland",
-              "offers": {
-                "@type": "Offer",
-                "priceRange": "€395-€1095"
-              }
-            }
-          `}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(offerCatalogSchema)}</script>
       </Helmet>
 
       <Header />

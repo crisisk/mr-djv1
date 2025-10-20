@@ -14,6 +14,8 @@
  * </Helmet>
  */
 
+import { BILLING_MODES } from '../data/pricingPackages.js';
+
 const BASE_URL = 'https://mr-dj.sevensa.nl';
 const BUSINESS_NAME = 'Mr. DJ';
 const BUSINESS_PHONE = '+31408422594';
@@ -222,6 +224,101 @@ export const generateServiceSchema = ({ serviceName, description, serviceType })
     }
   }
 });
+
+const DEFAULT_AVAILABILITY = 'https://schema.org/InStock';
+
+const joinUrl = (base, path = '') => {
+  if (!path) {
+    return `${base}/`;
+  }
+
+  if (path === '/') {
+    return `${base}/`;
+  }
+
+  return `${base}${path.startsWith('/') ? path : `/${path}`}`;
+};
+
+const stripTrailingSlash = (value) =>
+  typeof value === 'string' && value.endsWith('/') ? value.slice(0, -1) : value;
+
+const normalizeSlug = (pkg) => {
+  if (pkg?.slug) {
+    return pkg.slug;
+  }
+
+  if (pkg?.id) {
+    return String(pkg.id);
+  }
+
+  return String(pkg?.name || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+};
+
+const mapPriceSpecifications = (pricing = {}) =>
+  Object.entries(pricing).map(([mode, price]) => ({
+    "@type": "UnitPriceSpecification",
+    price: price?.amount ?? null,
+    priceCurrency: 'EUR',
+    unitText: mode === BILLING_MODES.MONTHLY ? 'Per maand' : 'Per event',
+    description: price?.description,
+  }));
+
+export const generateOfferCatalogSchema = ({
+  packages = [],
+  pagePath = '',
+  baseUrl = BASE_URL,
+  includeContext = true,
+  id,
+} = {}) => {
+  const catalogUrlWithSlash = joinUrl(baseUrl, pagePath);
+  const catalogUrl = stripTrailingSlash(
+    pagePath && pagePath !== '/' ? catalogUrlWithSlash : baseUrl,
+  );
+  const catalogId = id || `${catalogUrl}#offers`;
+
+  const itemListElement = packages.map((pkg) => {
+    const slug = normalizeSlug(pkg);
+    const offerId = `${catalogId}-${slug}`;
+    const primaryPrice =
+      pkg?.pricing?.[BILLING_MODES.EVENT] || Object.values(pkg?.pricing || {})[0] || {};
+    const offerUrl = pkg?.ctaPath
+      ? stripTrailingSlash(joinUrl(baseUrl, pkg.ctaPath))
+      : `${catalogUrlWithSlash}#${slug}`;
+
+    return {
+      "@type": "Offer",
+      "@id": offerId,
+      name: `${pkg.name} Pakket`,
+      availability: pkg.availability || DEFAULT_AVAILABILITY,
+      url: offerUrl,
+      priceCurrency: 'EUR',
+      price: primaryPrice.amount ?? null,
+      priceSpecification: mapPriceSpecifications(pkg.pricing),
+      itemOffered: {
+        "@type": pkg.schemaType || 'Service',
+        name: pkg.serviceName || `${pkg.name} DJ Pakket`,
+        description: pkg.subtitle,
+      },
+    };
+  });
+
+  const catalog = {
+    "@type": "OfferCatalog",
+    "@id": catalogId,
+    name: 'DJ Pakketten',
+    url: catalogUrlWithSlash,
+    itemListElement,
+  };
+
+  if (includeContext) {
+    catalog['@context'] = 'https://schema.org';
+  }
+
+  return catalog;
+};
 
 /**
  * Review/Rating Schema

@@ -5,11 +5,32 @@ import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
 import PricingTables from '../components/Organisms/PricingTables.jsx';
+import { pricingPackages } from '../data/pricingPackages.js';
+import { generateOfferCatalogSchema, generateServiceSchema } from '../utils/schemaOrg.js';
 
 const BedrijfsfeestDJPage = ({ variant = 'A' }) => {
   // Variant-specific CTA text
   const ctaPrimaryText = variant === 'B' ? 'Boek Nu' : 'Bekijk Video';
   const ctaSecondaryText = variant === 'B' ? 'Check Beschikbaarheid' : 'Vraag Prijs Aan';
+
+  const offerCatalogSchema = generateOfferCatalogSchema({
+    packages: pricingPackages,
+    pagePath: '/bedrijfsfeest-dj',
+  });
+
+  const serviceSchema = {
+    ...generateServiceSchema({
+      serviceName: 'Zakelijke DJ Service - Bedrijfsfeesten & Evenementen',
+      description:
+        'Dé professionele Brabantse gangmaker op jouw zakelijke feest of evenement. Complete drive in show! ✓Bedrijfsfeesten ✓Personeelsfeesten ✓Events > 2500 geslaagde feesten verzorgd',
+      serviceType: 'Corporate Event DJ',
+    }),
+    '@id': 'https://mr-dj.sevensa.nl/bedrijfsfeest-dj#service',
+    areaServed: 'Nederland',
+    offers: {
+      '@id': offerCatalogSchema['@id'],
+    },
+  };
 
   return (
     <div className="BedrijfsfeestDJPage">
@@ -21,23 +42,8 @@ const BedrijfsfeestDJPage = ({ variant = 'A' }) => {
         />
         <meta name="keywords" content="zakelijk dj, bedrijfsfeest dj, zakelijke dj, corporate events, personeelsfeest, zakelijk entertainment, zakelijk evenement, drive in show, professioneel" />
 
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "Service",
-              "name": "Zakelijke DJ Service - Bedrijfsfeesten & Evenementen",
-              "provider": {
-                "@type": "Organization",
-                "name": "Mr. DJ",
-                "url": "https://mr-dj.sevensa.nl"
-              },
-              "serviceType": "Corporate Event DJ",
-              "description": "Professionele DJ service voor bedrijfsfeesten, personeelsfeesten en zakelijke evenementen",
-              "areaServed": "Nederland"
-            }
-          `}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(offerCatalogSchema)}</script>
       </Helmet>
 
       <Header />
