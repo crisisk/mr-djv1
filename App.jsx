@@ -1,4 +1,3 @@
-import './App.css';
 import MrDjApp from './mr-dj-eds-components/src/App.jsx';
 import HeroSection from './HeroSection.jsx';
 
