@@ -3,6 +3,7 @@ import HeroSection from './HeroSection.jsx';
 import PricingTables from './PricingTables.jsx';
 import Testimonials from './Testimonials.jsx';
 import Button from './Buttons.jsx';
+import { translate, getDefaultLocale } from './mr-dj-eds-components/src/lib/i18n.js';
 
 // Placeholder for dynamic content
 const localData = {
@@ -12,17 +13,75 @@ const localData = {
     localVenues: ["Evoluon", "Effenaar", "Strijp-S"],
 };
 
-const LocalSeoPage = ({ data = localData }) => {
+const LocalSeoPage = ({ data = localData, locale = getDefaultLocale() }) => {
     const { city, localUSP, localReviews, localVenues } = data;
+
+    const heroProvinceSuffix = '';
+    const eventTypeTitle = translate('localSeo.hero.eventTypeGeneral', {
+        locale,
+        defaultValue: 'DJ voor feesten',
+    });
+
+    const heroTitle = translate('localSeo.hero.title', {
+        locale,
+        defaultValue: `Uw DJ voor Feesten in ${city}`,
+        params: {
+            city,
+            provinceSuffix: heroProvinceSuffix,
+            eventTypeTitle,
+        },
+    });
+
+    const heroPrimaryCta = translate('localSeo.hero.ctaPrimary', {
+        locale,
+        defaultValue: 'Check Beschikbaarheid',
+    });
+
+    const heroSecondaryCta = translate('localSeo.hero.ctaSecondary', {
+        locale,
+        defaultValue: 'Vraag Offerte Aan',
+    });
+
+    const venuesHeading = translate('localSeo.venues.heading', {
+        locale,
+        defaultValue: `Bekend met de beste locaties in ${city}`,
+        params: {
+            city,
+            provinceSuffix: '',
+        },
+    });
+
+    const testimonialsHeading = translate('localSeo.testimonials.heading', {
+        locale,
+        defaultValue: `Wat klanten in ${city} zeggen`,
+        params: {
+            city,
+            provinceSuffix: '',
+        },
+    });
+
+    const footerHeading = translate('localSeo.footer.heading', {
+        locale,
+        defaultValue: `Klaar voor een onvergetelijk feest in ${city}?`,
+        params: {
+            city,
+            provinceSuffix: '',
+        },
+    });
+
+    const footerCtaButton = translate('localSeo.footer.ctaButton', {
+        locale,
+        defaultValue: 'Vraag Nu een Offerte Aan',
+    });
 
     return (
         <div className="LocalSeoPage">
             {/* 1. Hero Section - Dynamic Title */}
             <HeroSection
-                title={`Uw DJ voor Feesten in ${city}`}
+                title={heroTitle}
                 subtitle={localUSP}
-                ctaPrimaryText="Check Beschikbaarheid"
-                ctaSecondaryText="Vraag Offerte Aan"
+                ctaPrimaryText={heroPrimaryCta}
+                ctaSecondaryText={heroSecondaryCta}
                 backgroundClass="bg-primary"
                 titleColor="text-neutral-light"
                 subtitleColor="text-neutral-light"
@@ -32,7 +91,7 @@ const LocalSeoPage = ({ data = localData }) => {
             <section className="py-spacing-2xl bg-neutral-light">
                 <div className="container mx-auto px-spacing-md text-center">
                     <h2 className="text-font-size-h2 font-bold text-neutral-dark mb-spacing-lg">
-                        Bekend met de beste locaties in {city}
+                        {venuesHeading}
                     </h2>
                     <div className="flex justify-center space-x-spacing-lg">
                         {localVenues.map((venue, index) => (
@@ -48,7 +107,7 @@ const LocalSeoPage = ({ data = localData }) => {
             <section className="py-spacing-3xl bg-neutral-gray-100">
                 <div className="container mx-auto px-spacing-md">
                     <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-lg font-extrabold">
-                        Wat klanten in {city} zeggen
+                        {testimonialsHeading}
                     </h2>
                     {/* Testimonials component is reused, but content should be filtered/localized in a real app */}
                     <Testimonials />
@@ -61,10 +120,10 @@ const LocalSeoPage = ({ data = localData }) => {
             {/* 5. Footer CTA - Localized */}
             <div className="bg-neutral-dark text-neutral-light py-spacing-2xl text-center">
                 <h3 className="text-font-size-h2 font-bold mb-spacing-md">
-                    Klaar voor een onvergetelijk feest in {city}?
+                    {footerHeading}
                 </h3>
                 <Button variant="primary" size="lg">
-                    Vraag Nu een Offerte Aan
+                    {footerCtaButton}
                 </Button>
             </div>
         </div>
