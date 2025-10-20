@@ -1,20 +1,25 @@
 const express = require('express');
 const config = require('../config');
 const db = require('../lib/db');
-const { getContactServiceStatus } = require('../services/contactService');
-const { getCallbackRequestServiceStatus } = require('../services/callbackRequestService');
-const { getBookingServiceStatus } = require('../services/bookingService');
-const { getStatus: getRentGuyStatus } = require('../services/rentGuyService');
+const contactService = require('../services/contactService');
+const callbackRequestService = require('../services/callbackRequestService');
+const bookingService = require('../services/bookingService');
+const rentGuyService = require('../services/rentGuyService');
+const redisService = require('../services/redisService');
 
 const router = express.Router();
 
 router.get('/', async (_req, res, next) => {
   const dbStatus = db.getStatus();
-  const contactStatus = getContactServiceStatus();
-  const callbackStatus = getCallbackRequestServiceStatus();
-  const bookingStatus = getBookingServiceStatus();
+  const contactStatus = contactService.ping();
+  const callbackStatus = callbackRequestService.ping();
+  const bookingStatus = bookingService.ping();
+
   try {
-    const rentGuyStatus = await getRentGuyStatus();
+    const [rentGuyStatus, redisStatus] = await Promise.all([
+      rentGuyService.ping(),
+      redisService.ping()
+    ]);
 
     res.json({
       status: 'ok',
@@ -33,17 +38,23 @@ router.get('/', async (_req, res, next) => {
         },
         storage: {
           contact: {
+            ok: contactStatus.ok,
             strategy: contactStatus.storageStrategy,
             fallbackQueueSize: contactStatus.fallbackQueueSize
           },
           callbackRequests: {
+            ok: callbackStatus.ok,
             strategy: callbackStatus.storageStrategy,
             fallbackQueueSize: callbackStatus.fallbackQueueSize
           },
           bookings: {
+            ok: bookingStatus.ok,
             strategy: bookingStatus.storageStrategy,
             fallbackQueueSize: bookingStatus.fallbackQueueSize
           }
+        },
+        cache: {
+          redis: redisStatus
         },
         integrations: {
           rentGuy: rentGuyStatus,

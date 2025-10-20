@@ -4,6 +4,7 @@ const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
 const observabilityService = require('../services/observabilityService');
+const { logger } = require('../lib/logger');
 
 const router = express.Router();
 
@@ -231,6 +232,165 @@ function renderPage() {
         background: #fee2e2;
       }
 
+      .roles-panel {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 1.75rem 1.5rem;
+        margin-bottom: 1.75rem;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        border: 1px solid rgba(226, 232, 240, 0.85);
+      }
+
+      .roles-panel[data-dirty="true"] {
+        border-color: rgba(99, 102, 241, 0.55);
+        box-shadow: 0 18px 40px rgba(99, 102, 241, 0.18);
+      }
+
+      .roles-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .roles-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        letter-spacing: -0.01em;
+      }
+
+      .roles-header p {
+        margin: 0.35rem 0 0;
+        color: #475569;
+        font-size: 0.95rem;
+        max-width: 520px;
+      }
+
+      .roles-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .role-item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        background: #f8fafc;
+      }
+
+      .role-item.role-item--empty {
+        justify-content: center;
+        color: #64748b;
+        font-style: italic;
+      }
+
+      .role-meta {
+        flex: 1;
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .role-meta h3 {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: -0.01em;
+      }
+
+      .role-meta p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #475569;
+      }
+
+      .role-count {
+        font-size: 0.85rem;
+        color: #6366f1;
+        font-weight: 600;
+      }
+
+      .role-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .role-actions button {
+        width: 140px;
+      }
+
+      .role-assignment {
+        margin-top: 1.25rem;
+        border-top: 1px solid rgba(226, 232, 240, 0.85);
+        padding-top: 1rem;
+      }
+
+      .role-assignment__label {
+        margin: 0 0 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #475569;
+      }
+
+      .role-assignment__options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .role-assignment__empty {
+        margin: 0.35rem 0 0;
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      .role-assignment__summary {
+        margin: 0.35rem 0 0;
+        font-size: 0.85rem;
+        color: #334155;
+      }
+
+      .role-assignment__summary[data-empty="true"] {
+        color: #64748b;
+        font-style: italic;
+      }
+
+      .role-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        border: 1px solid #cbd5e1;
+        background: white;
+        font-size: 0.85rem;
+        color: #1e293b;
+        cursor: pointer;
+        transition: border 120ms ease, box-shadow 120ms ease;
+      }
+
+      .role-chip:hover {
+        border-color: #6366f1;
+        box-shadow: 0 6px 12px rgba(99, 102, 241, 0.12);
+      }
+
+      .role-chip input {
+        accent-color: #6366f1;
+      }
+
+      .role-chip span {
+        line-height: 1;
+      }
+
       .status-pill {
         display: inline-flex;
         align-items: center;
@@ -276,6 +436,74 @@ function renderPage() {
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
         color: #1e293b;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.25rem;
+      }
+
+      .metric-grid div {
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 0.9rem 1rem;
+        background: rgba(248, 250, 252, 0.7);
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .metric-grid div .metric-title {
+        margin: 0;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #64748b;
+      }
+
+      .metric-grid div .metric-value {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .metric-grid div .metric-secondary {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #475569;
+      }
+
+      .funnel-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .funnel-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        background: rgba(241, 245, 249, 0.6);
+        border-radius: 8px;
+        padding: 0.55rem 0.75rem;
+      }
+
+      .funnel-list li span.value {
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .conversion-card footer {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: #64748b;
       }
 
       .variant-table {
@@ -390,6 +618,26 @@ function renderPage() {
           align-items: flex-start;
         }
 
+        .roles-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .role-item {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .role-actions {
+          flex-direction: row;
+          width: 100%;
+        }
+
+        .role-actions button {
+          flex: 1 1 auto;
+          width: auto;
+        }
+
         button.primary {
           width: 100%;
         }
@@ -425,11 +673,21 @@ function renderPage() {
         </div>
         <div class="metadata" id="metadata"></div>
       </header>
+      <section class="roles-panel" id="roles-panel">
+        <div class="roles-header">
+          <div>
+            <h2>Rollen &amp; toegang</h2>
+            <p>Beheer welke teams of personen toegang hebben tot de configuratievariabelen in deze omgeving.</p>
+          </div>
+          <button type="button" class="secondary" id="add-role">Nieuwe rol</button>
+        </div>
+        <ul class="roles-list" id="role-list"></ul>
+      </section>
       <form id="env-form">
         <section class="field">
           <h2>Applicatie variabelen</h2>
           <p>Voer nieuwe waarden in om bij te werken. Laat het veld leeg om de huidige waarde te behouden of gebruik "Verwijderen"
- om een waarde te wissen.</p>
+om een waarde te wissen.</p>
         </section>
         <div class="tabs" id="tabs" role="tablist" aria-label="Configuratie categorieën"></div>
         <div id="groups"></div>
@@ -443,12 +701,60 @@ function renderPage() {
       const groupsContainer = document.getElementById('groups');
       const metadataEl = document.getElementById('metadata');
       const toastEl = document.getElementById('toast');
+      const rolesPanel = document.getElementById('roles-panel');
+      const roleList = document.getElementById('role-list');
+      const addRoleButton = document.getElementById('add-role');
       let managedKeys = [];
       let currentGroupId = null;
+      let roles = [];
+      let roleAssignments = {};
       let rentGuyStatusControls = null;
       let sevensaStatusControls = null;
       let performanceStatusControls = null;
+      let conversionMetricsControls = null;
       let variantAnalyticsControls = null;
+
+      function reportError(context, error) {
+        try {
+          const payload = {
+            context,
+            message: error && error.message ? error.message : String(error)
+          };
+
+          if (error && typeof error === 'object') {
+            if (error.name) {
+              payload.name = error.name;
+            }
+            if (error.stack) {
+              payload.stack = error.stack;
+            }
+            if (error.details) {
+              payload.details = error.details;
+            }
+          }
+
+          fetch('./log', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin',
+            keepalive: true,
+            body: JSON.stringify(payload)
+          }).catch(() => {});
+        } catch (_loggingError) {
+          // ignore logging failures
+        }
+      }
+
+      function withErrorLogging(context, callback) {
+        return (error) => {
+          reportError(context, error);
+          if (typeof callback === 'function') {
+            callback(error);
+          }
+        };
+      }
 
       const FIELD_METADATA = {
         RENTGUY_API_BASE_URL: {
@@ -494,12 +800,401 @@ function renderPage() {
         }
       };
 
+      function normalizeRoles(rawRoles) {
+        if (!Array.isArray(rawRoles)) {
+          return [];
+        }
+
+        return rawRoles
+          .map((role) => {
+            if (!role || typeof role !== 'object') {
+              return null;
+            }
+
+            const id = typeof role.id === 'string' ? role.id : '';
+            const name = typeof role.name === 'string' ? role.name : '';
+
+            if (!id || !name) {
+              return null;
+            }
+
+            return {
+              id,
+              name,
+              description: typeof role.description === 'string' ? role.description : '',
+              permissions: Array.isArray(role.permissions) ? role.permissions : []
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => a.name.localeCompare(b.name, 'nl', { sensitivity: 'base' }));
+      }
+
+      function normalizeAssignmentsMap(raw) {
+        const normalized = {};
+
+        if (!raw || typeof raw !== 'object') {
+          return normalized;
+        }
+
+        Object.entries(raw).forEach(([key, value]) => {
+          if (!Array.isArray(value)) {
+            return;
+          }
+
+          const entries = value
+            .map((roleId) => (typeof roleId === 'string' ? roleId.trim() : ''))
+            .filter(Boolean);
+
+          if (!entries.length) {
+            return;
+          }
+
+          normalized[key] = Array.from(new Set(entries));
+        });
+
+        return normalized;
+      }
+
+      function getAssignmentsForKey(key) {
+        const values = roleAssignments[key];
+        if (!Array.isArray(values)) {
+          return [];
+        }
+        return values.slice();
+      }
+
+      function serializeAssignments() {
+        const result = {};
+        const validIds = new Set(roles.map((role) => role.id));
+
+        Object.entries(roleAssignments).forEach(([key, values]) => {
+          if (!Array.isArray(values)) {
+            return;
+          }
+
+          const filtered = values.filter((roleId) => validIds.has(roleId));
+
+          if (!filtered.length) {
+            return;
+          }
+
+          const unique = Array.from(new Set(filtered)).sort();
+          result[key] = unique;
+        });
+
+        return result;
+      }
+
+      function countAssignmentsForRole(roleId) {
+        let total = 0;
+
+        Object.values(roleAssignments).forEach((values) => {
+          if (Array.isArray(values) && values.includes(roleId)) {
+            total += 1;
+          }
+        });
+
+        return total;
+      }
+
+      function toggleRoleAssignment(key, roleId, enabled) {
+        const current = new Set(getAssignmentsForKey(key));
+
+        if (enabled) {
+          current.add(roleId);
+        } else {
+          current.delete(roleId);
+        }
+
+        if (current.size) {
+          roleAssignments[key] = Array.from(current).sort();
+        } else {
+          delete roleAssignments[key];
+        }
+
+        form.dataset.rolesDirty = 'true';
+        renderRolesPanel();
+        if (rolesPanel) {
+          rolesPanel.dataset.dirty = 'true';
+        }
+      }
+
+      function createRoleAssignmentControls(entry) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'role-assignment';
+
+        const label = document.createElement('p');
+        label.className = 'role-assignment__label';
+        label.textContent = 'Toegestane rollen';
+        wrapper.appendChild(label);
+
+        if (!roles.length) {
+          const empty = document.createElement('p');
+          empty.className = 'role-assignment__empty';
+          empty.textContent = 'Voeg rollen toe om toegang te beperken.';
+          wrapper.appendChild(empty);
+          return wrapper;
+        }
+
+        const options = document.createElement('div');
+        options.className = 'role-assignment__options';
+        const summary = document.createElement('p');
+        summary.className = 'role-assignment__summary';
+
+        const refreshSummary = () => {
+          const assigned = getAssignmentsForKey(entry.name);
+          if (assigned.length) {
+            const names = roles
+              .filter((role) => assigned.includes(role.id))
+              .map((role) => role.name);
+            summary.textContent = 'Toegewezen aan: ' + names.join(', ');
+            summary.dataset.empty = 'false';
+          } else {
+            summary.textContent =
+              'Geen rollen toegewezen - iedereen met dashboard toegang kan deze variabele beheren.';
+            summary.dataset.empty = 'true';
+          }
+        };
+
+        const assigned = new Set(getAssignmentsForKey(entry.name));
+
+        roles.forEach((role) => {
+          const option = document.createElement('label');
+          option.className = 'role-chip';
+
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.value = role.id;
+          checkbox.checked = assigned.has(role.id);
+          checkbox.addEventListener('change', (event) => {
+            toggleRoleAssignment(entry.name, role.id, event.target.checked);
+            refreshSummary();
+          });
+
+          const chipLabel = document.createElement('span');
+          chipLabel.textContent = role.name;
+
+          option.appendChild(checkbox);
+          option.appendChild(chipLabel);
+          options.appendChild(option);
+        });
+
+        wrapper.appendChild(options);
+        refreshSummary();
+        wrapper.appendChild(summary);
+
+        return wrapper;
+      }
+
+      async function handleCreateRole() {
+        const nameInput = window.prompt('Naam van de nieuwe rol:');
+
+        if (nameInput === null) {
+          return;
+        }
+
+        const trimmedName = nameInput.trim();
+
+        if (!trimmedName) {
+          showToast('Rolnaam mag niet leeg zijn');
+          return;
+        }
+
+        const descriptionInput = window.prompt('Omschrijving (optioneel):', '');
+        const description = descriptionInput === null ? '' : descriptionInput.trim();
+
+        try {
+          const response = await fetch('./api/roles', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: trimmedName, description })
+          });
+
+          if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.error || 'Kon rol niet opslaan');
+          }
+
+          showToast('Rol aangemaakt');
+          await loadState();
+        } catch (error) {
+          console.error(error);
+          showToast(error.message || 'Kon rol niet opslaan');
+        }
+      }
+
+      async function handleEditRole(role) {
+        const nameInput = window.prompt('Bewerk rolnaam', role.name);
+
+        if (nameInput === null) {
+          return;
+        }
+
+        const trimmedName = nameInput.trim();
+
+        if (!trimmedName) {
+          showToast('Rolnaam mag niet leeg zijn');
+          return;
+        }
+
+        const descriptionInput = window.prompt('Bewerk omschrijving', role.description || '');
+        const description = descriptionInput === null ? '' : descriptionInput.trim();
+
+        try {
+          const response = await fetch('./api/roles/' + encodeURIComponent(role.id), {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: trimmedName, description })
+          });
+
+          if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.error || 'Kon rol niet bijwerken');
+          }
+
+          showToast('Rol bijgewerkt');
+          await loadState();
+        } catch (error) {
+          console.error(error);
+          showToast(error.message || 'Kon rol niet bijwerken');
+        }
+      }
+
+      async function handleDeleteRole(role) {
+        const confirmed = window.confirm(
+          'Weet je zeker dat je de rol "' + role.name + '" wilt verwijderen?'
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        try {
+          const response = await fetch('./api/roles/' + encodeURIComponent(role.id), {
+            method: 'DELETE'
+          });
+
+          if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.error || 'Kon rol niet verwijderen');
+          }
+
+          showToast('Rol verwijderd');
+          await loadState();
+        } catch (error) {
+          console.error(error);
+          showToast(error.message || 'Kon rol niet verwijderen');
+        }
+      }
+
+      function renderRolesPanel() {
+        if (!roleList) {
+          return;
+        }
+
+        roleList.innerHTML = '';
+
+        if (!roles.length) {
+          const empty = document.createElement('li');
+          empty.className = 'role-item role-item--empty';
+          empty.textContent = 'Nog geen rollen aangemaakt.';
+          roleList.appendChild(empty);
+          return;
+        }
+
+        roles.forEach((role) => {
+          const item = document.createElement('li');
+          item.className = 'role-item';
+
+          const meta = document.createElement('div');
+          meta.className = 'role-meta';
+
+          const title = document.createElement('h3');
+          title.textContent = role.name;
+          meta.appendChild(title);
+
+          if (role.description) {
+            const description = document.createElement('p');
+            description.textContent = role.description;
+            meta.appendChild(description);
+          }
+
+          const count = document.createElement('p');
+          count.className = 'role-count';
+          const usage = countAssignmentsForRole(role.id);
+          count.textContent = usage === 1 ? '1 variabele' : usage + ' variabelen';
+          meta.appendChild(count);
+
+          item.appendChild(meta);
+
+          const actions = document.createElement('div');
+          actions.className = 'role-actions';
+
+          const editButton = document.createElement('button');
+          editButton.type = 'button';
+          editButton.className = 'secondary';
+          editButton.textContent = 'Bewerken';
+          editButton.addEventListener('click', () => {
+            handleEditRole(role).catch((error) => {
+              console.error(error);
+            });
+          });
+          actions.appendChild(editButton);
+
+          const deleteButton = document.createElement('button');
+          deleteButton.type = 'button';
+          deleteButton.className = 'secondary danger';
+          deleteButton.textContent = 'Verwijderen';
+          deleteButton.addEventListener('click', () => {
+            handleDeleteRole(role).catch((error) => {
+              console.error(error);
+            });
+          });
+          actions.appendChild(deleteButton);
+
+          item.appendChild(actions);
+
+          roleList.appendChild(item);
+        });
+      }
+
+      if (addRoleButton) {
+        addRoleButton.addEventListener('click', () => {
+          handleCreateRole().catch((error) => {
+            console.error(error);
+          });
+        });
+      }
+
+      renderRolesPanel();
+
       function showToast(message) {
         toastEl.textContent = message;
         toastEl.dataset.visible = 'true';
         setTimeout(() => {
           toastEl.dataset.visible = 'false';
         }, 3200);
+      }
+
+      const numberFormatter = new Intl.NumberFormat('nl-NL');
+      const percentFormatter = new Intl.NumberFormat('nl-NL', {
+        style: 'percent',
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+
+      function formatNumber(value) {
+        const numeric = Number.isFinite(value) ? value : 0;
+        return numberFormatter.format(numeric);
+      }
+
+      function formatPercent(value) {
+        const numeric = Number.isFinite(value) ? value : 0;
+        return percentFormatter.format(numeric / 100);
       }
 
       function setActiveGroup(groupId) {
@@ -615,6 +1310,11 @@ function renderPage() {
           wrapper.appendChild(hint);
         }
 
+        const roleControls = createRoleAssignmentControls(entry);
+        if (roleControls) {
+          wrapper.appendChild(roleControls);
+        }
+
         return wrapper;
       }
 
@@ -680,9 +1380,9 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Status verversen';
         refreshButton.addEventListener('click', () => {
-          refreshRentGuyStatus(true).catch((error) => {
-            console.error(error);
-          });
+          refreshRentGuyStatus(true).catch(
+            withErrorLogging('rentguy:status:manual-refresh')
+          );
         });
         actions.appendChild(refreshButton);
 
@@ -692,9 +1392,7 @@ function renderPage() {
         flushButton.textContent = 'Queue flushen';
         flushButton.disabled = true;
         flushButton.addEventListener('click', () => {
-          flushRentGuyQueue().catch((error) => {
-            console.error(error);
-          });
+          flushRentGuyQueue().catch(withErrorLogging('rentguy:queue:flush-click'));
         });
         actions.appendChild(flushButton);
 
@@ -768,9 +1466,9 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Status verversen';
         refreshButton.addEventListener('click', () => {
-          refreshSevensaStatus(true).catch((error) => {
-            console.error(error);
-          });
+          refreshSevensaStatus(true).catch(
+            withErrorLogging('sevensa:status:manual-refresh')
+          );
         });
         actions.appendChild(refreshButton);
 
@@ -780,9 +1478,7 @@ function renderPage() {
         flushButton.textContent = 'Queue flushen';
         flushButton.disabled = true;
         flushButton.addEventListener('click', () => {
-          flushSevensaQueue().catch((error) => {
-            console.error(error);
-          });
+          flushSevensaQueue().catch(withErrorLogging('sevensa:queue:flush-click'));
         });
         actions.appendChild(flushButton);
 
@@ -878,9 +1574,9 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Monitoring verversen';
         refreshButton.addEventListener('click', () => {
-          refreshPerformanceStatus(true).catch((error) => {
-            console.error(error);
-          });
+          refreshPerformanceStatus(true).catch(
+            withErrorLogging('performance:status:manual-refresh')
+          );
         });
         actions.appendChild(refreshButton);
 
@@ -889,9 +1585,9 @@ function renderPage() {
         runButton.className = 'secondary';
         runButton.textContent = 'Audit starten';
         runButton.addEventListener('click', () => {
-          triggerPerformanceRun().catch((error) => {
-            console.error(error);
-          });
+          triggerPerformanceRun().catch(
+            withErrorLogging('performance:run:trigger')
+          );
         });
         actions.appendChild(runButton);
 
@@ -1059,7 +1755,7 @@ function renderPage() {
             showToast('Monitoringstatus bijgewerkt');
           }
         } catch (error) {
-          console.error(error);
+          reportError('performance:status:refresh', error);
           showToast(error.message || 'Monitoring niet beschikbaar');
         } finally {
           delete performanceStatusControls.card.dataset.loading;
@@ -1105,10 +1801,243 @@ function renderPage() {
           await new Promise((resolve) => setTimeout(resolve, 75));
           await refreshPerformanceStatus();
         } catch (error) {
-          console.error(error);
+          reportError('performance:run:schedule', error);
           showToast(error.message || 'Audit plannen mislukt');
         } finally {
           performanceStatusControls.runButton.disabled = false;
+        }
+      }
+
+      function createConversionMetricsCard() {
+        const card = document.createElement('section');
+        card.className = 'field conversion-card';
+
+        const heading = document.createElement('h2');
+        heading.textContent = 'Conversies & funnel';
+        card.appendChild(heading);
+
+        const description = document.createElement('p');
+        description.className = 'hint';
+        description.textContent =
+          'Realtime funnel statistieken op basis van personalization events. Gebruik deze cijfers om varianten te optimaliseren.';
+        card.appendChild(description);
+
+        const totalsGrid = document.createElement('div');
+        totalsGrid.className = 'metric-grid';
+        card.appendChild(totalsGrid);
+
+        const metricDefinitions = [
+          { key: 'exposures', label: 'Variant exposures' },
+          { key: 'impressions', label: 'Hero impressions' },
+          { key: 'ctaClicks', label: 'CTA clicks', rateKey: 'ctaClickRate', rateLabel: 'Click-through' },
+          { key: 'formStarts', label: 'Form starts' },
+          {
+            key: 'formSubmits',
+            label: 'Form submits',
+            rateKey: 'formCompletionRate',
+            rateLabel: 'Completion'
+          },
+          { key: 'conversions', label: 'Conversions', rateKey: 'conversionRate', rateLabel: 'Conversion rate' }
+        ];
+
+        const metrics = new Map();
+
+        metricDefinitions.forEach((definition) => {
+          const wrapper = document.createElement('div');
+
+          const title = document.createElement('p');
+          title.className = 'metric-title';
+          title.textContent = definition.label;
+          wrapper.appendChild(title);
+
+          const value = document.createElement('p');
+          value.className = 'metric-value';
+          value.textContent = '0';
+          wrapper.appendChild(value);
+
+          let secondary = null;
+          if (definition.rateKey) {
+            secondary = document.createElement('span');
+            secondary.className = 'metric-secondary';
+            secondary.textContent = definition.rateLabel + ': —';
+            wrapper.appendChild(secondary);
+          }
+
+          totalsGrid.appendChild(wrapper);
+          metrics.set(definition.key, {
+            value,
+            secondary,
+            rateKey: definition.rateKey,
+            rateLabel: definition.rateLabel
+          });
+        });
+
+        const funnelHeading = document.createElement('p');
+        funnelHeading.className = 'hint';
+        funnelHeading.textContent = 'Funnel overzicht';
+        card.appendChild(funnelHeading);
+
+        const funnelList = document.createElement('ul');
+        funnelList.className = 'funnel-list';
+        card.appendChild(funnelList);
+
+        const variantHeading = document.createElement('p');
+        variantHeading.className = 'hint';
+        variantHeading.textContent = 'Top varianten op conversies';
+        card.appendChild(variantHeading);
+
+        const topVariantsList = document.createElement('ul');
+        topVariantsList.className = 'metric-list';
+        card.appendChild(topVariantsList);
+
+        const recentHeading = document.createElement('p');
+        recentHeading.className = 'hint';
+        recentHeading.textContent = 'Laatste conversies';
+        card.appendChild(recentHeading);
+
+        const recentList = document.createElement('ul');
+        recentList.className = 'metric-list';
+        card.appendChild(recentList);
+
+        const updatedAt = document.createElement('footer');
+        updatedAt.className = 'hint';
+        updatedAt.textContent = 'Laatste update: onbekend';
+        card.appendChild(updatedAt);
+
+        conversionMetricsControls = {
+          card,
+          metrics,
+          funnelList,
+          topVariantsList,
+          recentList,
+          updatedAt
+        };
+
+        return card;
+      }
+
+      function renderConversionMetrics(state) {
+        if (!conversionMetricsControls) {
+          return;
+        }
+
+        const totals = state?.totals || {};
+        conversionMetricsControls.metrics.forEach((controls, key) => {
+          const rawValue = Number.isFinite(totals[key]) ? totals[key] : 0;
+          controls.value.textContent = formatNumber(rawValue);
+          if (controls.secondary && controls.rateKey) {
+            const rateValue = Number.isFinite(totals[controls.rateKey]) ? totals[controls.rateKey] : null;
+            controls.secondary.textContent =
+              (controls.rateLabel || 'Ratio') + ': ' + (rateValue != null ? formatPercent(rateValue) : '—');
+          }
+        });
+
+        const funnelList = conversionMetricsControls.funnelList;
+        funnelList.innerHTML = '';
+        const funnel = Array.isArray(state?.funnel) ? state.funnel : [];
+        if (!funnel.length) {
+          const li = document.createElement('li');
+          li.textContent = 'Nog geen funnelgegevens beschikbaar.';
+          funnelList.appendChild(li);
+        } else {
+          funnel.forEach((step) => {
+            const li = document.createElement('li');
+            const label = document.createElement('span');
+            label.textContent = step.label || step.id;
+            const value = document.createElement('span');
+            value.className = 'value';
+            value.textContent = formatNumber(step.count || 0);
+            li.appendChild(label);
+            li.appendChild(value);
+            funnelList.appendChild(li);
+          });
+        }
+
+        const topVariantsList = conversionMetricsControls.topVariantsList;
+        topVariantsList.innerHTML = '';
+        const topVariants = Array.isArray(state?.topVariants) ? state.topVariants : [];
+        if (!topVariants.length) {
+          const empty = document.createElement('li');
+          empty.textContent = 'Nog geen varianten met conversies.';
+          topVariantsList.appendChild(empty);
+        } else {
+          topVariants.forEach((variant) => {
+            const li = document.createElement('li');
+            const rateText = Number.isFinite(variant.conversionRate)
+              ? formatPercent(variant.conversionRate)
+              : '—';
+            li.textContent =
+              variant.label +
+              ' • ' +
+              formatNumber(variant.conversions) +
+              ' conversies (CTA: ' +
+              formatNumber(variant.ctaClicks) +
+              ', rate: ' +
+              rateText +
+              ')';
+            topVariantsList.appendChild(li);
+          });
+        }
+
+        const recentList = conversionMetricsControls.recentList;
+        recentList.innerHTML = '';
+        const recentConversions = Array.isArray(state?.recentConversions) ? state.recentConversions : [];
+        if (!recentConversions.length) {
+          const li = document.createElement('li');
+          li.textContent = 'Nog geen conversie events geregistreerd.';
+          recentList.appendChild(li);
+        } else {
+          recentConversions.forEach((entry) => {
+            const li = document.createElement('li');
+            const timestamp = entry.createdAt ? formatDateTime(entry.createdAt) : 'Onbekend moment';
+            const keyword = entry.keyword ? ' • keyword: ' + entry.keyword : '';
+            let revenue = '';
+            if (entry.payload && typeof entry.payload === 'object') {
+              const rawAmount = entry.payload.amount || entry.payload.revenue || entry.payload.value;
+              const amount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount;
+              if (Number.isFinite(amount)) {
+                revenue = ' • omzet: €' + formatNumber(Math.round(amount));
+              }
+            }
+            li.textContent = timestamp + ' – ' + entry.variantLabel + keyword + revenue;
+            recentList.appendChild(li);
+          });
+        }
+
+        if (conversionMetricsControls.updatedAt) {
+          conversionMetricsControls.updatedAt.textContent = state?.updatedAt
+            ? 'Laatste update: ' + new Date(state.updatedAt).toLocaleString()
+            : 'Laatste update: onbekend';
+        }
+      }
+
+      async function refreshConversionMetrics(showToastOnSuccess = false) {
+        if (!conversionMetricsControls) {
+          return;
+        }
+
+        conversionMetricsControls.card.dataset.loading = 'true';
+
+        try {
+          const response = await fetch('./api/observability/conversions', {
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Kon conversiestatistieken niet laden');
+          }
+
+          const payload = await response.json();
+          renderConversionMetrics(payload);
+
+          if (showToastOnSuccess) {
+            showToast('Conversiestatistieken bijgewerkt');
+          }
+        } catch (error) {
+          console.error(error);
+          showToast(error.message || 'Conversiestatistieken niet beschikbaar');
+        } finally {
+          delete conversionMetricsControls.card.dataset.loading;
         }
       }
 
@@ -1163,9 +2092,9 @@ function renderPage() {
         refreshButton.className = 'secondary';
         refreshButton.textContent = 'Analytics verversen';
         refreshButton.addEventListener('click', () => {
-          refreshVariantAnalytics(true).catch((error) => {
-            console.error(error);
-          });
+          refreshVariantAnalytics(true).catch(
+            withErrorLogging('variant-analytics:status:manual-refresh')
+          );
         });
         actions.appendChild(refreshButton);
 
@@ -1303,7 +2232,7 @@ function renderPage() {
             showToast('Variant analytics bijgewerkt');
           }
         } catch (error) {
-          console.error(error);
+          reportError('variant-analytics:status:refresh', error);
           showToast(error.message || 'Variant analytics niet beschikbaar');
         } finally {
           delete variantAnalyticsControls.card.dataset.loading;
@@ -1420,7 +2349,7 @@ function renderPage() {
             showToast('RentGuy status bijgewerkt');
           }
         } catch (error) {
-          console.error(error);
+          reportError('rentguy:status:refresh', error);
           showToast(error.message || 'RentGuy status niet beschikbaar');
         } finally {
           delete rentGuyStatusControls.card.dataset.loading;
@@ -1450,7 +2379,7 @@ function renderPage() {
             showToast('Sevensa status bijgewerkt');
           }
         } catch (error) {
-          console.error(error);
+          reportError('sevensa:status:refresh', error);
           sevensaStatusControls.resultMessage.textContent = error.message || 'Sevensa status niet beschikbaar';
           showToast(error.message || 'Sevensa status niet beschikbaar');
         } finally {
@@ -1500,13 +2429,13 @@ function renderPage() {
           showToast('Sevensa queue flush uitgevoerd');
           await refreshSevensaStatus();
         } catch (error) {
-          console.error(error);
+          reportError('sevensa:queue:flush', error);
           sevensaStatusControls.resultMessage.textContent = error.message || 'Flush mislukt';
           showToast(error.message || 'Sevensa flush mislukt');
           try {
             await refreshSevensaStatus();
           } catch (refreshError) {
-            console.error(refreshError);
+            reportError('sevensa:status:refresh-after-flush', refreshError);
           }
         } finally {
           delete sevensaStatusControls.card.dataset.loading;
@@ -1554,13 +2483,13 @@ function renderPage() {
           showToast('RentGuy queue flush uitgevoerd');
           await refreshRentGuyStatus();
         } catch (error) {
-          console.error(error);
+          reportError('rentguy:queue:flush', error);
           rentGuyStatusControls.resultMessage.textContent = error.message || 'Flush mislukt';
           showToast(error.message || 'Flush mislukt');
           try {
             await refreshRentGuyStatus();
           } catch (refreshError) {
-            console.error(refreshError);
+            reportError('rentguy:status:refresh-after-flush', refreshError);
           }
         }
       }
@@ -1592,6 +2521,7 @@ function renderPage() {
           section.appendChild(createSevensaStatusCard());
           section.appendChild(createPerformanceStatusCard());
         } else if (group.id === 'personalization') {
+          section.appendChild(createConversionMetricsCard());
           section.appendChild(createVariantAnalyticsCard());
         }
 
@@ -1609,6 +2539,7 @@ function renderPage() {
         rentGuyStatusControls = null;
         sevensaStatusControls = null;
         performanceStatusControls = null;
+        conversionMetricsControls = null;
         variantAnalyticsControls = null;
 
         if (!groups.length) {
@@ -1651,27 +2582,29 @@ function renderPage() {
         }
 
         if (rentGuyStatusControls) {
-          refreshRentGuyStatus().catch((error) => {
-            console.error(error);
-          });
+          refreshRentGuyStatus().catch(withErrorLogging('rentguy:status:initial-load'));
         }
 
         if (sevensaStatusControls) {
-          refreshSevensaStatus().catch((error) => {
-            console.error(error);
-          });
+          refreshSevensaStatus().catch(withErrorLogging('sevensa:status:initial-load'));
         }
 
         if (performanceStatusControls) {
-          refreshPerformanceStatus().catch((error) => {
+          refreshPerformanceStatus().catch(
+            withErrorLogging('performance:status:initial-load')
+          );
+        }
+
+        if (conversionMetricsControls) {
+          refreshConversionMetrics().catch((error) => {
             console.error(error);
           });
         }
 
         if (variantAnalyticsControls) {
-          refreshVariantAnalytics().catch((error) => {
-            console.error(error);
-          });
+          refreshVariantAnalytics().catch(
+            withErrorLogging('variant-analytics:status:initial-load')
+          );
         }
       }
 
@@ -1687,8 +2620,16 @@ function renderPage() {
         }
 
         const payload = await response.json();
+        roles = normalizeRoles(payload.roles);
+        roleAssignments = normalizeAssignmentsMap(payload.roleAssignments);
+        roleAssignments = serializeAssignments();
+        renderRolesPanel();
         managedKeys = Array.isArray(payload.managedKeys) ? payload.managedKeys : [];
         renderGroups(Array.isArray(payload.groups) ? payload.groups : []);
+        form.dataset.rolesDirty = 'false';
+        if (rolesPanel) {
+          delete rolesPanel.dataset.dirty;
+        }
 
         const metadataItems = [];
         if (payload.metadata?.lastModified) {
@@ -1725,7 +2666,7 @@ function renderPage() {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ entries: payload })
+            body: JSON.stringify({ entries: payload, assignments: serializeAssignments() })
           });
 
           if (!response.ok) {
@@ -1735,13 +2676,13 @@ function renderPage() {
           await loadState();
           showToast('Configuratie opgeslagen');
         } catch (error) {
-          console.error(error);
+          reportError('dashboard:form:submit', error);
           showToast(error.message || 'Er ging iets mis');
         }
       });
 
       loadState().catch((error) => {
-        console.error(error);
+        reportError('dashboard:state:initial-load', error);
         showToast('Kon dashboard gegevens niet laden');
       });
     </script>
@@ -1765,15 +2706,81 @@ router.get('/api/variables', async (_req, res, next) => {
 router.post('/api/variables', async (req, res, next) => {
   try {
     const entries = req.body?.entries;
+    const assignments = req.body?.assignments;
 
     if (!entries || typeof entries !== 'object' || Array.isArray(entries)) {
       res.status(400).json({ error: 'Invalid payload' });
       return;
     }
 
-    const state = await configDashboardService.updateValues(entries);
+    const state = await configDashboardService.updateValues(entries, { assignments });
     res.json(state);
   } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/api/roles', async (_req, res, next) => {
+  try {
+    const data = await configDashboardService.listRoles();
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/api/roles', async (req, res, next) => {
+  try {
+    const result = await configDashboardService.createRole(req.body || {});
+    res.status(201).json(result);
+  } catch (error) {
+    if (
+      error.message === 'Invalid role payload' ||
+      error.message === 'Role name is required' ||
+      error.message === 'Role already exists' ||
+      error.message === 'Unable to determine role identifier'
+    ) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+    next(error);
+  }
+});
+
+router.put('/api/roles/:roleId', async (req, res, next) => {
+  try {
+    const result = await configDashboardService.updateRole(req.params.roleId, req.body || {});
+    res.json(result);
+  } catch (error) {
+    if (error.message === 'Role identifier is required' || error.message === 'Role name is required' || error.message === 'Invalid role payload') {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    if (error.message === 'Role not found') {
+      res.status(404).json({ error: error.message });
+      return;
+    }
+
+    next(error);
+  }
+});
+
+router.delete('/api/roles/:roleId', async (req, res, next) => {
+  try {
+    const result = await configDashboardService.deleteRole(req.params.roleId);
+    res.json(result);
+  } catch (error) {
+    if (error.message === 'Role identifier is required') {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    if (error.message === 'Role not found') {
+      res.status(404).json({ error: error.message });
+      return;
+    }
+
     next(error);
   }
 });
@@ -1852,6 +2859,26 @@ router.get('/api/observability/variants', async (_req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+router.post('/log', (req, res) => {
+  const { context, message, stack, name, details } = req.body || {};
+  const logContext = {
+    route: 'dashboard',
+    source: 'dashboard-client',
+    context: context || 'unknown',
+    client: {
+      name: name || undefined,
+      stack: stack || undefined,
+      details: details || undefined
+    },
+    ip: req.ip,
+    userAgent: req.headers['user-agent'] || undefined
+  };
+
+  const logMessage = message || 'Dashboard client reported an error';
+  logger.error(logMessage, logContext);
+  res.status(204).end();
 });
 
 module.exports = router;
