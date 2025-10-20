@@ -20,71 +20,72 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: clamp(16px, 5vw, 40px);
         }
-        
+
         .slide-container {
-            width: 1280px;
-            min-height: 720px;
+            width: 100%;
+            max-width: 1280px;
             background: #FFFFFF;
-            padding: 30px 40px;
+            padding: clamp(24px, 5vw, 40px);
             display: flex;
             flex-direction: column;
+            gap: clamp(16px, 3vw, 32px);
+            margin: 0 auto;
         }
-        
+
         h1 {
-            font-size: 42px;
+            font-size: clamp(28px, 5vw, 42px);
             font-weight: 900;
             color: #1A2C4B;
             margin-bottom: 8px;
         }
-        
+
         .subtitle {
-            font-size: 16px;
+            font-size: clamp(16px, 3.5vw, 18px);
             color: #666;
-            margin-bottom: 25px;
+            margin-bottom: clamp(16px, 4vw, 25px);
         }
-        
+
         .error-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(20px, 4vw, 30px);
             flex: 1;
         }
-        
+
         .error-box {
             border: 2px solid #FF4D4D;
             border-radius: 12px;
-            padding: 30px;
+            padding: clamp(24px, 4vw, 30px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
             background: #FFF5F5;
+            gap: clamp(12px, 2.5vw, 20px);
         }
-        
+
         .error-code {
-            font-size: 120px;
+            font-size: clamp(72px, 20vw, 120px);
             font-weight: 900;
             color: #FF4D4D;
             line-height: 1;
-            margin-bottom: 10px;
         }
-        
+
         .error-title {
-            font-size: 32px;
+            font-size: clamp(24px, 5vw, 32px);
             font-weight: 800;
             color: #1A2C4B;
-            margin-bottom: 15px;
         }
-        
+
         .error-message {
-            font-size: 18px;
+            font-size: clamp(16px, 3.5vw, 18px);
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: clamp(16px, 4vw, 30px);
         }
-        
+
         .error-cta {
             background: linear-gradient(135deg, #005B96 0%, #003F7F 100%);
             color: #FFFFFF;
@@ -126,7 +127,7 @@
         .error-box.server-error .error-code {
             color: #D4AF37;
         }
-        
+
         .error-box.server-error .error-cta {
             background: linear-gradient(135deg, #1A2C4B 0%, #0F1C33 100%);
         }
