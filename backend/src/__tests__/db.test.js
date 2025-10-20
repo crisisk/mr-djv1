@@ -1,4 +1,7 @@
+const { buildRequiredEnv } = require('../testUtils/env');
+
 const ORIGINAL_ENV = { ...process.env };
+const BASE_ENV = buildRequiredEnv();
 
 function flushPromises() {
   return new Promise((resolve) => setImmediate(resolve));
@@ -16,7 +19,9 @@ describe('database helper', () => {
   });
 
   it('returns null when no database URL is configured', async () => {
-    delete process.env.DATABASE_URL;
+    const env = { ...BASE_ENV };
+    delete env.DATABASE_URL;
+    process.env = env;
     const db = require('../lib/db');
 
     expect(db.isConfigured()).toBe(false);
@@ -26,7 +31,7 @@ describe('database helper', () => {
 
   it('creates a pool and tracks connectivity status', async () => {
     jest.resetModules();
-    process.env.DATABASE_URL = 'postgres://example';
+    process.env = buildRequiredEnv({ DATABASE_URL: 'postgres://example' });
 
     const release = jest.fn();
     const query = jest.fn().mockResolvedValue({ rows: [{ value: 1 }] });
@@ -70,7 +75,7 @@ describe('database helper', () => {
 
   it('logs an initial connection failure gracefully', async () => {
     jest.resetModules();
-    process.env.DATABASE_URL = 'postgres://example';
+    process.env = buildRequiredEnv({ DATABASE_URL: 'postgres://example' });
 
     const connectError = new Error('initial failure');
     const connect = jest.fn().mockRejectedValue(connectError);
@@ -92,7 +97,7 @@ describe('database helper', () => {
 
   it('disposes the pool when configuration is removed', async () => {
     jest.resetModules();
-    process.env.DATABASE_URL = 'postgres://initial';
+    process.env = buildRequiredEnv({ DATABASE_URL: 'postgres://initial' });
 
     const poolInstances = [];
     jest.doMock('pg', () => ({
@@ -126,7 +131,7 @@ describe('database helper', () => {
 
   it('recreates the pool when the connection string changes', async () => {
     jest.resetModules();
-    process.env.DATABASE_URL = 'postgres://initial';
+    process.env = buildRequiredEnv({ DATABASE_URL: 'postgres://initial' });
 
     const poolInstances = [];
     jest.doMock('pg', () => ({
@@ -146,7 +151,7 @@ describe('database helper', () => {
     db.getPool();
     await flushPromises();
 
-    process.env.DATABASE_URL = 'postgres://next';
+    process.env = buildRequiredEnv({ DATABASE_URL: 'postgres://next' });
     const config = require('../config');
     config.reload();
 

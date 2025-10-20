@@ -19,7 +19,7 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 - [ ] Verbind met de VPS en zorg dat Docker draait: `systemctl status docker`
 - [ ] Maak (indien nodig) de externe `web`-network aan: `docker network create web`
 - [ ] Controleer of de Postgres container draait: `docker ps | grep mr-dj-postgres`
-- [ ] Voer de initiële SQL uit als deze nog niet gedraaid is: `docker exec -i mr-dj-postgres psql -U mrdj_user -d mrdj_db < database/init.sql`
+- [ ] Voer de database migraties uit (idempotent): `docker compose run --rm mr-dj-backend npm run migrate`
 
 ## 4. Configuratie dashboard (staging.sevensa.nl/dashboard)
 - [ ] Zet de `CONFIG_DASHBOARD_*` variabelen in `.env` zodat het dashboard geactiveerd wordt
@@ -35,7 +35,7 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 ## 5. Backend en frontend deployen
 - [ ] Maak het deploy-script uitvoerbaar: `chmod +x deploy.sh`
 - [ ] Voer `./deploy.sh` uit vanaf de repository-root
-- [ ] Volg de scriptoutput om te bevestigen dat de containers opnieuw worden opgebouwd en starten zonder fouten
+- [ ] Volg de scriptoutput om te bevestigen dat de containers opnieuw worden opgebouwd en starten zonder fouten (het script voert automatisch `npm run migrate` uit binnen `mr-dj-backend`)
 
 ## 6. Netlify (statische hosting / CMS)
 - [ ] Meld je aan bij Netlify en importeer de GitHub-repository (zie [`NETLIFY_DEPLOYMENT.md`](../NETLIFY_DEPLOYMENT.md))
