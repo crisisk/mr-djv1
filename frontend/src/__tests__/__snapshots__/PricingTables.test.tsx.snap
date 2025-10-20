@@ -1,0 +1,951 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PricingTables > renders event-based pricing by default 1`] = `
+<DocumentFragment>
+  <section
+    class="py-spacing-3xl bg-neutral-gray-100"
+  >
+    <div
+      class="container mx-auto px-spacing-md"
+    >
+      <h2
+        class="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold"
+      >
+        Onze Pakketten
+      </h2>
+      <div
+        aria-label="Kies facturering"
+        class="flex flex-col items-center mb-spacing-2xl"
+        role="group"
+      >
+        <div
+          class="inline-flex rounded-full bg-neutral-light p-spacing-xs shadow"
+        >
+          <button
+            aria-pressed="true"
+            class="px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-primary text-neutral-light"
+            type="button"
+          >
+            Per event
+          </button>
+          <button
+            aria-pressed="false"
+            class="px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-transparent text-neutral-dark hover:bg-neutral-gray-200"
+            type="button"
+          >
+            Per maand
+          </button>
+        </div>
+        <p
+          class="mt-spacing-sm text-center text-font-size-small text-neutral-gray-500"
+        >
+          Vergelijk onze pakketten per event of kies voor een flexibel abonnement.
+        </p>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-center"
+      >
+        <div
+          class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-light text-neutral-dark shadow-lg"
+        >
+          <div
+            class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
+          >
+            <h3
+              class="text-font-size-h3 font-bold"
+            >
+              Brons
+            </h3>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Entry-level pakket
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-spacing-xs mb-spacing-lg"
+          >
+            <div
+              class="flex items-baseline"
+            >
+              <span
+                class="text-font-size-h1 font-extrabold"
+              >
+                €495
+              </span>
+              <span
+                class="text-font-size-body ml-spacing-xs"
+              >
+                / event
+              </span>
+            </div>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Eenmalige betaling per event.
+            </p>
+          </div>
+          <ul
+            class="flex-grow space-y-spacing-sm mb-spacing-xl"
+          >
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              4 uur DJ-set
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Basis licht- en geluidsset
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Persoonlijk intakegesprek
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Muziekvoorkeuren formulier
+            </li>
+          </ul>
+          <button
+            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            type="button"
+          >
+            Meer Info
+          </button>
+        </div>
+        <div
+          class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-dark text-neutral-light shadow-2xl transform scale-105"
+        >
+          <div
+            class="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg"
+          >
+            Populair
+          </div>
+          <div
+            class="pb-spacing-md mb-spacing-md text-secondary border-b border-secondary/50"
+          >
+            <h3
+              class="text-font-size-h3 font-bold"
+            >
+              Zilver
+            </h3>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Meest gekozen
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-spacing-xs mb-spacing-lg"
+          >
+            <div
+              class="flex items-baseline"
+            >
+              <span
+                class="text-font-size-h1 font-extrabold"
+              >
+                €795
+              </span>
+              <span
+                class="text-font-size-body ml-spacing-xs"
+              >
+                / event
+              </span>
+            </div>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Populairste keuze voor bruiloften en bedrijfsevents.
+            </p>
+          </div>
+          <ul
+            class="flex-grow space-y-spacing-sm mb-spacing-xl"
+          >
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              6 uur DJ-set
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Uitgebreide lichtshow
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              DJ + Saxofonist optie
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              100% dansgarantie
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Onbeperkt aantal gasten
+            </li>
+          </ul>
+          <button
+            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            type="button"
+          >
+            Boek Nu
+          </button>
+        </div>
+        <div
+          class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-light text-neutral-dark shadow-lg"
+        >
+          <div
+            class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
+          >
+            <h3
+              class="text-font-size-h3 font-bold"
+            >
+              Goud
+            </h3>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Premium All-Inclusive
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-spacing-xs mb-spacing-lg"
+          >
+            <div
+              class="flex items-baseline"
+            >
+              <span
+                class="text-font-size-h1 font-extrabold"
+              >
+                €1.295
+              </span>
+              <span
+                class="text-font-size-body ml-spacing-xs"
+              >
+                / event
+              </span>
+            </div>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              All-in pakket voor luxe en grootschalige events.
+            </p>
+          </div>
+          <ul
+            class="flex-grow space-y-spacing-sm mb-spacing-xl"
+          >
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              8 uur DJ-set
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Luxe licht- en geluidsset
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              DJ + Saxofonist (inbegrepen)
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Ceremonie & receptie muziek
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Professionele apparatuur
+            </li>
+          </ul>
+          <button
+            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            type="button"
+          >
+            Vraag Offerte Aan
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`PricingTables > toggles to monthly pricing 1`] = `
+<DocumentFragment>
+  <section
+    class="py-spacing-3xl bg-neutral-gray-100"
+  >
+    <div
+      class="container mx-auto px-spacing-md"
+    >
+      <h2
+        class="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold"
+      >
+        Onze Pakketten
+      </h2>
+      <div
+        aria-label="Kies facturering"
+        class="flex flex-col items-center mb-spacing-2xl"
+        role="group"
+      >
+        <div
+          class="inline-flex rounded-full bg-neutral-light p-spacing-xs shadow"
+        >
+          <button
+            aria-pressed="false"
+            class="px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-transparent text-neutral-dark hover:bg-neutral-gray-200"
+            type="button"
+          >
+            Per event
+          </button>
+          <button
+            aria-pressed="true"
+            class="px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-primary text-neutral-light"
+            type="button"
+          >
+            Per maand
+          </button>
+        </div>
+        <p
+          class="mt-spacing-sm text-center text-font-size-small text-neutral-gray-500"
+        >
+          Vergelijk onze pakketten per event of kies voor een flexibel abonnement.
+        </p>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-center"
+      >
+        <div
+          class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-light text-neutral-dark shadow-lg"
+        >
+          <div
+            class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
+          >
+            <h3
+              class="text-font-size-h3 font-bold"
+            >
+              Brons
+            </h3>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Entry-level pakket
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-spacing-xs mb-spacing-lg"
+          >
+            <div
+              class="flex items-baseline"
+            >
+              <span
+                class="text-font-size-h1 font-extrabold"
+              >
+                €99
+              </span>
+              <span
+                class="text-font-size-body ml-spacing-xs"
+              >
+                / maand
+              </span>
+            </div>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Flexibel maandelijks plan voor terugkerende events.
+            </p>
+          </div>
+          <ul
+            class="flex-grow space-y-spacing-sm mb-spacing-xl"
+          >
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              4 uur DJ-set
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Basis licht- en geluidsset
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Persoonlijk intakegesprek
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Muziekvoorkeuren formulier
+            </li>
+          </ul>
+          <button
+            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            type="button"
+          >
+            Meer Info
+          </button>
+        </div>
+        <div
+          class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-dark text-neutral-light shadow-2xl transform scale-105"
+        >
+          <div
+            class="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg"
+          >
+            Populair
+          </div>
+          <div
+            class="pb-spacing-md mb-spacing-md text-secondary border-b border-secondary/50"
+          >
+            <h3
+              class="text-font-size-h3 font-bold"
+            >
+              Zilver
+            </h3>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Meest gekozen
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-spacing-xs mb-spacing-lg"
+          >
+            <div
+              class="flex items-baseline"
+            >
+              <span
+                class="text-font-size-h1 font-extrabold"
+              >
+                €149
+              </span>
+              <span
+                class="text-font-size-body ml-spacing-xs"
+              >
+                / maand
+              </span>
+            </div>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Vaste maandprijs inclusief 2 events per kwartaal.
+            </p>
+          </div>
+          <ul
+            class="flex-grow space-y-spacing-sm mb-spacing-xl"
+          >
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              6 uur DJ-set
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Uitgebreide lichtshow
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              DJ + Saxofonist optie
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              100% dansgarantie
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-secondary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Onbeperkt aantal gasten
+            </li>
+          </ul>
+          <button
+            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            type="button"
+          >
+            Boek Nu
+          </button>
+        </div>
+        <div
+          class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-light text-neutral-dark shadow-lg"
+        >
+          <div
+            class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
+          >
+            <h3
+              class="text-font-size-h3 font-bold"
+            >
+              Goud
+            </h3>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Premium All-Inclusive
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-spacing-xs mb-spacing-lg"
+          >
+            <div
+              class="flex items-baseline"
+            >
+              <span
+                class="text-font-size-h1 font-extrabold"
+              >
+                €199
+              </span>
+              <span
+                class="text-font-size-body ml-spacing-xs"
+              >
+                / maand
+              </span>
+            </div>
+            <p
+              class="text-font-size-small opacity-80"
+            >
+              Premium abonnement met planning- & aftermovie-services.
+            </p>
+          </div>
+          <ul
+            class="flex-grow space-y-spacing-sm mb-spacing-xl"
+          >
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              8 uur DJ-set
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Luxe licht- en geluidsset
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              DJ + Saxofonist (inbegrepen)
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Ceremonie & receptie muziek
+            </li>
+            <li
+              class="flex items-start text-font-size-body"
+            >
+              <svg
+                class="w-5 h-5 mr-spacing-sm text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              Professionele apparatuur
+            </li>
+          </ul>
+          <button
+            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            type="button"
+          >
+            Vraag Offerte Aan
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
