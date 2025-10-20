@@ -12,6 +12,18 @@
             padding: 0;
             box-sizing: border-box;
         }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
         
         body {
             font-family: 'Montserrat', sans-serif;
@@ -287,6 +299,56 @@
             text-align: center;
             line-height: 1.2;
         }
+
+        @media (max-width: 1024px) {
+            .hero-homepage {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 24px;
+            }
+
+            .hero-ctas {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-ctas .hero-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 18px;
+            }
+
+            .local-booking {
+                width: 140px;
+                height: 140px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-homepage {
+                padding: 24px;
+                gap: 20px;
+            }
+
+            .hero-ctas {
+                gap: 12px;
+            }
+
+            .hero-stats {
+                gap: 16px;
+            }
+
+            .local-booking {
+                width: 120px;
+                height: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -308,12 +370,15 @@
                         <p class="hero-description">
                             Professionele DJ service voor bruiloften en bedrijfsfeesten in heel Brabant. 15+ jaar ervaring, 2500+ geslaagde events.
                         </p>
-                        <div class="hero-ctas">
-                            <button class="hero-btn hero-btn-primary">Direct Beschikbaarheid</button>
-                            <button class="hero-btn hero-btn-secondary">Bekijk Pakketten</button>
+                        <div class="hero-ctas" role="group" aria-labelledby="homepage-cta-label" aria-describedby="homepage-cta-description">
+                            <span id="homepage-cta-label" class="sr-only">Belangrijke acties voor de homepage hero</span>
+                            <span id="homepage-cta-description" class="sr-only">Kies een van de knoppen om Mister DJ direct te contacteren of pakketten te bekijken.</span>
+                            <button class="hero-btn hero-btn-primary" aria-label="Controleer direct de beschikbaarheid van Mister DJ" aria-describedby="homepage-cta-description">Check direct beschikbaarheid</button>
+                            <button class="hero-btn hero-btn-secondary" aria-label="Bekijk de beschikbare pakketten van Mister DJ" aria-describedby="homepage-cta-description">Bekijk DJ-pakketten</button>
                         </div>
                     </div>
-                    <div class="hero-stats">
+                    <div class="hero-stats" role="group" aria-labelledby="homepage-stats-label">
+                        <span id="homepage-stats-label" class="sr-only">Kernstatistieken over Mister DJ</span>
                         <div class="stat-item">
                             <span class="stat-number">2500+</span>
                             <span class="stat-label">Events</span>
@@ -350,15 +415,18 @@
                             <div class="local-feature">100% dansgarantie</div>
                             <div class="local-feature">Lokale kennis</div>
                         </div>
-                        <div class="local-cta">
-                            <button class="hero-btn hero-btn-primary">Vraag Offerte Aan</button>
-                            <button class="hero-btn hero-btn-secondary">Bekijk Reviews</button>
+                        <div class="local-cta" role="group" aria-labelledby="local-cta-label" aria-describedby="local-cta-description">
+                            <span id="local-cta-label" class="sr-only">Acties voor de lokale pagina</span>
+                            <span id="local-cta-description" class="sr-only">Vraag een offerte aan of lees ervaringen van andere klanten.</span>
+                            <button class="hero-btn hero-btn-primary" aria-label="Vraag een vrijblijvende offerte aan voor Eindhoven" aria-describedby="local-cta-description">Vraag offerte aan</button>
+                            <button class="hero-btn hero-btn-secondary" aria-label="Lees reviews van klanten uit Eindhoven" aria-describedby="local-cta-description">Lees klantreviews</button>
                         </div>
                     </div>
-                    <div class="local-booking">
-                        <div class="booking-icon">📅</div>
+                    <button class="local-booking" type="button" aria-describedby="local-booking-description">
+                        <span id="local-booking-description" class="sr-only">Plan een beschikbaarheidscheck voor een event in Eindhoven</span>
+                        <div class="booking-icon" aria-hidden="true">📅</div>
                         <div class="booking-text">Check<br>Beschikbaarheid</div>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
