@@ -1,5 +1,6 @@
 const app = require('../app');
 const { resetInMemoryStore: resetContactStore } = require('../services/contactService');
+const { resetInMemoryStore: resetCallbackStore } = require('../services/callbackRequestService');
 const { resetInMemoryStore: resetBookingStore } = require('../services/bookingService');
 const {
   resetLogs: resetPersonalizationLogs,
@@ -62,6 +63,7 @@ describe('Mister DJ API', () => {
 
   afterEach(() => {
     resetContactStore();
+    resetCallbackStore();
     resetBookingStore();
     resetPersonalizationLogs();
     resetPersonalizationCache();
@@ -76,6 +78,7 @@ describe('Mister DJ API', () => {
       endpoints: expect.objectContaining({
         health: '/health',
         contact: '/contact',
+        callbackRequest: '/callback-request',
         packages: '/packages',
         bookings: '/bookings',
         reviews: '/reviews'
@@ -110,10 +113,31 @@ describe('Mister DJ API', () => {
         }),
         storage: expect.objectContaining({
           contact: expect.objectContaining({ strategy: expect.any(String) }),
+          callbackRequests: expect.objectContaining({ strategy: expect.any(String) }),
           bookings: expect.objectContaining({ strategy: expect.any(String) })
         })
       })
     });
+  });
+
+  it('accepts callback requests and returns integration statuses', async () => {
+    const response = await request('POST', '/callback-request', {
+      name: 'Test Caller',
+      phone: '0612345678',
+      eventType: 'bruiloft'
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      success: true,
+      persisted: false,
+      status: 'pending',
+      eventType: 'bruiloft',
+      rentGuySync: expect.objectContaining({ queued: true }),
+      sevensaSync: expect.objectContaining({ queued: true })
+    });
+    expect(response.body.callbackId).toBeDefined();
+    expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
   });
 
   it('provides queue metrics for observability tooling', async () => {
