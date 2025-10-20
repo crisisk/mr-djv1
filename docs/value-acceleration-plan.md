@@ -30,7 +30,7 @@ Dit plan bundelt alle resterende werkzaamheden om de Mister DJ website van de hu
 | --- | --- | --- | --- | --- |
 | RentGuy SLA dashboard | Dashboard-tab toevoegen met queue metrics, SLA alerts en retry controls. | 18 | Backend, Ops | -20% mislukte syncs |
 | Disaster recovery drill | Scripts draaien (`scripts/backup/postgres-dump.sh`, `docs/disaster-recovery-plan.md`) + runbook bijwerken. | 12 | Ops, QA | RTO < 4 uur |
-| Compliance & consent audit | Jaarlijkse check op GDPR/AVG incl. logrotatie, retention policies en DPIA update. | 14 | Legal, Data privacy | Audit-proof |
+| Compliance & consent audit | Jaarlijkse check op GDPR/AVG incl. logrotatie, retention policies en DPIA update volgens het [Consent Compliance Audit Runbook](operations/consent-audit.md). | 14 | Legal, Data privacy | Audit-proof |
 
 **Totaal uren**: 44 → **Kostenrange**: €3.300 – €4.200
 

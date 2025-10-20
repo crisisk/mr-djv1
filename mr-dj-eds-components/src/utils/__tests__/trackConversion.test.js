@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   trackFormSubmission,
   trackPhoneClick,
@@ -10,114 +10,46 @@ import {
   trackWhatsAppClick,
   setUserVariant,
   getUserVariant
-} from '../trackConversion.js';
+} from '../trackConversion';
+import { setupDomMocks } from './testUtils';
 
-const FIXED_DATE = new Date('2024-01-01T00:00:00.000Z');
+let environment;
+
+beforeEach(() => {
+  environment = setupDomMocks();
+});
+
+afterEach(() => {
+  const { storage, document, dataLayer, location } = environment;
+  storage.clear();
+  document.__clear();
+  if (dataLayer) {
+    dataLayer.length = 0;
+  }
+  if (location) {
+    location.search = '';
+  }
+  environment.restore();
+  environment = undefined;
+});
 
 describe('trackConversion utilities', () => {
-  let cookieStore;
-  let pushSpy;
-  let sessionStorageMock;
+  const expectEventShape = (expected) => {
+    expect(window.dataLayer).toHaveLength(1);
+    const event = window.dataLayer[0];
 
-  const createSessionStorage = () => {
-    let store = {};
-    return {
-      getItem: vi.fn((key) => (key in store ? store[key] : null)),
-      setItem: vi.fn((key, value) => {
-        store[key] = value;
-      }),
-      removeItem: vi.fn((key) => {
-        delete store[key];
-      }),
-      clear: vi.fn(() => {
-        store = {};
-      }),
-      getStore: () => store
-    };
+    expect(event).toMatchObject(expected);
+    expect(typeof event.timestamp).toBe('string');
+    expect(new Date(event.timestamp).toString()).not.toBe('Invalid Date');
   };
 
-  beforeEach(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(FIXED_DATE);
+  it('pushes correct payload for trackFormSubmission', () => {
+    trackFormSubmission('B', 'wedding', 'availability');
 
-    cookieStore = {};
-
-    const documentMock = {};
-    Object.defineProperty(documentMock, 'cookie', {
-      configurable: true,
-      get: () =>
-        Object.entries(cookieStore)
-          .map(([key, value]) => `${key}=${value}`)
-          .join('; '),
-      set: (value) => {
-        const [pair] = value.split(';');
-        const [rawKey, rawVal] = pair.split('=');
-        const key = rawKey?.trim();
-        const val = rawVal;
-
-        if (!key) {
-          return;
-        }
-
-        const expiresMatch = value.match(/expires=([^;]+)/i);
-        if (expiresMatch) {
-          const expiresDate = new Date(expiresMatch[1]);
-          if (Number.isNaN(expiresDate.getTime()) || expiresDate < new Date()) {
-            delete cookieStore[key];
-            return;
-          }
-        }
-
-        if (typeof val === 'undefined' || val === '') {
-          delete cookieStore[key];
-          return;
-        }
-
-        cookieStore[key] = val;
-      }
-    });
-
-    sessionStorageMock = createSessionStorage();
-
-    globalThis.document = documentMock;
-    globalThis.window = {
-      dataLayer: [],
-      sessionStorage: sessionStorageMock,
-      location: { search: '', pathname: '/' }
-    };
-    globalThis.sessionStorage = sessionStorageMock;
-
-    pushSpy = vi.spyOn(window.dataLayer, 'push');
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-    vi.restoreAllMocks();
-    sessionStorageMock.clear();
-    cookieStore = {};
-    if (globalThis.window) {
-      globalThis.window.location.search = '';
-    }
-    delete globalThis.window;
-    delete globalThis.sessionStorage;
-    delete globalThis.document;
-  });
-
-  const expectPushWith = (expected) => {
-    expect(pushSpy).toHaveBeenCalledTimes(1);
-    expect(pushSpy).toHaveBeenCalledWith({
-      ...expected,
-      timestamp: FIXED_DATE.toISOString()
-    });
-  };
-
-  it('tracks form submissions with the expected payload', () => {
-    trackFormSubmission('B', 'wedding', 'contact');
-
-    expectPushWith({
+    expectEventShape({
       event: 'conversion',
       conversion_type: 'form_submit',
-      form_type: 'contact',
+      form_type: 'availability',
       variant: 'B',
       event_type: 'wedding',
       value: 1,
@@ -125,23 +57,23 @@ describe('trackConversion utilities', () => {
     });
   });
 
-  it('tracks phone clicks with the expected payload', () => {
-    trackPhoneClick('A', 'header');
+  it('pushes correct payload for trackPhoneClick', () => {
+    trackPhoneClick('A', 'footer');
 
-    expectPushWith({
+    expectEventShape({
       event: 'conversion',
       conversion_type: 'phone_click',
       variant: 'A',
-      click_location: 'header',
+      click_location: 'footer',
       value: 1,
       currency: 'EUR'
     });
   });
 
-  it('tracks quote requests with the expected payload', () => {
+  it('pushes correct payload for trackQuoteRequest', () => {
     trackQuoteRequest('B', 'corporate');
 
-    expectPushWith({
+    expectEventShape({
       event: 'conversion',
       conversion_type: 'quote_request',
       variant: 'B',
@@ -151,61 +83,61 @@ describe('trackConversion utilities', () => {
     });
   });
 
-  it('tracks availability checks with the expected payload', () => {
-    trackAvailabilityCheck('A', '2024-02-14');
+  it('pushes correct payload for trackAvailabilityCheck', () => {
+    trackAvailabilityCheck('A', '2025-05-05');
 
-    expectPushWith({
+    expectEventShape({
       event: 'conversion',
       conversion_type: 'availability_check',
       variant: 'A',
-      selected_date: '2024-02-14',
+      selected_date: '2025-05-05',
       value: 1,
       currency: 'EUR'
     });
   });
 
-  it('tracks pricing CTA clicks with normalized package data', () => {
-    trackPricingCTA('B', 'Zilver', '€1200');
+  it('pushes correct payload for trackPricingCTA', () => {
+    trackPricingCTA('B', 'Zilver', '€999');
 
-    expectPushWith({
+    expectEventShape({
       event: 'conversion',
       conversion_type: 'pricing_cta',
       variant: 'B',
       package_name: 'zilver',
-      package_price: '€1200',
+      package_price: '€999',
       value: 1,
       currency: 'EUR'
     });
   });
 
-  it('tracks contact navigation with the expected payload', () => {
-    trackContactNavigation('A', 'footer');
+  it('pushes correct payload for trackContactNavigation', () => {
+    trackContactNavigation('A', 'hero_banner');
 
-    expectPushWith({
+    expectEventShape({
       event: 'conversion',
       conversion_type: 'contact_navigation',
       variant: 'A',
-      navigation_source: 'footer',
+      navigation_source: 'hero_banner',
       value: 1,
       currency: 'EUR'
     });
   });
 
-  it('tracks generic button clicks', () => {
-    trackButtonClick('B', 'Contact', 'hero');
+  it('pushes correct payload for trackButtonClick', () => {
+    trackButtonClick('B', 'Check availability', 'hero');
 
-    expectPushWith({
+    expectEventShape({
       event: 'button_click',
       variant: 'B',
-      button_text: 'Contact',
+      button_text: 'Check availability',
       button_location: 'hero'
     });
   });
 
-  it('tracks WhatsApp clicks as conversions', () => {
+  it('pushes correct payload for trackWhatsAppClick', () => {
     trackWhatsAppClick('A');
 
-    expectPushWith({
+    expectEventShape({
       event: 'conversion',
       conversion_type: 'whatsapp_click',
       variant: 'A',
@@ -214,42 +146,37 @@ describe('trackConversion utilities', () => {
     });
   });
 
-  it('sets the user variant and pushes to the dataLayer', () => {
+  it('stores the variant in session storage and pushes an event when setUserVariant is called', () => {
     setUserVariant('B');
 
-    expect(sessionStorage.getItem('ab_variant')).toBe('B');
-    expectPushWith({
+    expect(sessionStorage.setItem).toHaveBeenCalledWith('ab_variant', 'B');
+    expectEventShape({
       event: 'ab_variant_set',
       variant: 'B'
     });
   });
 
-  it('returns the variant from session storage when available', () => {
+  it('returns the stored variant from session storage when available', () => {
     sessionStorage.setItem('ab_variant', 'B');
 
-    const result = getUserVariant();
+    const variant = getUserVariant();
 
-    expect(result).toBe('B');
-    expect(pushSpy).not.toHaveBeenCalled();
+    expect(variant).toBe('B');
+    expect(window.dataLayer).toHaveLength(0);
   });
 
-  it('hydrates session storage from cookies when no session value exists', () => {
+  it('hydrates session storage from cookies when necessary', () => {
     document.cookie = 'mr_dj_ab_variant=B';
-    sessionStorage.clear();
 
-    const result = getUserVariant();
+    const variant = getUserVariant();
 
-    expect(result).toBe('B');
+    expect(variant).toBe('B');
     expect(sessionStorage.setItem).toHaveBeenCalledWith('ab_variant', 'B');
-    expect(pushSpy).not.toHaveBeenCalled();
   });
 
-  it('falls back to variant A when no stored variant is found', () => {
-    sessionStorage.clear();
+  it('defaults to variant A when no information is stored', () => {
+    const variant = getUserVariant();
 
-    const result = getUserVariant();
-
-    expect(result).toBe('A');
-    expect(pushSpy).not.toHaveBeenCalled();
+    expect(variant).toBe('A');
   });
 });

@@ -1,13 +1,34 @@
 import * as React from "react"
-import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
+import { useInView } from "@/hooks/useInView"
+
+let rechartsModuleCache = null
+let rechartsModulePromise = null
+
+function loadRecharts() {
+  if (rechartsModuleCache) {
+    return Promise.resolve(rechartsModuleCache)
+  }
+
+  if (!rechartsModulePromise) {
+    rechartsModulePromise = import("recharts").then((module) => {
+      rechartsModuleCache = module
+      return module
+    })
+  }
+
+  return rechartsModulePromise
+}
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = {
   light: "",
   dark: ".dark"
 }
+
+const CHART_BASE_CLASSNAMES =
+  "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden"
 
 const ChartContext = React.createContext(null)
 
@@ -26,25 +47,65 @@ function ChartContainer({
   className,
   children,
   config,
+  fallback,
   ...props
 }) {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
+  const { ref, isInView } = useInView({ rootMargin: "0px 0px 200px 0px" })
+  const [recharts, setRecharts] = React.useState(() => rechartsModuleCache)
 
-  return (
-    <ChartContext.Provider value={{ config }}>
+  React.useEffect(() => {
+    if (!isInView || recharts) {
+      return
+    }
+
+    let active = true
+
+    loadRecharts().then((module) => {
+      if (!active) {
+        return
+      }
+      setRecharts(module)
+    })
+
+    return () => {
+      active = false
+    }
+  }, [isInView, recharts])
+
+  if (!recharts) {
+    return (
       <div
+        ref={ref}
         data-slot="chart"
         data-chart={chartId}
         className={cn(
-          "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
+          "flex aspect-video w-full items-center justify-center rounded-xl border border-dashed border-neutral-gray-200 bg-neutral-light/40 text-sm text-neutral-gray-500",
           className
         )}
+        aria-live="polite"
+        aria-busy="true"
+        {...props}>
+        {typeof fallback === "function"
+          ? fallback()
+          : fallback ?? "Grafiek wordt geladen…"}
+      </div>
+    )
+  }
+
+  return (
+    <ChartContext.Provider value={{ config, recharts }}>
+      <div
+        ref={ref}
+        data-slot="chart"
+        data-chart={chartId}
+        className={cn(CHART_BASE_CLASSNAMES, className)}
         {...props}>
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
+        <recharts.ResponsiveContainer>
           {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        </recharts.ResponsiveContainer>
       </div>
     </ChartContext.Provider>
   );
@@ -81,7 +142,16 @@ return color ? `  --color-${key}: ${color};` : null
   );
 }
 
-const ChartTooltip = RechartsPrimitive.Tooltip
+function ChartTooltip(props) {
+  const { recharts } = useChart()
+
+  if (!recharts) {
+    return null
+  }
+
+  const Tooltip = recharts.Tooltip
+  return <Tooltip {...props} />
+}
 
 function ChartTooltipContent({
   active,
@@ -213,7 +283,16 @@ function ChartTooltipContent({
   );
 }
 
-const ChartLegend = RechartsPrimitive.Legend
+function ChartLegend(props) {
+  const { recharts } = useChart()
+
+  if (!recharts) {
+    return null
+  }
+
+  const Legend = recharts.Legend
+  return <Legend {...props} />
+}
 
 function ChartLegendContent({
   className,

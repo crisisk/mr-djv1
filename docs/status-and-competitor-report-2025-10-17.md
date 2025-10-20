@@ -32,6 +32,7 @@
 4. **Analytics & Consent**
    - ConsentManager warnings refactor: scheid helpers in util-bestanden voor optimale Fast Refresh.
    - Meetplan: automatiseer Lighthouse/Axe runs in CI en log conversie events per variant.
+   - Monitoring: `ConsentManager.jsx` logt waarschuwingen wanneer marketing/statistiek-toggles geen sync krijgen; CRO-team volgt via browserconsole + consent-debug overlay.
 
 ## 5. KPI-impact verwachting
 - **Lead conversie**: +8-12% door ROI-calculator + video hero tests.
