@@ -18,6 +18,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const successResetTimeoutRef = useRef(null);
 
@@ -104,6 +105,12 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       return;
     }
 
+    const payload = {
+      name: formData.name.trim(),
+      phone: formData.phone.trim(),
+      eventType: formData.eventType || undefined,
+    };
+
     setIsSubmitting(true);
 
     const trimmedName = formData.name.trim();
@@ -139,6 +146,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       }
 
       setFieldErrors({});
+      setSuccessMessage(response?.message || 'Bedankt! We bellen je zo snel mogelijk terug.');
       setIsSubmitted(true);
       setSubmitError(null);
       // Reset form after 3 seconds
@@ -149,7 +157,8 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         setFormData({ name: '', phone: '', eventType: '' });
         setFieldErrors({});
         setIsSubmitted(false);
-      }, 3000);
+        setSuccessMessage('');
+      }, 5000);
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitError(error.message || 'Er ging iets mis. Bel ons direct: 040 - 842 2594');
@@ -166,7 +175,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           Bedankt!
         </h3>
         <p className="text-neutral-dark">
-          We bellen je zo snel mogelijk terug!
+          {successMessage || 'We bellen je zo snel mogelijk terug!'}
         </p>
       </div>
     );
