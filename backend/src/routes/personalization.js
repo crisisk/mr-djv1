@@ -4,6 +4,7 @@ const {
   getVariantForRequest,
   recordEvent
 } = require('../services/personalizationService');
+const { validationError } = require('../lib/httpError');
 
 const router = express.Router();
 
@@ -45,13 +46,15 @@ const eventValidations = [
   body('context').optional().isObject()
 ];
 
-function handleValidation(req, res, next) {
+function handleValidation(req, _res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      error: 'Validatie mislukt',
-      details: errors.array()
-    });
+    const details = errors.array().map((err) => ({
+      field: err.path || err.param,
+      message: err.msg
+    }));
+
+    return next(validationError(details));
   }
 
   return next();

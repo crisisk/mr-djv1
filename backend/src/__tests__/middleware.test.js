@@ -75,12 +75,20 @@ describe('error handlers', () => {
     const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { errorHandler, notFoundHandler } = require('../middleware/errors');
+    const { errorHandler, notFoundHandler } = require('../middleware/errorHandler');
 
     const notFoundRes = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     notFoundHandler({ path: '/missing' }, notFoundRes);
     expect(notFoundRes.status).toHaveBeenCalledWith(404);
-    expect(notFoundRes.json).toHaveBeenCalledWith({ error: 'Endpoint not found', path: '/missing' });
+    expect(notFoundRes.json).toHaveBeenCalledWith({
+      error: {
+        code: 'NOT_FOUND',
+        message: 'Endpoint not found'
+      },
+      details: {
+        path: '/missing'
+      }
+    });
 
     const err = new Error('kapot');
     err.status = 418;
@@ -89,11 +97,18 @@ describe('error handlers', () => {
     errorHandler(err, { method: 'GET', originalUrl: '/test' }, res, () => {});
 
     expect(res.status).toHaveBeenCalledWith(418);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-      error: 'Internal server error',
-      message: 'kapot',
-      stack: expect.any(String)
-    }));
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: {
+          code: 'ERROR_418',
+          message: 'kapot'
+        },
+        debug: expect.objectContaining({
+          message: 'kapot',
+          stack: expect.any(String)
+        })
+      })
+    );
     expect(consoleWarn).toHaveBeenCalled();
     expect(consoleError).not.toHaveBeenCalled();
   });
@@ -102,7 +117,7 @@ describe('error handlers', () => {
     jest.doMock('../config', () => ({ env: 'production' }));
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { errorHandler } = require('../middleware/errors');
+    const { errorHandler } = require('../middleware/errorHandler');
 
     const err = new Error('kapot');
     err.status = 500;
@@ -111,14 +126,19 @@ describe('error handlers', () => {
     errorHandler(err, { method: 'POST', originalUrl: '/broken' }, res, () => {});
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
+    expect(res.json).toHaveBeenCalledWith({
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Internal server error'
+      }
+    });
     expect(consoleError).toHaveBeenCalled();
   });
 
   it('returns a helpful message for JSON parse errors', () => {
     jest.doMock('../config', () => ({ env: 'production' }));
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const { errorHandler } = require('../middleware/errors');
+    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const { errorHandler } = require('../middleware/errorHandler');
 
     const err = new Error('Unexpected token');
     err.type = 'entity.parse.failed';
@@ -128,10 +148,15 @@ describe('error handlers', () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Ongeldige JSON payload',
-      details: 'Controleer of de JSON body correct is geformatteerd.'
+      error: {
+        code: 'INVALID_JSON',
+        message: 'Ongeldige JSON payload'
+      },
+      details: {
+        hint: 'Controleer of de JSON body correct is geformatteerd.'
+      }
     });
-    expect(consoleError).toHaveBeenCalled();
+    expect(consoleWarn).toHaveBeenCalled();
   });
 });
 

@@ -4,6 +4,7 @@ const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
 const observabilityService = require('../services/observabilityService');
+const { createHttpError } = require('../lib/httpError');
 
 const router = express.Router();
 
@@ -1767,8 +1768,13 @@ router.post('/api/variables', async (req, res, next) => {
     const entries = req.body?.entries;
 
     if (!entries || typeof entries !== 'object' || Array.isArray(entries)) {
-      res.status(400).json({ error: 'Invalid payload' });
-      return;
+      return next(
+        createHttpError(400, 'INVALID_PAYLOAD', 'Invalid payload', {
+          details: {
+            expected: 'entries must be an object of key/value pairs'
+          }
+        })
+      );
     }
 
     const state = await configDashboardService.updateValues(entries);

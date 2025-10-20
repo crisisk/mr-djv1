@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { saveCallbackRequest } = require('../services/callbackRequestService');
+const { validationError } = require('../lib/httpError');
 
 const router = express.Router();
 
@@ -28,13 +29,12 @@ router.post('/', validations, async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      error: 'Validatie mislukt',
-      details: errors.array().map((err) => ({
-        field: err.param,
-        message: err.msg
-      }))
-    });
+    const details = errors.array().map((err) => ({
+      field: err.path || err.param,
+      message: err.msg
+    }));
+
+    return next(validationError(details));
   }
 
   try {

@@ -172,15 +172,41 @@ describe('Mister DJ API', () => {
 
     expect(response.status).toBe(422);
     expect(response.body).toMatchObject({
-      error: 'Validatie mislukt'
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Validatie mislukt'
+      },
+      details: expect.arrayContaining([
+        expect.objectContaining({ field: 'name', message: expect.any(String) })
+      ])
     });
+    expect(response.body.debug).toEqual(
+      expect.objectContaining({
+        message: 'Validatie mislukt',
+        stack: expect.any(String)
+      })
+    );
   });
 
   it('rejects invalid callback requests', async () => {
     const response = await request('POST', '/callback-request', {});
 
     expect(response.status).toBe(422);
-    expect(response.body).toMatchObject({ error: 'Validatie mislukt' });
+    expect(response.body).toMatchObject({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Validatie mislukt'
+      },
+      details: expect.arrayContaining([
+        expect.objectContaining({ field: 'name', message: expect.any(String) })
+      ])
+    });
+    expect(response.body.debug).toEqual(
+      expect.objectContaining({
+        message: 'Validatie mislukt',
+        stack: expect.any(String)
+      })
+    );
   });
 
   it('returns a helpful error when the JSON payload cannot be parsed', async () => {
@@ -190,8 +216,20 @@ describe('Mister DJ API', () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toMatchObject({
-      error: 'Ongeldige JSON payload'
+      error: {
+        code: 'INVALID_JSON',
+        message: 'Ongeldige JSON payload'
+      },
+      details: {
+        hint: 'Controleer of de JSON body correct is geformatteerd.'
+      }
     });
+    expect(response.body.debug).toEqual(
+      expect.objectContaining({
+        message: expect.stringContaining('JSON'),
+        stack: expect.any(String)
+      })
+    );
   });
 
   it('accepts contact submissions and stores them in memory when no DB is configured', async () => {
@@ -218,6 +256,43 @@ describe('Mister DJ API', () => {
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
     expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
     expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
+  });
+
+  it('returns a structured error for unknown routes', async () => {
+    const response = await request('GET', '/does-not-exist');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      error: {
+        code: 'NOT_FOUND',
+        message: 'Endpoint not found'
+      },
+      details: {
+        path: '/does-not-exist'
+      }
+    });
+  });
+
+  it('returns validation details for incomplete booking submissions', async () => {
+    const response = await request('POST', '/bookings', {});
+
+    expect(response.status).toBe(422);
+    expect(response.body).toMatchObject({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Validatie mislukt'
+      },
+      details: expect.arrayContaining([
+        expect.objectContaining({ field: 'name', message: expect.any(String) }),
+        expect.objectContaining({ field: 'email', message: expect.any(String) })
+      ])
+    });
+    expect(response.body.debug).toEqual(
+      expect.objectContaining({
+        message: 'Validatie mislukt',
+        stack: expect.any(String)
+      })
+    );
   });
 
   it('accepts callback requests and queues integrations when no DB is configured', async () => {
@@ -252,7 +327,12 @@ describe('Mister DJ API', () => {
     const response = await request('POST', '/bookings', {});
 
     expect(response.status).toBe(422);
-    expect(response.body).toMatchObject({ error: 'Validatie mislukt' });
+    expect(response.body).toMatchObject({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Validatie mislukt'
+      }
+    });
   });
 
   it('creates bookings and tracks them in memory when the database is unavailable', async () => {

@@ -165,7 +165,21 @@ describe('configuration dashboard', () => {
 
     expect(response.status).toBe(400);
     const payload = await response.json();
-    expect(payload).toEqual({ error: 'Invalid payload' });
+    expect(payload).toMatchObject({
+      error: {
+        code: 'INVALID_PAYLOAD',
+        message: 'Invalid payload'
+      },
+      details: {
+        expected: 'entries must be an object of key/value pairs'
+      }
+    });
+    expect(payload.debug).toEqual(
+      expect.objectContaining({
+        message: 'Invalid payload',
+        stack: expect.any(String)
+      })
+    );
   });
 
   it('clears values when empty strings are provided and ignores null', async () => {

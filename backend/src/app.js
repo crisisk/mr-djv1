@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const compression = require('compression');
 const config = require('./config');
 const routes = require('./routes');
-const { notFoundHandler, errorHandler } = require('./middleware/errors');
+const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
 const rateLimiter = require('./middleware/rateLimiter');
 
 const app = express();
