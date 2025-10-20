@@ -2,6 +2,12 @@
 
 # Mister DJ - Deployment Script voor VPS
 # Usage: ./deploy.sh
+# Redeploy instructions:
+#   1. Make your code changes locally and commit them if desired.
+#   2. From the project root, run ./deploy.sh to build, package, and upload the latest version.
+#   3. The script recreates containers on the VPS using docker-compose up -d, so the new build
+#      is live once the health checks pass. For a quick remote redeploy, SSH into the VPS and run
+#      "docker-compose pull && docker-compose up -d" inside /opt/mr-dj.
 
 set -euo pipefail
 IFS=$'\n\t'
