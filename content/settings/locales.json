@@ -1,0 +1,50 @@
+{
+  "nl": {
+    "localSeo": {
+      "hero": {
+        "title": "Uw {{eventTypeTitle}} in {{city}}{{provinceSuffix}}",
+        "subtitle": "Dé beste DJ voor uw feest in {{city}} en omgeving. Bekend met toplocaties zoals het Evoluon en de Effenaar.",
+        "eventTypeGeneral": "DJ voor feesten",
+        "eventTypeWedding": "Bruiloft DJ",
+        "ctaPrimary": "Check beschikbaarheid",
+        "ctaSecondary": "Vraag offerte aan"
+      },
+      "venues": {
+        "heading": "Bekend met de beste locaties in {{city}}{{provinceSuffix}}"
+      },
+      "testimonials": {
+        "heading": "Wat klanten in {{city}}{{provinceSuffix}} zeggen"
+      },
+      "footer": {
+        "heading": "Klaar voor een onvergetelijk feest in {{city}}{{provinceSuffix}}?",
+        "variantBHeading": "Vraag vandaag nog een gratis offerte aan in {{city}}!",
+        "ctaPrompt": "Bel ons direct op",
+        "ctaButton": "Vraag nu een offerte aan"
+      }
+    }
+  },
+  "en": {
+    "localSeo": {
+      "hero": {
+        "title": "Your {{eventTypeTitle}} in {{city}}{{provinceSuffix}}",
+        "subtitle": "The best DJ for your celebration in {{city}} and the surrounding area. Familiar with top venues such as the Evoluon and the Effenaar.",
+        "eventTypeGeneral": "DJ for events",
+        "eventTypeWedding": "Wedding DJ",
+        "ctaPrimary": "Check availability",
+        "ctaSecondary": "Request a quote"
+      },
+      "venues": {
+        "heading": "Familiar with the best venues in {{city}}{{provinceSuffix}}"
+      },
+      "testimonials": {
+        "heading": "What clients in {{city}}{{provinceSuffix}} say"
+      },
+      "footer": {
+        "heading": "Ready for an unforgettable party in {{city}}{{provinceSuffix}}?",
+        "variantBHeading": "Request a free quote in {{city}} today!",
+        "ctaPrompt": "Call us directly at",
+        "ctaButton": "Request a quote now"
+      }
+    }
+  }
+}

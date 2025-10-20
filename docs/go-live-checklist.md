@@ -37,6 +37,7 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 - [ ] Maak het deploy-script uitvoerbaar: `chmod +x deploy.sh`
 - [ ] Voer `./deploy.sh` uit vanaf de repository-root
 - [ ] Volg de scriptoutput om te bevestigen dat de containers opnieuw worden opgebouwd en starten zonder fouten (het script voert automatisch `npm run migrate` uit binnen `mr-dj-backend`)
+- [ ] Houd de [rollback & hotfix runbook](operations/deployment-rollback.md) bij de hand voor snelle herstelacties indien de uitrol faalt
 
 ## 6. Netlify (statische hosting / CMS)
 - [ ] Meld je aan bij Netlify en importeer de GitHub-repository (zie [`NETLIFY_DEPLOYMENT.md`](../NETLIFY_DEPLOYMENT.md))
@@ -49,6 +50,7 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 - [ ] Voer een test-booking en contactformulier in en verifieer dat de responses `success: true` bevatten
 - [ ] Controleer via `docker compose logs` dat er geen fouten in de backend verschijnen
 - [ ] Draai `docker compose ps` om te bevestigen dat alle containers `Up` zijn
+- [ ] Bij afwijkingen: volg de [rollback & hotfix runbook](operations/deployment-rollback.md) voor herstel en communicatie
 - [ ] Bezoek de live site en valideer de belangrijkste pagina-secties (hero, pakketten, reviews, contactformulier)
 
 ## 8. Monitoring & nazorg

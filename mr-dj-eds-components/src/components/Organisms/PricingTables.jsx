@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from '../Atoms/Buttons.jsx';
-import IconBase, { mergeClassNames } from '../ui/icon-base';
+import { BILLING_MODES, pricingPackages } from '../../data/pricingPackages.js';
 import { trackPricingCTA, getUserVariant } from '../../utils/trackConversion';
 import { colors, spacing, typography } from '../../theme/tokens.js';
 
@@ -13,67 +13,10 @@ const withAlpha = (hex, alpha) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-// Data structure for the three packages
-const packages = [
-  {
-    name: "Brons",
-    subtitle: "Entry-level pakket",
-    price: "€495",
-    features: [
-      "4 uur DJ-set",
-      "Basis licht- en geluidsset",
-      "Persoonlijk intakegesprek",
-      "Muziekvoorkeuren formulier",
-    ],
-    isFeatured: false,
-    buttonText: "Meer Info",
-  },
-  {
-    name: "Zilver",
-    subtitle: "Meest gekozen",
-    price: "€795",
-    features: [
-      "6 uur DJ-set",
-      "Uitgebreide lichtshow",
-      "DJ + Saxofonist optie",
-      "100% dansgarantie",
-      "Onbeperkt aantal gasten",
-    ],
-    isFeatured: true,
-    buttonText: "Boek Nu",
-  },
-  {
-    name: "Goud",
-    subtitle: "Premium All-Inclusive",
-    price: "€1.295",
-    features: [
-      "8 uur DJ-set",
-      "Luxe licht- en geluidsset",
-      "DJ + Saxofonist (inbegrepen)",
-      "Ceremonie & receptie muziek",
-      "Professionele apparatuur",
-    ],
-    isFeatured: false,
-    buttonText: "Vraag Offerte Aan",
-  },
-];
-
-const CheckIcon = ({ className, style, ...props }) => (
-  <IconBase
-    className={mergeClassNames('h-5 w-5 flex-shrink-0', className)}
-    style={style}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-  </IconBase>
-);
-
-const PricingCard = ({ pkg }) => {
-  const { name, subtitle, price, features, isFeatured, buttonText } = pkg;
+const PricingCard = ({ pkg, billingMode, isHighlighted }) => {
+  const { name, subtitle, features, buttonText } = pkg;
+  const pricingDetails =
+    pkg.pricing[billingMode] ?? pkg.pricing[BILLING_MODES.EVENT];
 
   // Use token-based classes
   const buttonVariant = isFeatured ? "secondary" : "primary";
@@ -147,8 +90,16 @@ const PricingCard = ({ pkg }) => {
 
   // Handle CTA click with tracking
   const handleCTAClick = () => {
-    const variant = getUserVariant();
-    trackPricingCTA(variant, name, price);
+    loadTrackConversion()
+      .then(({ getUserVariant, trackPricingCTA }) => {
+        if (typeof trackPricingCTA === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackPricingCTA(variant, name, price);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for pricing CTA', error);
+      });
   };
 
   return (

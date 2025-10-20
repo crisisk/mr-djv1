@@ -134,37 +134,37 @@ mr-djv1/
 ### Start Services
 ```bash
 cd /opt/mr-dj
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Stop Services
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### View Logs
 ```bash
-docker-compose logs -f
-docker-compose logs frontend
-docker-compose logs backend
-docker-compose logs traefik
+docker compose logs -f
+docker compose logs frontend
+docker compose logs backend
+docker compose logs traefik
 ```
 
 ### Restart Services
 ```bash
-docker-compose restart
+docker compose restart
 ```
 
 ### Check Status
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 ### Update Code
 ```bash
 git pull origin main
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 ```
 
 ---
@@ -197,10 +197,10 @@ docker-compose up -d
 - **Redis:** `docker exec mr-dj-redis redis-cli ping`
 
 ### Logs Locaties
-- **Frontend:** `docker-compose logs frontend`
-- **Backend:** `docker-compose logs backend`
-- **Traefik:** `docker-compose logs traefik`
-- **Database:** `docker-compose logs postgres`
+- **Frontend:** `docker compose logs frontend`
+- **Backend:** `docker compose logs backend`
+- **Traefik:** `docker compose logs traefik`
+- **Database:** `docker compose logs postgres`
 
 ---
 
@@ -252,16 +252,16 @@ docker-compose up -d
 ### Deployment Issues
 ```bash
 # Check container status
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs --tail=100
+docker compose logs --tail=100
 
 # Restart specific service
-docker-compose restart frontend
+docker compose restart frontend
 
 # Rebuild and restart
-docker-compose build && docker-compose up -d
+docker compose build && docker compose up -d
 ```
 
 ### Database Issues
@@ -279,11 +279,11 @@ cat backup.sql | docker exec -i mr-dj-postgres psql -U mrdj_user -d mrdj_db
 ### SSL Certificate Issues
 ```bash
 # Check Traefik logs
-docker-compose logs traefik | grep -i "certificate\|acme"
+docker compose logs traefik | grep -i "certificate\|acme"
 
 # Remove old certificates
 rm -rf /opt/mr-dj/letsencrypt/*
-docker-compose restart traefik
+docker compose restart traefik
 ```
 
 ---

@@ -1,106 +1,10 @@
 import React from 'react';
 import Button from './Buttons.jsx';
 import usePricingToggle from './usePricingToggle';
-import IconBase, { mergeClassNames } from './mr-dj-eds-components/src/components/ui/icon-base.jsx';
+import { BILLING_MODES, pricingPackages } from './src/data/pricing_packages.js';
 
-const BILLING_MODES = {
-  EVENT: 'event',
-  MONTHLY: 'monthly',
-};
-
-// Data structure for the three packages with pricing variations
-const packages = [
-  {
-    name: 'Brons',
-    subtitle: 'Entry-level pakket',
-    pricing: {
-      [BILLING_MODES.EVENT]: {
-        amount: '€495',
-        suffix: '/ event',
-        description: 'Eenmalige betaling per event.',
-      },
-      [BILLING_MODES.MONTHLY]: {
-        amount: '€99',
-        suffix: '/ maand',
-        description: 'Flexibel maandelijks plan voor terugkerende events.',
-      },
-    },
-    features: [
-      '4 uur DJ-set',
-      'Basis licht- en geluidsset',
-      'Persoonlijk intakegesprek',
-      'Muziekvoorkeuren formulier',
-    ],
-    isFeatured: false,
-    buttonText: 'Meer Info',
-  },
-  {
-    name: 'Zilver',
-    subtitle: 'Meest gekozen',
-    pricing: {
-      [BILLING_MODES.EVENT]: {
-        amount: '€795',
-        suffix: '/ event',
-        description: 'Populairste keuze voor bruiloften en bedrijfsevents.',
-      },
-      [BILLING_MODES.MONTHLY]: {
-        amount: '€149',
-        suffix: '/ maand',
-        description: 'Vaste maandprijs inclusief 2 events per kwartaal.',
-      },
-    },
-    features: [
-      '6 uur DJ-set',
-      'Uitgebreide lichtshow',
-      'DJ + Saxofonist optie',
-      '100% dansgarantie',
-      'Onbeperkt aantal gasten',
-    ],
-    isFeatured: true,
-    buttonText: 'Boek Nu',
-  },
-  {
-    name: 'Goud',
-    subtitle: 'Premium All-Inclusive',
-    pricing: {
-      [BILLING_MODES.EVENT]: {
-        amount: '€1.295',
-        suffix: '/ event',
-        description: 'All-in pakket voor luxe en grootschalige events.',
-      },
-      [BILLING_MODES.MONTHLY]: {
-        amount: '€199',
-        suffix: '/ maand',
-        description: 'Premium abonnement met planning- & aftermovie-services.',
-      },
-    },
-    features: [
-      '8 uur DJ-set',
-      'Luxe licht- en geluidsset',
-      'DJ + Saxofonist (inbegrepen)',
-      'Ceremonie & receptie muziek',
-      'Professionele apparatuur',
-    ],
-    isFeatured: false,
-    buttonText: 'Vraag Offerte Aan',
-  },
-];
-
-const CheckIcon = ({ className, ...props }) => (
-  <IconBase
-    className={mergeClassNames('mr-spacing-sm h-5 w-5', className)}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-  </IconBase>
-);
-
-const PricingCard = ({ pkg, billingMode }) => {
-  const { name, subtitle, pricing, features, isFeatured, buttonText } = pkg;
+const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
+  const { name, subtitle, pricing, features, isFeatured, buttonText, localHighlights } = pkg;
   const pricingDetails = pricing[billingMode];
 
   // Use token-based classes
@@ -115,27 +19,57 @@ const PricingCard = ({ pkg, billingMode }) => {
   const buttonVariant = isFeatured ? "secondary" : "primary";
 
   return (
-    <div className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}>
+    <div
+      className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}
+      data-active-city={activeCitySlug || undefined}
+    >
       {isFeatured && (
-        <div className="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
+        <div
+          className="absolute top-0 right-0 rounded-tr-lg rounded-bl-lg bg-secondary px-spacing-md py-spacing-xs text-font-size-small font-bold text-neutral-dark"
+          role="status"
+          aria-label="Populair pakket"
+        >
           Populair
         </div>
       )}
-      <div className={`pb-spacing-md mb-spacing-md ${headerClasses}`}>
+      <div className={`mb-spacing-lg pb-spacing-md md:mb-spacing-xl ${headerClasses}`}>
         <h3 className="text-font-size-h3 font-bold">{name}</h3>
         <p className="text-font-size-small opacity-80">{subtitle}</p>
       </div>
-      <div className="flex flex-col gap-spacing-xs mb-spacing-lg">
+      <div className="mb-spacing-xl flex flex-col gap-spacing-sm">
         <div className="flex items-baseline">
           <span className="text-font-size-h1 font-extrabold">{pricingDetails.amount}</span>
           <span className="text-font-size-body ml-spacing-xs">{pricingDetails.suffix}</span>
         </div>
         <p className="text-font-size-small opacity-80">{pricingDetails.description}</p>
+        {localHighlight && (
+          <div
+            className="mt-spacing-xs rounded-md border border-secondary/30 bg-secondary/10 p-spacing-sm space-y-1"
+            data-testid={`pricing-local-highlight-${pkg.id}`}
+          >
+            {localHighlights?.label && (
+              <p className="text-font-size-small font-semibold uppercase tracking-wide text-secondary">
+                {localHighlights.label}
+              </p>
+            )}
+            <p className="text-font-size-small text-secondary leading-relaxed">{localHighlight}</p>
+          </div>
+        )}
       </div>
-      <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
+      <ul className="mb-spacing-xl flex-grow space-y-spacing-sm md:space-y-spacing-md">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start text-font-size-body">
-            <CheckIcon className={isFeatured ? 'text-secondary' : 'text-primary'} />
+            <svg
+              className={`mr-spacing-sm h-5 w-5 ${isFeatured ? 'text-secondary' : 'text-primary'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
             {feature}
           </li>
         ))}
@@ -147,7 +81,7 @@ const PricingCard = ({ pkg, billingMode }) => {
   );
 };
 
-const PricingTables = () => {
+const PricingTables = ({ citySlug, localSeo }) => {
   const {
     billingMode,
     isMonthly,
@@ -156,19 +90,43 @@ const PricingTables = () => {
     selectEvent,
   } = usePricingToggle(BILLING_MODES.EVENT);
 
+  const resolvedLocalSeo = React.useMemo(() => {
+    if (localSeo) {
+      if (localSeo.pricingHighlights) {
+        return localSeo;
+      }
+
+      if (localSeo.slug) {
+        const datasetEntry = getLocalSeoDataBySlug(localSeo.slug);
+        return datasetEntry ? { ...datasetEntry, ...localSeo } : localSeo;
+      }
+
+      return localSeo;
+    }
+
+    if (citySlug) {
+      return getLocalSeoDataBySlug(citySlug);
+    }
+
+    return null;
+  }, [citySlug, localSeo]);
+
+  const highlightMap = resolvedLocalSeo?.pricingHighlights;
+  const activeCitySlug = resolvedLocalSeo?.slug;
+
   return (
-    <section className="py-spacing-3xl bg-neutral-gray-100">
-      <div className="container mx-auto px-spacing-md">
-        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">
+    <section className="bg-neutral-gray-100 py-spacing-3xl lg:py-spacing-4xl xl:py-spacing-5xl">
+      <div className="container mx-auto px-spacing-md sm:px-spacing-lg lg:px-spacing-xl xl:px-spacing-2xl">
+        <h2 className="mb-spacing-2xl text-center text-font-size-h2 font-extrabold text-neutral-dark md:mb-spacing-3xl">
           Onze Pakketten
         </h2>
-        <div className="flex flex-col items-center mb-spacing-2xl" role="group" aria-label="Kies facturering">
-          <div className="inline-flex rounded-full bg-neutral-light p-spacing-xs shadow">
+        <div className="mb-spacing-2xl flex flex-col items-center md:mb-spacing-3xl" role="group" aria-label="Kies facturering">
+          <div className="inline-flex rounded-full bg-neutral-light p-spacing-xs shadow md:p-spacing-sm">
             <button
               type="button"
               onClick={selectEvent}
               aria-pressed={isEvent}
-              className={`px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary ${
+              className={`rounded-full px-spacing-md py-spacing-sm text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-light sm:px-spacing-lg md:py-spacing-md ${
                 isEvent
                   ? 'bg-primary text-neutral-light'
                   : 'bg-transparent text-neutral-dark hover:bg-neutral-gray-200'
@@ -180,7 +138,7 @@ const PricingTables = () => {
               type="button"
               onClick={selectMonthly}
               aria-pressed={isMonthly}
-              className={`px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary ${
+              className={`rounded-full px-spacing-md py-spacing-sm text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-light sm:px-spacing-lg md:py-spacing-md ${
                 isMonthly
                   ? 'bg-primary text-neutral-light'
                   : 'bg-transparent text-neutral-dark hover:bg-neutral-gray-200'
@@ -194,7 +152,7 @@ const PricingTables = () => {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-center">
-          {packages.map((pkg, index) => (
+          {pricingPackages.map((pkg, index) => (
             <PricingCard key={`${pkg.name}-${index}`} pkg={pkg} billingMode={billingMode} />
           ))}
         </div>

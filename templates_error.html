@@ -20,81 +20,104 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: clamp(16px, 5vw, 40px);
         }
-        
+
         .slide-container {
-            width: 1280px;
-            min-height: 720px;
+            width: 100%;
+            max-width: 1280px;
             background: #FFFFFF;
-            padding: 30px 40px;
+            padding: clamp(24px, 5vw, 40px);
             display: flex;
             flex-direction: column;
+            gap: clamp(16px, 3vw, 32px);
+            margin: 0 auto;
         }
-        
+
         h1 {
-            font-size: 42px;
+            font-size: clamp(28px, 5vw, 42px);
             font-weight: 900;
             color: #1A2C4B;
             margin-bottom: 8px;
         }
-        
+
         .subtitle {
-            font-size: 16px;
+            font-size: clamp(16px, 3.5vw, 18px);
             color: #666;
-            margin-bottom: 25px;
+            margin-bottom: clamp(16px, 4vw, 25px);
         }
-        
+
         .error-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(20px, 4vw, 30px);
             flex: 1;
         }
-        
+
         .error-box {
             border: 2px solid #FF4D4D;
             border-radius: 12px;
-            padding: 30px;
+            padding: clamp(24px, 4vw, 30px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
             background: #FFF5F5;
+            gap: clamp(12px, 2.5vw, 20px);
         }
-        
+
         .error-code {
-            font-size: 120px;
+            font-size: clamp(72px, 20vw, 120px);
             font-weight: 900;
             color: #FF4D4D;
             line-height: 1;
-            margin-bottom: 10px;
         }
-        
+
         .error-title {
-            font-size: 32px;
+            font-size: clamp(24px, 5vw, 32px);
             font-weight: 800;
             color: #1A2C4B;
-            margin-bottom: 15px;
         }
-        
+
         .error-message {
-            font-size: 18px;
+            font-size: clamp(16px, 3.5vw, 18px);
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: clamp(16px, 4vw, 30px);
         }
-        
+
         .error-cta {
-            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
-            color: white;
+            background: linear-gradient(135deg, #005B96 0%, #003F7F 100%);
+            color: #FFFFFF;
             padding: 12px 25px;
             border-radius: 8px;
             font-weight: 800;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s ease, color 0.2s ease, outline-color 0.2s ease;
         }
+
+        .error-cta::before {
+            content: "";
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 5a7 7 0 1 1-4.95 11.95" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="m8 5 4 4-4 4" fill="white"/></svg>') no-repeat center / contain;
+            flex-shrink: 0;
+        }
+
+        .error-cta:hover,
+        .error-cta:focus-visible {
+            background: linear-gradient(135deg, #003F7F 0%, #002C63 100%);
+            color: #FFFFFF;
+            outline: 3px solid #FFD166;
+            outline-offset: 3px;
+        }
+
+        /* Contrast ratio: default gradient vs white text ≈ 7.3:1, hover/focus gradient vs white text ≈ 9.6:1 */
         
         .error-box.server-error {
             border-color: #D4AF37;
@@ -104,10 +127,17 @@
         .error-box.server-error .error-code {
             color: #D4AF37;
         }
-        
+
         .error-box.server-error .error-cta {
-            background: #1A2C4B;
+            background: linear-gradient(135deg, #1A2C4B 0%, #0F1C33 100%);
         }
+
+        .error-box.server-error .error-cta:hover,
+        .error-box.server-error .error-cta:focus-visible {
+            background: linear-gradient(135deg, #10203A 0%, #0A1627 100%);
+        }
+
+        /* Server error CTA contrast ratios: default ≈ 11.9:1, hover/focus ≈ 13.6:1 */
     </style>
 </head>
 <body>
@@ -121,16 +151,22 @@
             <div class="error-box">
                 <div class="error-code">404</div>
                 <div class="error-title">Pagina Niet Gevonden</div>
-                <div class="error-message">Oeps! De pagina die u zoekt is verhuisd of bestaat niet meer.</div>
-                <a href="#" class="error-cta">Terug naar de Homepage</a>
+                <div class="error-message">Oeps! De pagina die je zoekt swingt elders of bestaat niet meer. Probeer onze zoekfunctie of neem contact op zodat we je verder kunnen helpen.</div>
+                <div class="cta-wrapper">
+                    <a href="/" class="error-cta">Terug naar de homepage</a>
+                    <a href="/support" class="error-secondary">Zoek hulp via support</a>
+                </div>
             </div>
-            
+
             <!-- Kolom 2: 500 Server Error -->
             <div class="error-box server-error">
                 <div class="error-code">500</div>
-                <div class="error-title">Interne Server Fout</div>
-                <div class="error-message">Er is een onverwachte fout opgetreden. Onze technici zijn op de hoogte.</div>
-                <a href="#" class="error-cta">Probeer het Later Opnieuw</a>
+                <div class="error-title">Interne Serverfout</div>
+                <div class="error-message">Onze decks haperden even. Vernieuw de pagina, of laat ons weten wat je zocht zodat we het meteen voor je fixen.</div>
+                <div class="cta-wrapper">
+                    <a href="/contact" class="error-cta">Neem contact op</a>
+                    <a href="/support" class="error-secondary">Bezoek de supportpagina</a>
+                </div>
             </div>
             
         </div>

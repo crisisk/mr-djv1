@@ -1,30 +1,31 @@
 // EventTypeSelector.jsx
 import React, { useState } from 'react';
 import './EventTypeSelector.css';
+import { Icon } from '../icons/index.jsx';
 
 const eventTypes = [
   {
     id: 'wedding',
     title: 'Wedding',
-    icon: '💒',
+    icon: 'icon-wedding',
     description: 'Perfect music for your special day'
   },
   {
     id: 'corporate',
     title: 'Corporate Event',
-    icon: '🏢',
+    icon: 'icon-corporate',
     description: 'Professional entertainment for business events'
   },
   {
     id: 'birthday',
     title: 'Birthday Party',
-    icon: '🎉',
+    icon: 'icon-private-party',
     description: 'Fun and energetic party music'
   },
   {
     id: 'festival',
     title: 'Festival',
-    icon: '🎪',
+    icon: 'icon-festival',
     description: 'High-energy festival experience'
   }
 ];
@@ -47,7 +48,9 @@ const EventTypeSelector = ({ onSelect }) => {
             className={`event-type-card ${selectedType === eventType.id ? 'selected' : ''}`}
             onClick={() => handleSelect(eventType)}
           >
-            <div className="event-type-icon">{eventType.icon}</div>
+            <div className="event-type-icon">
+              <Icon name={eventType.icon} size={40} className="text-primary" />
+            </div>
             <h3>{eventType.title}</h3>
             <p>{eventType.description}</p>
           </div>

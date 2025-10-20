@@ -1,5 +1,5 @@
 import React from 'react';
-import { trackWhatsAppClick } from '../../utils/trackConversion';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 import IconBase, { mergeClassNames } from '../ui/icon-base';
 
@@ -15,8 +15,15 @@ const WhatsAppButton = () => {
   );
 
   const handleClick = () => {
-    // Track WhatsApp clicks for analytics
-    trackWhatsAppClick();
+    loadTrackConversion()
+      .then(({ trackWhatsAppClick }) => {
+        if (typeof trackWhatsAppClick === 'function') {
+          trackWhatsAppClick();
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for WhatsApp click', error);
+      });
   };
 
   const WhatsAppIcon = ({ className, ...props }) => (
@@ -34,7 +41,7 @@ const WhatsAppButton = () => {
   return (
     <a
       href={`https://wa.me/${phoneNumber}?text=${defaultMessage}`}
-      className="fixed bottom-6 right-6 z-50 bg-green-500 text-neutral-light p-4 rounded-full shadow-2xl hover:bg-green-600 transition-all duration-300 hover:scale-110 active:scale-95 group"
+      className="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:bg-green-600 transition-all duration-300 hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-green-200 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent group"
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat via WhatsApp"
@@ -44,7 +51,7 @@ const WhatsAppButton = () => {
       <WhatsAppIcon aria-hidden />
 
       {/* Tooltip on hover */}
-      <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-neutral-dark text-neutral-light px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none shadow-lg">
+      <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-neutral-dark text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300 pointer-events-none shadow-lg">
         Chat via WhatsApp
       </span>
 

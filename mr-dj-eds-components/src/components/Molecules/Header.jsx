@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../Atoms/Logo.jsx';
-import { trackPhoneClick, trackContactNavigation, getUserVariant } from '../../utils/trackConversion';
-import IconBase from '../ui/icon-base';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 /**
  * Professional Header Component with Mobile Menu
@@ -24,14 +23,30 @@ const Header = ({ transparent = false }) => {
 
   // Track phone click
   const handlePhoneClick = () => {
-    const variant = getUserVariant();
-    trackPhoneClick(variant, 'header');
+    loadTrackConversion()
+      .then(({ getUserVariant, trackPhoneClick }) => {
+        if (typeof trackPhoneClick === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackPhoneClick(variant, 'header');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for header phone click', error);
+      });
   };
 
   // Track contact navigation
-  const handleContactClick = (e) => {
-    const variant = getUserVariant();
-    trackContactNavigation(variant, 'header');
+  const handleContactClick = () => {
+    loadTrackConversion()
+      .then(({ getUserVariant, trackContactNavigation }) => {
+        if (typeof trackContactNavigation === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackContactNavigation(variant, 'header');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for header contact click', error);
+      });
   };
 
   const bgClass = transparent && !isScrolled

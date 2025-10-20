@@ -6,6 +6,95 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
 
+const DEFAULT_LOCALE = 'nl';
+
+const normalizeLocale = (locale) => {
+  if (!locale || typeof locale !== 'string') {
+    return DEFAULT_LOCALE;
+  }
+
+  const lower = locale.toLowerCase();
+  const [primary] = lower.split(/[-_]/);
+  return primary || DEFAULT_LOCALE;
+};
+
+const getTranslations = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  if (typeof value === 'string') {
+    return { nl: value, en: value };
+  }
+
+  if (Array.isArray(value)) {
+    return { nl: value, en: value };
+  }
+
+  if (typeof value === 'object' && value.translations) {
+    return value.translations;
+  }
+
+  return null;
+};
+
+const resolveLocalizedValue = (value, locale = DEFAULT_LOCALE) => {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  const translations = getTranslations(value);
+  if (!translations) {
+    return '';
+  }
+
+  const normalized = normalizeLocale(locale);
+  if (typeof translations[normalized] === 'string') {
+    return translations[normalized];
+  }
+
+  if (typeof translations.nl === 'string') {
+    return translations.nl;
+  }
+
+  const first = Object.values(translations).find((entry) => typeof entry === 'string');
+  return typeof first === 'string' ? first : '';
+};
+
+const resolveLocalizedList = (value, locale = DEFAULT_LOCALE) => {
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  const translations = getTranslations(value);
+  if (!translations) {
+    return [];
+  }
+
+  const normalized = normalizeLocale(locale);
+  const candidate = translations[normalized] ?? translations.nl ?? Object.values(translations).find(Array.isArray);
+  return Array.isArray(candidate) ? candidate : [];
+};
+
+const localizeCase = (item, locale = DEFAULT_LOCALE) => ({
+  title: resolveLocalizedValue(item?.title, locale),
+  result: resolveLocalizedValue(item?.result, locale),
+  venue: resolveLocalizedValue(item?.venue, locale),
+});
+
+const localizeFaq = (item, locale = DEFAULT_LOCALE) => ({
+  question: resolveLocalizedValue(item?.question, locale),
+  answer: resolveLocalizedValue(item?.answer, locale),
+});
+
+const localizeCity = (city, locale = DEFAULT_LOCALE) => ({
+  ...city,
+  intro: resolveLocalizedValue(city?.intro, locale),
+  cases: Array.isArray(city?.cases) ? city.cases.map((item) => localizeCase(item, locale)) : [],
+  venues: resolveLocalizedList(city?.venues, locale),
+  faqs: Array.isArray(city?.faqs) ? city.faqs.map((item) => localizeFaq(item, locale)) : [],
+});
+
 export const template = ({ slug, city, intro, cases, venues, faqs }) => {
   const caseMarkup = cases
     .map(
@@ -200,8 +289,10 @@ export const readCities = async (dataPath) => {
 export const generateCityPages = async ({
   dataPath = path.join(repoRoot, 'content', 'local-seo', 'cities.json'),
   outputRoot = path.join(repoRoot, 'frontend', 'public', 'local-seo'),
+  locale = DEFAULT_LOCALE,
 } = {}) => {
-  const cities = await readCities(dataPath);
+  const sourceCities = await readCities(dataPath);
+  const cities = sourceCities.map((city) => localizeCity(city, locale));
 
   await fs.mkdir(outputRoot, { recursive: true });
 
@@ -214,7 +305,7 @@ export const generateCityPages = async ({
     })
   );
 
-  return { count: cities.length, cities, outputRoot };
+  return { count: cities.length, cities, outputRoot, locale };
 };
 
 const isCliExecution = () => {

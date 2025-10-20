@@ -83,22 +83,30 @@ function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
   return (
     <div className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}>
       {isFeatured ? (
-        <div className="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
+        <div className="absolute top-0 right-0 bg-secondary text-neutral-dark body-sm text-strong px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
           Populair
         </div>
       ) : null}
       <div className={`pb-spacing-md mb-spacing-md ${headerClasses}`}>
-        <h3 className="text-font-size-h3 font-bold">{name}</h3>
-        <p className="text-font-size-small opacity-80">{subtitle}</p>
+        <h3 className="heading-3">{name}</h3>
+        <p className="body-sm opacity-80">{subtitle}</p>
       </div>
       <div className="flex items-baseline mb-spacing-lg">
-        <span className="text-font-size-h1 font-extrabold">{price}</span>
-        <span className="text-font-size-body ml-spacing-xs">/ event</span>
+        <span className="heading-1">{price}</span>
+        <span className="body-md ml-spacing-xs">/ event</span>
       </div>
       <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
         {features.map((feature) => (
-          <li key={feature} className="flex items-start text-font-size-body">
-            <CheckIcon className={isFeatured ? 'text-secondary' : 'text-primary'} />
+          <li key={feature} className="flex items-start body-md">
+            <svg
+              className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
             {feature}
           </li>
         ))}
@@ -114,7 +122,7 @@ export function PricingTables({ packages = defaultPackages }: PricingTablesProps
   return (
     <section className="py-spacing-3xl bg-neutral-gray-100">
       <div className="container mx-auto px-spacing-md">
-        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">Onze Pakketten</h2>
+        <h2 className="heading-2 text-center text-neutral-dark mb-spacing-2xl">Onze Pakketten</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl items-center">
           {packages.map((pkg) => (
             <PricingCard key={pkg.name} pkg={pkg} />
