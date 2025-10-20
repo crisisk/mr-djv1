@@ -13,7 +13,7 @@ const Hero = () => {
           loop
           playsInline
           className={styles.videoBackground}
-          poster="/images/dj-poster.jpg"
+          poster="/images/events/hero-feest-dj.webp"
         >
           <source src="/videos/dj-performance.mp4" type="video/mp4" />
           Your browser does not support the video tag.
