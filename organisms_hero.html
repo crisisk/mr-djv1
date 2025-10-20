@@ -12,7 +12,52 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.85;
+            }
+        }
+
+        @keyframes statFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background: #FFFFFF;
@@ -77,8 +122,10 @@
             min-height: 200px;
             position: relative;
             overflow: hidden;
+            background-size: 150% 150%;
+            animation: gradientShift 28s ease-in-out infinite;
         }
-        
+
         .hero-homepage::before {
             content: '';
             position: absolute;
@@ -89,12 +136,13 @@
             background: radial-gradient(circle, rgba(0, 174, 239, 0.2) 0%, transparent 70%);
             border-radius: 50%;
         }
-        
+
         .hero-content {
             flex: 1;
             z-index: 2;
+            animation: fadeUp 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
-        
+
         .hero-badge {
             display: inline-block;
             background: rgba(212, 175, 55, 0.2);
@@ -104,102 +152,97 @@
             font-size: 11px;
             font-weight: 700;
             margin-bottom: 12px;
+            animation: badgePulse 4s ease-in-out infinite;
         }
-        
+
         .hero-title {
             font-size: 32px;
             font-weight: 800;
             color: white;
             line-height: 1.2;
             margin-bottom: 10px;
+            animation: fadeUp 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation-delay: 0.12s;
         }
-        
+
         .hero-title .highlight {
             color: #00AEEF;
         }
-        
+
         .hero-description {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.85);
             line-height: 1.5;
             margin-bottom: 16px;
+            animation: fadeUp 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation-delay: 0.22s;
         }
 
-        .hero-subheading {
-            font-size: 16px;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 12px;
-        }
-
-        .hero-supporting {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 18px;
-        }
-
-        .hero-testimonial {
-            margin-top: 20px;
-            font-style: italic;
-            color: rgba(255, 255, 255, 0.75);
-        }
-
-        .hero-testimonial span {
-            display: block;
-            margin-top: 6px;
-            font-style: normal;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
         .hero-ctas {
             display: flex;
             gap: 10px;
+            animation: fadeUp 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation-delay: 0.32s;
         }
-        
+
         .hero-btn {
             padding: 10px 20px;
             border-radius: 8px;
             font-weight: 700;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), filter 0.24s ease, box-shadow 0.24s ease;
             border: 2px solid transparent;
+            will-change: transform;
         }
-        
+
         .hero-btn-primary {
             background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
             color: white;
         }
-        
+
         .hero-btn-primary:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.03);
             box-shadow: 0 6px 20px rgba(0, 174, 239, 0.4);
+            filter: brightness(1.08) saturate(1.05);
         }
-        
+
         .hero-btn-secondary {
             background: transparent;
             color: white;
             border-color: rgba(255, 255, 255, 0.3);
         }
-        
+
         .hero-btn-secondary:hover {
             border-color: white;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px) scale(1.03);
+            filter: brightness(1.1);
         }
-        
+
+        .hero-btn:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.35);
+            transform: translateY(-3px) scale(1.03);
+        }
+
+        .hero-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
         .hero-stats {
             display: flex;
             gap: 25px;
             z-index: 2;
+            animation: fadeUp 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation-delay: 0.42s;
         }
-        
+
         .stat-item {
             text-align: center;
+            animation: statFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
-        
+
         .stat-number {
             font-size: 28px;
             font-weight: 800;
@@ -213,6 +256,30 @@
             font-size: 11px;
             color: rgba(255, 255, 255, 0.7);
             font-weight: 600;
+        }
+
+        .stat-item:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .stat-item:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-homepage,
+            .hero-content,
+            .hero-title,
+            .hero-description,
+            .hero-ctas,
+            .hero-stats,
+            .stat-item,
+            .hero-btn,
+            .hero-badge {
+                animation: none !important;
+                transition-duration: 0.01ms !important;
+                transform: none !important;
+            }
         }
         
         /* Local SEO Hero */
@@ -316,6 +383,56 @@
             text-align: center;
             line-height: 1.2;
         }
+
+        @media (max-width: 1024px) {
+            .hero-homepage {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 24px;
+            }
+
+            .hero-ctas {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-ctas .hero-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 18px;
+            }
+
+            .local-booking {
+                width: 140px;
+                height: 140px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-homepage {
+                padding: 24px;
+                gap: 20px;
+            }
+
+            .hero-ctas {
+                gap: 12px;
+            }
+
+            .hero-stats {
+                gap: 16px;
+            }
+
+            .local-booking {
+                width: 120px;
+                height: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -333,18 +450,18 @@
                         <h2 class="hero-title">
                             DJ + Sax die je dansvloer binnen <span class="highlight">2 tracks</span> vult
                         </h2>
-                        <p class="hero-subheading">Live mashups, saxofonist tussen je gasten en realtime setlists afgestemd op jouw publiek.</p>
-                        <p class="hero-supporting">120+ evenementen per jaar, 4.9/5 beoordeling over 180+ reviews en een dedicated eventmanager die jouw intake voorbereidt.</p>
-                        <div class="hero-ctas">
-                            <button class="hero-btn hero-btn-primary">Plan je intake</button>
-                            <button class="hero-btn hero-btn-secondary">Vraag een mixdemo aan</button>
-                        </div>
-                        <div class="hero-testimonial">
-                            “Binnen tien minuten zat onze dansvloer vol en bleef de energie de hele avond hoog.”
-                            <span>Lisa & Robbert – Bruiloft Utrecht</span>
+                        <p class="hero-description">
+                            Professionele DJ service voor bruiloften en bedrijfsfeesten in heel Brabant. 15+ jaar ervaring, 2500+ geslaagde events.
+                        </p>
+                        <div class="hero-ctas" role="group" aria-labelledby="homepage-cta-label" aria-describedby="homepage-cta-description">
+                            <span id="homepage-cta-label" class="sr-only">Belangrijke acties voor de homepage hero</span>
+                            <span id="homepage-cta-description" class="sr-only">Kies een van de knoppen om Mister DJ direct te contacteren of pakketten te bekijken.</span>
+                            <button class="hero-btn hero-btn-primary" aria-label="Controleer direct de beschikbaarheid van Mister DJ" aria-describedby="homepage-cta-description">Check direct beschikbaarheid</button>
+                            <button class="hero-btn hero-btn-secondary" aria-label="Bekijk de beschikbare pakketten van Mister DJ" aria-describedby="homepage-cta-description">Bekijk DJ-pakketten</button>
                         </div>
                     </div>
-                    <div class="hero-stats">
+                    <div class="hero-stats" role="group" aria-labelledby="homepage-stats-label">
+                        <span id="homepage-stats-label" class="sr-only">Kernstatistieken over Mister DJ</span>
                         <div class="stat-item">
                             <span class="stat-number">4.9/5</span>
                             <span class="stat-label">Gem. reviewscore</span>
@@ -381,15 +498,18 @@
                             <div class="local-feature">100% dansgarantie</div>
                             <div class="local-feature">Lokale kennis</div>
                         </div>
-                        <div class="local-cta">
-                            <button class="hero-btn hero-btn-primary">Vraag Offerte Aan</button>
-                            <button class="hero-btn hero-btn-secondary">Bekijk Reviews</button>
+                        <div class="local-cta" role="group" aria-labelledby="local-cta-label" aria-describedby="local-cta-description">
+                            <span id="local-cta-label" class="sr-only">Acties voor de lokale pagina</span>
+                            <span id="local-cta-description" class="sr-only">Vraag een offerte aan of lees ervaringen van andere klanten.</span>
+                            <button class="hero-btn hero-btn-primary" aria-label="Vraag een vrijblijvende offerte aan voor Eindhoven" aria-describedby="local-cta-description">Vraag offerte aan</button>
+                            <button class="hero-btn hero-btn-secondary" aria-label="Lees reviews van klanten uit Eindhoven" aria-describedby="local-cta-description">Lees klantreviews</button>
                         </div>
                     </div>
-                    <div class="local-booking">
-                        <div class="booking-icon">📅</div>
+                    <button class="local-booking" type="button" aria-describedby="local-booking-description">
+                        <span id="local-booking-description" class="sr-only">Plan een beschikbaarheidscheck voor een event in Eindhoven</span>
+                        <div class="booking-icon" aria-hidden="true">📅</div>
                         <div class="booking-text">Check<br>Beschikbaarheid</div>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>

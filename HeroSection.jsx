@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import Button from './Buttons.jsx'
 
@@ -36,79 +36,34 @@ const HeroSection = ({
       ? translatedTestimonial
       : {}
 
+  const ctaGroupLabelId = useId()
+  const ctaGroupDescriptionId = useId()
+  const statsGroupLabelId = useId()
+
   return (
     <div
-      className={`${backgroundClass} py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}
+      className={`${backgroundClass} hero-motion py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}
     >
-      <div className="container mx-auto text-center max-w-5xl">
-        {resolvedBadge && (
-          <div className="inline-flex items-center justify-center rounded-full bg-secondary/10 text-secondary px-spacing-md py-spacing-2xs text-font-size-small font-semibold mb-spacing-md">
-            {resolvedBadge}
-          </div>
-        )}
-        <h1
-          className={`text-font-size-h1 font-extrabold ${titleColor} mb-spacing-sm leading-tight`}
-        >
+      <div className="container mx-auto text-center hero-motion__inner">
+        <h1 className={`text-font-size-h1 font-extrabold ${titleColor} mb-spacing-md hero-motion__headline`}>
           {resolvedTitle}
         </h1>
         <p
-          className={`text-font-size-h3 mb-spacing-md max-w-4xl mx-auto ${subtitleColor}`}
+          className={`text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto ${subtitleColor} hero-motion__subtitle`}
         >
           {resolvedSubtitle}
         </p>
-        {resolvedSupportingCopy && (
-          <p
-            className={`text-font-size-body max-w-3xl mx-auto ${supportingColor} mb-spacing-xl`}
-          >
-            {resolvedSupportingCopy}
-          </p>
-        )}
-        <div className="flex flex-col sm:flex-row justify-center gap-spacing-sm sm:gap-spacing-md">
-          <Button variant="secondary" size="lg" {...ctaPrimaryProps}>
+        <div className="flex justify-center space-x-spacing-md hero-motion__ctaGroup">
+          <Button variant="secondary" size="lg" className="hero-motion__cta">
             {resolvedPrimaryCta}
           </Button>
           {resolvedSecondaryCta && (
-            <Button
-              variant="outline"
-              size="lg"
-              {...ctaSecondaryProps}
-            >
+            <Button variant="outline" size="lg" className="hero-motion__cta hero-motion__cta--secondary">
               {resolvedSecondaryCta}
             </Button>
           )}
         </div>
-        {resolvedStats?.length > 0 && (
-          <div className="mt-spacing-xl grid grid-cols-1 sm:grid-cols-3 gap-spacing-md text-neutral-light/90">
-            {resolvedStats.map((stat, index) => (
-              <div
-                key={`${stat?.label ?? 'stat'}-${index}`}
-                className="rounded-lg border border-neutral-light/10 bg-neutral-dark/20 px-spacing-md py-spacing-sm"
-              >
-                {stat?.value && (
-                  <div className="text-font-size-h2 font-bold text-secondary">
-                    {stat.value}
-                  </div>
-                )}
-                {stat?.label && (
-                  <div className="text-font-size-small uppercase tracking-wide text-neutral-light/70">
-                    {stat.label}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-        {resolvedTestimonial?.quote && (
-          <div className="mt-spacing-xl text-neutral-light/80 max-w-3xl mx-auto italic">
-            “{resolvedTestimonial.quote}”
-            {resolvedTestimonial?.author && (
-              <span className="not-italic block text-font-size-small text-neutral-light/70 mt-spacing-2xs">
-                — {resolvedTestimonial.author}
-              </span>
-            )}
-          </div>
-        )}
-        {children && <div className="mt-spacing-xl">{children}</div>}
+        {children && <div className="hero-motion__statsSlot">{children}</div>}
       </div>
     </div>
   )
