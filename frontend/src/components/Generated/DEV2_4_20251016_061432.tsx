@@ -63,35 +63,37 @@ const CheckoutForm = ({ amount, onSuccess, onFailure }) => {
 };
 
 const StripePayment = ({ amount }) => {
-  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState('idle');
+  const [statusMessage, setStatusMessage] = useState('');
 
   const handleSuccess = (paymentIntent) => {
     setPaymentStatus('success');
-    // Additional success logic (redirect, store in state, etc.)
+    setStatusMessage(`Payment confirmed. Reference: ${paymentIntent.id}`);
   };
 
-  const handleFailure = (error) => {
+  const handleFailure = (errorMessage) => {
     setPaymentStatus('failed');
-    // Additional failure logic
+    setStatusMessage(errorMessage);
   };
-
-  if (paymentStatus === 'success') {
-    return <PaymentSuccess />;
-  }
-
-  if (paymentStatus === 'failed') {
-    return <PaymentFailure />;
-  }
 
   return (
     <div className="payment-container">
       <Elements stripe={stripePromise}>
-        <CheckoutForm 
-          amount={amount} 
-          onSuccess={handleSuccess} 
-          onFailure={handleFailure} 
+        <CheckoutForm
+          amount={amount}
+          onSuccess={handleSuccess}
+          onFailure={handleFailure}
         />
       </Elements>
+      {paymentStatus !== 'idle' && (
+        <div
+          className={`payment-status payment-status--${paymentStatus}`}
+          role={paymentStatus === 'failed' ? 'alert' : 'status'}
+          aria-live={paymentStatus === 'failed' ? 'assertive' : 'polite'}
+        >
+          {statusMessage}
+        </div>
+      )}
     </div>
   );
 };

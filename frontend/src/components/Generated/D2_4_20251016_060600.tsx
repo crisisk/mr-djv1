@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Pannellum } from "pannellum-react";
 import styled from 'styled-components';
 
@@ -104,7 +104,7 @@ const VanSetupTour = () => {
             hfov={110}
             autoLoad
             onLoad={() => setIsLoading(false)}
-            onError={(err) => setError('Failed to load 360° view')}
+            onError={() => setError('Failed to load 360° view')}
           />
         )}
         

@@ -48,8 +48,6 @@ const ExitIntentPopup = () => {
     const hasSeenPopup = localStorage.getItem('djExitPopupShown');
     if (hasSeenPopup) return;
 
-    let timeout;
-
     const handleMouseLeave = (e) => {
       // Only trigger when mouse moves to top of window
       if (e.clientY <= 0) {
@@ -59,7 +57,7 @@ const ExitIntentPopup = () => {
     };
 
     // Mobile trigger after 30 seconds
-    timeout = setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       if (!hasSeenPopup && window.innerWidth <= 768) {
         setShowPopup(true);
         localStorage.setItem('djExitPopupShown', 'true');
@@ -70,7 +68,7 @@ const ExitIntentPopup = () => {
 
     return () => {
       document.removeEventListener('mouseleave', handleMouseLeave);
-      clearTimeout(timeout);
+      clearTimeout(timeoutId);
     };
   }, []);
 

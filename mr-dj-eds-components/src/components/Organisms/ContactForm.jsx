@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { submitContactForm } from '../../services/api';
 import Button from '../Atoms/Buttons';
 import { trackFormSubmission } from '../../utils/trackConversion';
+import { useHCaptchaWidget } from '../../hooks/useHCaptchaWidget.js';
+
+const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY;
 
 /**
  * ContactForm Component
@@ -30,6 +33,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const successTimeoutRef = useRef(null);
+  const captcha = useHCaptchaWidget(HCAPTCHA_SITE_KEY);
 
   useEffect(() => {
     return () => {
@@ -123,11 +127,19 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       return;
     }
 
+    if (HCAPTCHA_SITE_KEY && !captcha.token) {
+      captcha.setError('Bevestig dat je geen robot bent.');
+      return;
+    }
+
     // Submit
     setIsSubmitting(true);
 
     try {
-      await submitContactForm(formData);
+      await submitContactForm({
+        ...formData,
+        hCaptchaToken: captcha.token || undefined,
+      });
 
       // Success
       setSubmitSuccess(true);
@@ -152,6 +164,8 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
         eventType: initialEventType,
         eventDate: '',
       });
+      captcha.reset();
+      captcha.setError('');
 
       // Auto-hide success message after 5 seconds
       successTimeoutRef.current = setTimeout(() => setSubmitSuccess(false), 5000);
@@ -159,6 +173,10 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
       // Error handling
       setSubmitError(error.message || 'Er is een fout opgetreden. Probeer het later opnieuw.');
       console.error('Contact form error:', error);
+      captcha.reset();
+      if (error?.message && error.message.toLowerCase().includes('captcha')) {
+        captcha.setError(error.message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -323,13 +341,30 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
           {fieldErrors.message && <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>}
         </div>
 
+        {HCAPTCHA_SITE_KEY && (
+          <div>
+            <label className="block text-sm font-medium text-[#1A2C4B] mb-2">
+              Beveiligingscontrole <span className="text-red-500">*</span>
+            </label>
+            <div
+              ref={captcha.containerRef}
+              className="h-captcha"
+              aria-live="polite"
+            />
+            {captcha.isLoading && (
+              <p className="text-sm text-gray-500 mt-2">Beveiligingscontrole wordt geladen…</p>
+            )}
+            {captcha.error && <p className="text-red-500 text-sm mt-2">{captcha.error}</p>}
+          </div>
+        )}
+
         {/* Submit Button */}
         <div className="pt-2">
           <Button
             type="submit"
             variant="primary"
             size="large"
-            disabled={isSubmitting}
+            disabled={isSubmitting || (HCAPTCHA_SITE_KEY ? !captcha.isReady : false)}
             className="w-full"
           >
             {isSubmitting ? 'Bezig met verzenden...' : variant === 'B' ? 'Vraag Offerte Aan' : 'Verstuur Bericht'}

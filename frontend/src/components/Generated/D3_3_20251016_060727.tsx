@@ -1,5 +1,5 @@
 // PricingCalculator.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './PricingCalculator.css';
 
 const PricingCalculator = () => {
@@ -8,6 +8,8 @@ const PricingCalculator = () => {
   const [guests, setGuests] = useState(50);
   const [extras, setExtras] = useState([]);
   const [total, setTotal] = useState(0);
+  const hoursInputId = 'pricing-calculator-hours';
+  const guestsInputId = 'pricing-calculator-guests';
 
   // Base pricing constants
   const BASE_RATE_PER_HOUR = 125;
@@ -49,25 +51,33 @@ const PricingCalculator = () => {
       
       <div className="calculator-section">
         <div className="input-group">
-          <label>Hours</label>
-          <input 
-            type="range" 
-            min="2" 
-            max="8" 
+          <label htmlFor={hoursInputId}>Hours</label>
+          <input
+            type="range"
+            min="2"
+            max="8"
             value={hours}
             onChange={(e) => setHours(parseInt(e.target.value))}
+            id={hoursInputId}
+            aria-valuenow={hours}
+            aria-valuemin={2}
+            aria-valuemax={8}
           />
           <span>{hours} hours</span>
         </div>
 
         <div className="input-group">
-          <label>Number of Guests</label>
-          <input 
-            type="range" 
-            min="20" 
-            max="300" 
+          <label htmlFor={guestsInputId}>Number of Guests</label>
+          <input
+            type="range"
+            min="20"
+            max="300"
             value={guests}
             onChange={(e) => setGuests(parseInt(e.target.value))}
+            id={guestsInputId}
+            aria-valuenow={guests}
+            aria-valuemin={20}
+            aria-valuemax={300}
           />
           <span>{guests} guests</span>
         </div>
@@ -76,14 +86,17 @@ const PricingCalculator = () => {
           <h3>Additional Services</h3>
           <div className="extras-grid">
             {AVAILABLE_EXTRAS.map(extra => (
-              <div 
-                key={extra.id} 
+              <button
+                key={extra.id}
+                type="button"
                 className={`extra-item ${extras.find(e => e.id === extra.id) ? 'selected' : ''}`}
                 onClick={() => handleExtraToggle(extra)}
+                aria-pressed={extras.some(e => e.id === extra.id)}
+                aria-label={`${extras.some(e => e.id === extra.id) ? 'Remove' : 'Add'} ${extra.name}`}
               >
                 <span>{extra.name}</span>
                 <span>€{extra.price}</span>
-              </div>
+              </button>
             ))}
           </div>
         </div>

@@ -1,6 +1,11 @@
 const fs = require('fs/promises');
 const os = require('os');
 const path = require('path');
+const { buildRequiredEnv } = require('../testUtils/env');
+
+const ORIGINAL_ENV = { ...process.env };
+process.env = { ...ORIGINAL_ENV, ...buildRequiredEnv() };
+
 const automation = require('../services/cityContentAutomationService');
 
 function createMockFetch(payload) {
@@ -86,6 +91,7 @@ describe('cityContentAutomationService', () => {
 
       const reviewFilePath = path.join(tmpDir, 'review.md');
       const reportFilePath = path.join(tmpDir, 'report.md');
+      const cityContentDirPath = path.join(tmpDir, 'cities');
 
       const payload = {
         keywords: [
@@ -100,6 +106,7 @@ describe('cityContentAutomationService', () => {
           fetchImpl: createMockFetch(payload),
           seoApiUrl: 'https://example.com/keywords',
           citiesFilePath,
+          cityContentDirPath,
           reportFilePath,
           reviewFilePath,
           generatorScriptPath: null
@@ -115,8 +122,17 @@ describe('cityContentAutomationService', () => {
       expect(helmond).toBeDefined();
       expect(helmond.intro).toContain('Mister DJ');
 
+      const generatedCityFile = await fs.readFile(path.join(cityContentDirPath, 'dj-helmond.json'), 'utf8');
+      const parsedCityFile = JSON.parse(generatedCityFile);
+      expect(parsedCityFile.slug).toBe('dj-helmond');
+      expect(parsedCityFile.city).toBe('Helmond');
+
       const report = await fs.readFile(reportFilePath, 'utf8');
       expect(report).toContain('City content automation run');
     });
   });
+});
+
+afterAll(() => {
+  process.env = ORIGINAL_ENV;
 });
