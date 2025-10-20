@@ -1,3 +1,8 @@
+const { buildRequiredEnv } = require('../testUtils/env');
+
+const ORIGINAL_ENV = { ...process.env };
+process.env = { ...ORIGINAL_ENV, ...buildRequiredEnv() };
+
 jest.mock('../lib/db', () => ({
   isConfigured: jest.fn(() => false),
   runQuery: jest.fn(),
@@ -493,4 +498,7 @@ describe('catalog services', () => {
     expect(cached.cacheStatus).toBe('hit');
     expect(db.runQuery).not.toHaveBeenCalled();
   });
+});
+afterAll(() => {
+  process.env = ORIGINAL_ENV;
 });

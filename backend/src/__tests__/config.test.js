@@ -1,7 +1,8 @@
 const path = require('path');
-const { DEFAULT_STORE_PATH } = require('../lib/managedEnv');
+const { buildRequiredEnv } = require('../testUtils/env');
 
 const ORIGINAL_ENV = { ...process.env };
+const BASE_ENV = buildRequiredEnv();
 
 function loadConfig() {
   jest.resetModules();
@@ -18,178 +19,19 @@ describe('config', () => {
     process.env = ORIGINAL_ENV;
   });
 
-  it('uses safe defaults when environment variables are missing', () => {
-    process.env = {};
-    const config = loadConfig();
+  it('throws descriptive errors when required environment variables are missing', () => {
+    const env = { ...BASE_ENV };
+    delete env.RENTGUY_API_BASE_URL;
+    process.env = env;
 
-    expect(config.port).toBe(3000);
-    expect(config.host).toBe('0.0.0.0');
-    expect(config.cors).toEqual({ origin: '*', credentials: false });
-    expect(config.rateLimit).toEqual({ windowMs: 15 * 60 * 1000, max: 100 });
-    expect(config.logging).toBe('dev');
-    expect(config.databaseUrl).toBeUndefined();
-    expect(config.serviceName).toBe('mr-dj-backend');
-    expect(config.version).toBe('1.0.0');
-    expect(config.integrations).toEqual(
-      expect.objectContaining({
-        rentGuy: {
-          enabled: false,
-          baseUrl: null,
-          workspaceId: null,
-          timeoutMs: 5000
-        },
-        sevensa: {
-          enabled: false,
-          submitUrl: null,
-          retryDelayMs: 15000,
-          maxAttempts: 5
-        }
-      })
+    expect(() => loadConfig()).toThrow(
+      'Missing required environment variable "RENTGUY_API_BASE_URL" for RentGuy integration (RENTGUY_API_BASE_URL and RENTGUY_API_KEY).'
     );
-    expect(config.personalization).toEqual({ automationWebhook: null });
-    expect(config.alerts).toEqual({
-      webhooks: [],
-      throttleMs: 2 * 60 * 1000,
-      queue: {
-        warningBacklog: 25,
-        criticalBacklog: 75,
-        recoveryBacklog: 5,
-        warningRetryAgeMs: 5 * 60 * 1000,
-        criticalRetryAgeMs: 15 * 60 * 1000,
-        recoveryRetryAgeMs: 2 * 60 * 1000,
-        deadLetterWarning: 1
-      }
-    });
-    expect(config.dashboard.enabled).toBe(false);
-    expect(config.dashboard.username).toBeNull();
-    expect(config.dashboard.password).toBeNull();
-    expect(config.dashboard.allowedIps).toEqual([]);
-    expect(config.dashboard.managedKeys).toEqual(
-      expect.arrayContaining([
-        'NODE_ENV',
-        'HOST',
-        'PORT',
-        'SERVICE_NAME',
-        'LOG_FORMAT',
-        'CORS_ORIGIN',
-        'RATE_LIMIT_WINDOW_MS',
-        'RATE_LIMIT_MAX',
-        'DATABASE_URL',
-        'REDIS_URL',
-        'REDIS_TLS',
-        'REDIS_NAMESPACE',
-        'REDIS_TLS_REJECT_UNAUTHORIZED',
-        'PGSSLMODE',
-        'MAIL_PROVIDER',
-        'MAIL_API_KEY',
-        'MAIL_FROM_ADDRESS',
-        'MAIL_REPLY_TO',
-        'MAIL_TEMPLATES_CONTACT',
-        'MAIL_TEMPLATES_BOOKING',
-        'RENTGUY_API_BASE_URL',
-        'RENTGUY_API_KEY',
-        'RENTGUY_WORKSPACE_ID',
-        'RENTGUY_TIMEOUT_MS',
-        'SEVENSA_SUBMIT_URL',
-        'SEVENSA_QUEUE_RETRY_DELAY_MS',
-        'SEVENSA_QUEUE_MAX_ATTEMPTS',
-        'N8N_PERSONALIZATION_WEBHOOK_URL',
-        'SEO_AUTOMATION_API_URL',
-        'SEO_AUTOMATION_API_KEY',
-        'SEO_AUTOMATION_KEYWORDSET_ID',
-        'CITY_AUTOMATION_LLM_PROVIDER',
-        'CITY_AUTOMATION_LLM_MODEL'
-      ])
-    );
-    expect(config.dashboard.sections).toEqual([
-      expect.objectContaining({
-        id: 'application',
-        label: 'Applicatie instellingen',
-        description: 'Basisconfiguratie voor runtime gedrag, databaseverbindingen en rate limiting voor de API.',
-        keys: [
-          'NODE_ENV',
-          'HOST',
-          'PORT',
-          'SERVICE_NAME',
-          'LOG_FORMAT',
-          'CORS_ORIGIN',
-          'RATE_LIMIT_WINDOW_MS',
-          'RATE_LIMIT_MAX',
-          'DATABASE_URL',
-          'REDIS_URL',
-          'REDIS_TLS',
-          'REDIS_NAMESPACE',
-          'REDIS_TLS_REJECT_UNAUTHORIZED',
-          'PGSSLMODE'
-        ]
-      }),
-      expect.objectContaining({
-        id: 'mail',
-        label: 'E-mailintegratie',
-        description:
-          'Credentials, afzender en templaten voor transactionele mails richting klanten en interne teams.',
-        keys: [
-          'MAIL_PROVIDER',
-          'MAIL_API_KEY',
-          'MAIL_FROM_ADDRESS',
-          'MAIL_REPLY_TO',
-          'MAIL_TEMPLATES_CONTACT',
-          'MAIL_TEMPLATES_BOOKING'
-        ]
-      }),
-      expect.objectContaining({
-        id: 'rentguy',
-        label: 'RentGuy integratie',
-        description:
-          'API-parameters voor de synchronisatie van leads en boekingen richting de RentGuy applicatie.',
-        keys: [
-          'RENTGUY_API_BASE_URL',
-          'RENTGUY_API_KEY',
-          'RENTGUY_WORKSPACE_ID',
-          'RENTGUY_TIMEOUT_MS'
-        ]
-      }),
-      expect.objectContaining({
-        id: 'content-automation',
-        label: 'Automation & CRM',
-        description: 'Instellingen voor Sevensa submit URL, retry-logica en queue-monitoring richting n8n en RentGuy.',
-        keys: [
-          'SEVENSA_SUBMIT_URL',
-          'SEVENSA_QUEUE_RETRY_DELAY_MS',
-          'SEVENSA_QUEUE_MAX_ATTEMPTS'
-        ]
-      }),
-      expect.objectContaining({
-        id: 'personalization',
-        label: 'Personalization & CRO',
-        description:
-          'Webhook en toggles voor keyword-gedreven personalisatie, CRO-analytics en n8n automatiseringen.',
-        keys: ['N8N_PERSONALIZATION_WEBHOOK_URL']
-      }),
-      expect.objectContaining({
-        id: 'automation',
-        label: 'Content automatisering',
-        description: 'SEO keyword ingest, LLM-configuratie en reviewkanalen voor de interne city page generator.',
-        keys: [
-          'SEO_AUTOMATION_API_URL',
-          'SEO_AUTOMATION_API_KEY',
-          'SEO_AUTOMATION_KEYWORDSET_ID',
-          'SEO_AUTOMATION_REGION',
-          'SEO_AUTOMATION_THEME_KEYWORDS',
-          'SEO_AUTOMATION_APPROVAL_EMAIL',
-          'CITY_AUTOMATION_LLM_PROVIDER',
-          'CITY_AUTOMATION_LLM_MODEL',
-          'CITY_AUTOMATION_LLM_API_KEY',
-          'CITY_AUTOMATION_DRY_RUN'
-        ]
-      })
-    ]);
-    expect(config.dashboard.storePath).toBe(DEFAULT_STORE_PATH);
   });
 
   it('parses numeric and list based configuration values', () => {
     const tmpPath = path.join(__dirname, '..', '..', 'tmp-manual.env');
-    process.env = {
+    process.env = buildRequiredEnv({
       PORT: '8080',
       HOST: '127.0.0.1',
       CORS_ORIGIN: 'https://example.com, https://studio.test',
@@ -214,8 +56,11 @@ describe('config', () => {
       ALERT_QUEUE_WARNING_RETRY_AGE_MS: '120000',
       ALERT_QUEUE_CRITICAL_RETRY_AGE_MS: '240000',
       ALERT_QUEUE_RECOVERY_RETRY_AGE_MS: '60000',
-      ALERT_QUEUE_DEAD_LETTER_WARNING: '2'
-    };
+      ALERT_QUEUE_DEAD_LETTER_WARNING: '2',
+      RENTGUY_TIMEOUT_MS: '7000',
+      SEVENSA_QUEUE_RETRY_DELAY_MS: '45000',
+      SEVENSA_QUEUE_MAX_ATTEMPTS: '7'
+    });
 
     const config = loadConfig();
 
@@ -239,19 +84,22 @@ describe('config', () => {
     expect(config.integrations).toEqual(
       expect.objectContaining({
         rentGuy: {
-          enabled: false,
-          baseUrl: null,
-          workspaceId: null,
-          timeoutMs: 5000
+          enabled: true,
+          baseUrl: process.env.RENTGUY_API_BASE_URL,
+          workspaceId: process.env.RENTGUY_WORKSPACE_ID,
+          timeoutMs: 7000
         },
         sevensa: {
-          enabled: false,
-          submitUrl: null,
-          retryDelayMs: 15000,
-          maxAttempts: 5
+          enabled: true,
+          submitUrl: process.env.SEVENSA_SUBMIT_URL,
+          retryDelayMs: 45000,
+          maxAttempts: 7
         }
       })
     );
+    expect(config.personalization).toEqual({
+      automationWebhook: process.env.N8N_PERSONALIZATION_WEBHOOK_URL
+    });
     expect(config.alerts.webhooks).toEqual([
       'https://hooks.example/alert',
       'https://hooks.example/backup'
@@ -271,24 +119,18 @@ describe('config', () => {
     expect(config.dashboard.password).toBe('secret');
     expect(config.dashboard.allowedIps).toEqual(['127.0.0.1', '10.0.0.1']);
     expect(config.dashboard.managedKeys).toEqual(['PORT', 'DATABASE_URL']);
-    expect(config.dashboard.sections).toEqual([
-      expect.objectContaining({
-        id: 'application',
-        keys: ['PORT', 'DATABASE_URL']
-      })
-    ]);
+    const sections = config.dashboard.sections.map((section) => section.id);
+    expect(sections).toEqual(['application']);
     expect(config.dashboard.storePath).toBe(path.resolve(process.cwd(), tmpPath));
   });
 
   it('exposes personalization automation webhook when configured', () => {
-    process.env = {
-      N8N_PERSONALIZATION_WEBHOOK_URL: 'https://n8n.test/webhook/personalization'
-    };
+    process.env = { ...BASE_ENV };
 
     const config = loadConfig();
 
     expect(config.personalization).toEqual({
-      automationWebhook: 'https://n8n.test/webhook/personalization'
+      automationWebhook: BASE_ENV.N8N_PERSONALIZATION_WEBHOOK_URL
     });
     const personalizationSection = config.dashboard.sections.find(
       (section) => section.id === 'personalization'
@@ -298,11 +140,11 @@ describe('config', () => {
   });
 
   it('supports wildcard CORS configuration', () => {
-    process.env = {
+    process.env = buildRequiredEnv({
       CORS_ORIGIN: ' * ',
       RATE_LIMIT_WINDOW_MS: 'not-a-number',
       RATE_LIMIT_MAX: '-1'
-    };
+    });
 
     const config = loadConfig();
 
@@ -313,7 +155,7 @@ describe('config', () => {
   });
 
   it('exposes automation configuration for the city content workflow', () => {
-    process.env = {
+    process.env = buildRequiredEnv({
       SEO_AUTOMATION_API_URL: 'https://seo.internal/keywords',
       SEO_AUTOMATION_API_KEY: 'token',
       SEO_AUTOMATION_KEYWORDSET_ID: 'brabant',
@@ -324,7 +166,7 @@ describe('config', () => {
       CITY_AUTOMATION_LLM_MODEL: 'gpt-4.1-mini',
       CITY_AUTOMATION_LLM_API_KEY: 'openai-key',
       CITY_AUTOMATION_DRY_RUN: 'true'
-    };
+    });
 
     const config = loadConfig();
 
@@ -349,18 +191,18 @@ describe('config', () => {
     const automationSection = config.dashboard.sections.find((section) => section.id === 'automation');
     expect(automationSection).toBeDefined();
     expect(automationSection.keys).toContain('SEO_AUTOMATION_API_URL');
-    expect(config.dashboard.managedKeys).toContain('CITY_AUTOMATION_LLM_MODEL');
+    expect(config.dashboard.managedKeys).toEqual(expect.arrayContaining(['CITY_AUTOMATION_LLM_MODEL']));
   });
 
   it('reloads configuration, copies arrays/objects and removes stale keys', () => {
-    process.env = {
+    process.env = buildRequiredEnv({
       CONFIG_DASHBOARD_ENABLED: 'true',
       CONFIG_DASHBOARD_USER: 'admin',
       CONFIG_DASHBOARD_PASS: 'secret',
       CONFIG_DASHBOARD_KEYS: 'PORT,CUSTOM_KEY',
       CUSTOM_KEY: 'value',
       CORS_ORIGIN: ' , , '
-    };
+    });
 
     const config = loadConfig();
     expect(config.cors.origin).toBe('*');
@@ -379,5 +221,16 @@ describe('config', () => {
     expect(reloaded.dashboard.sections.find((section) => section.id === 'custom')).toBeUndefined();
     expect(reloaded.cors.origin).toBe('*');
     expect(reloaded.temporary).toBeUndefined();
+  });
+
+  it('requires at least one automation API key', () => {
+    const env = buildRequiredEnv();
+    delete env.CITY_AUTOMATION_LLM_API_KEY;
+    delete env.OPENAI_API_KEY;
+    process.env = env;
+
+    expect(() => loadConfig()).toThrow(
+      'Missing required environment variable "CITY_AUTOMATION_LLM_API_KEY" for city content automation LLM access (provide CITY_AUTOMATION_LLM_API_KEY or OPENAI_API_KEY).'
+    );
   });
 });

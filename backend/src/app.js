@@ -1,9 +1,9 @@
+const config = require('./config');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
-const config = require('./config');
 const routes = require('./routes');
 const { notFoundHandler, errorHandler } = require('./middleware/errors');
 const rateLimiter = require('./middleware/rateLimiter');
