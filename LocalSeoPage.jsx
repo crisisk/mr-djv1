@@ -3,17 +3,16 @@ import HeroSection from './HeroSection.jsx';
 import PricingTables from './PricingTables.jsx';
 import Testimonials from './Testimonials.jsx';
 import Button from './Buttons.jsx';
+import { DEFAULT_LOCAL_SEO_LOCALE, selectLocalSeoContent } from './local_seo_data.js';
 
-// Placeholder for dynamic content
-const localData = {
-    city: "Eindhoven",
-    localUSP: "Dé beste DJ voor uw feest in Eindhoven en omgeving. Bekend met alle top-locaties zoals het Evoluon en de Effenaar.",
-    localReviews: "Fantastische service in Eindhoven! De gasten waren laaiend enthousiast.",
-    localVenues: ["Evoluon", "Effenaar", "Strijp-S"],
-};
+const LocalSeoPage = ({ locale = DEFAULT_LOCAL_SEO_LOCALE, citySlug, data }) => {
+    const resolvedData = data ?? selectLocalSeoContent({ locale, citySlug });
 
-const LocalSeoPage = ({ data = localData }) => {
-    const { city, localUSP, localReviews, localVenues } = data;
+    if (!resolvedData) {
+        return null;
+    }
+
+    const { city, localUSP, localReviews, localVenues } = resolvedData;
 
     return (
         <div className="LocalSeoPage">
