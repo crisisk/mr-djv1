@@ -41,6 +41,10 @@ tar -czf "$ROOT_DIR/$PACKAGE_NAME" \
     --exclude='backend/node_modules' \
     --exclude='backend/.env' \
     --exclude='backend/.env.*' \
+    --exclude='frontend/node_modules' \
+    --exclude='frontend/dist' \
+    --exclude='frontend/build' \
+    --exclude='frontend/.next' \
     -C "$ROOT_DIR" \
     docker-compose.yml \
     frontend \
