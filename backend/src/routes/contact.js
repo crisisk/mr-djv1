@@ -1,8 +1,10 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
+const config = require('../config');
 const { saveContact } = require('../services/contactService');
 
 const router = express.Router();
+const requireCaptchaToken = config.integrations?.hcaptcha?.enabled;
 
 const validations = [
   body('name').trim().notEmpty().withMessage('Naam is vereist'),
@@ -15,7 +17,12 @@ const validations = [
     .withMessage('Type evenement is vereist')
     .isLength({ max: 255 }),
   body('eventDate').optional().trim().isISO8601().withMessage('Ongeldige datum'),
-  body('packageId').optional().trim()
+  body('packageId').optional().trim(),
+  body('hCaptchaToken')
+    .if(() => requireCaptchaToken)
+    .customSanitizer((value) => (typeof value === 'string' ? value.trim() : value))
+    .notEmpty()
+    .withMessage('hCaptcha validatie is vereist')
 ];
 
 router.post('/', validations, async (req, res, next) => {
@@ -32,15 +39,21 @@ router.post('/', validations, async (req, res, next) => {
   }
 
   try {
-    const contactRecord = await saveContact({
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      message: req.body.message,
-      eventType: req.body.eventType,
-      eventDate: req.body.eventDate,
-      packageId: req.body.packageId
-    });
+    const contactRecord = await saveContact(
+      {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        message: req.body.message,
+        eventType: req.body.eventType,
+        eventDate: req.body.eventDate,
+        packageId: req.body.packageId
+      },
+      {
+        captchaToken: req.body.hCaptchaToken,
+        remoteIp: req.ip
+      }
+    );
 
     const eventDateIso = contactRecord.eventDate
       ? new Date(contactRecord.eventDate).toISOString()

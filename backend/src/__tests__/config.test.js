@@ -43,6 +43,12 @@ describe('config', () => {
           submitUrl: null,
           retryDelayMs: 15000,
           maxAttempts: 5
+        },
+        hcaptcha: {
+          enabled: false,
+          siteKey: null,
+          secretKey: null,
+          verifyUrl: 'https://hcaptcha.com/siteverify'
         }
       })
     );
@@ -86,6 +92,9 @@ describe('config', () => {
         'MAIL_REPLY_TO',
         'MAIL_TEMPLATES_CONTACT',
         'MAIL_TEMPLATES_BOOKING',
+        'HCAPTCHA_SITE_KEY',
+        'HCAPTCHA_SECRET_KEY',
+        'HCAPTCHA_VERIFY_URL',
         'RENTGUY_API_BASE_URL',
         'RENTGUY_API_KEY',
         'RENTGUY_WORKSPACE_ID',
@@ -136,6 +145,12 @@ describe('config', () => {
           'MAIL_TEMPLATES_CONTACT',
           'MAIL_TEMPLATES_BOOKING'
         ]
+      }),
+      expect.objectContaining({
+        id: 'security',
+        label: 'Beveiliging',
+        description: 'Instellingen voor hCaptcha-validatie van formulieren en spam-preventie.',
+        keys: ['HCAPTCHA_SITE_KEY', 'HCAPTCHA_SECRET_KEY', 'HCAPTCHA_VERIFY_URL']
       }),
       expect.objectContaining({
         id: 'rentguy',
@@ -249,6 +264,12 @@ describe('config', () => {
           submitUrl: null,
           retryDelayMs: 15000,
           maxAttempts: 5
+        },
+        hcaptcha: {
+          enabled: false,
+          siteKey: null,
+          secretKey: null,
+          verifyUrl: 'https://hcaptcha.com/siteverify'
         }
       })
     );

@@ -20,6 +20,7 @@ const DEFAULT_ALERT_QUEUE_THRESHOLDS = {
   recoveryRetryAgeMs: 2 * 60 * 1000,
   deadLetterWarning: 1
 };
+const DEFAULT_HCAPTCHA_VERIFY_URL = 'https://hcaptcha.com/siteverify';
 const DEFAULT_SECTION_CONFIG = [
   {
     id: 'application',
@@ -56,6 +57,12 @@ const DEFAULT_SECTION_CONFIG = [
       'MAIL_TEMPLATES_CONTACT',
       'MAIL_TEMPLATES_BOOKING'
     ]
+  },
+  {
+    id: 'security',
+    label: 'Beveiliging',
+    description: 'Instellingen voor hCaptcha-validatie van formulieren en spam-preventie.',
+    keys: ['HCAPTCHA_SITE_KEY', 'HCAPTCHA_SECRET_KEY', 'HCAPTCHA_VERIFY_URL']
   },
   {
     id: 'rentguy',
@@ -214,6 +221,12 @@ function buildConfig() {
           process.env.SEVENSA_QUEUE_MAX_ATTEMPTS,
           DEFAULT_SEVENSA_MAX_ATTEMPTS
         )
+      },
+      hcaptcha: {
+        enabled: Boolean(process.env.HCAPTCHA_SECRET_KEY),
+        siteKey: process.env.HCAPTCHA_SITE_KEY || null,
+        secretKey: process.env.HCAPTCHA_SECRET_KEY || null,
+        verifyUrl: process.env.HCAPTCHA_VERIFY_URL || DEFAULT_HCAPTCHA_VERIFY_URL
       }
     },
     personalization: {

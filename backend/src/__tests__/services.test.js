@@ -31,6 +31,7 @@ jest.mock('../services/sevensaService', () => ({
 }));
 
 const db = require('../lib/db');
+const config = require('../config');
 const contactService = require('../services/contactService');
 const callbackRequestService = require('../services/callbackRequestService');
 const bookingService = require('../services/bookingService');
@@ -44,6 +45,16 @@ function mockConsole(method = 'error') {
 }
 
 describe('contactService', () => {
+  beforeEach(() => {
+    config.integrations = config.integrations || {};
+    config.integrations.hcaptcha = {
+      enabled: false,
+      siteKey: null,
+      secretKey: null,
+      verifyUrl: 'https://hcaptcha.com/siteverify'
+    };
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
     contactService.resetInMemoryStore();
@@ -130,6 +141,71 @@ describe('contactService', () => {
     });
     expect(rentGuyService.syncLead).toHaveBeenCalled();
     expect(sevensaService.submitLead).toHaveBeenCalled();
+  });
+
+  it('throws when hCaptcha token is missing while verification is ingeschakeld', async () => {
+    config.integrations.hcaptcha = {
+      enabled: true,
+      siteKey: 'site',
+      secretKey: 'secret',
+      verifyUrl: 'https://hcaptcha.com/siteverify'
+    };
+
+    await expect(
+      contactService.saveContact(
+        {
+          name: 'Zonder captcha',
+          email: 'nocaptcha@example.com',
+          phone: '0612345678',
+          message: 'Hallo',
+          eventType: 'Bruiloft'
+        },
+        { captchaToken: '', remoteIp: '127.0.0.1' }
+      )
+    ).rejects.toMatchObject({
+      status: 400,
+      publicMessage: 'Captcha validatie is vereist.'
+    });
+  });
+
+  it('verifies the hCaptcha token when configured', async () => {
+    config.integrations.hcaptcha = {
+      enabled: true,
+      siteKey: 'site',
+      secretKey: 'secret',
+      verifyUrl: 'https://hcaptcha.com/siteverify'
+    };
+
+    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true })
+    });
+
+    rentGuyService.syncLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
+    sevensaService.submitLead.mockResolvedValueOnce({ delivered: true, queued: false, queueSize: 0 });
+
+    const result = await contactService.saveContact(
+      {
+        name: 'Captcha',
+        email: 'captcha@example.com',
+        phone: '0612345678',
+        message: 'Hallo',
+        eventType: 'Bruiloft'
+      },
+      { captchaToken: 'valid-token', remoteIp: '127.0.0.1' }
+    );
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    const [url, options] = fetchSpy.mock.calls[0];
+    expect(url).toBe('https://hcaptcha.com/siteverify');
+    expect(options.method).toBe('POST');
+    expect(options.body).toBeInstanceOf(URLSearchParams);
+    expect(options.body.get('secret')).toBe('secret');
+    expect(options.body.get('response')).toBe('valid-token');
+    expect(options.body.get('remoteip')).toBe('127.0.0.1');
+    expect(result).toHaveProperty('id');
+
+    fetchSpy.mockRestore();
   });
 
   it('exposes the current status information', () => {
