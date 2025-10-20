@@ -12,7 +12,11 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background: #FFFFFF;
@@ -22,7 +26,7 @@
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .slide-container {
             width: 1280px;
             min-height: 720px;
@@ -31,20 +35,87 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         h1 {
             font-size: 42px;
             font-weight: 900;
             color: #1A2C4B;
             margin-bottom: 8px;
         }
-        
+
         .subtitle {
             font-size: 16px;
             color: #666;
             margin-bottom: 25px;
         }
-        
+
+        .service-nav {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 8px 12px;
+            background: #F8FCFF;
+            border: 1px solid #E5F3FA;
+            border-radius: 999px;
+        }
+
+        .service-nav .nav-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #1A2C4B;
+            background: white;
+            border: 1px solid rgba(0, 174, 239, 0.25);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .service-nav .nav-pill::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00AEEF;
+            display: inline-block;
+        }
+
+        .service-nav .nav-pill:hover {
+            box-shadow: 0 6px 14px rgba(26, 44, 75, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .service-nav .nav-pill.active {
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            color: #FFFFFF;
+            border-color: #00AEEF;
+            box-shadow: 0 8px 18px rgba(0, 142, 214, 0.25);
+        }
+
+        .service-nav .nav-pill.active::before {
+            background: #FFFFFF;
+        }
+
+        .service-block {
+            margin-bottom: 30px;
+            scroll-margin-top: 120px;
+        }
+
+        .service-block .page-template {
+            border: 2px solid #E5E5E5;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .service-block.active .page-template,
+        .service-block:target .page-template {
+            border-color: #00AEEF;
+            box-shadow: 0 18px 34px rgba(0, 174, 239, 0.18);
+        }
+
         .page-template {
             border: 2px solid #E5E5E5;
             border-radius: 12px;
@@ -56,7 +127,7 @@
             flex: 1;
             overflow: hidden;
         }
-        
+
         .template-header {
             background: #1A2C4B;
             height: 25px;
@@ -66,25 +137,25 @@
             justify-content: space-between;
             padding: 0 10px;
         }
-        
+
         .template-header-title {
             font-size: 12px;
             color: white;
             font-weight: 600;
         }
-        
+
         .template-header-nav {
             display: flex;
             gap: 8px;
         }
-        
+
         .nav-dot {
             width: 6px;
             height: 6px;
             background: #00AEEF;
             border-radius: 50%;
         }
-        
+
         .section-block {
             border-radius: 8px;
             padding: 15px;
@@ -92,7 +163,7 @@
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .hero-section {
             background: linear-gradient(135deg, #1A2C4B 0%, #2D3A45 100%);
             height: 120px;
@@ -105,7 +176,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .hero-section::after {
             content: 'ORGANISM: HERO SECTION';
             position: absolute;
@@ -115,7 +186,7 @@
             font-weight: 600;
             color: rgba(255, 255, 255, 0.5);
         }
-        
+
         .content-section {
             background: white;
             border: 1px solid #E5E5E5;
@@ -125,7 +196,7 @@
             gap: 10px;
             position: relative;
         }
-        
+
         .content-section::after {
             content: 'CONTENT: FEATURES & USP\'s';
             position: absolute;
@@ -135,12 +206,12 @@
             font-weight: 600;
             color: #999;
         }
-        
+
         .content-row {
             display: flex;
             gap: 10px;
         }
-        
+
         .feature-card {
             flex: 1;
             background: #F8FCFF;
@@ -154,7 +225,7 @@
             font-weight: 700;
             color: #1A2C4B;
         }
-        
+
         .testimonial-section {
             background: #F0F0F0;
             height: 80px;
@@ -166,7 +237,7 @@
             color: #666;
             position: relative;
         }
-        
+
         .testimonial-section::after {
             content: 'ORGANISM: TESTIMONIALS';
             position: absolute;
@@ -176,7 +247,7 @@
             font-weight: 600;
             color: #999;
         }
-        
+
         .pricing-section {
             background: #FFF9E6;
             border: 1px solid #D4AF37;
@@ -189,7 +260,7 @@
             color: #1A2C4B;
             position: relative;
         }
-        
+
         .pricing-section::after {
             content: 'ORGANISM: PRICING TABLES';
             position: absolute;
@@ -199,7 +270,7 @@
             font-weight: 600;
             color: #999;
         }
-        
+
         .cta-section {
             background: linear-gradient(90deg, #00AEEF 0%, #0088CC 100%);
             height: 50px;
@@ -211,7 +282,7 @@
             color: white;
             position: relative;
         }
-        
+
         .cta-section::after {
             content: 'MOLECULE: CTA BLOCK';
             position: absolute;
@@ -221,7 +292,7 @@
             font-weight: 600;
             color: rgba(255, 255, 255, 0.5);
         }
-        
+
         .footer-section {
             background: #1A2C4B;
             height: 40px;
@@ -234,7 +305,7 @@
             color: rgba(255, 255, 255, 0.7);
             position: relative;
         }
-        
+
         .footer-section::after {
             content: 'MOLECULE: FOOTER NAVIGATION';
             position: absolute;
@@ -244,7 +315,7 @@
             font-weight: 600;
             color: rgba(255, 255, 255, 0.3);
         }
-        
+
         .sidebar {
             width: 200px;
             background: white;
@@ -256,14 +327,14 @@
             gap: 10px;
             position: relative;
         }
-        
+
         .sidebar-title {
             font-size: 14px;
             font-weight: 800;
             color: #1A2C4B;
             margin-bottom: 5px;
         }
-        
+
         .sidebar-block {
             background: #F8FCFF;
             border: 1px solid #00AEEF;
@@ -276,7 +347,7 @@
             font-weight: 700;
             color: #00AEEF;
         }
-        
+
         .sidebar-block.form {
             background: #E6F7FF;
             border-color: #00AEEF;
@@ -284,7 +355,7 @@
             font-size: 12px;
             color: #1A2C4B;
         }
-        
+
         .sidebar::after {
             content: 'MOLECULE: CONTACT FORM';
             position: absolute;
@@ -294,20 +365,20 @@
             font-weight: 600;
             color: #999;
         }
-        
+
         .template-layout {
             display: grid;
             grid-template-columns: 1fr 250px;
             gap: 15px;
             flex: 1;
         }
-        
+
         .main-content {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .key-components {
             background: #F8F8F8;
             border: 1px solid #E5E5E5;
@@ -318,7 +389,7 @@
             color: #666;
             margin-top: 10px;
         }
-        
+
         .key-components span {
             color: #1A2C4B;
             font-weight: 800;
@@ -329,72 +400,239 @@
     <div class="slide-container">
         <h1>Templates: Service Page</h1>
         <p class="subtitle">Herbruikbare template voor de drie hoofddiensten: Bruiloft DJ, Bedrijfsfeest DJ, Private Feesten</p>
-        
-        <div class="page-template">
-            <div class="template-header">
-                <div class="template-header-title">mr-dj.nl/diensten/bruiloft-dj</div>
-                <div class="template-header-nav">
-                    <div class="nav-dot"></div>
-                    <div class="nav-dot"></div>
-                    <div class="nav-dot"></div>
+
+        <nav class="service-nav" aria-label="Service navigatie">
+            <a class="nav-pill" href="#service-bruiloft">Bruiloft DJ</a>
+            <a class="nav-pill" href="#service-bedrijfsfeest">Bedrijfsfeest DJ</a>
+            <a class="nav-pill" href="#service-private">Private Feesten</a>
+        </nav>
+
+        <section id="service-bruiloft" class="service-block">
+            <div class="page-template">
+                <div class="template-header">
+                    <div class="template-header-title">mr-dj.nl/diensten/bruiloft-dj</div>
+                    <div class="template-header-nav">
+                        <div class="nav-dot"></div>
+                        <div class="nav-dot"></div>
+                        <div class="nav-dot"></div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="hero-section">
-                BRUILOFT DJ - ONVERGETELIJKE TROUWDAG
-            </div>
-            
-            <div class="template-layout">
-                <div class="main-content">
-                    <div class="content-section">
-                        <div class="content-row">
-                            <div class="feature-card">✓ Persoonlijk intakegesprek</div>
-                            <div class="feature-card">✓ Muziekvoorkeuren formulier</div>
-                            <div class="feature-card">✓ Ceremonie & receptie muziek</div>
+
+                <div class="hero-section">
+                    BRUILOFT DJ - ONVERGETELIJKE TROUWDAG
+                </div>
+
+                <div class="template-layout">
+                    <div class="main-content">
+                        <div class="content-section">
+                            <div class="content-row">
+                                <div class="feature-card">✓ Persoonlijk intakegesprek</div>
+                                <div class="feature-card">✓ Muziekvoorkeuren formulier</div>
+                                <div class="feature-card">✓ Ceremonie &amp; receptie muziek</div>
+                            </div>
+                            <div class="content-row">
+                                <div class="feature-card">✓ Professionele apparatuur</div>
+                                <div class="feature-card">✓ Flexibele opstelling</div>
+                                <div class="feature-card">✓ Diverse muziekstijlen</div>
+                            </div>
                         </div>
-                        <div class="content-row">
-                            <div class="feature-card">✓ Professionele apparatuur</div>
-                            <div class="feature-card">✓ Flexibele opstelling</div>
-                            <div class="feature-card">✓ Diverse muziekstijlen</div>
+
+                        <div class="testimonial-section">
+                            ORGANISM: TESTIMONIAL CAROUSEL (3-5 REVIEWS)
+                        </div>
+
+                        <div class="pricing-section">
+                            ORGANISM: PRICING TABLE (BRONS, ZILVER, GOUD)
+                        </div>
+
+                        <div class="cta-section">
+                            MOLECULE: DIRECT OFFERTE AANVRAGEN
                         </div>
                     </div>
-                    
-                    <div class="testimonial-section">
-                        ORGANISM: TESTIMONIAL CAROUSEL (3-5 REVIEWS)
-                    </div>
-                    
-                    <div class="pricing-section">
-                        ORGANISM: PRICING TABLE (BRONS, ZILVER, GOUD)
-                    </div>
-                    
-                    <div class="cta-section">
-                        MOLECULE: DIRECT OFFERTE AANVRAGEN
-                    </div>
-                </div>
-                
-                <div class="sidebar">
-                    <div class="sidebar-title">Contact & Beschikbaarheid</div>
-                    <div class="sidebar-block form">
-                        MOLECULE: CONTACT FORM (KLEIN)
-                    </div>
-                    <div class="sidebar-block">
-                        MOLECULE: FAQ ACCORDION
-                    </div>
-                    <div class="sidebar-block">
-                        MOLECULE: RELATED SERVICES
+
+                    <div class="sidebar">
+                        <div class="sidebar-title">Contact &amp; Beschikbaarheid</div>
+                        <div class="sidebar-block form">
+                            MOLECULE: CONTACT FORM (KLEIN)
+                        </div>
+                        <div class="sidebar-block">
+                            MOLECULE: FAQ ACCORDION
+                        </div>
+                        <div class="sidebar-block">
+                            MOLECULE: RELATED SERVICES
+                        </div>
                     </div>
                 </div>
+
+                <div class="footer-section">
+                    FOOTER &amp; COPYRIGHT
+                </div>
             </div>
-            
-            <div class="footer-section">
-                FOOTER & COPYRIGHT
+        </section>
+
+        <section id="service-bedrijfsfeest" class="service-block">
+            <div class="page-template">
+                <div class="template-header">
+                    <div class="template-header-title">mr-dj.nl/diensten/bedrijfsfeest-dj</div>
+                    <div class="template-header-nav">
+                        <div class="nav-dot"></div>
+                        <div class="nav-dot"></div>
+                        <div class="nav-dot"></div>
+                    </div>
+                </div>
+
+                <div class="hero-section">
+                    BEDRIJFSFEEST DJ - BOOST JE TEAMSPIRIT
+                </div>
+
+                <div class="template-layout">
+                    <div class="main-content">
+                        <div class="content-section">
+                            <div class="content-row">
+                                <div class="feature-card">✓ Energizers &amp; openingsacts</div>
+                                <div class="feature-card">✓ Interactieve verzoeksessies</div>
+                                <div class="feature-card">✓ Presentatie &amp; aankondigingen</div>
+                            </div>
+                            <div class="content-row">
+                                <div class="feature-card">✓ Merkkleuren lichtshow</div>
+                                <div class="feature-card">✓ Hybride event ondersteuning</div>
+                                <div class="feature-card">✓ Aftermovie &amp; recap opties</div>
+                            </div>
+                        </div>
+
+                        <div class="testimonial-section">
+                            ORGANISM: TESTIMONIAL CAROUSEL (HR &amp; EVENTMANAGERS)
+                        </div>
+
+                        <div class="pricing-section">
+                            ORGANISM: PRICING TABLE (TEAM, PREMIUM, XL)
+                        </div>
+
+                        <div class="cta-section">
+                            MOLECULE: PLAN EEN BEDRIJFSFEEST
+                        </div>
+                    </div>
+
+                    <div class="sidebar">
+                        <div class="sidebar-title">Activatie &amp; Support</div>
+                        <div class="sidebar-block form">
+                            MOLECULE: EVENT CHECKLIST DOWNLOAD
+                        </div>
+                        <div class="sidebar-block">
+                            MOLECULE: TECHNISCHE VEREISTEN
+                        </div>
+                        <div class="sidebar-block">
+                            MOLECULE: CASE STUDIES
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    FOOTER &amp; COPYRIGHT
+                </div>
             </div>
-        </div>
-        
+        </section>
+
+        <section id="service-private" class="service-block">
+            <div class="page-template">
+                <div class="template-header">
+                    <div class="template-header-title">mr-dj.nl/diensten/private-feesten</div>
+                    <div class="template-header-nav">
+                        <div class="nav-dot"></div>
+                        <div class="nav-dot"></div>
+                        <div class="nav-dot"></div>
+                    </div>
+                </div>
+
+                <div class="hero-section">
+                    PRIVATE FEESTEN - INTIEM EN OP MAAT
+                </div>
+
+                <div class="template-layout">
+                    <div class="main-content">
+                        <div class="content-section">
+                            <div class="content-row">
+                                <div class="feature-card">✓ Verjaardagen &amp; jubilea</div>
+                                <div class="feature-card">✓ Thema playlists</div>
+                                <div class="feature-card">✓ Compacte booth opties</div>
+                            </div>
+                            <div class="content-row">
+                                <div class="feature-card">✓ Ambient &amp; lounge sets</div>
+                                <div class="feature-card">✓ Party photographer add-on</div>
+                                <div class="feature-card">✓ Flexibele eindtijden</div>
+                            </div>
+                        </div>
+
+                        <div class="testimonial-section">
+                            ORGANISM: TESTIMONIAL CAROUSEL (HOSTS &amp; FAMILIE)
+                        </div>
+
+                        <div class="pricing-section">
+                            ORGANISM: PRICING TABLE (BASIS, DELUXE, VIP)
+                        </div>
+
+                        <div class="cta-section">
+                            MOLECULE: CHECK BESCHIKBAARHEID
+                        </div>
+                    </div>
+
+                    <div class="sidebar">
+                        <div class="sidebar-title">Service &amp; Extra's</div>
+                        <div class="sidebar-block form">
+                            MOLECULE: PERSOONLIJKE PLAYLIST BUILDER
+                        </div>
+                        <div class="sidebar-block">
+                            MOLECULE: DECOR &amp; LIGHTING ADD-ONS
+                        </div>
+                        <div class="sidebar-block">
+                            MOLECULE: SFEERIMPRESSIES
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    FOOTER &amp; COPYRIGHT
+                </div>
+            </div>
+        </section>
+
         <div class="key-components">
             <span>Kerncomponenten:</span> Hero Section, Feature Cards, Testimonial Carousel, Pricing Table, Contact Form, Footer Navigation.
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = Array.from(document.querySelectorAll('.service-nav .nav-pill'));
+            const serviceSections = Array.from(document.querySelectorAll('.service-block'));
+
+            const setActiveService = (hash) => {
+                const targetHash = hash || '#service-bruiloft';
+                navLinks.forEach((link) => {
+                    const isActive = link.getAttribute('href') === targetHash;
+                    link.classList.toggle('active', isActive);
+                    if (isActive) {
+                        link.setAttribute('aria-current', 'true');
+                    } else {
+                        link.removeAttribute('aria-current');
+                    }
+                });
+
+                serviceSections.forEach((section) => {
+                    const isActive = `#${section.id}` === targetHash;
+                    section.classList.toggle('active', isActive);
+                });
+            };
+
+            setActiveService(window.location.hash);
+            window.addEventListener('hashchange', () => setActiveService(window.location.hash));
+
+            navLinks.forEach((link) => {
+                link.addEventListener('click', () => {
+                    requestAnimationFrame(() => setActiveService(window.location.hash));
+                });
+            });
+        });
+    </script>
 </body>
 </html>
 
