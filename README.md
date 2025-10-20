@@ -14,6 +14,8 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
+> ℹ️  Het deploy-script installeert nu automatisch backend- én frontend-dependencies en draait zowel de backend tests als de frontend production build (`npm ci && npm run build`). Zorg dat Node 20 + npm 10 lokaal beschikbaar zijn zodat deze verificaties slagen voordat het pakket wordt geüpload.
+
 👉 Gebruik de [Go-Live checklist](docs/go-live-checklist.md) om stap-voor-stap te bevestigen dat backend, database en Netlify klaarstaan voor productie.
 
 **Website**: https://staging.sevensa.nl

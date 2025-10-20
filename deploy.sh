@@ -21,6 +21,8 @@ VPS_HOST="147.93.57.40"
 VPS_USER="root"
 DEPLOY_DIR="/opt/mr-dj"
 DOMAIN="staging.sevensa.nl"
+SITE_PATH="/eds"
+SITE_URL="https://${DOMAIN}${SITE_PATH}"
 PACKAGE_NAME="mr-dj-deploy.tar.gz"
 
 command -v ssh >/dev/null 2>&1 || { echo "❌ ssh command not found"; exit 1; }
@@ -32,6 +34,14 @@ echo "📦 Installing backend dependencies (if needed)..."
 npm install --no-audit --progress=false
 echo "🧪 Executing backend test suite..."
 npm test -- --runInBand
+popd >/dev/null
+
+echo "🧱 Building production frontend bundle..."
+pushd "$ROOT_DIR/frontend" >/dev/null
+echo "📦 Installing frontend dependencies via npm ci..."
+npm ci --no-audit --progress=false
+echo "🏗️ Running frontend build..."
+npm run build
 popd >/dev/null
 
 echo "🧹 Preparing clean deployment artifact..."
@@ -107,7 +117,7 @@ echo "Recent logs for eds-frontend:"
 docker-compose logs eds-frontend --tail=50
 
 echo "✅ Deployment complete!"
-echo "🌐 Website should be available at: https://staging.sevensa.nl/eds"
+echo "🌐 Website should be available at: ${SITE_URL}"
 echo ""
 echo "Useful commands (inside /opt/mr-dj on VPS):"
 echo "  docker-compose logs -f eds-frontend # View frontend logs"
@@ -118,7 +128,7 @@ echo "  docker-compose down                 # Stop all services"
 ENDSSH
 
 echo "✅ Deployment script completed!"
-echo "🌐 Check your website at: https://staging.sevensa.nl/eds"
+echo "🌐 Check your website at: ${SITE_URL}"
 echo "📊 Post-deploy: Import docs/observability/grafana.json into Grafana via Dashboards → New → Import."
 
 # Cleanup local tar
