@@ -182,6 +182,7 @@ async function createBooking(payload) {
         id: row.id,
         status: row.status,
         createdAt: row.created_at,
+        updatedAt: row.created_at,
         persisted: true,
         name: payload.name,
         email: payload.email,
@@ -204,6 +205,7 @@ async function createBooking(payload) {
       id,
       status: 'pending',
       createdAt: timestamp,
+      updatedAt: timestamp,
       persisted: false,
       name: payload.name,
       email: payload.email,
@@ -345,6 +347,8 @@ function ping() {
 module.exports = {
   createBooking,
   getRecentBookings,
+  updateBooking,
+  deleteBooking,
   resetInMemoryStore,
   getBookingServiceStatus,
   ping
