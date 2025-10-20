@@ -52,8 +52,22 @@ scp -o StrictHostKeyChecking=no \
     "$ROOT_DIR/$PACKAGE_NAME" ${VPS_USER}@${VPS_HOST}:/tmp/
 
 echo "🔧 Deploying on VPS..."
+
+echo "🔍 Detecting Docker Compose availability on VPS..."
+COMPOSE_CMD=$(ssh -o StrictHostKeyChecking=no \
+    ${VPS_USER}@${VPS_HOST} \
+    "if command -v docker-compose >/dev/null 2>&1; then echo docker-compose; elif docker compose version >/dev/null 2>&1; then echo 'docker compose'; fi")
+
+if [[ -z "${COMPOSE_CMD}" ]]; then
+    echo "❌ Neither docker-compose nor the Docker Compose plugin is available on the VPS."
+    echo "   Please install Docker Compose before running the deployment script again."
+    exit 1
+fi
+
+echo "ℹ️ Using '$COMPOSE_CMD' on the VPS."
+
 ssh -o StrictHostKeyChecking=no \
-    ${VPS_USER}@${VPS_HOST} << 'ENDSSH'
+    ${VPS_USER}@${VPS_HOST} "COMPOSE_CMD='${COMPOSE_CMD}' bash -s" <<'ENDSSH'
 
 # Check if the 'web' network exists and create it as external if it doesn't
 if ! docker network ls | grep -q " web "; then
@@ -61,15 +75,23 @@ if ! docker network ls | grep -q " web "; then
     docker network create web
 fi
 
+# Ensure Compose command is available
+if [[ -z "${COMPOSE_CMD:-}" ]]; then
+    echo "❌ COMPOSE_CMD is not set. Aborting deployment."
+    exit 1
+fi
+
+export COMPOSE_CMD
+
 # Stop existing containers for this project (using the new container names)
 DEPLOY_DIR="/opt/mr-dj"
 mkdir -p "$DEPLOY_DIR"
 cd "$DEPLOY_DIR"
 
 # Stop and remove old containers if they exist, to prevent conflicts
-# The original script's 'docker-compose down' is sufficient if the project name is unique.
+# The original script's Compose down command is sufficient if the project name is unique.
 # Since we are using unique container names, a simple down/up is fine.
-docker-compose down || true
+$COMPOSE_CMD down || true
 
 # Extract new version
 tar -xzf /tmp/mr-dj-deploy.tar.gz
@@ -84,11 +106,11 @@ chmod 600 letsencrypt
 # Build and start containers
 echo "Building Docker images..."
 # Skipping cache for a fresh build, as is common in deployment scripts
-docker-compose build --no-cache
+$COMPOSE_CMD build --no-cache
 
 echo "Starting containers..."
 # Use -d for detached mode
-docker-compose up -d
+$COMPOSE_CMD up -d
 
 # Wait for services to be ready
 echo "Waiting for services to start..."
@@ -96,24 +118,24 @@ sleep 10
 
 # Ensure database migrations are up to date
 echo "Running database migrations..."
-docker-compose exec -T mr-dj-backend npm run migrate
+$COMPOSE_CMD exec -T mr-dj-backend npm run migrate
 
 # Check container status
 echo "Container Status:"
-docker-compose ps
+$COMPOSE_CMD ps
 
 # Show logs for the frontend service (eds-frontend)
 echo "Recent logs for eds-frontend:"
-docker-compose logs eds-frontend --tail=50
+$COMPOSE_CMD logs eds-frontend --tail=50
 
 echo "✅ Deployment complete!"
 echo "🌐 Website should be available at: https://staging.sevensa.nl/eds"
 echo ""
 echo "Useful commands (inside /opt/mr-dj on VPS):"
-echo "  docker-compose logs -f eds-frontend # View frontend logs"
-echo "  docker-compose ps                   # Check status"
-echo "  docker-compose restart eds-frontend # Restart frontend"
-echo "  docker-compose down                 # Stop all services"
+echo "  $COMPOSE_CMD logs -f eds-frontend # View frontend logs"
+echo "  $COMPOSE_CMD ps                   # Check status"
+echo "  $COMPOSE_CMD restart eds-frontend # Restart frontend"
+echo "  $COMPOSE_CMD down                 # Stop all services"
 
 ENDSSH
 
