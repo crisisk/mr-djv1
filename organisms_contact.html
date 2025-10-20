@@ -61,18 +61,114 @@
             padding-bottom: 5px;
         }
         
-        .contact-form-placeholder {
+        .contact-form {
             background: #F8FCFF;
             border: 2px solid #E5E5E5;
             border-radius: 12px;
-            padding: 20px;
-            height: 350px;
+            padding: 24px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-field label {
             font-weight: 700;
             color: #1A2C4B;
+            font-size: 14px;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            border: 1px solid #C5D8E8;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 15px;
+            font-family: 'Montserrat', sans-serif;
+            color: #1A2C4B;
+            background-color: #FFFFFF;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #00AEEF;
+            box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.2);
+        }
+
+        .form-field textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #4F6783;
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: #C62828;
+            min-height: 16px;
+        }
+
+        .error-message[hidden] {
+            display: none;
+        }
+
+        .form-status {
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-status[hidden] {
+            display: none;
+        }
+
+        .form-status.success {
+            background: #E6F9F1;
+            color: #146A4D;
+            border: 1px solid #A0DFC6;
+        }
+
+        .form-status.error {
+            background: #FDECEF;
+            color: #8A1C2F;
+            border: 1px solid #F3BBC4;
+        }
+
+        .submit-button {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
+            border: none;
+            color: #FFFFFF;
+            font-weight: 800;
+            font-size: 15px;
+            padding: 12px 26px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 136, 204, 0.25);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
         }
         
         .info-card-grid {
@@ -141,6 +237,39 @@
             display: inline-block;
             margin-top: 10px;
         }
+
+        @media (max-width: 1024px) {
+            .slide-container {
+                width: 100%;
+                padding: 20px;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .slide-container {
+                padding: 16px;
+            }
+
+            .contact-form {
+                padding: 18px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -154,9 +283,60 @@
             <div>
                 <div class="section-title">Lay-out 1: Formulier met Info Cards</div>
                 
-                <div class="contact-form-placeholder">
-                    Contact Formulier (zie Molecules: Forms)
-                </div>
+                <form id="contact-form" class="contact-form" novalidate>
+                    <div id="form-status" class="form-status" role="status" aria-live="polite" hidden></div>
+
+                    <div class="form-field">
+                        <label for="contact-name">Naam</label>
+                        <input type="text" id="contact-name" name="name" autocomplete="name" required aria-describedby="contact-name-help contact-name-error">
+                        <p id="contact-name-help" class="helper-text">Vertel ons met wie we contact mogen opnemen.</p>
+                        <p id="contact-name-error" class="error-message" role="alert" hidden></p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="contact-email">E-mailadres</label>
+                        <input type="email" id="contact-email" name="email" autocomplete="email" required aria-describedby="contact-email-help contact-email-error">
+                        <p id="contact-email-help" class="helper-text">We gebruiken dit om onze bevestiging te sturen.</p>
+                        <p id="contact-email-error" class="error-message" role="alert" hidden></p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="contact-phone">Telefoonnummer</label>
+                        <input type="tel" id="contact-phone" name="phone" autocomplete="tel" required aria-describedby="contact-phone-help contact-phone-error">
+                        <p id="contact-phone-help" class="helper-text">Minimaal 6 cijfers zodat we je snel kunnen bereiken.</p>
+                        <p id="contact-phone-error" class="error-message" role="alert" hidden></p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="contact-event-type">Type evenement</label>
+                        <select id="contact-event-type" name="eventType" required aria-describedby="contact-event-type-help contact-event-type-error">
+                            <option value="">Maak een keuze</option>
+                            <option value="Bruiloft">Bruiloft</option>
+                            <option value="Bedrijfsevenement">Bedrijfsevenement</option>
+                            <option value="Privéfeest">Privéfeest</option>
+                            <option value="Festival">Festival</option>
+                            <option value="Anders">Anders</option>
+                        </select>
+                        <p id="contact-event-type-help" class="helper-text">Zo weten we direct welke sfeer je zoekt.</p>
+                        <p id="contact-event-type-error" class="error-message" role="alert" hidden></p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="contact-event-date">Datum evenement</label>
+                        <input type="date" id="contact-event-date" name="eventDate" aria-describedby="contact-event-date-help contact-event-date-error">
+                        <p id="contact-event-date-help" class="helper-text">Optioneel. Helpt ons om onze agenda te checken.</p>
+                        <p id="contact-event-date-error" class="error-message" role="alert" hidden></p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="contact-message">Bericht</label>
+                        <textarea id="contact-message" name="message" aria-describedby="contact-message-help contact-message-error" maxlength="2000" placeholder="Vertel ons meer over je wensen, locatie of pakketkeuze."></textarea>
+                        <p id="contact-message-help" class="helper-text">Maximaal 2000 tekens. Deel alle relevante details.</p>
+                        <p id="contact-message-error" class="error-message" role="alert" hidden></p>
+                    </div>
+
+                    <button type="submit" class="submit-button" data-default-label="Verstuur bericht">Verstuur bericht</button>
+                </form>
                 
                 <div class="info-card-grid">
                     <div class="info-card">
@@ -193,6 +373,180 @@
             
         </div>
     </div>
+    <script type="module">
+        const form = document.getElementById('contact-form');
+        const statusRegion = document.getElementById('form-status');
+        const submitButton = form?.querySelector('button[type="submit"]');
+
+        const initContactForm = () => {
+            const fields = {
+                name: {
+                    input: form.querySelector('#contact-name'),
+                    validator: (value) => value.trim() !== '' || 'Naam is vereist.'
+                },
+                email: {
+                    input: form.querySelector('#contact-email'),
+                    validator: (value) => /.+@.+\..+/.test(value.trim()) || 'Vul een geldig e-mailadres in.'
+                },
+                phone: {
+                    input: form.querySelector('#contact-phone'),
+                    validator: (value) => value.replace(/\D/g, '').length >= 6 || 'Telefoonnummer moet minimaal 6 cijfers bevatten.'
+                },
+                eventType: {
+                    input: form.querySelector('#contact-event-type'),
+                    validator: (value) => value.trim() !== '' || 'Selecteer het type evenement.'
+                },
+                eventDate: {
+                    input: form.querySelector('#contact-event-date'),
+                    validator: (value) => {
+                        if (!value) return true;
+                        const parsed = Date.parse(value);
+                        return !Number.isNaN(parsed) || 'Gebruik een geldige datum.';
+                    }
+                },
+                message: {
+                    input: form.querySelector('#contact-message'),
+                    validator: (value) => value.length <= 2000 || 'Bericht mag niet langer zijn dan 2000 tekens.'
+                }
+            };
+
+            const setFieldError = (fieldKey, errorMessage) => {
+                const field = fields[fieldKey];
+                if (!field) return;
+                const errorRegion = form.querySelector(`#${field.input.id}-error`);
+                if (errorMessage) {
+                    field.input.setAttribute('aria-invalid', 'true');
+                    errorRegion.hidden = false;
+                    errorRegion.textContent = errorMessage;
+                } else {
+                    field.input.removeAttribute('aria-invalid');
+                    errorRegion.hidden = true;
+                    errorRegion.textContent = '';
+                }
+            };
+
+            const resetStatus = () => {
+                statusRegion.hidden = true;
+                statusRegion.classList.remove('success', 'error');
+                statusRegion.textContent = '';
+                statusRegion.setAttribute('role', 'status');
+                statusRegion.setAttribute('aria-live', 'polite');
+            };
+
+            const showStatus = (type, message) => {
+                statusRegion.hidden = false;
+                statusRegion.classList.remove('success', 'error');
+                statusRegion.classList.add(type);
+                statusRegion.setAttribute('role', type === 'error' ? 'alert' : 'status');
+                statusRegion.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+                statusRegion.textContent = message;
+            };
+
+            const validateField = (fieldKey) => {
+                const field = fields[fieldKey];
+                if (!field) return true;
+                const value = field.input.value;
+                const result = field.validator(value);
+                const valid = result === true;
+                setFieldError(fieldKey, valid ? '' : result);
+                return valid;
+            };
+
+            Object.keys(fields).forEach((fieldKey) => {
+                const field = fields[fieldKey];
+                field.input?.addEventListener('blur', () => {
+                    validateField(fieldKey);
+                });
+                field.input?.addEventListener('input', () => {
+                    if (field.input.hasAttribute('aria-invalid')) {
+                        validateField(fieldKey);
+                    }
+                });
+            });
+
+            const setLoading = (loading) => {
+                if (loading) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Versturen...';
+                } else {
+                    submitButton.disabled = false;
+                    submitButton.textContent = submitButton.dataset.defaultLabel || 'Verstuur bericht';
+                }
+            };
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                resetStatus();
+
+                let formValid = true;
+                let firstInvalidField = null;
+
+                Object.keys(fields).forEach((fieldKey) => {
+                    const valid = validateField(fieldKey);
+                    if (!valid && !firstInvalidField) {
+                        firstInvalidField = fields[fieldKey].input;
+                    }
+                    formValid = formValid && valid;
+                });
+
+                if (!formValid) {
+                    showStatus('error', 'Controleer de gemarkeerde velden en probeer het opnieuw.');
+                    firstInvalidField?.focus();
+                    return;
+                }
+
+                const payload = {
+                    name: fields.name.input.value.trim(),
+                    email: fields.email.input.value.trim(),
+                    phone: fields.phone.input.value.trim(),
+                    message: fields.message.input.value.trim(),
+                    eventType: fields.eventType.input.value.trim(),
+                    eventDate: fields.eventDate.input.value || undefined
+                };
+
+                setLoading(true);
+
+                try {
+                    const response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json().catch(() => ({}));
+
+                    if (!response.ok) {
+                        if (response.status === 422 && Array.isArray(result.details)) {
+                            result.details.forEach((detail) => {
+                                if (detail.field && fields[detail.field]) {
+                                    setFieldError(detail.field, detail.message);
+                                }
+                            });
+                            showStatus('error', result.error || 'Validatie mislukt. Vul de velden opnieuw in.');
+                        } else {
+                            showStatus('error', result.error || 'Er is iets misgegaan bij het versturen. Probeer het later opnieuw.');
+                        }
+                        return;
+                    }
+
+                    form.reset();
+                    Object.keys(fields).forEach((fieldKey) => setFieldError(fieldKey, ''));
+                    showStatus('success', result.message || 'Bedankt voor je bericht! We nemen snel contact op.');
+                } catch (error) {
+                    showStatus('error', 'Verbinding mislukt. Controleer je internetverbinding en probeer opnieuw.');
+                } finally {
+                    setLoading(false);
+                }
+            });
+        };
+
+        if (form && statusRegion && submitButton) {
+            initContactForm();
+        }
+    </script>
 </body>
 </html>
 

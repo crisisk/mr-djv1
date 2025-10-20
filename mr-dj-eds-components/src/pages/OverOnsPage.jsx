@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import Header from '../components/Molecules/Header.jsx';
 import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
+import { Icon } from '../icons/index.jsx';
 
 const OverOnsPage = () => {
   return (
@@ -62,8 +63,8 @@ const OverOnsPage = () => {
 
           <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
             <div className="text-center">
-              <div className="w-48 h-48 bg-[#00AEEF] rounded-full mx-auto mb-6 flex items-center justify-center text-white text-6xl">
-                🎧
+              <div className="w-48 h-48 bg-[#00AEEF] rounded-full mx-auto mb-6 flex items-center justify-center text-white">
+                <Icon name="icon-headphones" size={72} />
               </div>
               <h3 className="text-2xl font-bold text-[#1A2C4B] mb-2">Mr. DJ</h3>
               <p className="text-[#00AEEF] font-semibold mb-4">Founder & Lead DJ</p>
@@ -74,8 +75,8 @@ const OverOnsPage = () => {
             </div>
 
             <div className="text-center">
-              <div className="w-48 h-48 bg-[#D4AF37] rounded-full mx-auto mb-6 flex items-center justify-center text-white text-6xl">
-                🎷
+              <div className="w-48 h-48 bg-[#D4AF37] rounded-full mx-auto mb-6 flex items-center justify-center text-white">
+                <Icon name="icon-sax" size={72} />
               </div>
               <h3 className="text-2xl font-bold text-[#1A2C4B] mb-2">Leslie Moore</h3>
               <p className="text-[#D4AF37] font-semibold mb-4">Saxofonist</p>
@@ -98,7 +99,9 @@ const OverOnsPage = () => {
 
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="text-5xl mb-4">🎯</div>
+                <div className="text-5xl mb-4 text-primary">
+                  <Icon name="icon-target" size={48} />
+                </div>
                 <h3 className="text-xl font-bold text-[#1A2C4B] mb-3">Professionaliteit</h3>
                 <p className="text-gray-700">
                   Stipt op tijd, nette presentatie, betrouwbare apparatuur en duidelijke communicatie.
@@ -116,7 +119,9 @@ const OverOnsPage = () => {
               </div>
 
               <div className="text-center">
-                <div className="text-5xl mb-4">🤝</div>
+                <div className="text-5xl mb-4 text-primary">
+                  <Icon name="icon-handshake" size={48} />
+                </div>
                 <h3 className="text-xl font-bold text-[#1A2C4B] mb-3">Persoonlijk Contact</h3>
                 <p className="text-gray-700">
                   Geen standaard pakket, maar maatwerk. We luisteren naar jullie wensen en denken
@@ -176,7 +181,10 @@ const OverOnsPage = () => {
 
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="font-bold text-[#1A2C4B] mb-3">🔊 Geluid</h3>
+                <h3 className="font-bold text-[#1A2C4B] mb-3 flex items-center gap-2">
+                  <Icon name="icon-volume" size={24} className="text-[#00AEEF]" />
+                  Geluid
+                </h3>
                 <ul className="text-gray-700 space-y-2">
                   <li>• Pioneer DJ CDJ-3000 / XDJ-XZ</li>
                   <li>• JBL PRX / RCF HD Line Array Speakers</li>
@@ -186,7 +194,10 @@ const OverOnsPage = () => {
               </div>
 
               <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="font-bold text-[#1A2C4B] mb-3">💡 Licht</h3>
+                <h3 className="font-bold text-[#1A2C4B] mb-3 flex items-center gap-2">
+                  <Icon name="icon-lightbulb" size={24} className="text-[#D4AF37]" />
+                  Licht
+                </h3>
                 <ul className="text-gray-700 space-y-2">
                   <li>• Chauvet / ADJ Moving Heads</li>
                   <li>• Laser Effecten (Coherent / Kvant)</li>
