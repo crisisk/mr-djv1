@@ -118,7 +118,9 @@ function buildState(values) {
     metadata: {
       storePath: path.relative(process.cwd(), storePath),
       lastModified
-    }
+    },
+    roles: roleState.roles,
+    roleAssignments: roleState.assignments
   };
 }
 
@@ -160,7 +162,9 @@ async function updateValues(payload) {
   await managedEnv.write(nextValues);
   config.reload();
 
-  return buildState(nextValues);
+  const roleState = await updateRoleAssignments(assignments);
+
+  return buildState(nextValues, roleState);
 }
 
 /**
