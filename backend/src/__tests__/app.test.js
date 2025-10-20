@@ -2,6 +2,7 @@ const app = require('../app');
 const { resetInMemoryStore: resetContactStore } = require('../services/contactService');
 const { resetInMemoryStore: resetCallbackStore } = require('../services/callbackRequestService');
 const { resetInMemoryStore: resetBookingStore } = require('../services/bookingService');
+const sevensaService = require('../services/sevensaService');
 const {
   resetLogs: resetPersonalizationLogs,
   resetCache: resetPersonalizationCache
@@ -61,12 +62,13 @@ describe('Mister DJ API', () => {
     server.close(done);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     resetContactStore();
     resetCallbackStore();
     resetBookingStore();
     resetPersonalizationLogs();
     resetPersonalizationCache();
+    await sevensaService.reset();
   });
 
   it('returns service metadata on the root route', async () => {
@@ -87,7 +89,8 @@ describe('Mister DJ API', () => {
     expect(response.body.endpoints.integrations).toEqual(
       expect.objectContaining({
         rentGuy: '/integrations/rentguy/status',
-        sevensa: '/integrations/sevensa/status'
+        sevensa: '/integrations/sevensa/status',
+        crmExport: '/integrations/crm/export'
       })
     );
     expect(response.body.endpoints.metrics).toBe('/metrics/queues');
@@ -97,6 +100,43 @@ describe('Mister DJ API', () => {
         events: '/personalization/events'
       })
     );
+  });
+
+  it('exports Sevensa CRM queue data as CSV', async () => {
+    await sevensaService.reset();
+    await sevensaService.submitLead(
+      {
+        id: 'crm-lead-1',
+        firstName: 'Alice',
+        lastName: 'DJ',
+        email: 'alice@example.com',
+        phone: '0612345678',
+        message: 'Interested in DJ services',
+        eventType: 'wedding',
+        eventDate: '2025-06-01'
+      },
+      { source: 'unit-test' }
+    );
+
+    const response = await request('GET', '/integrations/crm/export');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/csv');
+    const lines = response.body.trim().split('\n');
+    expect(lines[0]).toBe(
+      'lead_id,queue_status,queued_at,attempts,last_error,firstname,lastname,email,phone,company,message,event_date,event_type,budget,page_uri,page_name,source'
+    );
+    expect(lines.length).toBeGreaterThan(1);
+    const columns = lines[1].split(',');
+    expect(columns[0]).toBe('crm-lead-1');
+    expect(columns[1]).toBe('waiting');
+    expect(columns[5]).toBe('Alice');
+    expect(columns[6]).toBe('DJ');
+    expect(columns[7]).toBe('alice@example.com');
+    expect(columns[8]).toBe('0612345678');
+    expect(columns[10]).toBe('Interested in DJ services');
+    expect(columns[12]).toBe('wedding');
+    expect(columns[16]).toBe('unit-test');
   });
 
   it('exposes a detailed health check', async () => {
