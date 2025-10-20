@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { submitCallbackRequest } from '../../services/api.js';
 import { trackFormSubmission } from '../../utils/trackConversion';
 
@@ -17,6 +17,15 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const successResetTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (successResetTimeoutRef.current) {
+        clearTimeout(successResetTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const validateForm = () => {
     const errors = {};
@@ -70,12 +79,6 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
     setIsSubmitting(true);
 
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
     try {
       await submitCallbackRequest(formData);
 
@@ -87,7 +90,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
         window.dataLayer.push({
           event: 'quick_callback_submit',
           form_variant: variant,
-          event_type: payload.eventType,
+          event_type: formData.eventType,
           form_type: 'callback',
         });
       }
@@ -95,7 +98,10 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
       setFieldErrors({});
       setIsSubmitted(true);
       // Reset form after 3 seconds
-      setTimeout(() => {
+      if (successResetTimeoutRef.current) {
+        clearTimeout(successResetTimeoutRef.current);
+      }
+      successResetTimeoutRef.current = setTimeout(() => {
         setFormData({ name: '', phone: '', eventType: '' });
         setFieldErrors({});
         setIsSubmitted(false);
