@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '../Atoms/Buttons.jsx';
+import IconBase, { mergeClassNames } from '../ui/icon-base';
 import { trackPricingCTA, getUserVariant } from '../../utils/trackConversion';
 import { colors, spacing, typography } from '../../theme/tokens.js';
 
@@ -56,6 +57,20 @@ const packages = [
     buttonText: "Vraag Offerte Aan",
   },
 ];
+
+const CheckIcon = ({ className, style, ...props }) => (
+  <IconBase
+    className={mergeClassNames('h-5 w-5 flex-shrink-0', className)}
+    style={style}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+  </IconBase>
+);
 
 const PricingCard = ({ pkg }) => {
   const { name, subtitle, price, features, isFeatured, buttonText } = pkg;
@@ -164,17 +179,9 @@ const PricingCard = ({ pkg }) => {
       <ul style={featuresStyle}>
         {features.map((feature, index) => (
           <li key={index} style={featureItemStyle}>
-            <svg
-              width="20"
-              height="20"
-              style={{ color: isFeatured ? colors.secondary.main : colors.primary.main, flexShrink: 0 }}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-            </svg>
+            <CheckIcon
+              style={{ color: isFeatured ? colors.secondary.main : colors.primary.main }}
+            />
             {feature}
           </li>
         ))}

@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from './Buttons.jsx';
 import usePricingToggle from './usePricingToggle';
+import IconBase, { mergeClassNames } from './mr-dj-eds-components/src/components/ui/icon-base.jsx';
 
 const BILLING_MODES = {
   EVENT: 'event',
@@ -85,6 +86,19 @@ const packages = [
   },
 ];
 
+const CheckIcon = ({ className, ...props }) => (
+  <IconBase
+    className={mergeClassNames('mr-spacing-sm h-5 w-5', className)}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+  </IconBase>
+);
+
 const PricingCard = ({ pkg, billingMode }) => {
   const { name, subtitle, pricing, features, isFeatured, buttonText } = pkg;
   const pricingDetails = pricing[billingMode];
@@ -121,9 +135,7 @@ const PricingCard = ({ pkg, billingMode }) => {
       <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start text-font-size-body">
-            <svg className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-            </svg>
+            <CheckIcon className={isFeatured ? 'text-secondary' : 'text-primary'} />
             {feature}
           </li>
         ))}
