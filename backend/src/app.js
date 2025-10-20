@@ -9,7 +9,6 @@ const YAML = require('yamljs');
 const config = require('./config');
 const routes = require('./routes');
 const { notFoundHandler, errorHandler } = require('./middleware/errors');
-const rateLimiter = require('./middleware/rateLimiter');
 
 const app = express();
 
@@ -67,8 +66,6 @@ app.use(
   })
 );
 app.use(express.urlencoded({ extended: true }));
-
-app.use(rateLimiter);
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument, { explorer: true }));
 
