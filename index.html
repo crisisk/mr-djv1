@@ -162,6 +162,48 @@
 
     <!-- Complianz Script (Placeholder URL) -->
     <script src="https://cdn.complianz.io/consent-manager/complianz.js" data-site-id="YOUR_SITE_ID" async></script>
+
+    <script>
+      (function() {
+        var pixelId = '%VITE_FACEBOOK_PIXEL_ID%';
+        var shouldLoad = typeof pixelId === 'string' && pixelId.trim() !== '' && pixelId !== 'undefined' && pixelId !== 'null';
+        if (!shouldLoad) {
+          var placeholder = document.getElementById('facebook-pixel-noscript');
+          if (placeholder && placeholder.parentNode) {
+            placeholder.parentNode.removeChild(placeholder);
+          }
+          return;
+        }
+
+        !(function(f, b, e, v, n, t, s) {
+          if (f.fbq) return;
+          n = f.fbq = function() {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = '2.0';
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = 'https://connect.facebook.net/en_US/fbevents.js';
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(window, document, 'script');
+
+        window.fbq('init', pixelId);
+        window.fbq('track', 'PageView');
+
+        var noscript = document.getElementById('facebook-pixel-noscript');
+        if (noscript) {
+          noscript.innerHTML = '<img height="1" width="1" style="display:none" alt="facebook pixel" src="https://www.facebook.com/tr?id=' + encodeURIComponent(pixelId) + '&ev=PageView&noscript=1" />';
+        }
+      })();
+    </script>
+    <noscript id="facebook-pixel-noscript">
+      <img height="1" width="1" style="display:none" alt="facebook pixel" src="https://www.facebook.com/tr?id=%VITE_FACEBOOK_PIXEL_ID%&ev=PageView&noscript=1" />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>

@@ -6,32 +6,15 @@ import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
 import PricingTables from '../components/Organisms/PricingTables.jsx';
 import Button from '../components/Atoms/Buttons.jsx';
-import { pricingPackages } from '../data/pricingPackages.js';
-import { generateOfferCatalogSchema, generateServiceSchema } from '../utils/schemaOrg.js';
+import { Icon } from '../icons/index.jsx';
 
 const BruiloftDJPage = ({ variant = 'A' }) => {
   // Variant-specific CTA text
   const ctaPrimaryText = variant === 'B' ? 'Boek Nu' : 'Bekijk Video';
   const ctaSecondaryText = variant === 'B' ? 'Check Beschikbaarheid' : 'Vraag Prijs Aan';
 
-  const offerCatalogSchema = generateOfferCatalogSchema({
-    packages: pricingPackages,
-    pagePath: '/bruiloft-dj',
-  });
-
-  const serviceSchema = {
-    ...generateServiceSchema({
-      serviceName: 'Bruiloft DJ Service',
-      description:
-        'Op zoek naar een bruiloft DJ? Zeg ook ja tegen Mister DJ en je bent gegarandeerd van een perfect geregeld knallend trouwfeest. Niets is te gek!',
-      serviceType: 'DJ Services',
-    }),
-    '@id': 'https://mr-dj.sevensa.nl/bruiloft-dj#service',
-    areaServed: 'Nederland',
-    offers: {
-      '@id': offerCatalogSchema['@id'],
-    },
-  };
+  const breadcrumbs = createServiceBreadcrumbs('Bruiloft DJ', '/bruiloft-dj');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
 
   return (
     <div className="BruiloftDJPage">
@@ -43,8 +26,27 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
         />
         <meta name="keywords" content="bruiloft dj, wedding dj, dj met saxofoon, bruiloft entertainment, live muziek bruiloft, trouwfeest dj" />
 
-        <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(offerCatalogSchema)}</script>
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "Service",
+              "name": "Bruiloft DJ Service",
+              "provider": {
+                "@type": "Organization",
+                "name": "Mr. DJ",
+                "url": "https://mr-dj.sevensa.nl"
+              },
+              "serviceType": "DJ Services",
+              "areaServed": "Nederland",
+              "offers": {
+                "@type": "Offer",
+                "priceRange": "€495-€1295"
+              }
+            }
+          `}
+        </script>
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />
@@ -76,7 +78,9 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
 
             <div className="grid md:grid-cols-2 gap-8 mt-12">
               <div className="bg-gray-50 p-6 rounded-lg">
-                <div className="text-4xl mb-4">🎵</div>
+                <div className="text-4xl mb-4 text-primary">
+                  <Icon name="icon-music" size={48} />
+                </div>
                 <h3 className="text-2xl font-bold text-[#1A2C4B] mb-3">Jullie persoonlijke bruiloft DJ</h3>
                 <p className="text-gray-700">
                   Alle muziekwensen en nog zoveel meer bespreek je ruim van te voren met je persoonlijke Mister DJ. In een ontspannen setting kunnen jullie dan precies aangeven hoe de avond eruit zal gaan zien en wat jullie van de trouwfeest DJ verwachten.
@@ -84,7 +88,9 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
               </div>
 
               <div className="bg-gray-50 p-6 rounded-lg">
-                <div className="text-4xl mb-4">🎼</div>
+                <div className="text-4xl mb-4 text-primary">
+                  <Icon name="icon-music" size={48} />
+                </div>
                 <h3 className="text-2xl font-bold text-[#1A2C4B] mb-3">Bruiloft muziek, licht en geluid</h3>
                 <p className="text-gray-700">
                   Afgestemd op jullie wensen en de locatie. Een goede afstemming van het licht en het geluid op het aantal gasten en de grootte van de locatie is erg belangrijk. Ook op dit gebied denkt Mister DJ graag met je mee.
@@ -92,7 +98,9 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
               </div>
 
               <div className="bg-gray-50 p-6 rounded-lg">
-                <div className="text-4xl mb-4">🔄</div>
+                <div className="text-4xl mb-4 text-primary">
+                  <Icon name="icon-refresh" size={48} />
+                </div>
                 <h3 className="text-2xl font-bold text-[#1A2C4B] mb-3">Altijd een reserve DJ</h3>
                 <p className="text-gray-700">
                   Ook een Mister DJ kan wel eens een griepje krijgen. Dan zal hij niet met een doos tissues op de draaitafel tussen je gasten gaan staan, maar krijgen jullie gewoon een verse stand-in Mr. DJ die ook op de hoogte is van al jullie wensen en voorkeuren.
@@ -100,7 +108,9 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
               </div>
 
               <div className="bg-gray-50 p-6 rounded-lg">
-                <div className="text-4xl mb-4">💯</div>
+                <div className="text-4xl mb-4 text-primary">
+                  <Icon name="icon-badge" size={48} />
+                </div>
                 <h3 className="text-2xl font-bold text-[#1A2C4B] mb-3">100% Dansgarantie</h3>
                 <p className="text-gray-700">
                   Als rasechte Brabanders weten we als geen ander hoe je een feestje bouwt. We stemmen de muziek af op waar de gasten van houden. Niets is te gek, het kan allemaal!
@@ -163,35 +173,45 @@ const BruiloftDJPage = ({ variant = 'A' }) => {
 
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-lg shadow-sm flex items-center gap-4">
-                <div className="text-3xl">🎷</div>
+                <div className="text-3xl text-secondary">
+                  <Icon name="icon-sax" size={40} />
+                </div>
                 <div>
                   <h3 className="text-xl font-bold text-[#1A2C4B]">Topsaxofonist Leslie Moore</h3>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-sm flex items-center gap-4">
-                <div className="text-3xl">✨</div>
+                <div className="text-3xl text-secondary">
+                  <Icon name="icon-sparkles" size={36} />
+                </div>
                 <div>
                   <h3 className="text-xl font-bold text-[#1A2C4B]">Een spectaculaire lasershow</h3>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-sm flex items-center gap-4">
-                <div className="text-3xl">🎤</div>
+                <div className="text-3xl text-secondary">
+                  <Icon name="icon-microphone" size={36} />
+                </div>
                 <div>
                   <h3 className="text-xl font-bold text-[#1A2C4B]">Verschillende zangers en zangeressen</h3>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-sm flex items-center gap-4">
-                <div className="text-3xl">📸</div>
+                <div className="text-3xl text-secondary">
+                  <Icon name="icon-camera" size={36} />
+                </div>
                 <div>
                   <h3 className="text-xl font-bold text-[#1A2C4B]">Ervaren partyfotograaf</h3>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-sm flex items-center gap-4">
-                <div className="text-3xl">📺</div>
+                <div className="text-3xl text-secondary">
+                  <Icon name="icon-tv" size={36} />
+                </div>
                 <div>
                   <h3 className="text-xl font-bold text-[#1A2C4B]">Grote tv-schermen (leuk voor speciale foto's)</h3>
                 </div>

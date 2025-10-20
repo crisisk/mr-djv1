@@ -5,32 +5,15 @@ import Footer from '../components/Organisms/Footer.jsx';
 import HeroSection from '../components/Organisms/HeroSection.jsx';
 import ContactForm from '../components/Organisms/ContactForm.jsx';
 import PricingTables from '../components/Organisms/PricingTables.jsx';
-import { pricingPackages } from '../data/pricingPackages.js';
-import { generateOfferCatalogSchema, generateServiceSchema } from '../utils/schemaOrg.js';
+import { Icon } from '../icons/index.jsx';
 
 const FeestDJPage = ({ variant = 'A' }) => {
   // Variant-specific CTA text
   const ctaPrimaryText = variant === 'B' ? 'Boek Nu' : 'Bekijk Video';
   const ctaSecondaryText = variant === 'B' ? 'Check Beschikbaarheid' : 'Vraag Prijs Aan';
 
-  const offerCatalogSchema = generateOfferCatalogSchema({
-    packages: pricingPackages,
-    pagePath: '/feest-dj',
-  });
-
-  const serviceSchema = {
-    ...generateServiceSchema({
-      serviceName: 'Feest DJ Service',
-      description:
-        'DJ inhuren voor je verjaardag? Boek dan de complete drive in show van Mr. DJ en ga heel de avond los met je vrienden op de meest dampende beats.',
-      serviceType: 'Party DJ Services',
-    }),
-    '@id': 'https://mr-dj.sevensa.nl/feest-dj#service',
-    areaServed: 'Nederland',
-    offers: {
-      '@id': offerCatalogSchema['@id'],
-    },
-  };
+  const breadcrumbs = createServiceBreadcrumbs('Feest DJ', '/feest-dj');
+  const breadcrumbSchema = JSON.stringify(generateBreadcrumbSchema(breadcrumbs));
 
   return (
     <div className="FeestDJPage">
@@ -42,8 +25,27 @@ const FeestDJPage = ({ variant = 'A' }) => {
         />
         <meta name="keywords" content="feest dj, verjaardag dj, jubileum dj, party dj, dj huren, carnaval dj, schoolfeest dj, drive in show" />
 
-        <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(offerCatalogSchema)}</script>
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "Service",
+              "name": "Feest DJ Service",
+              "provider": {
+                "@type": "Organization",
+                "name": "Mr. DJ",
+                "url": "https://mr-dj.sevensa.nl"
+              },
+              "serviceType": "Party DJ Services",
+              "areaServed": "Nederland",
+              "offers": {
+                "@type": "Offer",
+                "priceRange": "€395-€1095"
+              }
+            }
+          `}
+        </script>
+        <script type="application/ld+json">{breadcrumbSchema}</script>
       </Helmet>
 
       <Header />
@@ -111,7 +113,7 @@ const FeestDJPage = ({ variant = 'A' }) => {
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-xl font-bold text-[#1A2C4B] mb-3 flex items-center gap-3">
-                  <span className="text-2xl">🎧</span>
+                  <Icon name="icon-headphones" size={28} className="text-[#00AEEF]" />
                   Persoonlijke Mister DJ
                 </h3>
                 <p className="text-gray-700">
@@ -121,7 +123,7 @@ const FeestDJPage = ({ variant = 'A' }) => {
 
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-xl font-bold text-[#1A2C4B] mb-3 flex items-center gap-3">
-                  <span className="text-2xl">🔊</span>
+                  <Icon name="icon-volume" size={28} className="text-[#00AEEF]" />
                   Muziek, Licht en Geluid
                 </h3>
                 <p className="text-gray-700">
@@ -131,7 +133,7 @@ const FeestDJPage = ({ variant = 'A' }) => {
 
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-xl font-bold text-[#1A2C4B] mb-3 flex items-center gap-3">
-                  <span className="text-2xl">🔄</span>
+                  <Icon name="icon-refresh" size={28} className="text-[#00AEEF]" />
                   Altijd Een Reserve DJ
                 </h3>
                 <p className="text-gray-700">
@@ -171,28 +173,28 @@ const FeestDJPage = ({ variant = 'A' }) => {
               </h3>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">🎷</span>
+                  <Icon name="icon-sax" size={28} className="text-[#D4AF37]" />
                   <div>
                     <h4 className="font-bold text-[#1A2C4B]">DJ + Saxofonist (1 uur)</h4>
                     <p className="text-gray-700 text-sm">+€250 - Live saxofoon tijdens hoogtepunt</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">📸</span>
+                  <Icon name="icon-camera" size={28} className="text-[#00AEEF]" />
                   <div>
                     <h4 className="font-bold text-[#1A2C4B]">Photobooth (3 uur)</h4>
                     <p className="text-gray-700 text-sm">+€400 - Met props en direct print</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">✨</span>
+                  <Icon name="icon-sparkles" size={28} className="text-[#D4AF37]" />
                   <div>
                     <h4 className="font-bold text-[#1A2C4B]">CO2 Jets</h4>
                     <p className="text-gray-700 text-sm">+€150 - Spectaculaire effecten</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">🕺</span>
+                  <Icon name="icon-dancer" size={28} className="text-[#1A2C4B]" />
                   <div>
                     <h4 className="font-bold text-[#1A2C4B]">LED Dansvloer (4x4m)</h4>
                     <p className="text-gray-700 text-sm">+€350 - Verlichte dansvloer</p>

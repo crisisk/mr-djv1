@@ -1,3 +1,5 @@
+import { socialLinkUrls } from '../config/socialLinks';
+
 /**
  * Schema.org Structured Data Utilities
  *
@@ -40,11 +42,7 @@ export const generateOrganizationSchema = () => ({
     "addressRegion": "Noord-Brabant",
     "addressCountry": "NL"
   },
-  "sameAs": [
-    "https://www.facebook.com/mrdj.nl",
-    "https://www.instagram.com/mrdj.nl",
-    "https://www.linkedin.com/company/mrdj-nl"
-  ],
+  "sameAs": socialLinkUrls,
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.9",

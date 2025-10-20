@@ -2,6 +2,16 @@ import React from 'react';
 import Button from '../Atoms/Buttons.jsx';
 import { BILLING_MODES, pricingPackages } from '../../data/pricingPackages.js';
 import { trackPricingCTA, getUserVariant } from '../../utils/trackConversion';
+import { colors, spacing, typography } from '../../theme/tokens.js';
+
+const withAlpha = (hex, alpha) => {
+  const normalized = hex.replace('#', '');
+  const bigint = parseInt(normalized, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 const PricingCard = ({ pkg, billingMode, isHighlighted }) => {
   const { name, subtitle, features, buttonText } = pkg;
@@ -9,44 +19,126 @@ const PricingCard = ({ pkg, billingMode, isHighlighted }) => {
     pkg.pricing[billingMode] ?? pkg.pricing[BILLING_MODES.EVENT];
 
   // Use token-based classes
-  const cardClasses = isHighlighted
-    ? "bg-[#1A2C4B] text-white shadow-2xl transform scale-105"
-    : "bg-white text-[#1A2C4B] shadow-lg";
+  const buttonVariant = isFeatured ? "secondary" : "primary";
 
-  const headerClasses = isHighlighted
-    ? "text-secondary border-b border-secondary/50"
-    : "text-primary border-b border-gray-100";
+  const cardStyle = {
+    backgroundColor: isFeatured ? colors.neutral.dark : colors.neutral.light,
+    color: isFeatured ? colors.neutral.light : colors.neutral.dark,
+    padding: spacing.xl,
+    borderRadius: '0.75rem',
+    boxShadow: isFeatured
+      ? '0 25px 60px rgba(26, 44, 75, 0.35)'
+      : '0 15px 40px rgba(26, 44, 75, 0.18)',
+    transform: isFeatured ? 'scale(1.05)' : 'scale(1)',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    minHeight: '100%',
+  };
 
-  const buttonVariant = isHighlighted ? "secondary" : "primary";
+  const headerStyle = {
+    color: isFeatured ? colors.secondary.main : colors.primary.main,
+    borderBottom: `1px solid ${isFeatured ? withAlpha(colors.secondary.main, 0.5) : colors.neutral.gray100}`,
+    paddingBottom: spacing.md,
+    marginBottom: spacing.md,
+  };
+
+  const titleStyle = {
+    fontSize: typography.fontSize.h3,
+    fontFamily: typography.fontFamily.heading,
+    fontWeight: typography.fontWeight.bold,
+  };
+
+  const subtitleStyle = {
+    fontSize: typography.fontSize.small,
+    opacity: 0.8,
+    fontFamily: typography.fontFamily.primary,
+  };
+
+  const priceContainerStyle = {
+    display: 'flex',
+    alignItems: 'baseline',
+    marginBottom: spacing.lg,
+    gap: spacing.xs,
+  };
+
+  const priceStyle = {
+    fontSize: typography.fontSize.h1,
+    fontWeight: typography.fontWeight.extrabold,
+    fontFamily: typography.fontFamily.heading,
+    lineHeight: typography.lineHeight.tight,
+  };
+
+  const priceSuffixStyle = {
+    fontSize: typography.fontSize.body,
+    fontFamily: typography.fontFamily.primary,
+  };
+
+  const featuresStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+    flexGrow: 1,
+  };
+
+  const featureItemStyle = {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    fontSize: typography.fontSize.body,
+    fontFamily: typography.fontFamily.primary,
+  };
 
   // Handle CTA click with tracking
   const handleCTAClick = () => {
-    const variant = getUserVariant();
-    trackPricingCTA(variant, name, pricingDetails.displayAmount);
+    loadTrackConversion()
+      .then(({ getUserVariant, trackPricingCTA }) => {
+        if (typeof trackPricingCTA === 'function') {
+          const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+          trackPricingCTA(variant, name, price);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load tracking utilities for pricing CTA', error);
+      });
   };
 
   return (
-    <div className={`relative flex flex-col p-8 rounded-lg transition duration-300 ${cardClasses}`}>
-      {isHighlighted && (
-        <div className="absolute top-0 right-0 bg-secondary text-[#1A2C4B] text-sm font-bold px-4 py-1 rounded-tr-lg rounded-bl-lg">
+    <div className="relative flex flex-col" style={cardStyle}>
+      {isFeatured && (
+        <div
+          className="absolute top-0 right-0 rounded-tr-lg rounded-bl-lg"
+          style={{
+            backgroundColor: colors.secondary.main,
+            color: colors.neutral.dark,
+            fontSize: typography.fontSize.small,
+            fontWeight: typography.fontWeight.bold,
+            paddingInline: spacing.md,
+            paddingBlock: spacing.xs,
+          }}
+        >
           Populair
         </div>
       )}
-      <div className={`pb-4 mb-4 ${headerClasses}`}>
-        <h3 className="text-2xl font-bold">{name}</h3>
-        <p className="text-sm opacity-80">{subtitle}</p>
+      <div style={headerStyle}>
+        <h3 style={titleStyle}>{name}</h3>
+        <p style={subtitleStyle}>{subtitle}</p>
       </div>
-      <div className="flex flex-col gap-2 mb-6">
-        <div className="flex items-baseline">
-          <span className="text-5xl font-extrabold">{pricingDetails.displayAmount}</span>
-          <span className="text-base ml-1">{pricingDetails.suffix}</span>
-        </div>
-        <p className="text-sm opacity-80">{pricingDetails.description}</p>
+      <div style={priceContainerStyle}>
+        <span style={priceStyle}>{price}</span>
+        <span style={priceSuffixStyle}>/ event</span>
       </div>
-      <ul className="flex-grow space-y-2 mb-8">
+      <ul style={featuresStyle}>
         {features.map((feature, index) => (
-          <li key={index} className="flex items-start text-base">
-            <svg className={`w-5 h-5 mr-2 ${isHighlighted ? 'text-secondary' : 'text-primary'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <li key={index} style={featureItemStyle}>
+            <svg
+              width="20"
+              height="20"
+              style={{ color: isFeatured ? colors.secondary.main : colors.primary.main, flexShrink: 0 }}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
             </svg>
             {feature}
@@ -65,31 +157,37 @@ const PricingCard = ({ pkg, billingMode, isHighlighted }) => {
   );
 };
 
-const PricingTables = ({
-  highlightPackage,
-  billingMode = BILLING_MODES.EVENT,
-  packages = pricingPackages,
-}) => {
-  return (
-    <section className="py-16 bg-gray-100">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl text-center text-[#1A2C4B] mb-12 font-extrabold">
-          Onze Pakketten
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-          {packages.map((pkg) => {
-            const isHighlighted = highlightPackage
-              ? pkg.name.toLowerCase() === highlightPackage.toLowerCase()
-              : pkg.isFeatured;
+const PricingTables = () => {
+  const sectionStyle = {
+    paddingTop: spacing['3xl'],
+    paddingBottom: spacing['3xl'],
+    backgroundColor: colors.neutral.gray100,
+  };
 
-            return (
-              <PricingCard
-                key={pkg.id || pkg.name}
-                pkg={pkg}
-                billingMode={billingMode}
-                isHighlighted={isHighlighted}
-              />
-            );
+  const containerStyle = {
+    paddingInline: spacing.md,
+  };
+
+  const headingStyle = {
+    fontSize: typography.fontSize.h2,
+    textAlign: 'center',
+    color: colors.neutral.dark,
+    marginBottom: spacing['2xl'],
+    fontFamily: typography.fontFamily.heading,
+    fontWeight: typography.fontWeight.extrabold,
+  };
+
+  const gridStyle = {
+    gap: spacing.xl,
+  };
+
+  return (
+    <section style={sectionStyle}>
+      <div className="container mx-auto" style={containerStyle}>
+        <h2 style={headingStyle}>Onze Pakketten</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 items-center" style={gridStyle}>
+          {packages.map((pkg, index) => (
+            <PricingCard key={index} pkg={pkg} />
           ))}
         </div>
       </div>
