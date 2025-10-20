@@ -2,6 +2,7 @@ const express = require('express');
 const config = require('../config');
 const db = require('../lib/db');
 const { getContactServiceStatus } = require('../services/contactService');
+const { getCallbackRequestServiceStatus } = require('../services/callbackRequestService');
 const { getBookingServiceStatus } = require('../services/bookingService');
 const { getStatus: getRentGuyStatus } = require('../services/rentGuyService');
 
@@ -10,6 +11,7 @@ const router = express.Router();
 router.get('/', async (_req, res, next) => {
   const dbStatus = db.getStatus();
   const contactStatus = getContactServiceStatus();
+  const callbackStatus = getCallbackRequestServiceStatus();
   const bookingStatus = getBookingServiceStatus();
   try {
     const rentGuyStatus = await getRentGuyStatus();
@@ -33,6 +35,10 @@ router.get('/', async (_req, res, next) => {
           contact: {
             strategy: contactStatus.storageStrategy,
             fallbackQueueSize: contactStatus.fallbackQueueSize
+          },
+          callbackRequests: {
+            strategy: callbackStatus.storageStrategy,
+            fallbackQueueSize: callbackStatus.fallbackQueueSize
           },
           bookings: {
             strategy: bookingStatus.storageStrategy,

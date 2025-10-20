@@ -28,7 +28,7 @@ const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage.jsx')
 const TermsConditionsPage = React.lazy(() => import('./pages/TermsConditionsPage.jsx'));
 import { localSeoData, getLocalSeoDataBySlug } from './data/local_seo_data.js';
 import { localSeoBruiloftData, getLocalSeoBruiloftDataBySlug } from './data/local_seo_bruiloft_data.js';
-import './App.css'
+import './App.css';
 
 // Component to handle dynamic data fetching and rendering for local SEO pages
 // T12: A/B Testing Framework - Automatic assignment with cookie persistence
@@ -40,6 +40,8 @@ const LocalSeoPageWrapper = () => {
 
   let data = null;
   let isBruiloftPage = pathname.startsWith('/bruiloft-dj-');
+  const normalizedSlug = citySlug ? citySlug.toLowerCase() : '';
+  const fullSlug = isBruiloftPage ? `bruiloft-dj-${normalizedSlug}` : normalizedSlug;
 
   // T11: SEA Setup - Placeholder for tracking parameter logic
   // In a real application, you would parse the URL for tracking parameters (e.g., utm_source, gclid)
@@ -54,11 +56,11 @@ const LocalSeoPageWrapper = () => {
 
 
   if (isBruiloftPage) {
-    // For Bruiloft DJ pages, the slug is the full path segment (e.g., bruiloft-dj-eindhoven)
-    data = getLocalSeoBruiloftDataBySlug(citySlug);
+    // For Bruiloft DJ pages, append the prefix expected by the dataset (e.g., bruiloft-dj-eindhoven)
+    data = getLocalSeoBruiloftDataBySlug(fullSlug);
   } else {
     // For general DJ pages, the slug is just the city name (e.g., eindhoven)
-    data = getLocalSeoDataBySlug(citySlug);
+    data = getLocalSeoDataBySlug(fullSlug);
   }
 
   if (!data) {

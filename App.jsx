@@ -1,13 +1,8 @@
-import { BrowserRouter } from 'react-router-dom';
-import CoreApp from './mr-dj-eds-components/src/App.jsx';
 import './App.css';
+import MrDjApp from './mr-dj-eds-components/src/App.jsx';
 
 function App() {
-  return (
-    <BrowserRouter>
-      <CoreApp />
-    </BrowserRouter>
-  );
+  return <MrDjApp />;
 }
 
 export default App;
