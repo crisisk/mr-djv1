@@ -69,6 +69,7 @@ describe('Mister DJ API', () => {
     resetPersonalizationLogs();
     resetPersonalizationCache();
     await sevensaService.reset();
+    await resetPersonalizationCache();
   });
 
   it('returns service metadata on the root route', async () => {
