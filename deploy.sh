@@ -59,6 +59,9 @@ echo "🔧 Deploying on VPS..."
 ssh -o StrictHostKeyChecking=no \
     ${VPS_USER}@${VPS_HOST} << 'ENDSSH'
 
+set -euo pipefail
+IFS=$'\n\t'
+
 # Check if the 'web' network exists and create it as external if it doesn't
 if ! docker network ls | grep -q " web "; then
     echo "Creating external 'web' network for Traefik integration..."
@@ -99,7 +102,7 @@ fi
 "${DOCKER_COMPOSE[@]}" down || true
 
 # Extract new version
-tar -xzf /tmp/mr-dj-deploy.tar.gz
+tar -xzf /tmp/mr-dj-deploy.tar.gz || { echo "❌ Failed to extract deployment archive"; exit 1; }
 rm /tmp/mr-dj-deploy.tar.gz
 
 # Create letsencrypt directory (if Traefik is managed by this compose file, which it is not anymore)
