@@ -2,6 +2,9 @@ const fs = require('fs/promises');
 const path = require('path');
 const cache = require('../lib/cache');
 const config = require('../config');
+const { createDurableQueue } = require('../lib/durableQueue');
+const db = require('../lib/db');
+const { logger } = require('../lib/logger');
 const rentGuyService = require('./rentGuyService');
 
 const VARIANT_CACHE_KEY = 'personalization:variants';
@@ -14,6 +17,27 @@ const citiesFilePath = path.join(__dirname, '../../..', 'content', 'local-seo', 
 
 const exposureLog = [];
 const eventLog = [];
+const automationRetryStore = new Map();
+
+const automationQueue = createDurableQueue(
+  'personalization-automation-webhook',
+  async (job) => {
+    const { payload, retryId } = job.data;
+    const attempts = job.attemptsMade + 1;
+
+    try {
+      await deliverAutomationWebhook(payload);
+      await markAutomationRetrySuccess(retryId, attempts);
+      return { status: 'delivered' };
+    } catch (error) {
+      await markAutomationRetryFailure(retryId, attempts, error);
+      throw error;
+    }
+  },
+  {
+    concurrency: 3
+  }
+);
 
 function createId(prefix) {
   return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -431,29 +455,168 @@ async function matchCityVariant(keywordData, baseVariant) {
   return null;
 }
 
+function clonePayload(payload) {
+  if (payload === undefined) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(JSON.stringify(payload));
+  } catch (error) {
+    logger.warn({ err: error }, 'Failed to clone automation payload for retry state');
+    return payload;
+  }
+}
+
+function createAutomationRetryEntry(payload, errorMessage = null) {
+  const createdAt = new Date().toISOString();
+  return {
+    id: createId('auto_retry'),
+    status: 'queued',
+    attempts: 0,
+    payload: clonePayload(payload),
+    lastError: errorMessage,
+    createdAt,
+    updatedAt: createdAt,
+    deliveredAt: null
+  };
+}
+
+async function persistAutomationRetryEntry(entry) {
+  const snapshot = {
+    ...entry,
+    payload: clonePayload(entry.payload)
+  };
+  automationRetryStore.set(entry.id, snapshot);
+
+  if (typeof db?.isConfigured === 'function' && db.isConfigured()) {
+    try {
+      await db.runQuery(
+        `INSERT INTO personalization_automation_retries
+          (id, status, attempts, payload, last_error, created_at, updated_at, delivered_at)
+        VALUES ($1, $2, $3, $4::jsonb, $5, $6, $7, $8)
+        ON CONFLICT (id) DO UPDATE SET
+          status = EXCLUDED.status,
+          attempts = EXCLUDED.attempts,
+          payload = EXCLUDED.payload,
+          last_error = EXCLUDED.last_error,
+          updated_at = EXCLUDED.updated_at,
+          delivered_at = EXCLUDED.delivered_at`,
+        [
+          entry.id,
+          entry.status,
+          entry.attempts,
+          JSON.stringify(entry.payload ?? null),
+          entry.lastError || null,
+          entry.createdAt,
+          entry.updatedAt,
+          entry.deliveredAt
+        ]
+      );
+    } catch (error) {
+      logger.warn({ err: error, retryId: entry.id }, 'Failed to persist automation retry state');
+    }
+  }
+}
+
+async function markAutomationRetrySuccess(retryId, attempts) {
+  if (!retryId) {
+    return;
+  }
+
+  const entry = automationRetryStore.get(retryId);
+  if (!entry) {
+    return;
+  }
+
+  const updatedAt = new Date().toISOString();
+  const deliveredEntry = {
+    ...entry,
+    status: 'delivered',
+    attempts,
+    lastError: null,
+    updatedAt,
+    deliveredAt: updatedAt
+  };
+  await persistAutomationRetryEntry(deliveredEntry);
+}
+
+async function markAutomationRetryFailure(retryId, attempts, error) {
+  if (!retryId) {
+    return;
+  }
+
+  const existing = automationRetryStore.get(retryId) || createAutomationRetryEntry({}, error?.message);
+  const updatedEntry = {
+    ...existing,
+    attempts,
+    status: 'retrying',
+    lastError: error?.message || existing.lastError || 'unknown-error',
+    updatedAt: new Date().toISOString()
+  };
+  await persistAutomationRetryEntry(updatedEntry);
+}
+
+async function deliverAutomationWebhook(payload) {
+  const webhookUrl = config.personalization?.automationWebhook;
+  if (!webhookUrl) {
+    throw new Error('Automation webhook is not configured');
+  }
+
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    let text = '';
+    try {
+      text = await response.text();
+    } catch (error) {
+      text = error.message;
+    }
+    throw new Error(`n8n webhook returned ${response.status}${text ? `: ${text}` : ''}`);
+  }
+}
+
+async function queueAutomationRetry(payload, errorMessage) {
+  const entry = createAutomationRetryEntry(payload, errorMessage);
+  await persistAutomationRetryEntry(entry);
+  await automationQueue.addJob(
+    {
+      payload: clonePayload(payload),
+      retryId: entry.id
+    },
+    {
+      backoff: { type: 'exponential', delay: 5000 },
+      attempts: 5
+    }
+  );
+  return entry;
+}
+
 async function notifyAutomation(payload) {
   const deliveries = [];
   const webhookUrl = config.personalization?.automationWebhook;
 
   if (webhookUrl) {
     deliveries.push(
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-        .then((response) => {
-          if (!response.ok) {
-            console.error('[personalizationService] n8n webhook returned', response.status);
-            return false;
-          }
-
-          return true;
-        })
-        .catch((error) => {
+      deliverAutomationWebhook(payload)
+        .then(() => true)
+        .catch(async (error) => {
           console.error('[personalizationService] Failed to trigger n8n webhook:', error.message);
+          try {
+            const entry = await queueAutomationRetry(payload, error.message);
+            console.warn('[personalizationService] Queued automation webhook retry', entry.id);
+          } catch (queueError) {
+            console.error(
+              '[personalizationService] Failed to persist automation webhook retry:',
+              queueError.message
+            );
+          }
           return false;
         })
     );
@@ -471,6 +634,58 @@ async function notifyAutomation(payload) {
 
   const results = await Promise.all(deliveries);
   return results.some(Boolean);
+}
+
+function getAutomationRetryState() {
+  return Array.from(automationRetryStore.values()).map((entry) => ({
+    ...entry,
+    payload: clonePayload(entry.payload)
+  }));
+}
+
+async function flushAutomationQueue(limit = 25) {
+  const jobs = await automationQueue.queue.getJobs(['failed', 'waiting', 'delayed'], 0, limit - 1, true);
+  let attempted = 0;
+  let delivered = 0;
+
+  for (const job of jobs) {
+    attempted += 1;
+    try {
+      if (job.failedReason) {
+        await job.retry();
+      } else {
+        await job.promote();
+      }
+      const result = await job.waitUntilFinished(automationQueue.queueEvents, { timeout: 10000 }).catch(() => null);
+      if (result && result.status === 'delivered') {
+        delivered += 1;
+      }
+    } catch (error) {
+      logger.error({ err: error, jobId: job.id }, 'Failed to flush automation webhook job');
+      await job.waitUntilFinished(automationQueue.queueEvents, { timeout: 500 }).catch(() => null);
+    }
+  }
+
+  const metrics = await automationQueue.getMetrics();
+  return {
+    attempted,
+    delivered,
+    remaining: (metrics.counts.waiting || 0) + (metrics.counts.delayed || 0)
+  };
+}
+
+async function resetAutomationQueue() {
+  if (automationQueue?.queue?.drain) {
+    try {
+      await automationQueue.queue.drain(true);
+    } catch (error) {
+      await automationQueue.queue.drain().catch(() => {});
+    }
+  }
+  if (automationQueue?.deadLetterQueue?.drain) {
+    await automationQueue.deadLetterQueue.drain().catch(() => {});
+  }
+  automationRetryStore.clear();
 }
 
 async function getVariantForRequest(context = {}) {
@@ -592,6 +807,9 @@ module.exports = {
   recordEvent,
   getExposureLog,
   getEventLog,
+  getAutomationRetryState,
+  flushAutomationQueue,
+  resetAutomationQueue,
   resetLogs,
   resetCache,
   loadVariantsConfig,
