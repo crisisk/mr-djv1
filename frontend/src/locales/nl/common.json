@@ -8,10 +8,30 @@
     "reactLogoAlt": "React-logo"
   },
   "hero": {
-    "title": "Energieke muziek voor een onvergetelijk evenement",
-    "subtitle": "Boek ons DJ- en saxofonistenduo en houd de dansvloer de hele avond vol.",
-    "ctaPrimaryText": "Boek nu",
-    "ctaSecondaryText": "Meer informatie"
+    "badge": "✨ 4.9/5 op 180+ reviews",
+    "title": "DJ + Sax die je dansvloer binnen 2 tracks vult",
+    "subtitle": "Live mashups, saxofonist tussen je gasten en realtime setlists afgestemd op jouw publiek.",
+    "supportingCopy": "120+ evenementen per jaar, 4.9/5 beoordeling over 180+ reviews en een dedicated eventmanager die jouw intake voorbereidt.",
+    "ctaPrimaryText": "Plan je intake",
+    "ctaSecondaryText": "Vraag een mixdemo aan",
+    "stats": [
+      {
+        "label": "Gem. reviewscore",
+        "value": "4.9/5"
+      },
+      {
+        "label": "Evenementen per jaar",
+        "value": "120+"
+      },
+      {
+        "label": "Dansvloeractivatie",
+        "value": "98%"
+      }
+    ],
+    "testimonial": {
+      "quote": "Binnen tien minuten zat onze dansvloer vol en hield het team de energie de hele avond vast.",
+      "author": "Lisa & Robbert – Bruiloft Utrecht"
+    }
   },
   "testimonials": {
     "title": "Wat klanten zeggen",

@@ -9,7 +9,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
       class="container mx-auto px-spacing-md"
     >
       <h2
-        class="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold"
+        class="heading-2 text-center text-neutral-dark mb-spacing-2xl"
       >
         Onze Pakketten
       </h2>
@@ -23,21 +23,21 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
         >
           <button
             aria-pressed="true"
-            class="px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-primary text-neutral-light"
+            class="px-spacing-lg py-spacing-sm rounded-full body-md transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-primary text-neutral-light"
             type="button"
           >
             Per event
           </button>
           <button
             aria-pressed="false"
-            class="px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-transparent text-neutral-dark hover:bg-neutral-gray-200"
+            class="px-spacing-lg py-spacing-sm rounded-full body-md transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-transparent text-neutral-dark hover:bg-neutral-gray-200"
             type="button"
           >
             Per maand
           </button>
         </div>
         <p
-          class="mt-spacing-sm text-center text-font-size-small text-neutral-gray-500"
+          class="mt-spacing-sm text-center body-sm text-neutral-gray-500"
         >
           Vergelijk onze pakketten per event of kies voor een flexibel abonnement.
         </p>
@@ -52,12 +52,12 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
           >
             <h3
-              class="text-font-size-h3 font-bold"
+              class="heading-3"
             >
               Brons
             </h3>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Entry-level pakket
             </p>
@@ -69,18 +69,18 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               class="flex items-baseline"
             >
               <span
-                class="text-font-size-h1 font-extrabold"
+                class="heading-1"
               >
                 €495
               </span>
               <span
-                class="text-font-size-body ml-spacing-xs"
+                class="body-md ml-spacing-xs"
               >
                 / event
               </span>
             </div>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Eenmalige betaling per event.
             </p>
@@ -89,7 +89,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             class="flex-grow space-y-spacing-sm mb-spacing-xl"
           >
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -108,7 +108,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               4 uur DJ-set
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -127,7 +127,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               Basis licht- en geluidsset
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -146,7 +146,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               Persoonlijk intakegesprek
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -166,7 +166,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             </li>
           </ul>
           <button
-            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md body-lg w-full"
             type="button"
           >
             Meer Info
@@ -176,7 +176,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
           class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-dark text-neutral-light shadow-2xl transform scale-105"
         >
           <div
-            class="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg"
+            class="absolute top-0 right-0 bg-secondary text-neutral-dark body-sm text-strong px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg"
           >
             Populair
           </div>
@@ -184,12 +184,12 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             class="pb-spacing-md mb-spacing-md text-secondary border-b border-secondary/50"
           >
             <h3
-              class="text-font-size-h3 font-bold"
+              class="heading-3"
             >
               Zilver
             </h3>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Meest gekozen
             </p>
@@ -201,18 +201,18 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               class="flex items-baseline"
             >
               <span
-                class="text-font-size-h1 font-extrabold"
+                class="heading-1"
               >
                 €795
               </span>
               <span
-                class="text-font-size-body ml-spacing-xs"
+                class="body-md ml-spacing-xs"
               >
                 / event
               </span>
             </div>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Populairste keuze voor bruiloften en bedrijfsevents.
             </p>
@@ -221,7 +221,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             class="flex-grow space-y-spacing-sm mb-spacing-xl"
           >
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -240,7 +240,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               6 uur DJ-set
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -259,7 +259,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               Uitgebreide lichtshow
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -278,7 +278,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               DJ + Saxofonist optie
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -297,7 +297,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               100% dansgarantie
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -317,7 +317,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             </li>
           </ul>
           <button
-            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md body-lg w-full"
             type="button"
           >
             Boek Nu
@@ -330,12 +330,12 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
           >
             <h3
-              class="text-font-size-h3 font-bold"
+              class="heading-3"
             >
               Goud
             </h3>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Premium All-Inclusive
             </p>
@@ -347,18 +347,18 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               class="flex items-baseline"
             >
               <span
-                class="text-font-size-h1 font-extrabold"
+                class="heading-1"
               >
                 €1.295
               </span>
               <span
-                class="text-font-size-body ml-spacing-xs"
+                class="body-md ml-spacing-xs"
               >
                 / event
               </span>
             </div>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               All-in pakket voor luxe en grootschalige events.
             </p>
@@ -367,7 +367,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             class="flex-grow space-y-spacing-sm mb-spacing-xl"
           >
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -386,7 +386,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               8 uur DJ-set
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -405,7 +405,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               Luxe licht- en geluidsset
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -424,7 +424,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               DJ + Saxofonist (inbegrepen)
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -443,7 +443,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
               Ceremonie & receptie muziek
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -463,7 +463,7 @@ exports[`PricingTables > renders event-based pricing by default 1`] = `
             </li>
           </ul>
           <button
-            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md body-lg w-full"
             type="button"
           >
             Vraag Offerte Aan
@@ -484,7 +484,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
       class="container mx-auto px-spacing-md"
     >
       <h2
-        class="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold"
+        class="heading-2 text-center text-neutral-dark mb-spacing-2xl"
       >
         Onze Pakketten
       </h2>
@@ -498,21 +498,21 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
         >
           <button
             aria-pressed="false"
-            class="px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-transparent text-neutral-dark hover:bg-neutral-gray-200"
+            class="px-spacing-lg py-spacing-sm rounded-full body-md transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-transparent text-neutral-dark hover:bg-neutral-gray-200"
             type="button"
           >
             Per event
           </button>
           <button
             aria-pressed="true"
-            class="px-spacing-lg py-spacing-sm rounded-full text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-primary text-neutral-light"
+            class="px-spacing-lg py-spacing-sm rounded-full body-md transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary bg-primary text-neutral-light"
             type="button"
           >
             Per maand
           </button>
         </div>
         <p
-          class="mt-spacing-sm text-center text-font-size-small text-neutral-gray-500"
+          class="mt-spacing-sm text-center body-sm text-neutral-gray-500"
         >
           Vergelijk onze pakketten per event of kies voor een flexibel abonnement.
         </p>
@@ -527,12 +527,12 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
           >
             <h3
-              class="text-font-size-h3 font-bold"
+              class="heading-3"
             >
               Brons
             </h3>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Entry-level pakket
             </p>
@@ -544,18 +544,18 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               class="flex items-baseline"
             >
               <span
-                class="text-font-size-h1 font-extrabold"
+                class="heading-1"
               >
                 €99
               </span>
               <span
-                class="text-font-size-body ml-spacing-xs"
+                class="body-md ml-spacing-xs"
               >
                 / maand
               </span>
             </div>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Flexibel maandelijks plan voor terugkerende events.
             </p>
@@ -564,7 +564,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             class="flex-grow space-y-spacing-sm mb-spacing-xl"
           >
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -583,7 +583,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               4 uur DJ-set
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -602,7 +602,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               Basis licht- en geluidsset
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -621,7 +621,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               Persoonlijk intakegesprek
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -641,7 +641,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             </li>
           </ul>
           <button
-            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md body-lg w-full"
             type="button"
           >
             Meer Info
@@ -651,7 +651,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
           class="relative flex flex-col p-spacing-xl rounded-lg transition duration-300 bg-neutral-dark text-neutral-light shadow-2xl transform scale-105"
         >
           <div
-            class="absolute top-0 right-0 bg-secondary text-neutral-dark text-font-size-small font-bold px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg"
+            class="absolute top-0 right-0 bg-secondary text-neutral-dark body-sm text-strong px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg"
           >
             Populair
           </div>
@@ -659,12 +659,12 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             class="pb-spacing-md mb-spacing-md text-secondary border-b border-secondary/50"
           >
             <h3
-              class="text-font-size-h3 font-bold"
+              class="heading-3"
             >
               Zilver
             </h3>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Meest gekozen
             </p>
@@ -676,18 +676,18 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               class="flex items-baseline"
             >
               <span
-                class="text-font-size-h1 font-extrabold"
+                class="heading-1"
               >
                 €149
               </span>
               <span
-                class="text-font-size-body ml-spacing-xs"
+                class="body-md ml-spacing-xs"
               >
                 / maand
               </span>
             </div>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Vaste maandprijs inclusief 2 events per kwartaal.
             </p>
@@ -696,7 +696,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             class="flex-grow space-y-spacing-sm mb-spacing-xl"
           >
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -715,7 +715,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               6 uur DJ-set
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -734,7 +734,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               Uitgebreide lichtshow
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -753,7 +753,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               DJ + Saxofonist optie
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -772,7 +772,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               100% dansgarantie
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-secondary"
@@ -792,7 +792,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             </li>
           </ul>
           <button
-            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-secondary text-neutral-dark hover:bg-secondary/90 focus-visible:ring-secondary/40 px-spacing-lg py-spacing-md body-lg w-full"
             type="button"
           >
             Boek Nu
@@ -805,12 +805,12 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             class="pb-spacing-md mb-spacing-md text-primary border-b border-neutral-gray-100"
           >
             <h3
-              class="text-font-size-h3 font-bold"
+              class="heading-3"
             >
               Goud
             </h3>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Premium All-Inclusive
             </p>
@@ -822,18 +822,18 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               class="flex items-baseline"
             >
               <span
-                class="text-font-size-h1 font-extrabold"
+                class="heading-1"
               >
                 €199
               </span>
               <span
-                class="text-font-size-body ml-spacing-xs"
+                class="body-md ml-spacing-xs"
               >
                 / maand
               </span>
             </div>
             <p
-              class="text-font-size-small opacity-80"
+              class="body-sm opacity-80"
             >
               Premium abonnement met planning- & aftermovie-services.
             </p>
@@ -842,7 +842,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             class="flex-grow space-y-spacing-sm mb-spacing-xl"
           >
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -861,7 +861,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               8 uur DJ-set
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -880,7 +880,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               Luxe licht- en geluidsset
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -899,7 +899,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               DJ + Saxofonist (inbegrepen)
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -918,7 +918,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
               Ceremonie & receptie muziek
             </li>
             <li
-              class="flex items-start text-font-size-body"
+              class="flex items-start body-md"
             >
               <svg
                 class="w-5 h-5 mr-spacing-sm text-primary"
@@ -938,7 +938,7 @@ exports[`PricingTables > toggles to monthly pricing 1`] = `
             </li>
           </ul>
           <button
-            class="inline-flex items-center justify-center rounded-md font-semibold transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md text-font-size-h4 w-full"
+            class="inline-flex items-center justify-center rounded-md text-strong transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-primary text-neutral-light hover:bg-primary/90 focus-visible:ring-primary/40 px-spacing-lg py-spacing-md body-lg w-full"
             type="button"
           >
             Vraag Offerte Aan

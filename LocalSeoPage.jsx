@@ -3,17 +3,25 @@ import HeroSection from './HeroSection.jsx';
 import PricingTables from './PricingTables.jsx';
 import Testimonials from './Testimonials.jsx';
 import Button from './Buttons.jsx';
+import { getLocalSeoDataBySlug } from './local_seo_data.js';
 
 // Placeholder for dynamic content
-const localData = {
+const DEFAULT_CITY_SLUG = 'eindhoven';
+const localData = getLocalSeoDataBySlug(DEFAULT_CITY_SLUG) ?? {
     city: "Eindhoven",
+    slug: DEFAULT_CITY_SLUG,
     localUSP: "Dé beste DJ voor uw feest in Eindhoven en omgeving. Bekend met alle top-locaties zoals het Evoluon en de Effenaar.",
     localReviews: "Fantastische service in Eindhoven! De gasten waren laaiend enthousiast.",
     localVenues: ["Evoluon", "Effenaar", "Strijp-S"],
+    pricingHighlights: {
+        brons: "Soepele set-up voor intieme feesten bij Evoluon en Effenaar.",
+        zilver: "Dé beste DJ voor uw feest in Eindhoven en omgeving. Perfect voor bruiloften en bedrijfsfeesten in Eindhoven.",
+        goud: "Premium showbeleving voor iconische locaties zoals Strijp-S.",
+    },
 };
 
 const LocalSeoPage = ({ data = localData }) => {
-    const { city, localUSP, localReviews, localVenues } = data;
+    const { city, localUSP, localReviews, localVenues, slug } = data;
 
     return (
         <div className="LocalSeoPage">
@@ -56,7 +64,7 @@ const LocalSeoPage = ({ data = localData }) => {
             </section>
 
             {/* 4. Pricing Section */}
-            <PricingTables />
+            <PricingTables citySlug={slug} localSeo={data} />
 
             {/* 5. Footer CTA - Localized */}
             <div className="bg-neutral-dark text-neutral-light py-spacing-2xl text-center">
