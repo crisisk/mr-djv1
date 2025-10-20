@@ -32,7 +32,7 @@
             flex-direction: column;
         }
         
-        h1 {
+        .page-title {
             font-size: 42px;
             font-weight: 900;
             color: #1A2C4B;
@@ -301,6 +301,14 @@
             font-weight: 600;
             line-height: 1.4;
         }
+
+        .seo-note {
+            display: block;
+            margin-top: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #1A2C4B;
+        }
         
         .dynamic-tag {
             display: inline-block;
@@ -353,7 +361,7 @@
 </head>
 <body>
     <div class="slide-container">
-        <h1>Templates: Local SEO Pages</h1>
+        <h2 class="page-title">Templates: Local SEO Pages</h2>
         <p class="subtitle">Programmatisch gegenereerde city-specific landing pages voor lokale SEO dominantie</p>
         
         <div class="content-wrapper">
@@ -369,7 +377,7 @@
                                     <span>📍</span>
                                     <span>EINDHOVEN</span>
                                 </div>
-                                <h2 class="local-title">Bruiloft DJ Eindhoven</h2>
+                                <h1 class="local-title">Bruiloft DJ Eindhoven</h1>
                                 <p class="local-description">
                                     Op zoek naar een professionele bruiloft DJ in Eindhoven? Mister DJ zorgt voor een onvergetelijke feestavond met 100% dansgarantie. Lokale ervaring met 150+ bruiloften in Eindhoven en omgeving.
                                 </p>
@@ -458,6 +466,7 @@
                             <div class="seo-item-label">H1 Heading</div>
                             <div class="seo-item-value">
                                 Bruiloft DJ <span class="dynamic-tag">{CITY}</span>
+                                <span class="seo-note">Elke stadspagina krijgt exact één unieke H1 met de stadsnaam.</span>
                             </div>
                         </div>
                     </div>
