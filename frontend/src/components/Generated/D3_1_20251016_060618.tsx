@@ -1,6 +1,7 @@
 // components/StickyBookingCTA.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { recordBookingCta } from '../../lib/ctaTracking';
 
 const StickyCTAWrapper = styled.div`
   position: fixed;
@@ -53,10 +54,20 @@ const StickyBookingCTA = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleBooking = () => {
-    // Add booking logic here
-    console.log('Booking initiated');
-  };
+  const handleBooking = useCallback(() => {
+    void recordBookingCta({
+      cta: 'sticky-booking-cta',
+      metadata: {
+        surface: 'sticky_booking_cta',
+        trigger: 'scroll_depth',
+      },
+      navigateTo: '/#contact',
+    }).catch((error) => {
+      if (import.meta.env?.MODE !== 'production') {
+        console.warn('[StickyBookingCTA] Failed to record CTA', error);
+      }
+    });
+  }, []);
 
   return (
     <StickyCTAWrapper isVisible={isVisible}>
