@@ -75,6 +75,37 @@ paths:
                     type: string
                   cacheStatus:
                     type: string
+  /pricing/quote:
+    post:
+      summary: Calculate a booking quote
+      tags: [Pricing]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PricingQuoteRequest'
+      responses:
+        '200':
+          description: Quote calculated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PricingQuoteResponse'
+        '400':
+          description: Pricing calculation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PricingError'
+        '404':
+          description: Selected package or extra was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PricingError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
   /contact:
     post:
       summary: Submit a contact request
@@ -317,6 +348,87 @@ components:
           type: object
           nullable: true
         sevensaSync:
+          type: object
+          nullable: true
+    PricingQuoteRequest:
+      type: object
+      required: [packageId]
+      properties:
+        packageId:
+          type: string
+          description: Identifier of the primary DJ package.
+        location:
+          type: string
+          nullable: true
+          description: City or venue location used to determine travel fees.
+        extras:
+          type: array
+          items:
+            type: string
+          description: List of addon identifiers to include in the quote.
+    PricingExtra:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        description:
+          type: string
+          nullable: true
+    PricingQuoteResponse:
+      type: object
+      properties:
+        currency:
+          type: string
+          example: EUR
+        package:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            price:
+              type: number
+        extras:
+          type: array
+          items:
+            $ref: '#/components/schemas/PricingExtra'
+        location:
+          type: object
+          properties:
+            input:
+              type: string
+              nullable: true
+            zone:
+              type: string
+            label:
+              type: string
+            travelFee:
+              type: number
+        totals:
+          type: object
+          properties:
+            base:
+              type: number
+            extras:
+              type: number
+            travel:
+              type: number
+            grandTotal:
+              type: number
+        updatedAt:
+          type: string
+          format: date-time
+    PricingError:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
           type: object
           nullable: true
     CallbackRequest:
