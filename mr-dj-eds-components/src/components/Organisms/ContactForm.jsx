@@ -306,7 +306,7 @@ const ContactForm = ({ variant = 'A', eventType: initialEventType = '' }) => {
         {/* Privacy Notice */}
         <p className="text-xs text-gray-500 mt-4">
           Door dit formulier te versturen ga je akkoord met ons{' '}
-          <a href="/privacy" className="text-primary-500 hover:underline">
+          <a href="/privacy-policy" className="text-primary-500 hover:underline">
             privacybeleid
           </a>
           . We gebruiken je gegevens alleen om contact met je op te nemen over je evenement.
