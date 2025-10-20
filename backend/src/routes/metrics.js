@@ -2,6 +2,7 @@ const express = require('express');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
 const observabilityService = require('../services/observabilityService');
+const contactService = require('../services/contactService');
 
 const router = express.Router();
 
@@ -50,6 +51,16 @@ router.get('/queues', async (_req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+router.get('/contact-backlog', (_req, res) => {
+  const snapshot = contactService.getFallbackQueueSnapshot(100);
+  res.json({
+    generatedAt: new Date().toISOString(),
+    queueSize: snapshot.queueSize,
+    queue: snapshot.items,
+    metrics: snapshot.metrics
+  });
 });
 
 module.exports = router;

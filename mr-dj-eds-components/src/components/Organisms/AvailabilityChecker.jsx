@@ -4,7 +4,7 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import Button from '../Atoms/Buttons.jsx';
 import { submitBooking } from '../../services/api.js';
-import { trackAvailabilityCheck, trackFormSubmission, getUserVariant } from '../../utils/trackConversion';
+import { loadTrackConversion } from '../../utils/loadTrackConversion';
 
 const EVENT_TYPES = [
   { value: 'bruiloft', label: 'Bruiloft' },
@@ -65,7 +65,6 @@ const AvailabilityChecker = () => {
     setIsSubmitting(true);
     setStatus({ type: 'loading', message: 'Bezig met controleren...' });
 
-    const variant = getUserVariant();
     const eventDateIso = selectedDate.toISOString().split('T')[0];
 
     try {
@@ -81,8 +80,20 @@ const AvailabilityChecker = () => {
 
       const response = await submitBooking(payload);
 
-      trackAvailabilityCheck(variant, eventDateIso);
-      trackFormSubmission(variant, formData.eventType, 'availability');
+      try {
+        const { getUserVariant, trackAvailabilityCheck, trackFormSubmission } = await loadTrackConversion();
+        const variant = typeof getUserVariant === 'function' ? getUserVariant() : undefined;
+
+        if (typeof trackAvailabilityCheck === 'function') {
+          trackAvailabilityCheck(variant, eventDateIso);
+        }
+
+        if (typeof trackFormSubmission === 'function') {
+          trackFormSubmission(variant, formData.eventType, 'availability');
+        }
+      } catch (trackingError) {
+        console.error('Failed to load tracking utilities for availability checker submission', trackingError);
+      }
 
       setStatus({
         type: 'success',

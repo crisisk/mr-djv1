@@ -12,7 +12,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         html {
             scroll-behavior: smooth;
         }
@@ -34,6 +34,7 @@
             padding: 30px 40px;
             display: flex;
             flex-direction: column;
+            gap: 30px;
         }
 
         h1 {
@@ -48,72 +49,67 @@
             color: #666;
             margin-bottom: 25px;
         }
-
+        
         .service-nav {
             display: flex;
             gap: 12px;
-            margin-bottom: 20px;
-            padding: 8px 12px;
+            align-items: center;
             background: #F8FCFF;
-            border: 1px solid #E5F3FA;
+            border: 1px solid #E5E5E5;
             border-radius: 999px;
+            padding: 8px 12px;
+            width: fit-content;
+            box-shadow: 0 8px 20px rgba(26, 44, 75, 0.08);
         }
 
-        .service-nav .nav-pill {
+        .service-nav a {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 18px;
+            gap: 8px;
+            padding: 10px 18px;
             border-radius: 999px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 700;
-            letter-spacing: 0.02em;
-            color: #1A2C4B;
-            background: white;
-            border: 1px solid rgba(0, 174, 239, 0.25);
             text-decoration: none;
-            transition: all 0.2s ease;
+            color: #1A2C4B;
+            transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .service-nav .nav-pill::before {
-            content: '';
+        .service-nav a .nav-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            background: rgba(0, 174, 239, 0.4);
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .service-nav a:hover {
+            color: #00AEEF;
+        }
+
+        .service-nav a:hover .nav-dot {
             background: #00AEEF;
-            display: inline-block;
+            transform: scale(1.1);
         }
 
-        .service-nav .nav-pill:hover {
-            box-shadow: 0 6px 14px rgba(26, 44, 75, 0.08);
-            transform: translateY(-1px);
+        .service-nav a.active {
+            background: linear-gradient(90deg, #00AEEF 0%, #0088CC 100%);
+            color: white;
+            box-shadow: 0 12px 24px rgba(0, 136, 204, 0.25);
         }
 
-        .service-nav .nav-pill.active {
-            background: linear-gradient(135deg, #00AEEF 0%, #0088CC 100%);
-            color: #FFFFFF;
-            border-color: #00AEEF;
-            box-shadow: 0 8px 18px rgba(0, 142, 214, 0.25);
-        }
-
-        .service-nav .nav-pill.active::before {
+        .service-nav a.active .nav-dot {
             background: #FFFFFF;
         }
 
-        .service-block {
-            margin-bottom: 30px;
-            scroll-margin-top: 120px;
+        .service-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
 
-        .service-block .page-template {
-            border: 2px solid #E5E5E5;
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-
-        .service-block.active .page-template,
-        .service-block:target .page-template {
-            border-color: #00AEEF;
-            box-shadow: 0 18px 34px rgba(0, 174, 239, 0.18);
+        .service-section {
+            scroll-margin-top: 40px;
         }
 
         .page-template {
@@ -128,6 +124,11 @@
             overflow: hidden;
         }
 
+        .page-template.corporate-template {
+            border-style: dashed;
+            background: #F2F9FF;
+        }
+        
         .template-header {
             background: #1A2C4B;
             height: 25px;
@@ -402,65 +403,263 @@
         <p class="subtitle">Herbruikbare template voor de drie hoofddiensten: Bruiloft DJ, Bedrijfsfeest DJ, Private Feesten</p>
 
         <nav class="service-nav" aria-label="Service navigatie">
-            <a class="nav-pill" href="#service-bruiloft">Bruiloft DJ</a>
-            <a class="nav-pill" href="#service-bedrijfsfeest">Bedrijfsfeest DJ</a>
-            <a class="nav-pill" href="#service-private">Private Feesten</a>
+            <a href="#service-bruiloft" class="active" aria-current="true">
+                <span class="nav-dot"></span>
+                Bruiloft DJ
+            </a>
+            <a href="#service-bedrijfsfeest">
+                <span class="nav-dot"></span>
+                Bedrijfsfeest DJ
+            </a>
+            <a href="#service-private">
+                <span class="nav-dot"></span>
+                Private Feesten
+            </a>
         </nav>
 
-        <section id="service-bruiloft" class="service-block">
-            <div class="page-template">
-                <div class="template-header">
-                    <div class="template-header-title">mr-dj.nl/diensten/bruiloft-dj</div>
-                    <div class="template-header-nav">
-                        <div class="nav-dot"></div>
-                        <div class="nav-dot"></div>
-                        <div class="nav-dot"></div>
-                    </div>
-                </div>
-
-                <div class="hero-section">
-                    BRUILOFT DJ - ONVERGETELIJKE TROUWDAG
-                </div>
-
-                <div class="template-layout">
-                    <div class="main-content">
-                        <div class="content-section">
-                            <div class="content-row">
-                                <div class="feature-card">✓ Persoonlijk intakegesprek</div>
-                                <div class="feature-card">✓ Muziekvoorkeuren formulier</div>
-                                <div class="feature-card">✓ Ceremonie &amp; receptie muziek</div>
-                            </div>
-                            <div class="content-row">
-                                <div class="feature-card">✓ Professionele apparatuur</div>
-                                <div class="feature-card">✓ Flexibele opstelling</div>
-                                <div class="feature-card">✓ Diverse muziekstijlen</div>
-                            </div>
-                        </div>
-
-                        <div class="testimonial-section">
-                            ORGANISM: TESTIMONIAL CAROUSEL (3-5 REVIEWS)
-                        </div>
-
-                        <div class="pricing-section">
-                            ORGANISM: PRICING TABLE (BRONS, ZILVER, GOUD)
-                        </div>
-
-                        <div class="cta-section">
-                            MOLECULE: DIRECT OFFERTE AANVRAGEN
+        <div class="service-sections">
+            <section id="service-bruiloft" class="service-section">
+                <div class="page-template">
+                    <div class="template-header">
+                        <div class="template-header-title">mr-dj.nl/diensten/bruiloft-dj</div>
+                        <div class="template-header-nav">
+                            <div class="nav-dot"></div>
+                            <div class="nav-dot"></div>
+                            <div class="nav-dot"></div>
                         </div>
                     </div>
 
-                    <div class="sidebar">
-                        <div class="sidebar-title">Contact &amp; Beschikbaarheid</div>
-                        <div class="sidebar-block form">
-                            MOLECULE: CONTACT FORM (KLEIN)
+                    <div class="hero-section">
+                        BRUILOFT DJ - ONVERGETELIJKE TROUWDAG
+                    </div>
+
+                    <div class="template-layout">
+                        <div class="main-content">
+                            <div class="content-section">
+                                <div class="content-row">
+                                    <div class="feature-card">✓ Persoonlijk intakegesprek</div>
+                                    <div class="feature-card">✓ Muziekvoorkeuren formulier</div>
+                                    <div class="feature-card">✓ Ceremonie & receptie muziek</div>
+                                </div>
+                                <div class="content-row">
+                                    <div class="feature-card">✓ Professionele apparatuur</div>
+                                    <div class="feature-card">✓ Flexibele opstelling</div>
+                                    <div class="feature-card">✓ Diverse muziekstijlen</div>
+                                </div>
+                            </div>
+
+                            <div class="testimonial-section">
+                                ORGANISM: TESTIMONIAL CAROUSEL (3-5 REVIEWS)
+                            </div>
+
+                            <div class="pricing-section">
+                                ORGANISM: PRICING TABLE (BRONS, ZILVER, GOUD)
+                            </div>
+
+                            <div class="cta-section">
+                                MOLECULE: DIRECT OFFERTE AANVRAGEN
+                            </div>
                         </div>
-                        <div class="sidebar-block">
-                            MOLECULE: FAQ ACCORDION
+
+                        <div class="sidebar">
+                            <div class="sidebar-title">Contact & Beschikbaarheid</div>
+                            <div class="sidebar-block form">
+                                MOLECULE: CONTACT FORM (KLEIN)
+                            </div>
+                            <div class="sidebar-block">
+                                MOLECULE: FAQ ACCORDION
+                            </div>
+                            <div class="sidebar-block">
+                                MOLECULE: RELATED SERVICES
+                            </div>
                         </div>
-                        <div class="sidebar-block">
-                            MOLECULE: RELATED SERVICES
+                    </div>
+
+                    <div class="footer-section">
+                        FOOTER & COPYRIGHT
+                    </div>
+                </div>
+            </section>
+
+            <section id="service-bedrijfsfeest" class="service-section">
+                <div class="page-template">
+                    <div class="template-header">
+                        <div class="template-header-title">mr-dj.nl/diensten/bedrijfsfeest-dj</div>
+                        <div class="template-header-nav">
+                            <div class="nav-dot"></div>
+                            <div class="nav-dot"></div>
+                            <div class="nav-dot"></div>
                         </div>
+                    </div>
+
+                    <div class="hero-section">
+                        BEDRIJFSFEEST DJ - ENERGIE & TEAMBUILDING
+                    </div>
+
+                    <div class="template-layout">
+                        <div class="main-content">
+                            <div class="content-section">
+                                <div class="content-row">
+                                    <div class="feature-card">✓ Kick-off strategie & concept</div>
+                                    <div class="feature-card">✓ Presentatiemoment audio support</div>
+                                    <div class="feature-card">✓ Interactieve DJ sets</div>
+                                </div>
+                                <div class="content-row">
+                                    <div class="feature-card">✓ Bedrijfsspecifieke branding</div>
+                                    <div class="feature-card">✓ Live reporting voor socials</div>
+                                    <div class="feature-card">✓ Aftermovie coördinatie</div>
+                                </div>
+                            </div>
+
+                            <div class="testimonial-section">
+                                ORGANISM: TEAM REVIEWS & IMPACT STATS
+                            </div>
+
+                            <div class="pricing-section">
+                                ORGANISM: PAKKETTEN (BASIS, PREMIUM, EXPERIENCE)
+                            </div>
+
+                            <div class="cta-section">
+                                MOLECULE: PLAN EEN STRATEGIECALL
+                            </div>
+                        </div>
+
+                        <div class="sidebar">
+                            <div class="sidebar-title">Event Services</div>
+                            <div class="sidebar-block form">
+                                MOLECULE: QUICK QUOTE FORMULIER
+                            </div>
+                            <div class="sidebar-block">
+                                MOLECULE: DOWNLOAD EVENTCHECKLIST
+                            </div>
+                            <div class="sidebar-block">
+                                MOLECULE: PARTNER SHOWCASES
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-section">
+                        FOOTER & CONTACTGEGEVENS
+                    </div>
+                </div>
+            </section>
+
+            <section id="service-private" class="service-section">
+                <div class="page-template">
+                    <div class="template-header">
+                        <div class="template-header-title">mr-dj.nl/diensten/private-feesten</div>
+                        <div class="template-header-nav">
+                            <div class="nav-dot"></div>
+                            <div class="nav-dot"></div>
+                            <div class="nav-dot"></div>
+                        </div>
+                    </div>
+
+                    <div class="hero-section">
+                        PRIVATE FEESTEN DJ - EXCLUSIEVE SFEER
+                    </div>
+
+                    <div class="template-layout">
+                        <div class="main-content">
+                            <div class="content-section">
+                                <div class="content-row">
+                                    <div class="feature-card">✓ Curated playlists op maat</div>
+                                    <div class="feature-card">✓ Luxe licht & decor opties</div>
+                                    <div class="feature-card">✓ Styling & host ondersteuning</div>
+                                </div>
+                                <div class="content-row">
+                                    <div class="feature-card">✓ Silent disco mogelijkheden</div>
+                                    <div class="feature-card">✓ Multi-room audio</div>
+                                    <div class="feature-card">✓ VIP gastbeleving</div>
+                                </div>
+                            </div>
+
+                            <div class="testimonial-section">
+                                ORGANISM: HIGHLIGHT STORIES & FOTO'S
+                            </div>
+
+                            <div class="pricing-section">
+                                ORGANISM: TIERED EXPERIENCES (ESSENTIAL, SIGNATURE, BESPOKE)
+                            </div>
+
+                            <div class="cta-section">
+                                MOLECULE: PLAN EEN DESIGNSESSIE
+                            </div>
+                        </div>
+
+                        <div class="sidebar">
+                            <div class="sidebar-title">Personal Concierge</div>
+                            <div class="sidebar-block form">
+                                MOLECULE: PRIVÉ EVENEMENT INTAKE
+                            </div>
+                            <div class="sidebar-block">
+                                MOLECULE: CURATOR'S PICKS PLAYLISTS
+                            </div>
+                            <div class="sidebar-block">
+                                MOLECULE: EXCLUSIVE PARTNERS
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-section">
+                        FOOTER & PRIVACY DETAILS
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-template">
+            <div class="template-header">
+                <div class="template-header-title">mr-dj.nl/diensten/bedrijfsfeest-dj</div>
+                <div class="template-header-nav">
+                    <div class="nav-dot"></div>
+                    <div class="nav-dot"></div>
+                    <div class="nav-dot"></div>
+                </div>
+            </div>
+
+            <div class="hero-section">
+                BEDRIJFSFEEST DJ - ENERGIE OP DE DANSVLOER
+            </div>
+
+            <div class="template-layout">
+                <div class="main-content">
+                    <div class="content-section">
+                        <div class="content-row">
+                            <div class="feature-card">✓ Kick-off & strategie overleg</div>
+                            <div class="feature-card">✓ Branding van booth & lichtshow</div>
+                            <div class="feature-card">✓ Hosting voor speeches & awards</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="feature-card">✓ Corporate playlists op maat</div>
+                            <div class="feature-card">✓ Meertalige presentatie opties</div>
+                            <div class="feature-card">✓ Netwerkmomenten met lounge muziek</div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-section">
+                        ORGANISM: TESTIMONIALS VAN TEAMBUILDINGS & RELATIEDAGEN
+                    </div>
+
+                    <div class="pricing-section">
+                        ORGANISM: PRICING TABLE (STARTUP, SCALE-UP, ENTERPRISE)
+                    </div>
+
+                    <div class="cta-section">
+                        MOLECULE: PLAN EEN BEDRIJFSFEEST STRATEGIECALL
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="sidebar-title">Planning & Support</div>
+                    <div class="sidebar-block form">
+                        MOLECULE: EVENTBRIEFING FORMULIER
+                    </div>
+                    <div class="sidebar-block">
+                        MOLECULE: CASES & REFERENTIES
+                    </div>
+                    <div class="sidebar-block">
+                        MOLECULE: TECH CHECKLIST & RIDER
                     </div>
                 </div>
 
@@ -468,133 +667,72 @@
                     FOOTER &amp; COPYRIGHT
                 </div>
             </div>
-        </section>
 
-        <section id="service-bedrijfsfeest" class="service-block">
-            <div class="page-template">
-                <div class="template-header">
-                    <div class="template-header-title">mr-dj.nl/diensten/bedrijfsfeest-dj</div>
-                    <div class="template-header-nav">
-                        <div class="nav-dot"></div>
-                        <div class="nav-dot"></div>
-                        <div class="nav-dot"></div>
-                    </div>
-                </div>
+            <div class="footer-section">
+                FOOTER & COPYRIGHT
+            </div>
+        </div>
 
-                <div class="hero-section">
-                    BEDRIJFSFEEST DJ - BOOST JE TEAMSPIRIT
-                </div>
-
-                <div class="template-layout">
-                    <div class="main-content">
-                        <div class="content-section">
-                            <div class="content-row">
-                                <div class="feature-card">✓ Energizers &amp; openingsacts</div>
-                                <div class="feature-card">✓ Interactieve verzoeksessies</div>
-                                <div class="feature-card">✓ Presentatie &amp; aankondigingen</div>
-                            </div>
-                            <div class="content-row">
-                                <div class="feature-card">✓ Merkkleuren lichtshow</div>
-                                <div class="feature-card">✓ Hybride event ondersteuning</div>
-                                <div class="feature-card">✓ Aftermovie &amp; recap opties</div>
-                            </div>
-                        </div>
-
-                        <div class="testimonial-section">
-                            ORGANISM: TESTIMONIAL CAROUSEL (HR &amp; EVENTMANAGERS)
-                        </div>
-
-                        <div class="pricing-section">
-                            ORGANISM: PRICING TABLE (TEAM, PREMIUM, XL)
-                        </div>
-
-                        <div class="cta-section">
-                            MOLECULE: PLAN EEN BEDRIJFSFEEST
-                        </div>
-                    </div>
-
-                    <div class="sidebar">
-                        <div class="sidebar-title">Activatie &amp; Support</div>
-                        <div class="sidebar-block form">
-                            MOLECULE: EVENT CHECKLIST DOWNLOAD
-                        </div>
-                        <div class="sidebar-block">
-                            MOLECULE: TECHNISCHE VEREISTEN
-                        </div>
-                        <div class="sidebar-block">
-                            MOLECULE: CASE STUDIES
-                        </div>
-                    </div>
-                </div>
-
-                <div class="footer-section">
-                    FOOTER &amp; COPYRIGHT
+        <div class="page-template">
+            <div class="template-header">
+                <div class="template-header-title">mr-dj.nl/diensten/private-feesten</div>
+                <div class="template-header-nav">
+                    <div class="nav-dot"></div>
+                    <div class="nav-dot"></div>
+                    <div class="nav-dot"></div>
                 </div>
             </div>
-        </section>
 
-        <section id="service-private" class="service-block">
-            <div class="page-template">
-                <div class="template-header">
-                    <div class="template-header-title">mr-dj.nl/diensten/private-feesten</div>
-                    <div class="template-header-nav">
-                        <div class="nav-dot"></div>
-                        <div class="nav-dot"></div>
-                        <div class="nav-dot"></div>
-                    </div>
-                </div>
+            <div class="hero-section">
+                PRIVATE FEESTEN - VERJAARDAGEN & JUBILEA IN STIJL
+            </div>
 
-                <div class="hero-section">
-                    PRIVATE FEESTEN - INTIEM EN OP MAAT
-                </div>
-
-                <div class="template-layout">
-                    <div class="main-content">
-                        <div class="content-section">
-                            <div class="content-row">
-                                <div class="feature-card">✓ Verjaardagen &amp; jubilea</div>
-                                <div class="feature-card">✓ Thema playlists</div>
-                                <div class="feature-card">✓ Compacte booth opties</div>
-                            </div>
-                            <div class="content-row">
-                                <div class="feature-card">✓ Ambient &amp; lounge sets</div>
-                                <div class="feature-card">✓ Party photographer add-on</div>
-                                <div class="feature-card">✓ Flexibele eindtijden</div>
-                            </div>
+            <div class="template-layout">
+                <div class="main-content">
+                    <div class="content-section">
+                        <div class="content-row">
+                            <div class="feature-card">✓ Thema playlists (80's, Latin, Disco)</div>
+                            <div class="feature-card">✓ Compacte setups voor woonkamers & tuinen</div>
+                            <div class="feature-card">✓ Verzoeknummers live aangevraagd</div>
                         </div>
-
-                        <div class="testimonial-section">
-                            ORGANISM: TESTIMONIAL CAROUSEL (HOSTS &amp; FAMILIE)
-                        </div>
-
-                        <div class="pricing-section">
-                            ORGANISM: PRICING TABLE (BASIS, DELUXE, VIP)
-                        </div>
-
-                        <div class="cta-section">
-                            MOLECULE: CHECK BESCHIKBAARHEID
+                        <div class="content-row">
+                            <div class="feature-card">✓ Extra sfeerverlichting & photobooth</div>
+                            <div class="feature-card">✓ Geluidscontrole voor buurtvriendelijke avonden</div>
+                            <div class="feature-card">✓ Surprise-momenten met favoriete tracks</div>
                         </div>
                     </div>
 
-                    <div class="sidebar">
-                        <div class="sidebar-title">Service &amp; Extra's</div>
-                        <div class="sidebar-block form">
-                            MOLECULE: PERSOONLIJKE PLAYLIST BUILDER
-                        </div>
-                        <div class="sidebar-block">
-                            MOLECULE: DECOR &amp; LIGHTING ADD-ONS
-                        </div>
-                        <div class="sidebar-block">
-                            MOLECULE: SFEERIMPRESSIES
-                        </div>
+                    <div class="testimonial-section">
+                        ORGANISM: REVIEWS VAN VERJAARDAGEN, BABYSHOWERS & JUBILEA
+                    </div>
+
+                    <div class="pricing-section">
+                        ORGANISM: PRICING TABLE (HUISKAMER, TUINFEEST, CLUB NIGHT)
+                    </div>
+
+                    <div class="cta-section">
+                        MOLECULE: PLAN JE PRIVATE FEEST IN 3 SIMPELE STAPPEN
                     </div>
                 </div>
 
-                <div class="footer-section">
-                    FOOTER &amp; COPYRIGHT
+                <div class="sidebar">
+                    <div class="sidebar-title">Maatwerk voor Kleinere Gezelschappen</div>
+                    <div class="sidebar-block form">
+                        MOLECULE: SNELLE BOEKING & BESCHIKBAARHEIDSCHECK
+                    </div>
+                    <div class="sidebar-block">
+                        MOLECULE: FLEXIBELE OPSTELLINGEN & RUIMTEPLAN
+                    </div>
+                    <div class="sidebar-block">
+                        MOLECULE: THEMA PLAYLIST IDEEËN & VERZOEKNUMMERS
+                    </div>
                 </div>
             </div>
-        </section>
+
+            <div class="footer-section">
+                FOOTER & COPYRIGHT
+            </div>
+        </div>
 
         <div class="key-components">
             <span>Kerncomponenten:</span> Hero Section, Feature Cards, Testimonial Carousel, Pricing Table, Contact Form, Footer Navigation.
