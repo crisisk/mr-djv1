@@ -4,9 +4,9 @@ const Button = ({ children, variant = 'primary', size = 'medium', onClick, class
   const baseStyle = 'font-semibold rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-4';
 
   const variantStyles = {
-    primary: 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-300',
-    secondary: 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300 focus:ring-neutral-400',
-    outline: 'bg-transparent border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white focus:ring-primary-300',
+    primary: 'bg-[var(--color-primary-blue)] text-white hover:bg-[#00487A] focus:ring-[#66A6D9] focus:ring-offset-2 focus:ring-offset-white',
+    secondary: 'bg-[var(--color-secondary-gold)] text-white hover:bg-[#7A5500] focus:ring-[#C28E2C] focus:ring-offset-2 focus:ring-offset-white',
+    outline: 'bg-transparent border-2 border-[var(--color-primary-blue)] text-[var(--color-primary-blue)] hover:bg-[var(--color-primary-blue)] hover:text-white focus:ring-[#66A6D9] focus:ring-offset-2 focus:ring-offset-white',
     ghost: 'bg-transparent text-neutral-800 hover:bg-neutral-100 focus:ring-neutral-200',
   };
 

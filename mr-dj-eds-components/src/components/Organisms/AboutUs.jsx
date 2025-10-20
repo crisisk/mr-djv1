@@ -1,4 +1,5 @@
 import React from 'react';
+import IconBase from '../ui/icon-base';
 
 /**
  * AboutUs Component
@@ -76,33 +77,33 @@ const AboutUs = () => {
               </h4>
               <ul className="space-y-2">
                 <li className="flex items-start">
-                  <svg className="w-6 h-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <IconBase className="h-6 w-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
+                  </IconBase>
                   <span className="text-base text-[#1A2C4B]">
                     <strong>Live Saxofonist</strong> - Unieke combinatie van DJ + live muziek
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="w-6 h-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <IconBase className="h-6 w-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
+                  </IconBase>
                   <span className="text-base text-[#1A2C4B]">
                     <strong>Persoonlijke Aanpak</strong> - Elk evenement is uniek
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="w-6 h-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <IconBase className="h-6 w-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
+                  </IconBase>
                   <span className="text-base text-[#1A2C4B]">
                     <strong>100% Dansgarantie</strong> - Volle dansvloer of geld terug
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="w-6 h-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <IconBase className="h-6 w-6 mr-2 text-secondary flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
+                  </IconBase>
                   <span className="text-base text-[#1A2C4B]">
                     <strong>Professionele Apparatuur</strong> - Topkwaliteit geluid en licht
                   </span>

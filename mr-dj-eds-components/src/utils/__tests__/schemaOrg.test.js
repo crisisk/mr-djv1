@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   generateOrganizationSchema,
   generateLocalBusinessSchema,
@@ -8,39 +8,35 @@ import {
   generateReviewSchema,
   generateFAQSchema,
   generateWebPageSchema,
-  generateProductSchema,
-  SITE_BASE_URL
+  generateProductSchema
 } from '../schemaOrg.js';
 
-const FIXED_DATE = new Date('2024-01-01T12:00:00.000Z');
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2025-01-15T12:00:00Z'));
+});
 
-describe('schemaOrg utilities', () => {
-  beforeAll(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(FIXED_DATE);
-  });
+afterEach(() => {
+  vi.useRealTimers();
+});
 
-  afterAll(() => {
-    vi.useRealTimers();
-  });
-
-  it('generates organization schema', () => {
-    const schema = generateOrganizationSchema();
-    expect(schema).toMatchInlineSnapshot(`
+describe('schemaOrg generators', () => {
+  it('creates the organization schema baseline', () => {
+    expect(generateOrganizationSchema()).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "Organization",
         "address": {
           "@type": "PostalAddress",
           "addressCountry": "NL",
-          "addressRegion": "Noord-Brabant",
+          "addressRegion": "Noord-Brabant"
         },
         "aggregateRating": {
           "@type": "AggregateRating",
           "bestRating": "5",
           "ratingValue": "4.9",
           "reviewCount": "500",
-          "worstRating": "1",
+          "worstRating": "1"
         },
         "description": "Dé Feestspecialist van het Zuiden. DJ + Saxofoon voor bruiloften, bedrijfsfeesten en meer.",
         "email": "info@mr-dj.nl",
@@ -49,22 +45,23 @@ describe('schemaOrg utilities', () => {
         "sameAs": [
           "https://www.facebook.com/mrdj.nl",
           "https://www.instagram.com/mrdj.nl",
-          "https://www.linkedin.com/company/mrdj-nl",
+          "https://www.linkedin.com/company/mrdj-nl"
         ],
         "telephone": "+31408422594",
-        "url": "https://mr-dj.sevensa.nl",
+        "url": "https://mr-dj.sevensa.nl"
       }
     `);
   });
 
-  it('generates local business schema with custom path', () => {
-    const schema = generateLocalBusinessSchema({
-      city: 'Eindhoven',
-      province: 'Noord-Brabant',
-      slug: 'eindhoven',
-      path: '/diensten/dj-eindhoven'
-    });
-    expect(schema).toMatchInlineSnapshot(`
+  it('supports custom slug and path when generating local business schema', () => {
+    expect(
+      generateLocalBusinessSchema({
+        city: 'Eindhoven',
+        province: 'Noord-Brabant',
+        slug: 'dj-eindhoven-nl',
+        path: '/diensten/dj-eindhoven-nl'
+      })
+    ).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
@@ -72,27 +69,27 @@ describe('schemaOrg utilities', () => {
           "@type": "PostalAddress",
           "addressCountry": "NL",
           "addressLocality": "Eindhoven",
-          "addressRegion": "Noord-Brabant",
+          "addressRegion": "Noord-Brabant"
         },
         "aggregateRating": {
           "@type": "AggregateRating",
           "bestRating": "5",
           "ratingValue": "4.9",
           "reviewCount": "500",
-          "worstRating": "1",
+          "worstRating": "1"
         },
         "areaServed": {
           "@type": "City",
           "containedInPlace": {
             "@type": "AdministrativeArea",
-            "name": "Noord-Brabant",
+            "name": "Noord-Brabant"
           },
-          "name": "Eindhoven",
+          "name": "Eindhoven"
         },
         "email": "info@mr-dj.nl",
         "geo": {
           "@type": "GeoCoordinates",
-          "addressCountry": "NL",
+          "addressCountry": "NL"
         },
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
@@ -102,51 +99,52 @@ describe('schemaOrg utilities', () => {
               "itemOffered": {
                 "@type": "Service",
                 "description": "Professionele DJ voor uw bruiloft",
-                "name": "Bruiloft DJ",
-              },
+                "name": "Bruiloft DJ"
+              }
             },
             {
               "@type": "Offer",
               "itemOffered": {
                 "@type": "Service",
                 "description": "DJ voor zakelijke evenementen",
-                "name": "Bedrijfsfeest DJ",
-              },
+                "name": "Bedrijfsfeest DJ"
+              }
             },
             {
               "@type": "Offer",
               "itemOffered": {
                 "@type": "Service",
                 "description": "DJ voor verjaardagen en privé-feesten",
-                "name": "Feest DJ",
-              },
-            },
+                "name": "Feest DJ"
+              }
+            }
           ],
-          "name": "DJ Services",
+          "name": "DJ Services"
         },
         "image": "https://mr-dj.sevensa.nl/images/logo.png",
         "name": "Mr. DJ - DJ in Eindhoven",
         "priceRange": "€€€",
         "telephone": "+31408422594",
-        "url": "https://mr-dj.sevensa.nl/diensten/dj-eindhoven",
+        "url": "https://mr-dj.sevensa.nl/diensten/dj-eindhoven-nl"
       }
     `);
   });
 
-  it('generates event schema with defaults', () => {
-    const schema = generateEventSchema({
-      name: 'Bedrijfsfeest',
-      description: 'DJ voor bedrijfsfeest',
-      city: 'Tilburg',
-      province: 'Noord-Brabant',
-      endDate: '2024-01-02T18:00:00.000Z'
-    });
-    expect(schema).toMatchInlineSnapshot(`
+  it('fills dynamic defaults for event schema', () => {
+    expect(
+      generateEventSchema({
+        name: 'Mr. DJ Live Showcase',
+        description: 'Avondvullend feest met DJ en saxofonist',
+        city: 'Tilburg',
+        province: 'Noord-Brabant',
+        endDate: '2025-02-01T00:00:00.000Z'
+      })
+    ).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "Event",
-        "description": "DJ voor bedrijfsfeest",
-        "endDate": "2024-01-02T18:00:00.000Z",
+        "description": "Avondvullend feest met DJ en saxofonist",
+        "endDate": "2025-02-01T00:00:00.000Z",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
         "eventStatus": "https://schema.org/EventScheduled",
         "location": {
@@ -155,39 +153,40 @@ describe('schemaOrg utilities', () => {
             "@type": "PostalAddress",
             "addressCountry": "NL",
             "addressLocality": "Tilburg",
-            "addressRegion": "Noord-Brabant",
+            "addressRegion": "Noord-Brabant"
           },
-          "name": "Diverse Locaties in Tilburg",
+          "name": "Diverse Locaties in Tilburg"
         },
-        "name": "Bedrijfsfeest",
+        "name": "Mr. DJ Live Showcase",
         "offers": {
           "@type": "Offer",
           "availability": "https://schema.org/InStock",
           "url": "https://mr-dj.sevensa.nl",
-          "validFrom": "2024-01-01T12:00:00.000Z",
+          "validFrom": "2025-01-15T12:00:00.000Z"
         },
         "organizer": {
           "@type": "Organization",
           "name": "Mr. DJ",
-          "url": "https://mr-dj.sevensa.nl",
+          "url": "https://mr-dj.sevensa.nl"
         },
         "performer": {
           "@type": "MusicGroup",
           "name": "Mr. DJ",
-          "url": "https://mr-dj.sevensa.nl",
+          "url": "https://mr-dj.sevensa.nl"
         },
-        "startDate": "2024-01-01T12:00:00.000Z",
+        "startDate": "2025-01-15T12:00:00.000Z"
       }
     `);
   });
 
-  it('generates breadcrumb schema with absolute URLs', () => {
-    const schema = generateBreadcrumbSchema([
-      { name: 'Home', url: '/' },
-      { name: 'Services', url: '/services' },
-      { name: 'Extern', url: 'https://partner.example.com/dj' }
-    ]);
-    expect(schema).toMatchInlineSnapshot(`
+  it('normalises breadcrumb URLs while respecting absolute links', () => {
+    expect(
+      generateBreadcrumbSchema([
+        { name: 'Home', url: '/' },
+        { name: 'DJ Services', url: '/diensten' },
+        { name: 'External Feature', url: 'https://partner.example/dj' }
+      ])
+    ).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -196,52 +195,53 @@ describe('schemaOrg utilities', () => {
             "@type": "ListItem",
             "item": "https://mr-dj.sevensa.nl/",
             "name": "Home",
-            "position": 1,
+            "position": 1
           },
           {
             "@type": "ListItem",
-            "item": "https://mr-dj.sevensa.nl/services",
-            "name": "Services",
-            "position": 2,
+            "item": "https://mr-dj.sevensa.nl/diensten",
+            "name": "DJ Services",
+            "position": 2
           },
           {
             "@type": "ListItem",
-            "item": "https://partner.example.com/dj",
-            "name": "Extern",
-            "position": 3,
-          },
-        ],
+            "item": "https://partner.example/dj",
+            "name": "External Feature",
+            "position": 3
+          }
+        ]
       }
     `);
   });
 
-  it('generates service schema', () => {
-    const schema = generateServiceSchema({
-      serviceName: 'Bruiloft DJ',
-      description: 'All-inclusive bruiloft DJ pakket',
-      serviceType: 'WeddingService'
-    });
-    expect(schema).toMatchInlineSnapshot(`
+  it('structures service schema with provider and offers', () => {
+    expect(
+      generateServiceSchema({
+        serviceName: 'Bruiloft DJ Deluxe',
+        description: 'Compleet verzorgde avond met lichtshow en saxofonist',
+        serviceType: 'Bruiloft'
+      })
+    ).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "Service",
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": "4.9",
-          "reviewCount": "500",
+          "reviewCount": "500"
         },
         "areaServed": [
           {
             "@type": "State",
-            "name": "Noord-Brabant",
+            "name": "Noord-Brabant"
           },
           {
             "@type": "State",
-            "name": "Limburg",
-          },
+            "name": "Limburg"
+          }
         ],
-        "description": "All-inclusive bruiloft DJ pakket",
-        "name": "Bruiloft DJ",
+        "description": "Compleet verzorgde avond met lichtshow en saxofonist",
+        "name": "Bruiloft DJ Deluxe",
         "offers": {
           "@type": "Offer",
           "availability": "https://schema.org/InStock",
@@ -249,58 +249,66 @@ describe('schemaOrg utilities', () => {
             "@type": "PriceSpecification",
             "description": "Prijzen op aanvraag",
             "price": "0",
-            "priceCurrency": "EUR",
-          },
+            "priceCurrency": "EUR"
+          }
         },
         "provider": {
           "@type": "Organization",
           "name": "Mr. DJ",
           "telephone": "+31408422594",
-          "url": "https://mr-dj.sevensa.nl",
+          "url": "https://mr-dj.sevensa.nl"
         },
-        "serviceType": "WeddingService",
+        "serviceType": "Bruiloft"
       }
     `);
   });
 
-  it('generates review schema', () => {
-    const schema = generateReviewSchema({
-      reviewBody: 'Geweldige ervaring!',
-      author: 'Sanne',
-      ratingValue: '5',
-      datePublished: '2024-01-01'
-    });
-    expect(schema).toMatchInlineSnapshot(`
+  it('records reviews with rating metadata', () => {
+    expect(
+      generateReviewSchema({
+        reviewBody: 'Fantastische avond! Muziek sloot perfect aan op onze gasten.',
+        author: 'Sanne van Dijk',
+        ratingValue: '5',
+        datePublished: '2024-09-10'
+      })
+    ).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "Review",
         "author": {
           "@type": "Person",
-          "name": "Sanne",
+          "name": "Sanne van Dijk"
         },
-        "datePublished": "2024-01-01",
+        "datePublished": "2024-09-10",
         "itemReviewed": {
           "@type": "LocalBusiness",
           "name": "Mr. DJ",
-          "url": "https://mr-dj.sevensa.nl",
+          "url": "https://mr-dj.sevensa.nl"
         },
-        "reviewBody": "Geweldige ervaring!",
+        "reviewBody": "Fantastische avond! Muziek sloot perfect aan op onze gasten.",
         "reviewRating": {
           "@type": "Rating",
           "bestRating": "5",
           "ratingValue": "5",
-          "worstRating": "1",
-        },
+          "worstRating": "1"
+        }
       }
     `);
   });
 
-  it('generates FAQ schema', () => {
-    const schema = generateFAQSchema([
-      { question: 'Hoe lang draait de DJ?', answer: 'Standaard 4 uur.' },
-      { question: 'Is saxofonist inbegrepen?', answer: 'Optioneel bij te boeken.' }
-    ]);
-    expect(schema).toMatchInlineSnapshot(`
+  it('builds FAQ schema from Q&A pairs', () => {
+    expect(
+      generateFAQSchema([
+        {
+          question: 'Hoe lang draait de DJ?',
+          answer: 'Een standaard set duurt 4 uur en is uitbreidbaar.'
+        },
+        {
+          question: 'Kunnen we een verzoeknummer doorgeven?',
+          answer: 'Zeker, stuur vooraf jullie favorieten door en we regelen het.'
+        }
+      ])
+    ).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -309,34 +317,36 @@ describe('schemaOrg utilities', () => {
             "@type": "Question",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Standaard 4 uur.",
+              "text": "Een standaard set duurt 4 uur en is uitbreidbaar."
             },
-            "name": "Hoe lang draait de DJ?",
+            "name": "Hoe lang draait de DJ?"
           },
           {
             "@type": "Question",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Optioneel bij te boeken.",
+              "text": "Zeker, stuur vooraf jullie favorieten door en we regelen het."
             },
-            "name": "Is saxofonist inbegrepen?",
-          },
-        ],
+            "name": "Kunnen we een verzoeknummer doorgeven?"
+          }
+        ]
       }
     `);
   });
 
-  it('generates webpage schema with breadcrumb reference', () => {
-    const schema = generateWebPageSchema({
-      title: 'Bruiloft DJ',
-      description: 'DJ en saxofonist voor uw bruiloft.',
-      url: `${SITE_BASE_URL}/bruiloft`,
-      breadcrumbs: [
-        { name: 'Home', url: '/' },
-        { name: 'Bruiloft', url: '/bruiloft' }
-      ]
-    });
-    expect(schema).toMatchInlineSnapshot(`
+  it('combines webpage data with breadcrumb schema', () => {
+    expect(
+      generateWebPageSchema({
+        title: 'Mr. DJ | Bruiloft DJ',
+        description: 'Volledige DJ-beleving voor jullie trouwdag.',
+        url: 'https://mr-dj.sevensa.nl/bruiloft',
+        breadcrumbs: [
+          { name: 'Home', url: '/' },
+          { name: 'Bruiloften', url: '/bruiloft' },
+          { name: 'Externe Inspiratie', url: 'https://partner.example/bruiloft-dj' }
+        ]
+      })
+    ).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -348,61 +358,68 @@ describe('schemaOrg utilities', () => {
               "@type": "ListItem",
               "item": "https://mr-dj.sevensa.nl/",
               "name": "Home",
-              "position": 1,
+              "position": 1
             },
             {
               "@type": "ListItem",
               "item": "https://mr-dj.sevensa.nl/bruiloft",
-              "name": "Bruiloft",
-              "position": 2,
+              "name": "Bruiloften",
+              "position": 2
             },
-          ],
+            {
+              "@type": "ListItem",
+              "item": "https://partner.example/bruiloft-dj",
+              "name": "Externe Inspiratie",
+              "position": 3
+            }
+          ]
         },
-        "description": "DJ en saxofonist voor uw bruiloft.",
+        "description": "Volledige DJ-beleving voor jullie trouwdag.",
         "inLanguage": "nl-NL",
-        "name": "Bruiloft DJ",
+        "name": "Mr. DJ | Bruiloft DJ",
         "publisher": {
           "@type": "Organization",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://mr-dj.sevensa.nl/images/logo.png",
+            "url": "https://mr-dj.sevensa.nl/images/logo.png"
           },
-          "name": "Mr. DJ",
+          "name": "Mr. DJ"
         },
-        "url": "https://mr-dj.sevensa.nl/bruiloft",
+        "url": "https://mr-dj.sevensa.nl/bruiloft"
       }
     `);
   });
 
-  it('generates product schema', () => {
-    const schema = generateProductSchema({
-      name: 'Bruiloft Pakket',
-      description: 'Complete DJ + Sax show',
-      price: '2499',
-      priceCurrency: 'EUR'
-    });
-    expect(schema).toMatchInlineSnapshot(`
+  it('encapsulates product pricing with a rolling validity window', () => {
+    expect(
+      generateProductSchema({
+        name: 'Bruiloft Pakket Premium',
+        description: 'Incl. DJ, saxofonist en lichtshow',
+        price: '1895',
+        priceCurrency: 'EUR'
+      })
+    ).toMatchInlineSnapshot(`
       {
         "@context": "https://schema.org",
         "@type": "Product",
         "brand": {
           "@type": "Brand",
-          "name": "Mr. DJ",
+          "name": "Mr. DJ"
         },
-        "description": "Complete DJ + Sax show",
-        "name": "Bruiloft Pakket",
+        "description": "Incl. DJ, saxofonist en lichtshow",
+        "name": "Bruiloft Pakket Premium",
         "offers": {
           "@type": "Offer",
           "availability": "https://schema.org/InStock",
-          "price": "2499",
+          "price": "1895",
           "priceCurrency": "EUR",
-          "priceValidUntil": "2025-01-01",
+          "priceValidUntil": "2026-01-15",
           "seller": {
             "@type": "Organization",
-            "name": "Mr. DJ",
+            "name": "Mr. DJ"
           },
-          "url": "https://mr-dj.sevensa.nl",
-        },
+          "url": "https://mr-dj.sevensa.nl"
+        }
       }
     `);
   });
