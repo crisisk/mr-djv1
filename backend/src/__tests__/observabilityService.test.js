@@ -1,16 +1,25 @@
+const { buildRequiredEnv } = require('../testUtils/env');
+
+const ORIGINAL_ENV = { ...process.env };
+process.env = { ...ORIGINAL_ENV, ...buildRequiredEnv() };
+
 const observabilityService = require('../services/observabilityService');
 const personalizationService = require('../services/personalizationService');
 
 describe('observabilityService', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     observabilityService.reset();
     personalizationService.resetLogs();
-    personalizationService.resetCache();
+    await personalizationService.resetCache();
   });
 
   afterEach(() => {
     observabilityService.reset();
     personalizationService.resetLogs();
+  });
+
+  afterAll(() => {
+    process.env = ORIGINAL_ENV;
   });
 
   it('processes scheduled runs and records metrics', async () => {

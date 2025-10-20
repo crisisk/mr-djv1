@@ -2,6 +2,12 @@
 
 # Mister DJ - Deployment Script voor VPS
 # Usage: ./deploy.sh
+# Redeploy instructions:
+#   1. Make your code changes locally and commit them if desired.
+#   2. From the project root, run ./deploy.sh to build, package, and upload the latest version.
+#   3. The script recreates containers on the VPS using docker-compose up -d, so the new build
+#      is live once the health checks pass. For a quick remote redeploy, SSH into the VPS and run
+#      "docker-compose pull && docker-compose up -d" inside /opt/mr-dj.
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -88,6 +94,10 @@ docker-compose up -d
 echo "Waiting for services to start..."
 sleep 10
 
+# Ensure database migrations are up to date
+echo "Running database migrations..."
+docker-compose exec -T mr-dj-backend npm run migrate
+
 # Check container status
 echo "Container Status:"
 docker-compose ps
@@ -109,6 +119,7 @@ ENDSSH
 
 echo "✅ Deployment script completed!"
 echo "🌐 Check your website at: https://staging.sevensa.nl/eds"
+echo "📊 Post-deploy: Import docs/observability/grafana.json into Grafana via Dashboards → New → Import."
 
 # Cleanup local tar
 rm -f "$ROOT_DIR/$PACKAGE_NAME"
