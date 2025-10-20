@@ -1,39 +1,8 @@
 const express = require('express');
-const { body, param, validationResult } = require('express-validator');
-const {
-  createBooking,
-  getRecentBookings,
-  updateBooking,
-  deleteBooking
-} = require('../services/bookingService');
+const { createBooking, getRecentBookings } = require('../services/bookingService');
+const { validateBooking } = require('../lib/validation/bookingSchema');
 
 const router = express.Router();
-
-const bookingValidations = [
-  body('name').trim().notEmpty().withMessage('Naam is vereist'),
-  body('email').trim().isEmail().withMessage('Ongeldig e-mailadres'),
-  body('phone').trim().isLength({ min: 6 }).withMessage('Telefoonnummer is vereist'),
-  body('eventType').trim().notEmpty().withMessage('Type evenement is vereist'),
-  body('eventDate').optional().trim().isISO8601().withMessage('Ongeldige datum'),
-  body('message').optional().trim().isLength({ max: 4000 }).withMessage('Bericht is te lang'),
-  body('packageId').optional().trim().isLength({ max: 255 })
-];
-
-const updateValidations = [
-  param('id').trim().notEmpty().withMessage('Boeking ID is vereist'),
-  body('name').optional().trim().notEmpty().withMessage('Naam mag niet leeg zijn'),
-  body('email').optional().trim().isEmail().withMessage('Ongeldig e-mailadres'),
-  body('phone').optional().trim().isLength({ min: 6 }).withMessage('Telefoonnummer is ongeldig'),
-  body('eventType').optional().trim().notEmpty().withMessage('Type evenement is vereist'),
-  body('eventDate').optional().trim().isISO8601().withMessage('Ongeldige datum'),
-  body('message').optional().trim().isLength({ max: 4000 }).withMessage('Bericht is te lang'),
-  body('packageId').optional().trim().isLength({ max: 255 }),
-  body('status').optional().isIn(['pending', 'confirmed', 'cancelled']).withMessage('Ongeldige status')
-];
-
-const deleteValidations = [
-  param('id').trim().notEmpty().withMessage('Boeking ID is vereist')
-];
 
 router.get('/', async (_req, res, next) => {
   try {
@@ -47,29 +16,18 @@ router.get('/', async (_req, res, next) => {
   }
 });
 
-router.post('/', bookingValidations, async (req, res, next) => {
-  const errors = validationResult(req);
+router.post('/', async (req, res, next) => {
+  const { error, value, details } = validateBooking(req.body);
 
-  if (!errors.isEmpty()) {
+  if (error) {
     return res.status(422).json({
       error: 'Validatie mislukt',
-      details: errors.array().map((err) => ({
-        field: err.param,
-        message: err.msg
-      }))
+      details
     });
   }
 
   try {
-    const booking = await createBooking({
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      eventType: req.body.eventType,
-      eventDate: req.body.eventDate,
-      message: req.body.message,
-      packageId: req.body.packageId
-    });
+    const booking = await createBooking(value);
 
     res.status(201).json({
       success: true,
@@ -77,7 +35,9 @@ router.post('/', bookingValidations, async (req, res, next) => {
       bookingId: booking.id,
       status: booking.status,
       persisted: booking.persisted,
-      rentGuySync: booking.rentGuySync
+      rentGuySync: booking.rentGuySync,
+      eventType: value.eventType,
+      requestedPackage: value.packageId || null
     });
   } catch (error) {
     next(error);

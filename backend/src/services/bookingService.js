@@ -2,11 +2,162 @@ const { randomUUID } = require('crypto');
 const db = require('../lib/db');
 const rentGuyService = require('./rentGuyService');
 
+/**
+ * @typedef {Object} BookingPayload
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} eventType
+ * @property {string|Date|null} [eventDate]
+ * @property {string|null} [packageId]
+ * @property {string|null} [message]
+ */
+
+/**
+ * @typedef {Object} RentGuySyncResult
+ * @property {boolean} delivered
+ * @property {boolean} queued
+ * @property {number} [queueSize]
+ * @property {string} [reason]
+ */
+
+/**
+ * @typedef {Object} BookingRecord
+ * @property {string} id
+ * @property {string} status
+ * @property {Date} createdAt
+ * @property {boolean} persisted
+ * @property {string} name
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} eventType
+ * @property {Date|null} eventDate
+ * @property {string|null} packageId
+ * @property {string|null} message
+ */
+
+/**
+ * @typedef {Object} CreateBookingResult
+ * @property {string} id
+ * @property {string} status
+ * @property {Date} createdAt
+ * @property {boolean} persisted
+ * @property {RentGuySyncResult} rentGuySync
+ */
+
 const inMemoryBookings = new Map();
+
+const DEFAULT_TIMEZONE = 'Europe/Amsterdam';
+
+function zonedDateTimeToUtc({ year, month, day, hour = 0, minute = 0, second = 0 }, timeZone) {
+  const baseline = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  const parts = formatter.formatToParts(baseline).filter((part) => part.type !== 'literal');
+  const partMap = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const zonedUtc = Date.UTC(
+    Number(partMap.year),
+    Number(partMap.month) - 1,
+    Number(partMap.day),
+    Number(partMap.hour),
+    Number(partMap.minute),
+    Number(partMap.second)
+  );
+  const offset = zonedUtc - baseline.getTime();
+  return new Date(baseline.getTime() - offset);
+}
+
+function parseZonedDate(value, timeZone = DEFAULT_TIMEZONE) {
+  if (!value) {
+    return null;
+  }
+
+  if (value instanceof Date) {
+    return new Date(value.getTime());
+  }
+
+  if (typeof value === 'number') {
+    return new Date(value);
+  }
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const isoTimezoneMatch = /([zZ]|[+\-]\d{2}:?\d{2})$/.test(trimmed);
+  if (isoTimezoneMatch) {
+    const direct = new Date(trimmed);
+    return Number.isNaN(direct.getTime()) ? null : direct;
+  }
+
+  const partsMatch = trimmed.match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?$/
+  );
+  if (!partsMatch) {
+    const fallback = new Date(trimmed);
+    return Number.isNaN(fallback.getTime()) ? null : fallback;
+  }
+
+  const [, year, month, day, hour = '00', minute = '00', second = '00'] = partsMatch;
+  return zonedDateTimeToUtc(
+    {
+      year: Number(year),
+      month: Number(month),
+      day: Number(day),
+      hour: Number(hour),
+      minute: Number(minute),
+      second: Number(second)
+    },
+    timeZone
+  );
+}
+
+function normalizeEventDate(input, defaultTimeZone = DEFAULT_TIMEZONE) {
+  if (!input) {
+    return { start: null, end: null, timeZone: defaultTimeZone };
+  }
+
+  if (typeof input === 'string' || input instanceof Date || typeof input === 'number') {
+    return {
+      start: parseZonedDate(input, defaultTimeZone),
+      end: null,
+      timeZone: defaultTimeZone
+    };
+  }
+
+  if (typeof input === 'object') {
+    const timeZone = input.timezone || input.timeZone || defaultTimeZone;
+    const startSource = input.start ?? input.date ?? input.from ?? null;
+    const endSource = input.end ?? input.until ?? input.to ?? null;
+    return {
+      start: parseZonedDate(startSource, timeZone),
+      end: parseZonedDate(endSource, timeZone),
+      timeZone
+    };
+  }
+
+  return { start: null, end: null, timeZone: defaultTimeZone };
+}
 
 async function createBooking(payload) {
   const timestamp = new Date();
   let result;
+
+  const normalizedEventDate = normalizeEventDate(payload.eventDate);
+  const eventDateForStorage = normalizedEventDate.start;
 
   if (db.isConfigured()) {
     try {
@@ -19,7 +170,7 @@ async function createBooking(payload) {
           payload.email,
           payload.phone,
           payload.eventType,
-          payload.eventDate ? new Date(payload.eventDate) : null,
+          eventDateForStorage,
           payload.message,
           payload.packageId || null,
           timestamp
@@ -37,7 +188,9 @@ async function createBooking(payload) {
         email: payload.email,
         phone: payload.phone,
         eventType: payload.eventType,
-        eventDate: payload.eventDate ? new Date(payload.eventDate) : null,
+        eventDate: eventDateForStorage,
+        eventEndDate: normalizedEventDate.end,
+        eventTimeZone: normalizedEventDate.timeZone,
         packageId: payload.packageId || null,
         message: payload.message || null
       };
@@ -58,7 +211,9 @@ async function createBooking(payload) {
       email: payload.email,
       phone: payload.phone,
       eventType: payload.eventType,
-      eventDate: payload.eventDate ? new Date(payload.eventDate) : null,
+      eventDate: eventDateForStorage,
+      eventEndDate: normalizedEventDate.end,
+      eventTimeZone: normalizedEventDate.timeZone,
       packageId: payload.packageId || null,
       message: payload.message || null
     };
@@ -78,6 +233,8 @@ async function createBooking(payload) {
       phone: result.phone,
       eventType: result.eventType,
       eventDate: result.eventDate,
+      eventEndDate: result.eventEndDate,
+      eventTimeZone: result.eventTimeZone,
       packageId: result.packageId,
       message: result.message
     },
@@ -91,10 +248,19 @@ async function createBooking(payload) {
     status: result.status,
     createdAt: result.createdAt,
     persisted: result.persisted,
+    eventDate: result.eventDate,
+    eventEndDate: result.eventEndDate,
+    eventTimeZone: result.eventTimeZone,
     rentGuySync
   };
 }
 
+/**
+ * Fetches the most recent bookings, falling back to the in-memory store.
+ *
+ * @param {number} [limit=10]
+ * @returns {Promise<{persisted: boolean, bookings: Array<BookingRecord>}>}
+ */
 async function getRecentBookings(limit = 10) {
   if (db.isConfigured()) {
     try {
@@ -138,182 +304,25 @@ async function getRecentBookings(limit = 10) {
   };
 }
 
-async function updateBooking(id, updates = {}) {
-  const timestamp = new Date();
-  let record = null;
-
-  if (db.isConfigured()) {
-    try {
-      const columnMap = {
-        name: 'name',
-        email: 'email',
-        phone: 'phone',
-        eventType: 'event_type',
-        eventDate: 'event_date',
-        message: 'message',
-        packageId: 'package_id',
-        status: 'status'
-      };
-      const assignments = [];
-      const values = [];
-
-      Object.entries(columnMap).forEach(([key, column]) => {
-        if (Object.prototype.hasOwnProperty.call(updates, key)) {
-          let value = updates[key];
-
-          if (key === 'eventDate') {
-            value = value ? new Date(value) : null;
-          }
-
-          if (key === 'packageId') {
-            value = value || null;
-          }
-
-          assignments.push(`${column} = $${assignments.length + 2}`);
-          values.push(value);
-        }
-      });
-
-      const assignmentCount = assignments.length;
-      const updatedAtPlaceholder = `$${assignmentCount + 2}`;
-      const setClause = assignmentCount > 0 ? `${assignments.join(', ')}, updated_at = ${updatedAtPlaceholder}` : `updated_at = ${updatedAtPlaceholder}`;
-      const query = `UPDATE bookings SET ${setClause} WHERE id = $1 RETURNING id, name, email, phone, event_type AS "eventType", event_date AS "eventDate", package_id AS "packageId", status, message, created_at AS "createdAt", updated_at AS "updatedAt"`;
-      const dbResult = await db.runQuery(query, [id, ...values, timestamp]);
-
-      if (dbResult && dbResult.rows.length > 0) {
-        const row = dbResult.rows[0];
-        record = {
-          id: row.id,
-          status: row.status,
-          createdAt: row.createdAt,
-          updatedAt: row.updatedAt,
-          persisted: true,
-          name: row.name,
-          email: row.email,
-          phone: row.phone,
-          eventType: row.eventType,
-          eventDate: row.eventDate ? new Date(row.eventDate) : null,
-          packageId: row.packageId || null,
-          message: row.message || null
-        };
-      }
-    } catch (error) {
-      console.error('[bookingService] Failed to update booking in database:', error.message);
-    }
-  }
-
-  const existing = inMemoryBookings.get(id);
-  if (existing) {
-    const nextRecord = {
-      ...existing,
-      updatedAt: timestamp
-    };
-
-    if (Object.prototype.hasOwnProperty.call(updates, 'name')) {
-      nextRecord.name = updates.name;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(updates, 'email')) {
-      nextRecord.email = updates.email;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(updates, 'phone')) {
-      nextRecord.phone = updates.phone;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(updates, 'eventType')) {
-      nextRecord.eventType = updates.eventType;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(updates, 'eventDate')) {
-      nextRecord.eventDate = updates.eventDate ? new Date(updates.eventDate) : null;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(updates, 'packageId')) {
-      nextRecord.packageId = updates.packageId || null;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(updates, 'message')) {
-      nextRecord.message = updates.message || null;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(updates, 'status')) {
-      nextRecord.status = updates.status;
-    }
-
-    inMemoryBookings.set(id, nextRecord);
-
-    if (!record) {
-      record = nextRecord;
-    }
-  }
-
-  if (!record) {
-    return null;
-  }
-
-  const rentGuySync = await rentGuyService.syncBooking(
-    {
-      id: record.id,
-      status: record.status,
-      createdAt: record.createdAt,
-      persisted: record.persisted,
-      name: record.name,
-      email: record.email,
-      phone: record.phone,
-      eventType: record.eventType,
-      eventDate: record.eventDate,
-      packageId: record.packageId,
-      message: record.message
-    },
-    {
-      source: 'booking-flow',
-      action: 'update'
-    }
-  );
-
-  return {
-    id: record.id,
-    status: record.status,
-    createdAt: record.createdAt,
-    updatedAt: record.updatedAt || timestamp,
-    persisted: record.persisted,
-    rentGuySync,
-    name: record.name,
-    email: record.email,
-    phone: record.phone,
-    eventType: record.eventType,
-    eventDate: record.eventDate,
-    packageId: record.packageId,
-    message: record.message
-  };
-}
-
-async function deleteBooking(id) {
-  let removed = false;
-
-  if (db.isConfigured()) {
-    try {
-      const result = await db.runQuery('DELETE FROM bookings WHERE id = $1', [id]);
-      if (result && result.rowCount > 0) {
-        removed = true;
-      }
-    } catch (error) {
-      console.error('[bookingService] Failed to delete booking from database:', error.message);
-    }
-  }
-
-  if (inMemoryBookings.delete(id)) {
-    removed = true;
-  }
-
-  return removed;
-}
-
+/**
+ * Clears the in-memory booking cache (used in tests).
+ *
+ * @returns {void}
+ */
 function resetInMemoryStore() {
   inMemoryBookings.clear();
 }
 
+/**
+ * Provides diagnostics about the current booking persistence strategy.
+ *
+ * @returns {{
+ *   databaseConnected: boolean,
+ *   storageStrategy: 'postgres'|'in-memory',
+ *   fallbackQueueSize: number,
+ *   lastError: string|null
+ * }}
+ */
 function getBookingServiceStatus() {
   const dbStatus = db.getStatus();
 
@@ -325,11 +334,22 @@ function getBookingServiceStatus() {
   };
 }
 
+function ping() {
+  const status = getBookingServiceStatus();
+  return {
+    ok: true,
+    databaseConnected: status.databaseConnected,
+    storageStrategy: status.storageStrategy,
+    fallbackQueueSize: status.fallbackQueueSize
+  };
+}
+
 module.exports = {
   createBooking,
   getRecentBookings,
   updateBooking,
   deleteBooking,
   resetInMemoryStore,
-  getBookingServiceStatus
+  getBookingServiceStatus,
+  ping
 };
