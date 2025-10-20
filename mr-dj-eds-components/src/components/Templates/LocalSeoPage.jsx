@@ -13,7 +13,7 @@ import { getWindow } from '../../lib/environment.js';
 import { generateBreadcrumbSchema } from '../../utils/schemaOrg.js';
 import { createLocalSeoBreadcrumbs } from '../../utils/breadcrumbs.js';
 
-const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) => {
+const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant, locale = getDefaultLocale() }) => {
   const hasData = Boolean(data);
   const city = hasData ? data.city : '';
   const province = hasData ? data.province : '';
@@ -42,7 +42,86 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
   );
 
   const heroBackgroundImage = heroImage || fallbackHeroImage;
-  const heroTitle = isBruiloftPage ? `Uw Bruiloft DJ in ${city}, ${province}` : `Uw DJ voor Feesten in ${city}, ${province}`;
+  const heroProvinceSuffix = province ? `, ${province}` : '';
+  const venuesProvinceSuffix = province ? ` en ${province}` : '';
+  const footerProvinceSuffix = province ? ` of ${province}` : '';
+  const eventTypeTitle = translate(
+    isBruiloftPage ? 'localSeo.hero.eventTypeWedding' : 'localSeo.hero.eventTypeGeneral',
+    {
+      locale,
+      defaultValue: isBruiloftPage ? 'Bruiloft DJ' : 'DJ voor feesten',
+    },
+  );
+
+  const heroTitle = translate('localSeo.hero.title', {
+    locale,
+    defaultValue: isBruiloftPage
+      ? `Uw Bruiloft DJ in ${city}${heroProvinceSuffix}`
+      : `Uw DJ voor Feesten in ${city}${heroProvinceSuffix}`,
+    params: {
+      city,
+      provinceSuffix: heroProvinceSuffix,
+      eventTypeTitle,
+    },
+  });
+
+  const heroPrimaryCta = translate('localSeo.hero.ctaPrimary', {
+    locale,
+    defaultValue: 'Check Beschikbaarheid',
+  });
+
+  const heroSecondaryCta = translate('localSeo.hero.ctaSecondary', {
+    locale,
+    defaultValue: 'Vraag Offerte Aan',
+  });
+
+  const venuesHeading = translate('localSeo.venues.heading', {
+    locale,
+    defaultValue: `Bekend met de beste locaties in ${city}${venuesProvinceSuffix}`,
+    params: {
+      city,
+      provinceSuffix: venuesProvinceSuffix,
+    },
+  });
+
+  const testimonialsHeading = translate('localSeo.testimonials.heading', {
+    locale,
+    defaultValue: `Wat klanten in ${city}${venuesProvinceSuffix} zeggen`,
+    params: {
+      city,
+      provinceSuffix: venuesProvinceSuffix,
+    },
+  });
+
+  const footerHeading = translate(
+    variant === 'B' ? 'localSeo.footer.variantBHeading' : 'localSeo.footer.heading',
+    {
+      locale,
+      defaultValue:
+        variant === 'B'
+          ? `Vraag vandaag nog een gratis offerte aan in ${city}!`
+          : `Klaar voor een onvergetelijk feest in ${city}${footerProvinceSuffix}?`,
+      params:
+        variant === 'B'
+          ? {
+              city,
+            }
+          : {
+              city,
+              provinceSuffix: footerProvinceSuffix,
+            },
+    },
+  );
+
+  const footerCtaPrompt = translate('localSeo.footer.ctaPrompt', {
+    locale,
+    defaultValue: 'Bel ons direct op',
+  });
+
+  const footerCtaButton = translate('localSeo.footer.ctaButton', {
+    locale,
+    defaultValue: 'Vraag nu een offerte aan',
+  });
 
   const canonicalPath = hasData ? (isBruiloftPage ? `/${slug}` : `/dj-in-${slug}`) : '/';
   const browser = getWindow();
@@ -202,8 +281,8 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
       <HeroSection
         title={heroTitle}
         subtitle={localUSP}
-        ctaPrimaryText="Check Beschikbaarheid"
-        ctaSecondaryText="Vraag Offerte Aan"
+        ctaPrimaryText={heroPrimaryCta}
+        ctaSecondaryText={heroSecondaryCta}
         backgroundClass="bg-primary"
         titleColor="text-white"
         subtitleColor="text-white"
@@ -223,9 +302,7 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 
       <section className="bg-white py-12">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-6 text-4xl font-bold text-[#1A2C4B]">
-            Bekend met de beste locaties in {city} en {province}
-          </h2>
+          <h2 className="mb-6 text-4xl font-bold text-[#1A2C4B]">{venuesHeading}</h2>
           <div className="flex flex-wrap justify-center gap-3">
             {localVenues.map((venue) => (
               <span key={venue} className="rounded-full bg-gray-100 px-4 py-2 text-base text-[#1A2C4B] shadow-sm">
@@ -238,9 +315,7 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
 
       <section className="bg-gray-100 py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-center text-4xl font-extrabold text-[#1A2C4B]">
-            Wat klanten in {city} en {province} zeggen
-          </h2>
+          <h2 className="text-center text-4xl font-extrabold text-[#1A2C4B]">{testimonialsHeading}</h2>
           <div className="mt-8">{testimonialsSection}</div>
           {localReviews && (
             <blockquote className="mx-auto mt-10 max-w-3xl rounded-xl bg-white/70 p-6 text-center text-lg italic text-[#1A2C4B] shadow-md">
@@ -274,17 +349,21 @@ const LocalSeoPage = ({ data, pricingSection, testimonialsSection, variant }) =>
       </section>
 
       <div className="bg-[#1A2C4B] py-12 text-center text-white">
-        <h3 className="mb-4 text-4xl font-bold">
-          {variant === 'B'
-            ? `Vraag vandaag nog een gratis offerte aan in ${city}!`
-            : `Klaar voor een onvergetelijk feest in ${city} of ${province}?`}
-        </h3>
+        <h3 className="mb-4 text-4xl font-bold">{footerHeading}</h3>
         <p className="text-white">
-          Bel ons direct op{' '}
+          {footerCtaPrompt}{' '}
           <a href="tel:+31408422594" className="font-bold underline hover:text-secondary">
             +31 (0) 40 8422594
           </a>
         </p>
+        <div className="mt-6 flex justify-center">
+          <a
+            href="/contact"
+            className="inline-flex items-center rounded-full bg-white px-6 py-3 text-lg font-semibold text-[#1A2C4B] shadow-md transition hover:bg-gray-100"
+          >
+            {footerCtaButton}
+          </a>
+        </div>
       </div>
 
       <Footer />
