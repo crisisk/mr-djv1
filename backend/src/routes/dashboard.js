@@ -5,7 +5,7 @@ const configDashboardService = require('../services/configDashboardService');
 const rentGuyService = require('../services/rentGuyService');
 const sevensaService = require('../services/sevensaService');
 const observabilityService = require('../services/observabilityService');
-const config = require('../config');
+const reviewService = require('../services/reviewService');
 const { logger } = require('../lib/logger');
 
 const DASHBOARD_LIMIT_BOUNDS = { min: 1, max: 500 };
@@ -3003,6 +3003,72 @@ router.delete('/api/roles/:roleId', async (req, res, next) => {
     }
 
     if (error.message === 'Role not found') {
+      res.status(404).json({ error: error.message });
+      return;
+    }
+
+    next(error);
+  }
+});
+
+router.get('/api/reviews/pending', async (_req, res, next) => {
+  try {
+    const testimonials = await reviewService.getPendingReviews();
+    res.json({
+      testimonials,
+      total: testimonials.length
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/api/reviews/:reviewId/approve', async (req, res, next) => {
+  try {
+    const review = await reviewService.approveReview(req.params.reviewId);
+    res.json({ review, status: 'approved' });
+  } catch (error) {
+    if (
+      error.message === 'Review identifier is required' ||
+      error.message === 'Invalid review identifier'
+    ) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    if (error.message === 'Database not configured') {
+      res.status(503).json({ error: error.message });
+      return;
+    }
+
+    if (error.message === 'Review not found') {
+      res.status(404).json({ error: error.message });
+      return;
+    }
+
+    next(error);
+  }
+});
+
+router.patch('/api/reviews/:reviewId/reject', async (req, res, next) => {
+  try {
+    const review = await reviewService.rejectReview(req.params.reviewId);
+    res.json({ review, status: 'rejected' });
+  } catch (error) {
+    if (
+      error.message === 'Review identifier is required' ||
+      error.message === 'Invalid review identifier'
+    ) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    if (error.message === 'Database not configured') {
+      res.status(503).json({ error: error.message });
+      return;
+    }
+
+    if (error.message === 'Review not found') {
       res.status(404).json({ error: error.message });
       return;
     }
