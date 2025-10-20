@@ -56,12 +56,14 @@ export const generateOrganizationSchema = () => ({
  * LocalBusiness Schema
  * For location-specific pages (city landing pages)
  */
-export const generateLocalBusinessSchema = ({ city, province, slug }) => ({
+export const SITE_BASE_URL = BASE_URL;
+
+export const generateLocalBusinessSchema = ({ city, province, slug, path }) => ({
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": `${BUSINESS_NAME} - DJ in ${city}`,
   "image": LOGO_URL,
-  "url": `${BASE_URL}/dj-in-${slug}`,
+  "url": `${BASE_URL}${path || `/dj-in-${slug}`}`,
   "telephone": BUSINESS_PHONE,
   "email": BUSINESS_EMAIL,
   "address": {
