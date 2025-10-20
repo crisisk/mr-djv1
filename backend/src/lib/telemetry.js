@@ -6,6 +6,7 @@ const { OTLPMetricExporter } = require('@opentelemetry/exporter-metrics-otlp-htt
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 const config = require('../config');
+const featureFlags = require('./featureFlags');
 const { logger } = require('./logger');
 
 let sdk = null;
@@ -26,7 +27,16 @@ function createMetricReader() {
 }
 
 async function startTelemetry() {
-  if (process.env.OTEL_ENABLED === 'false' || sdk) {
+  if (sdk) {
+    return;
+  }
+
+  if (!featureFlags.isEnabled('telemetry')) {
+    logger.info('Telemetry disabled via feature flag');
+    return;
+  }
+
+  if (process.env.OTEL_ENABLED === 'false') {
     return;
   }
 
