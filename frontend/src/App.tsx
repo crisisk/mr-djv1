@@ -2,9 +2,19 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { pushEvent } from './lib/analytics/ga4'
 
 function App() {
   const [count, setCount] = useState(0)
+
+  const handleBookingClick = (ctaLocation: string) => {
+    pushEvent({
+      name: 'booking_cta_click',
+      params: {
+        location: ctaLocation,
+      },
+    })
+  }
 
   return (
     <>
@@ -18,16 +28,25 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <button onClick={() => setCount((value) => value + 1)}>
           count is {count}
         </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="card">
+        <button
+          type="button"
+          onClick={() => handleBookingClick('primary-cta')}
+          className="booking-button"
+        >
+          Book your consultation
+        </button>
+        <p className="read-the-docs">
+          Clicking the booking button will send a GA4 event when analytics is available.
+        </p>
+      </div>
     </>
   )
 }
