@@ -9,7 +9,7 @@ const EmailSignup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/email-signup', { email });
+      await axios.post('/api/email-signup', { email });
       setStatus('success');
       // Trigger welcome email sequence
     } catch (error) {

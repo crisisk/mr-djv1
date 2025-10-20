@@ -1,5 +1,5 @@
 // components/MoodBoardGenerator.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './MoodBoardGenerator.module.css';
 
 const eventTypes = {
@@ -64,19 +64,22 @@ const MoodBoardGenerator = () => {
 
       <div className={styles.schemesContainer}>
         {eventTypes[selectedEvent].presets.map((scheme, index) => (
-          <div 
+          <button
             key={index}
+            type="button"
             className={`${styles.scheme} ${selectedScheme === index ? styles.selected : ''}`}
             onClick={() => handleSchemeSelect(index)}
+            aria-pressed={selectedScheme === index}
+            aria-label={`Select color scheme ${index + 1} for ${eventTypes[selectedEvent].name}`}
           >
             {scheme.map((color, i) => (
-              <div 
+              <div
                 key={i}
                 className={styles.colorBox}
                 style={{ backgroundColor: color }}
               />
             ))}
-          </div>
+          </button>
         ))}
       </div>
 

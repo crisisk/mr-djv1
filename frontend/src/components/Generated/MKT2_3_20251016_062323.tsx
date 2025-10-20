@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './InstagramReelsSection.module.css';
+
+const mockReels = [
+  {
+    id: '1',
+    videoUrl: '/videos/dj-event-1.mp4',
+    audioTitle: 'Trending Song 1',
+    likes: 1200,
+    views: 5000,
+    description: 'Amazing wedding party! 🎵 #DJLife',
+    captions: '/captions/dj-event-1.vtt'
+  },
+  // Add more mock reels
+];
 
 const InstagramReelsSection = () => {
   const [reels, setReels] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Mock data - Replace with actual Instagram API integration
-  const mockReels = [
-    {
-      id: '1',
-      videoUrl: '/videos/dj-event-1.mp4',
-      audioTitle: 'Trending Song 1',
-      likes: 1200,
-      views: 5000,
-      description: 'Amazing wedding party! 🎵 #DJLife'
-    },
-    // Add more mock reels
-  ];
 
   useEffect(() => {
     const fetchReels = async () => {
@@ -26,6 +26,7 @@ const InstagramReelsSection = () => {
         setReels(mockReels);
         setIsLoading(false);
       } catch (err) {
+        console.error('Unable to load mock Instagram reels', err);
         setError('Failed to load Instagram Reels');
         setIsLoading(false);
       }
@@ -44,13 +45,20 @@ const InstagramReelsSection = () => {
         {reels.map((reel) => (
           <div key={reel.id} className={styles.reelCard}>
             <div className={styles.videoContainer}>
-              <video 
-                controls 
+              <video
+                controls
                 playsInline
                 poster="/images/reel-thumbnail.jpg"
                 className={styles.video}
               >
                 <source src={reel.videoUrl} type="video/mp4" />
+                <track
+                  kind="captions"
+                  src={reel.captions}
+                  label="English captions"
+                  srclang="en"
+                  default
+                />
                 Your browser does not support video playback.
               </video>
             </div>

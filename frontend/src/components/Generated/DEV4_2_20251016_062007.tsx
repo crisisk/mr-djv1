@@ -1,5 +1,3 @@
-import { getAllPages } from '../lib/pageData'; // Function to fetch all website pages
-
 export default function generateSitemap(pages) {
   const urls = pages.map(page => `
     <url>
