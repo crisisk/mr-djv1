@@ -1,5 +1,5 @@
 // components/VideoGallery.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './VideoGallery.module.css';
 
 const VideoGallery = () => {
@@ -22,27 +22,31 @@ const VideoGallery = () => {
       
       <div className={styles.videoGrid}>
         {videos.map(video => (
-          <div 
-            key={video.id} 
+          <button
+            key={video.id}
+            type="button"
             className={styles.videoCard}
             onClick={() => setSelectedVideo(video)}
+            aria-label={`Play ${video.title}`}
           >
-            <img 
-              src={video.thumbnail} 
+            <img
+              src={video.thumbnail}
               alt={video.title}
               loading="lazy"
             />
             <h3>{video.title}</h3>
-          </div>
+          </button>
         ))}
       </div>
 
       {selectedVideo && (
-        <div className={styles.modal}>
+        <div className={styles.modal} role="dialog" aria-modal="true" aria-label={`Video player for ${selectedVideo.title}`}>
           <div className={styles.modalContent}>
-            <button 
+            <button
               className={styles.closeButton}
               onClick={() => setSelectedVideo(null)}
+              type="button"
+              aria-label="Close video"
             >
               ×
             </button>

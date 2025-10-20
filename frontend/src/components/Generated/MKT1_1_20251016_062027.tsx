@@ -1,48 +1,64 @@
 // components/GoogleReviews.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import GeneratedLayout from './GeneratedLayout';
+import { apiClient } from '../../lib/apiClient';
+
+interface GoogleReview {
+  id: string | number;
+  profile_photo_url?: string;
+  author_name?: string;
+  rating?: number;
+  text?: string;
+}
 
 const GoogleReviews = () => {
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState<GoogleReview[]>([]);
   
   useEffect(() => {
     // Fetch reviews from Google Business API
     const fetchReviews = async () => {
       try {
         // Implementation would use actual Google Business API
-        const response = await fetch('/api/google-reviews');
-        const data = await response.json();
-        setReviews(data);
+        const data = await apiClient.get<GoogleReview[]>('/api/google-reviews');
+        setReviews(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching reviews:', error);
       }
     };
-    
+
     fetchReviews();
   }, []);
 
   return (
-    <section className="google-reviews">
-      <h2>What Our Clients Say</h2>
-      <div className="reviews-grid">
-        {reviews.map((review) => (
-          <div key={review.id} className="review-card">
-            <div className="reviewer-info">
-              <img src={review.profile_photo_url} alt={review.author_name} />
-              <h3>{review.author_name}</h3>
+    <GeneratedLayout>
+      <section className="google-reviews">
+        <h2>What Our Clients Say</h2>
+        <div className="reviews-grid">
+          {reviews.map((review) => (
+            <div key={review.id} className="review-card">
+              <div className="reviewer-info">
+                {review.profile_photo_url ? (
+                  <img src={review.profile_photo_url} alt={review.author_name} />
+                ) : null}
+                <h3>{review.author_name}</h3>
+              </div>
+              <div className="rating">
+                {/* Star rating implementation */}
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={i < (review.rating ?? 0) ? 'star-filled' : 'star-empty'}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <p>{review.text}</p>
             </div>
-            <div className="rating">
-              {/* Star rating implementation */}
-              {Array(5).fill().map((_, i) => (
-                <span key={i} className={i < review.rating ? 'star-filled' : 'star-empty'}>
-                  ★
-                </span>
-              ))}
-            </div>
-            <p>{review.text}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+          ))}
+        </div>
+      </section>
+    </GeneratedLayout>
   );
 };
 

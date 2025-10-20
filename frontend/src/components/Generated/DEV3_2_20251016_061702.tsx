@@ -1,4 +1,5 @@
 // EventTypeContext.js
+/* eslint-disable react-refresh/only-export-components -- file exports a hook alongside its provider for convenience */
 import React, { createContext, useState, useContext } from 'react';
 
 const EventTypeContext = createContext();

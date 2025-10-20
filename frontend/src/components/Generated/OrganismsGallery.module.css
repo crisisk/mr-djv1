@@ -1,0 +1,177 @@
+.slideContainer {
+  width: 100%;
+  max-width: 1280px;
+  min-height: 720px;
+  background: #ffffff;
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Montserrat', sans-serif;
+  color: #1a2c4b;
+}
+
+.slideContainer h1 {
+  font-size: 42px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #666666;
+  margin-bottom: 25px;
+}
+
+.galleryContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  flex: 1;
+}
+
+.gallerySection {
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+}
+
+.galleryTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a2c4b;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #d4af37;
+  padding-bottom: 5px;
+}
+
+.gridGallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.gridItem {
+  position: relative;
+  background: #f8fcff;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+}
+
+.featured {
+  grid-column: span 2;
+  grid-row: span 2;
+  background: #1a2c4b;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mediaLabel {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(26, 44, 75, 0.9);
+  color: #ffffff;
+}
+
+.imagePlaceholder {
+  background: #d4af37;
+}
+
+.imageLabel {
+  background: rgba(212, 175, 55, 0.9);
+  color: #1a2c4b;
+}
+
+.carouselGallery {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scroll-snap-type: x mandatory;
+}
+
+.carouselGallery::-webkit-scrollbar {
+  height: 8px;
+}
+
+.carouselGallery::-webkit-scrollbar-thumb {
+  background: rgba(26, 44, 75, 0.3);
+  border-radius: 4px;
+}
+
+.carouselItem {
+  min-width: 250px;
+  height: 150px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  position: relative;
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+
+.videoPlaceholder {
+  background: #ff4d4d;
+}
+
+.carouselControls {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.controlButton {
+  background: #00aeef;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+@media (max-width: 1024px) {
+  .gridGallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .featured {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .slideContainer {
+    padding: 20px;
+  }
+
+  .galleryTitle {
+    font-size: 20px;
+  }
+
+  .carouselItem {
+    min-width: 200px;
+    height: 140px;
+  }
+}

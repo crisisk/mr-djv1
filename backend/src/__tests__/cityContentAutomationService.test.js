@@ -1,6 +1,11 @@
 const fs = require('fs/promises');
 const os = require('os');
 const path = require('path');
+const { buildRequiredEnv } = require('../testUtils/env');
+
+const ORIGINAL_ENV = { ...process.env };
+process.env = { ...ORIGINAL_ENV, ...buildRequiredEnv() };
+
 const automation = require('../services/cityContentAutomationService');
 
 function createMockFetch(payload) {
@@ -119,4 +124,8 @@ describe('cityContentAutomationService', () => {
       expect(report).toContain('City content automation run');
     });
   });
+});
+
+afterAll(() => {
+  process.env = ORIGINAL_ENV;
 });
