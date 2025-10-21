@@ -102,7 +102,10 @@ describe('Mister DJ API', () => {
         crmExport: '/integrations/crm/export'
       })
     );
-    expect(response.body.endpoints.metrics).toBe('/metrics/queues');
+    expect(response.body.endpoints.metrics).toEqual({
+      queues: '/metrics/queues',
+      contactBacklog: '/metrics/contact-backlog'
+    });
     expect(response.body.endpoints.personalization).toEqual(
       expect.objectContaining({
         keyword: '/personalization/keyword',
@@ -254,19 +257,46 @@ describe('Mister DJ API', () => {
       packageId: 'gold'
     });
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(202);
     expect(response.body).toMatchObject({
       success: true,
       persisted: false,
       status: 'pending',
       eventType: 'Bruiloft',
-      requestedPackage: 'gold'
+      requestedPackage: 'gold',
+      processingStatus: 'queued'
     });
     expect(response.body.contactId).toBeDefined();
     expect(new Date(response.body.submittedAt).getTime()).toBeGreaterThan(0);
     expect(new Date(response.body.eventDate).toISOString().startsWith('2024-12-31')).toBe(true);
     expect(response.body.rentGuySync).toEqual(expect.objectContaining({ queued: true }));
     expect(response.body.sevensaSync).toEqual(expect.objectContaining({ queued: true }));
+    expect(response.body.partnerIncidents).toEqual(expect.arrayContaining(['rentguy', 'sevensa']));
+  });
+
+  it('exposes the contact backlog snapshot for administrators', async () => {
+    const queued = await request('POST', '/contact', {
+      name: 'Backlog User',
+      email: 'backlog@example.com',
+      phone: '0612345678',
+      message: 'Ik heb interesse',
+      eventType: 'Bruiloft'
+    });
+
+    expect(queued.status).toBe(202);
+
+    const response = await request('GET', '/metrics/contact-backlog');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      queueSize: expect.any(Number),
+      metrics: expect.objectContaining({ totalEnqueued: expect.any(Number) }),
+      queue: expect.any(Array)
+    });
+    expect(response.body.queue.length).toBeGreaterThan(0);
+    expect(response.body.queue[0]).toEqual(
+      expect.objectContaining({ id: expect.any(String), email: 'backlog@example.com' })
+    );
   });
 
   it('accepts callback requests and queues integrations when no DB is configured', async () => {

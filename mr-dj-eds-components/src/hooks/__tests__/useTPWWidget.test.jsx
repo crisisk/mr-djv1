@@ -1,63 +1,57 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, waitFor, act, cleanup } from '@testing-library/react';
 import React from 'react';
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../services/tpwWidget', () => {
-  return {
-    initializeWidget: vi.fn(() => Promise.resolve()),
-    destroyWidget: vi.fn(),
-  };
-});
+const initializeWidgetMock = vi.fn().mockResolvedValue(undefined);
+const destroyWidgetMock = vi.fn();
 
-import useTPWWidget from '../useTPWWidget.js';
-import { initializeWidget, destroyWidget } from '../../services/tpwWidget';
+vi.mock('../../services/tpwWidget', () => ({
+  initializeWidget: initializeWidgetMock,
+  destroyWidget: destroyWidgetMock,
+}));
+
+import { useTPWWidget } from '../useTPWWidget.js';
 
 describe('useTPWWidget hook', () => {
   beforeEach(() => {
-    vi.spyOn(Date, 'now').mockReturnValue(1700000000000);
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
-    vi.restoreAllMocks();
   });
 
-  function TestComponent({ widgetType = 'booking' }) {
+  const HookHarness = ({ widgetType = 'booking' }) => {
     const { containerRef, containerId } = useTPWWidget(widgetType);
 
-    return (
-      <div>
-        <div data-testid="tpw-container" data-container-id={containerId} ref={containerRef} />
-      </div>
-    );
-  }
+    return <div data-testid="tpw-container" id={containerId} ref={containerRef} />;
+  };
 
-  it('initializes the TPW widget with the generated container id', async () => {
-    render(<TestComponent widgetType="reviews" />);
+  it('initializes the widget with the generated container id and widget type', async () => {
+    const { getByTestId } = render(<HookHarness widgetType="calendar" />);
 
-    const container = await screen.findByTestId('tpw-container');
-    const containerId = container.getAttribute('data-container-id');
+    await waitFor(() => expect(initializeWidgetMock).toHaveBeenCalledTimes(1));
 
-    await waitFor(() => {
-      expect(initializeWidget).toHaveBeenCalledWith(containerId, 'reviews');
-    });
+    const container = getByTestId('tpw-container');
+    const [[containerIdArg, widgetTypeArg]] = initializeWidgetMock.mock.calls;
+
+    expect(container.id).toBe(containerIdArg);
+    expect(widgetTypeArg).toBe('calendar');
   });
 
-  it('cleans up the widget on unmount with the same container id', async () => {
-    const { unmount } = render(<TestComponent widgetType="calendar" />);
+  it('destroys the widget with the same container id on unmount when loaded', async () => {
+    const { unmount, getByTestId } = render(<HookHarness widgetType="booking" />);
 
-    const container = await screen.findByTestId('tpw-container');
-    const containerId = container.getAttribute('data-container-id');
+    await waitFor(() => expect(initializeWidgetMock).toHaveBeenCalledTimes(1));
 
-    await waitFor(() => {
-      expect(initializeWidget).toHaveBeenCalledWith(containerId, 'calendar');
+    const containerId = getByTestId('tpw-container').id;
+
+    await act(async () => {
+      unmount();
     });
 
-    unmount();
-
     await waitFor(() => {
-      expect(destroyWidget).toHaveBeenCalledWith(containerId);
+      expect(destroyWidgetMock).toHaveBeenCalledWith(containerId);
     });
   });
 });

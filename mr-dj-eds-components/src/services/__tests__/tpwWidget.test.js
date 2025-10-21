@@ -1,103 +1,135 @@
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-const API_ERROR = 'TPW API key ontbreekt. Stel VITE_TPW_API_KEY in om de TPW widget te laden.';
+const setupWindowWidget = () => {
+  global.window.TPWWidget = {
+    init: vi.fn(),
+    render: vi.fn(),
+    destroy: vi.fn(),
+  };
+};
 
 describe('tpwWidget service', () => {
   beforeEach(() => {
     vi.resetModules();
-    vi.unstubAllEnvs();
-    document.body.innerHTML = '';
     document.head.innerHTML = '';
-
-    // Ensure window and TPWWidget mocks exist
-    global.window = window;
-    window.TPWWidget = {
-      init: vi.fn(),
-      render: vi.fn(),
-      destroy: vi.fn(),
-    };
+    document.body.innerHTML = '';
+    setupWindowWidget();
   });
 
   afterEach(() => {
+    delete process.env.VITE_TPW_API_KEY;
     vi.restoreAllMocks();
-    vi.unstubAllEnvs();
-    delete window.TPWWidget;
   });
 
-  it('returns the correct widget configurations', async () => {
-    vi.stubEnv('VITE_TPW_API_KEY', 'test-key');
+  it('returns booking config by default and falls back for unknown types', async () => {
     const module = await import('../tpwWidget.js');
+    const { getWidgetConfig } = module;
 
-    expect(module.getWidgetConfig('booking')).toMatchObject({
+    const bookingConfig = getWidgetConfig();
+    expect(bookingConfig).toMatchObject({
       id: 'mr-dj-booking-widget',
       type: 'booking',
     });
 
-    expect(module.getWidgetConfig('calendar')).toMatchObject({
+    const calendarConfig = getWidgetConfig('calendar');
+    expect(calendarConfig).toMatchObject({
       id: 'mr-dj-calendar-widget',
       type: 'calendar',
     });
 
-    expect(module.getWidgetConfig('reviews')).toMatchObject({
-      id: 'mr-dj-reviews-widget',
-      type: 'reviews',
-    });
-
-    expect(module.getWidgetConfig('unknown')).toMatchObject({
-      id: 'mr-dj-booking-widget',
-      type: 'booking',
-    });
+    const fallbackConfig = getWidgetConfig('non-existent');
+    expect(fallbackConfig).toEqual(bookingConfig);
   });
 
-  it('injects the TPW widget script and initializes the widget', async () => {
-    vi.stubEnv('VITE_TPW_API_KEY', 'widget-key');
+  it('loads TPW script once and initializes with API key', async () => {
+    process.env.VITE_TPW_API_KEY = 'test-api-key';
     const module = await import('../tpwWidget.js');
+    const { loadTPWWidget } = module;
 
-    const appendSpy = vi.spyOn(document.head, 'appendChild');
+    const originalAppendChild = document.head.appendChild.bind(document.head);
+    const appendSpy = vi
+      .spyOn(document.head, 'appendChild')
+      .mockImplementation((element) => {
+        const result = originalAppendChild(element);
+        element.onload?.();
+        return result;
+      });
 
-    const loadPromise = module.loadTPWWidget('widget-123');
+    await loadTPWWidget('widget-123');
 
-    expect(appendSpy).toHaveBeenCalledTimes(1);
-    const [scriptEl] = appendSpy.mock.calls[0];
-    expect(scriptEl).toBeInstanceOf(HTMLScriptElement);
-    expect(scriptEl.id).toBe('tpw-widget-script');
+    const script = document.getElementById('tpw-widget-script');
+    expect(script).toBeTruthy();
+    expect(script.tagName).toBe('SCRIPT');
+    expect(script.getAttribute('src')).toContain('https://widgets.tpw.com/embed.js');
 
-    // Simulate script load
-    scriptEl.onload?.();
-
-    await expect(loadPromise).resolves.toBeUndefined();
     expect(window.TPWWidget.init).toHaveBeenCalledWith({
       widgetId: 'widget-123',
-      apiKey: 'widget-key',
+      apiKey: 'test-api-key',
     });
+
+    expect(appendSpy).toHaveBeenCalledTimes(1);
+
+    // Call again should resolve immediately without creating new script
+    await loadTPWWidget('widget-123');
+    expect(appendSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('enforces API key requirement before initialization', async () => {
-    vi.stubEnv('VITE_TPW_API_KEY', '');
+  it('throws a descriptive error when API key is missing during initialization', async () => {
+    process.env.VITE_TPW_API_KEY = '';
     const module = await import('../tpwWidget.js');
 
-    await expect(module.initializeWidget('container-id', 'booking')).rejects.toThrow(API_ERROR);
-    expect(window.TPWWidget.render).not.toHaveBeenCalled();
+    await expect(module.initializeWidget('missing-container')).rejects.toThrow(
+      'TPW API key ontbreekt. Stel VITE_TPW_API_KEY in om de TPW widget te laden.'
+    );
   });
 
-  it('loads, renders, and destroys the widget for a valid container', async () => {
-    vi.stubEnv('VITE_TPW_API_KEY', 'valid-key');
+  it('initializes widget and renders into the requested container', async () => {
+    process.env.VITE_TPW_API_KEY = 'active-api-key';
     const module = await import('../tpwWidget.js');
+    const { initializeWidget, getWidgetConfig } = module;
+
     const loadSpy = vi.spyOn(module, 'loadTPWWidget').mockResolvedValue();
 
     const container = document.createElement('div');
-    container.id = 'calendar-container';
+    container.id = 'tpw-container';
     document.body.appendChild(container);
 
-    await module.initializeWidget('calendar-container', 'calendar');
+    await initializeWidget('tpw-container', 'reviews');
 
-    expect(loadSpy).toHaveBeenCalledWith('mr-dj-calendar-widget');
-    expect(window.TPWWidget.render).toHaveBeenCalledWith(
-      'calendar-container',
-      module.getWidgetConfig('calendar'),
+    const expectedConfig = getWidgetConfig('reviews');
+
+    expect(loadSpy).toHaveBeenCalledWith(expectedConfig.id);
+    expect(window.TPWWidget.render).toHaveBeenCalledWith('tpw-container', expectedConfig);
+  });
+
+  it('throws when the container cannot be found during initialization', async () => {
+    process.env.VITE_TPW_API_KEY = 'active-api-key';
+    const module = await import('../tpwWidget.js');
+    vi.spyOn(module, 'loadTPWWidget').mockResolvedValue();
+
+    await expect(module.initializeWidget('unknown-container')).rejects.toThrow(
+      'Container unknown-container not found'
     );
+  });
 
-    module.destroyWidget('calendar-container');
-    expect(window.TPWWidget.destroy).toHaveBeenCalledWith('calendar-container');
+  it('destroys the widget when destroyWidget is called', async () => {
+    const module = await import('../tpwWidget.js');
+    const { destroyWidget } = module;
+
+    destroyWidget('tpw-container');
+
+    expect(window.TPWWidget.destroy).toHaveBeenCalledWith('tpw-container');
+  });
+
+  it('safely skips destruction when TPWWidget is unavailable', async () => {
+    const module = await import('../tpwWidget.js');
+    const { destroyWidget } = module;
+    const originalWidget = window.TPWWidget;
+
+    delete window.TPWWidget;
+
+    expect(() => destroyWidget('tpw-container')).not.toThrow();
+
+    window.TPWWidget = originalWidget;
   });
 });

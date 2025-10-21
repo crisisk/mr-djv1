@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 
 const LOCAL_STORAGE_KEY = 'mr-dj-consent-preferences';
 
@@ -6,6 +6,142 @@ const defaultConsent = {
   functional: true,
   statistics: false,
   marketing: false,
+};
+
+const FACEBOOK_PIXEL_SCRIPT_ID = 'mr-dj-facebook-pixel-script';
+const FACEBOOK_PIXEL_NOSCRIPT_ID = 'mr-dj-facebook-pixel-noscript';
+const MARKETING_CONSENT_EVENT = 'mr-dj:marketing-consent-change';
+
+const marketingConsentSubscribers = new Set();
+
+const getFacebookPixelId = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const fromWindow =
+    window.MR_DJ_FACEBOOK_PIXEL_ID ||
+    window.__MR_DJ_FACEBOOK_PIXEL_ID ||
+    window.facebookPixelId ||
+    null;
+
+  if (typeof fromWindow === 'string' && fromWindow.trim()) {
+    return fromWindow.trim();
+  }
+
+  const meta = document.querySelector('meta[name="facebook-pixel-id"]');
+  if (meta?.content?.trim()) {
+    return meta.content.trim();
+  }
+
+  return null;
+};
+
+const removeFacebookPixelNodes = () => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  const script = document.getElementById(FACEBOOK_PIXEL_SCRIPT_ID);
+  if (script?.parentNode) {
+    script.parentNode.removeChild(script);
+  }
+
+  const noscript = document.getElementById(FACEBOOK_PIXEL_NOSCRIPT_ID);
+  if (noscript?.parentNode) {
+    noscript.parentNode.removeChild(noscript);
+  }
+};
+
+const injectFacebookPixel = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return;
+  }
+
+  const pixelId = getFacebookPixelId();
+  if (!pixelId) {
+    console.warn('Facebook Pixel ID is not configured. Skipping pixel injection.');
+    return;
+  }
+
+  if (!document.getElementById(FACEBOOK_PIXEL_SCRIPT_ID)) {
+    const script = document.createElement('script');
+    script.id = FACEBOOK_PIXEL_SCRIPT_ID;
+    script.setAttribute('data-testid', FACEBOOK_PIXEL_SCRIPT_ID);
+    script.innerHTML =
+      "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?" +
+      "n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;" +
+      "n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;" +
+      "t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(" +
+      "window,document,'script','https://connect.facebook.net/en_US/fbevents.js');" +
+      `fbq('init','${pixelId}');fbq('track','PageView');`;
+    if (document.head) {
+      document.head.appendChild(script);
+    } else {
+      document.documentElement?.appendChild(script);
+    }
+  }
+
+  if (!document.getElementById(FACEBOOK_PIXEL_NOSCRIPT_ID)) {
+    const noscript = document.createElement('noscript');
+    noscript.id = FACEBOOK_PIXEL_NOSCRIPT_ID;
+    noscript.setAttribute('data-testid', FACEBOOK_PIXEL_NOSCRIPT_ID);
+    noscript.innerHTML = `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1" />`;
+    if (document.body) {
+      document.body.appendChild(noscript);
+    } else {
+      document.documentElement?.appendChild(noscript);
+    }
+  }
+
+  if (typeof window.fbq === 'function') {
+    window.fbq('consent', 'grant');
+  }
+};
+
+const disableFacebookPixel = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (typeof window.fbq === 'function') {
+    try {
+      window.fbq('consent', 'revoke');
+    } catch (error) {
+      console.warn('Unable to notify Facebook Pixel about revoked consent', error);
+    }
+  }
+
+  removeFacebookPixelNodes();
+};
+
+const updateFacebookPixelConsent = (isGranted) => {
+  if (isGranted) {
+    injectFacebookPixel();
+    return;
+  }
+
+  disableFacebookPixel();
+};
+
+const notifyMarketingConsentChange = (isGranted) => {
+  const subscribers = Array.from(marketingConsentSubscribers);
+
+  subscribers.forEach((callback) => {
+    try {
+      callback(isGranted);
+    } catch (error) {
+      console.error('Marketing consent subscriber threw an error', error);
+    }
+  });
+
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.dispatchEvent === 'function' &&
+    typeof window.CustomEvent === 'function'
+  ) {
+    window.dispatchEvent(new window.CustomEvent(MARKETING_CONSENT_EVENT, { detail: { granted: isGranted } }));
+  }
 };
 
 // 1. Create the Context
@@ -74,6 +210,32 @@ export const ConsentManager = ({ children }) => {
     statistics: Boolean(consent.statistics),
     marketing: Boolean(consent.marketing),
   }));
+  const lastMarketingConsentRef = useRef();
+
+  useEffect(
+    () => () => {
+      marketingConsentSubscribers.clear();
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const isGranted = Boolean(consent.marketing);
+
+    if (lastMarketingConsentRef.current === isGranted) {
+      return undefined;
+    }
+
+    lastMarketingConsentRef.current = isGranted;
+    updateFacebookPixelConsent(isGranted);
+    notifyMarketingConsentChange(isGranted);
+
+    return undefined;
+  }, [consent.marketing]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -211,11 +373,34 @@ export const ConsentManager = ({ children }) => {
   };
 
   // The value provided to consumers
+  const subscribeToMarketingConsent = useCallback(
+    (callback) => {
+      if (typeof callback !== 'function') {
+        return () => {};
+      }
+
+      marketingConsentSubscribers.add(callback);
+
+      try {
+        callback(Boolean(consent.marketing));
+      } catch (error) {
+        console.error('Marketing consent subscriber threw an error', error);
+      }
+
+      return () => {
+        marketingConsentSubscribers.delete(callback);
+      };
+    },
+    [consent.marketing],
+  );
+
   const value = {
     ...consent,
     // Helper to check if a specific category is allowed
     isAllowed: (category) => Boolean(consent?.[category]),
     openPreferences: () => setIsBannerVisible(true),
+    subscribeToMarketingConsent,
+    marketingConsentEventName: MARKETING_CONSENT_EVENT,
   };
 
   return (
@@ -305,3 +490,5 @@ export const useConsent = () => {
   }
   return context;
 };
+
+export const MARKETING_CONSENT_EVENT_NAME = MARKETING_CONSENT_EVENT;

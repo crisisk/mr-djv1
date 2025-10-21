@@ -26,8 +26,8 @@ export function HeroSection({
     <section className={`${backgroundClass} py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}>
       <div className="container mx-auto text-center space-y-spacing-xl">
         <div>
-          <h1 className={`text-font-size-h1 font-extrabold ${titleColor} mb-spacing-md`}>{title}</h1>
-          <p className={`text-font-size-h3 mb-spacing-xl max-w-4xl mx-auto ${subtitleColor}`}>{subtitle}</p>
+          <h1 className={`heading-1 ${titleColor} mb-spacing-md`}>{title}</h1>
+          <p className={`lead mb-spacing-xl max-w-4xl mx-auto ${subtitleColor}`}>{subtitle}</p>
         </div>
         <div className="flex justify-center gap-spacing-md flex-wrap">
           <Button variant="secondary" size="lg">

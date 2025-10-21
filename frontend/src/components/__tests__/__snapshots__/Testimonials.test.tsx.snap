@@ -8,7 +8,7 @@ exports[`Testimonials matches the snapshot for winter events 1`] = `
     class="container mx-auto px-spacing-md"
   >
     <h2
-      class="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold"
+      class="heading-2 text-center text-neutral-dark mb-spacing-2xl"
     >
       Wat Klanten Zeggen
     </h2>
@@ -79,7 +79,7 @@ exports[`Testimonials matches the snapshot for winter events 1`] = `
           </svg>
         </div>
         <p
-          class="text-font-size-h3 text-neutral-dark italic my-spacing-lg flex-grow"
+          class="lead text-neutral-dark text-emphasis my-spacing-lg flex-grow"
         >
           “
           Een warme sfeer ondanks de kou buiten. De DJ heeft iedereen aan het dansen gekregen.
@@ -89,12 +89,12 @@ exports[`Testimonials matches the snapshot for winter events 1`] = `
           class="border-t border-neutral-gray-100 pt-spacing-md"
         >
           <p
-            class="text-font-size-body font-bold text-primary"
+            class="body-md text-strong text-primary"
           >
             Elise & Bram
           </p>
           <p
-            class="text-font-size-small text-neutral-gray-500"
+            class="body-sm text-neutral-gray-500"
           >
             Winterfeest, Breda
           </p>
@@ -164,7 +164,7 @@ exports[`Testimonials matches the snapshot for winter events 1`] = `
           </svg>
         </div>
         <p
-          class="text-font-size-h3 text-neutral-dark italic my-spacing-lg flex-grow"
+          class="lead text-neutral-dark text-emphasis my-spacing-lg flex-grow"
         >
           “
           Onze klanten waren onder de indruk van de professionele uitstraling en muzikale begeleiding.
@@ -174,12 +174,12 @@ exports[`Testimonials matches the snapshot for winter events 1`] = `
           class="border-t border-neutral-gray-100 pt-spacing-md"
         >
           <p
-            class="text-font-size-body font-bold text-primary"
+            class="body-md text-strong text-primary"
           >
             Mila Jansen
           </p>
           <p
-            class="text-font-size-small text-neutral-gray-500"
+            class="body-sm text-neutral-gray-500"
           >
             Zakelijk event, Den Haag
           </p>
