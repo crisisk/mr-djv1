@@ -5,6 +5,7 @@ import viteLogo from '/vite.svg'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import './App.css'
 import LanguageSwitcher from './components/LanguageSwitcher'
+import BookingSummary from './components/BookingSummary'
 import HeroSection from '../../HeroSection.jsx'
 import Testimonials from '../../Testimonials.jsx'
 
@@ -55,6 +56,8 @@ function App() {
         />
 
         <Testimonials />
+
+        <BookingSummary />
       </main>
     </div>
   )

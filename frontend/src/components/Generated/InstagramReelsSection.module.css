@@ -114,6 +114,16 @@
   color: #fecaca;
 }
 
+.rateLimit {
+  padding: 0.75rem 1rem;
+  margin: 0 auto 1.5rem;
+  max-width: 480px;
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
 @media (max-width: 600px) {
   .reelsSection {
     padding: 1.5rem 1rem;

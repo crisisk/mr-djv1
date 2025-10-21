@@ -1,11 +1,21 @@
 // layouts/MainLayout.jsx or similar
-import StickyBookingCTA from '../components/StickyBookingCTA';
+import React from 'react';
+import Header from '../Molecules/Header.jsx';
+import Footer from '../Organisms/Footer.jsx';
 
-const MainLayout = ({ children }) => {
+/**
+ * Primary marketing layout that combines the shared header and footer. The
+ * layout keeps the main slot flexible so that feature pages can provide their
+ * own container classes without duplicating the chrome wiring.
+ */
+const MainLayout = ({ children, headerTransparent = false, mainClassName = 'flex-1' }) => {
   return (
-    <>
-      {children}
-      <StickyBookingCTA />
-    </>
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header transparent={headerTransparent} />
+      <main className={mainClassName}>{children}</main>
+      <Footer />
+    </div>
   );
 };
+
+export default MainLayout;

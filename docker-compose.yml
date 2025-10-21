@@ -8,6 +8,9 @@ services:
       dockerfile: Dockerfile
     container_name: mr-dj-eds-frontend
     restart: unless-stopped
+    environment:
+      VITE_WHATSAPP_NUMBER: ${VITE_WHATSAPP_NUMBER:-31123456789}
+      VITE_WHATSAPP_MESSAGE: ${VITE_WHATSAPP_MESSAGE:-Hoi! Ik wil graag meer informatie over jullie DJ services.}
     depends_on:
       mr-dj-backend:
         condition: service_healthy
@@ -17,14 +20,14 @@ services:
       - "traefik.enable=true"
       # Service definition - single service for both routers
       - "traefik.http.services.mrdj-eds-frontend.loadbalancer.server.port=80"
-      # Main router - Host rule for mr-dj.sevensa.nl root
-      - "traefik.http.routers.mrdj-eds-frontend.rule=Host(`mr-dj.sevensa.nl`)"
+      # Main router - Host rule for staging.sevensa.nl root
+      - "traefik.http.routers.mrdj-eds-frontend.rule=Host(`staging.sevensa.nl`)"
       - "traefik.http.routers.mrdj-eds-frontend.service=mrdj-eds-frontend"
       - "traefik.http.routers.mrdj-eds-frontend.entrypoints=websecure"
       - "traefik.http.routers.mrdj-eds-frontend.tls=true"
       - "traefik.http.routers.mrdj-eds-frontend.tls.certresolver=letsencrypt"
 
-  # Backend API (Node.js/Express) - Renamed to mr-dj-backend
+  # Backend API (FastAPI)
   mr-dj-backend:
     build:
       context: ./backend
@@ -32,13 +35,9 @@ services:
     container_name: mr-dj-backend
     restart: unless-stopped
     environment:
-      NODE_ENV: production
-      PORT: 3000
-      DATABASE_URL: postgresql://mrdj_user:mrdj_secure_password_2025@mr-dj-postgres:5432/mrdj_db
-      JWT_SECRET: mrdj_jwt_secret_key_2025_very_secure
-      CORS_ORIGIN: https://mr-dj.sevensa.nl
-      REDIS_URL: redis://:mrdj_redis_password_2025@mr-dj-redis:6379/0
-      REDIS_NAMESPACE: mr-dj
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:-https://staging.sevensa.nl}
+      WHATSAPP_NUMBER: ${VITE_WHATSAPP_NUMBER:-31123456789}
+      WHATSAPP_MESSAGE: ${VITE_WHATSAPP_MESSAGE:-Hoi! Ik wil graag meer informatie over jullie DJ services.}
     depends_on:
       mr-dj-postgres:
         condition: service_healthy
@@ -47,24 +46,24 @@ services:
     networks:
       - web
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 30s
       timeout: 5s
       start_period: 15s
       retries: 3
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mrdj-backend.rule=Host(`mr-dj.sevensa.nl`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.mrdj-backend.rule=Host(`staging.sevensa.nl`) && PathPrefix(`/api`)"
       - "traefik.http.routers.mrdj-backend.entrypoints=websecure"
       - "traefik.http.routers.mrdj-backend.tls=true"
       - "traefik.http.routers.mrdj-backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.mrdj-backend.loadbalancer.server.port=3000"
+      - "traefik.http.services.mrdj-backend.loadbalancer.server.port=8000"
       - "traefik.http.middlewares.mrdj-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.mrdj-backend.middlewares=mrdj-backend-stripprefix"
 
   # PostgreSQL Database - Renamed to mr-dj-postgres
   mr-dj-postgres:
-    image: postgres:15-alpine
+    image: postgres:16.3-alpine
     container_name: mr-dj-postgres
     restart: unless-stopped
     environment:
@@ -84,7 +83,7 @@ services:
 
   # Redis Cache (optional, voor sessions/caching) - Renamed to mr-dj-redis
   mr-dj-redis:
-    image: redis:7-alpine
+    image: redis:7.2-alpine
     container_name: mr-dj-redis
     restart: unless-stopped
     command: redis-server --requirepass mrdj_redis_password_2025

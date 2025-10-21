@@ -1,20 +1,33 @@
-// mr-djv1/mr-dj-eds-components/src/data/local_seo_data.js
+/**
+ * Lokale SEO dataset met automatische pricing-highlights.
+ *
+ * ➤ Zo voeg je een nieuwe stad toe:
+ *   1. Voeg een nieuw object toe aan `baseLocalSeoData` met minimaal `city`, `slug`,
+ *      `localUSP` en een lijst `localVenues` (van meest toegankelijk naar meest premium).
+ *   2. Optioneel: geef een eigen `pricingHighlights`-object mee met sleutels `brons`,
+ *      `zilver` en `goud`. Laat je dit weg, dan worden de highlights automatisch
+ *      opgebouwd op basis van de USP en venues.
+ *   3. De pricing component leest deze highlights en toont ze wanneer een stad actief is.
+ */
 
-export const localSeoData = [
+const baseLocalSeoData = [
     {
         city: "Eindhoven",
         province: "Noord-Brabant",
         slug: "eindhoven",
+        locales: ["nl-NL"],
         localUSP: "Dé beste DJ voor uw feest in Eindhoven en omgeving. Bekend met alle top-locaties zoals het Evoluon en de Effenaar.",
         localReviews: "Fantastische service in Eindhoven! De gasten waren laaiend enthousiast.",
         localVenues: ["Evoluon", "Effenaar", "Strijp-S", "Klokgebouw"],
         seoTitle: "DJ Huren in Eindhoven | De Beste Feest DJ voor uw Event",
         seoDescription: "Zoek niet verder! Huur de beste DJ van Eindhoven voor uw bruiloft, bedrijfsfeest of verjaardag. Bekend met alle locaties.",
+        isDefault: true,
     },
     {
         city: "Maastricht",
         province: "Limburg",
         slug: "maastricht",
+        locales: ["nl-NL"],
         localUSP: "Uw specialist in sfeervolle feesten in het hart van Limburg. Van het Vrijthof tot de Maas, wij kennen de Limburgse gezelligheid.",
         localReviews: "Onze bruiloft in Maastricht was onvergetelijk dankzij de perfecte muziekkeuze!",
         localVenues: ["Kasteel Vaeshartelt", "Bonnefanten Museum", "Theater aan het Vrijthof"],
@@ -25,6 +38,7 @@ export const localSeoData = [
         city: "Tilburg",
         province: "Noord-Brabant",
         slug: "tilburg",
+        locales: ["nl-NL"],
         localUSP: "De DJ die de Tilburgse kermismentaliteit naar uw feest brengt. Van de Piushaven tot de Spoorzone, wij maken er een knalfeest van.",
         localReviews: "Wat een feest in Tilburg! De dansvloer was geen moment leeg.",
         localVenues: ["De Koepelhal", "TextielMuseum", "Poppodium 013"],
@@ -35,6 +49,7 @@ export const localSeoData = [
         city: "Breda",
         province: "Noord-Brabant",
         slug: "breda",
+        locales: ["nl-NL"],
         localUSP: "Stijlvolle en energieke DJ-sets voor de bourgondische feesten in Breda. Van de Grote Markt tot het Mastbos, wij zijn uw muzikale partner.",
         localReviews: "Zeer professioneel en een geweldige sfeer neergezet in Breda.",
         localVenues: ["Kasteel Bouvigne", "Breepark", "Chassé Theater"],
@@ -45,6 +60,7 @@ export const localSeoData = [
         city: "Venlo",
         province: "Limburg",
         slug: "venlo",
+        locales: ["nl-NL"],
         localUSP: "De perfecte mix van Limburgse gezelligheid en internationale hits voor uw feest in Venlo. Wij kennen de lokale smaak.",
         localReviews: "Fantastische avond gehad in Venlo! De DJ wist precies wat het publiek wilde.",
         localVenues: ["De Maaspoort", "Grenswerk", "Kasteel Arcen"],
@@ -53,8 +69,76 @@ export const localSeoData = [
     },
 ];
 
+const ensureSentence = (text = "") => {
+    const trimmed = text.trim();
+    if (!trimmed) {
+        return "";
+    }
+    return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+};
+
+const formatVenueList = (venues = []) => {
+    const filtered = venues.filter(Boolean);
+    if (filtered.length === 0) {
+        return "";
+    }
+    if (filtered.length === 1) {
+        return filtered[0];
+    }
+
+    const last = filtered[filtered.length - 1];
+    const rest = filtered.slice(0, -1);
+
+    return `${rest.join(', ')} en ${last}`;
+};
+
+// Brons = toegankelijke locaties, Zilver = lokale USP, Goud = iconische/premium locaties.
+const buildPricingHighlights = ({ city, localUSP, localVenues = [] }) => {
+    const accessibleVenues = localVenues.slice(0, 2);
+    const premiumVenues = localVenues.length > 2 ? localVenues.slice(-2) : accessibleVenues;
+
+    const accessibleText = formatVenueList(accessibleVenues);
+    const premiumText = formatVenueList(premiumVenues);
+    const uspSentence = ensureSentence(localUSP);
+
+    return {
+        brons: accessibleText
+            ? `Soepele set-up voor intieme feesten bij ${accessibleText}.`
+            : `Soepele set-up voor lokale feesten in ${city}.`,
+        zilver: `${uspSentence} Perfect voor bruiloften en bedrijfsfeesten in ${city}.`,
+        goud: premiumText
+            ? `Premium showbeleving voor iconische locaties zoals ${premiumText}.`
+            : `Premium showbeleving voor iconische locaties in ${city}.`,
+    };
+};
+
+export const localSeoData = baseLocalSeoData.map((entry) =>
+    entry.pricingHighlights
+        ? entry
+        : {
+              ...entry,
+              pricingHighlights: buildPricingHighlights(entry),
+          }
+);
+
 // Function to find data by slug, useful for routing
 export const getLocalSeoDataBySlug = (slug) => {
-    return localSeoData.find(data => data.slug === slug);
+    return localSeoData.find((data) => data.slug === slug);
+};
+
+export const getLocalizedLocalSeoDataBySlug = (slug, locale = DEFAULT_LOCALE) => {
+    const entry = getLocalSeoDataBySlug(slug);
+    if (!entry) {
+        return undefined;
+    }
+
+    return {
+        ...entry,
+        localUSP: resolveLocalizedValue(entry.localUSP, locale),
+        localReviews: resolveLocalizedValue(entry.localReviews, locale),
+        localVenues: resolveLocalizedList(entry.localVenues, locale),
+        seoTitle: resolveLocalizedValue(entry.seoTitle, locale),
+        seoDescription: resolveLocalizedValue(entry.seoDescription, locale),
+    };
 };
 

@@ -5,9 +5,9 @@
 # Redeploy instructions:
 #   1. Make your code changes locally and commit them if desired.
 #   2. From the project root, run ./deploy.sh to build, package, and upload the latest version.
-#   3. The script recreates containers on the VPS using docker-compose up -d, so the new build
+#   3. The script recreates containers on the VPS using docker compose up -d, so the new build
 #      is live once the health checks pass. For a quick remote redeploy, SSH into the VPS and run
-#      "docker-compose pull && docker-compose up -d" inside /opt/mr-dj.
+#      "docker compose pull && docker compose up -d" inside /opt/mr-dj.
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -21,6 +21,8 @@ VPS_HOST="147.93.57.40"
 VPS_USER="root"
 DEPLOY_DIR="/opt/mr-dj"
 DOMAIN="staging.sevensa.nl"
+SITE_PATH="/eds"
+SITE_URL="https://${DOMAIN}${SITE_PATH}"
 PACKAGE_NAME="mr-dj-deploy.tar.gz"
 
 command -v ssh >/dev/null 2>&1 || { echo "❌ ssh command not found"; exit 1; }
@@ -34,6 +36,14 @@ echo "🧪 Executing backend test suite..."
 npm test -- --runInBand
 popd >/dev/null
 
+echo "🧱 Building production frontend bundle..."
+pushd "$ROOT_DIR/frontend" >/dev/null
+echo "📦 Installing frontend dependencies via npm ci..."
+npm ci --no-audit --progress=false
+echo "🏗️ Running frontend build..."
+npm run build
+popd >/dev/null
+
 echo "🧹 Preparing clean deployment artifact..."
 rm -f "$ROOT_DIR/$PACKAGE_NAME"
 
@@ -41,6 +51,10 @@ tar -czf "$ROOT_DIR/$PACKAGE_NAME" \
     --exclude='backend/node_modules' \
     --exclude='backend/.env' \
     --exclude='backend/.env.*' \
+    --exclude='frontend/node_modules' \
+    --exclude='frontend/dist' \
+    --exclude='frontend/build' \
+    --exclude='frontend/.next' \
     -C "$ROOT_DIR" \
     docker-compose.yml \
     frontend \
@@ -52,27 +66,79 @@ scp -o StrictHostKeyChecking=no \
     "$ROOT_DIR/$PACKAGE_NAME" ${VPS_USER}@${VPS_HOST}:/tmp/
 
 echo "🔧 Deploying on VPS..."
+
+echo "🔍 Detecting Docker Compose availability on VPS..."
+COMPOSE_CMD=$(ssh -o StrictHostKeyChecking=no \
+    ${VPS_USER}@${VPS_HOST} \
+    "if command -v docker-compose >/dev/null 2>&1; then echo docker-compose; elif docker compose version >/dev/null 2>&1; then echo 'docker compose'; fi")
+
+if [[ -z "${COMPOSE_CMD}" ]]; then
+    echo "❌ Neither docker-compose nor the Docker Compose plugin is available on the VPS."
+    echo "   Please install Docker Compose before running the deployment script again."
+    exit 1
+fi
+
+echo "ℹ️ Using '$COMPOSE_CMD' on the VPS."
+
 ssh -o StrictHostKeyChecking=no \
-    ${VPS_USER}@${VPS_HOST} << 'ENDSSH'
+    ${VPS_USER}@${VPS_HOST} "COMPOSE_CMD='${COMPOSE_CMD}' bash -s" <<'ENDSSH'
+
+set -euo pipefail
+IFS=$'\n\t'
 
 # Check if the 'web' network exists and create it as external if it doesn't
-if ! docker network ls | grep -q " web "; then
+if ! docker network inspect web >/dev/null 2>&1; then
     echo "Creating external 'web' network for Traefik integration..."
-    docker network create web
+    # Use an attachable bridge so Traefik and compose-managed services can share the network.
+    if ! docker network create --driver bridge --attachable web; then
+        echo "❌ Failed to create 'web' network. Aborting deployment." >&2
+        exit 1
+    fi
 fi
+
+# Ensure Compose command is available
+if [[ -z "${COMPOSE_CMD:-}" ]]; then
+    echo "❌ COMPOSE_CMD is not set. Aborting deployment."
+    exit 1
+fi
+
+export COMPOSE_CMD
 
 # Stop existing containers for this project (using the new container names)
 DEPLOY_DIR="/opt/mr-dj"
 mkdir -p "$DEPLOY_DIR"
 cd "$DEPLOY_DIR"
 
+# Resolve the Docker Compose command, preferring the plugin
+if docker compose version >/dev/null 2>&1; then
+    echo "Docker Compose plugin detected."
+    DOCKER_COMPOSE=(docker compose)
+else
+    echo "Docker Compose plugin not detected. Attempting to install..."
+    if command -v apt-get >/dev/null 2>&1; then
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update >/dev/null 2>&1 && apt-get install -y docker-compose-plugin >/dev/null 2>&1 || true
+    fi
+
+    if docker compose version >/dev/null 2>&1; then
+        echo "Docker Compose plugin installed successfully."
+        DOCKER_COMPOSE=(docker compose)
+    elif command -v docker-compose >/dev/null 2>&1; then
+        echo "Warning: falling back to legacy docker-compose binary." >&2
+        DOCKER_COMPOSE=(docker-compose)
+    else
+        echo "Error: Docker Compose is not available on this host." >&2
+        exit 1
+    fi
+fi
+
 # Stop and remove old containers if they exist, to prevent conflicts
-# The original script's 'docker-compose down' is sufficient if the project name is unique.
+# The original script's 'docker compose down' is sufficient if the project name is unique.
 # Since we are using unique container names, a simple down/up is fine.
-docker-compose down || true
+"${DOCKER_COMPOSE[@]}" down || true
 
 # Extract new version
-tar -xzf /tmp/mr-dj-deploy.tar.gz
+tar -xzf /tmp/mr-dj-deploy.tar.gz || { echo "❌ Failed to extract deployment archive"; exit 1; }
 rm /tmp/mr-dj-deploy.tar.gz
 
 # Create letsencrypt directory (if Traefik is managed by this compose file, which it is not anymore)
@@ -84,11 +150,11 @@ chmod 600 letsencrypt
 # Build and start containers
 echo "Building Docker images..."
 # Skipping cache for a fresh build, as is common in deployment scripts
-docker-compose build --no-cache
+"${DOCKER_COMPOSE[@]}" build --no-cache
 
 echo "Starting containers..."
 # Use -d for detached mode
-docker-compose up -d
+"${DOCKER_COMPOSE[@]}" up -d
 
 # Wait for services to be ready
 echo "Waiting for services to start..."
@@ -96,29 +162,29 @@ sleep 10
 
 # Ensure database migrations are up to date
 echo "Running database migrations..."
-docker-compose exec -T mr-dj-backend npm run migrate
+"${DOCKER_COMPOSE[@]}" exec -T mr-dj-backend npm run migrate
 
 # Check container status
 echo "Container Status:"
-docker-compose ps
+"${DOCKER_COMPOSE[@]}" ps
 
 # Show logs for the frontend service (eds-frontend)
 echo "Recent logs for eds-frontend:"
-docker-compose logs eds-frontend --tail=50
+"${DOCKER_COMPOSE[@]}" logs eds-frontend --tail=50
 
 echo "✅ Deployment complete!"
-echo "🌐 Website should be available at: https://staging.sevensa.nl/eds"
+echo "🌐 Website should be available at: ${SITE_URL}"
 echo ""
 echo "Useful commands (inside /opt/mr-dj on VPS):"
-echo "  docker-compose logs -f eds-frontend # View frontend logs"
-echo "  docker-compose ps                   # Check status"
-echo "  docker-compose restart eds-frontend # Restart frontend"
-echo "  docker-compose down                 # Stop all services"
+echo "  docker compose logs -f eds-frontend # View frontend logs"
+echo "  docker compose ps                   # Check status"
+echo "  docker compose restart eds-frontend # Restart frontend"
+echo "  docker compose down                 # Stop all services"
 
 ENDSSH
 
 echo "✅ Deployment script completed!"
-echo "🌐 Check your website at: https://staging.sevensa.nl/eds"
+echo "🌐 Check your website at: ${SITE_URL}"
 echo "📊 Post-deploy: Import docs/observability/grafana.json into Grafana via Dashboards → New → Import."
 
 # Cleanup local tar

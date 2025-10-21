@@ -1,8 +1,10 @@
 const { randomUUID } = require('crypto');
 const db = require('../lib/db');
 const config = require('../config');
+const { logger } = require('../lib/logger');
 const rentGuyService = require('./rentGuyService');
 const sevensaService = require('./sevensaService');
+const surveyService = require('./surveyService');
 
 /**
  * @typedef {Object} ContactPayload
@@ -65,7 +67,103 @@ const sevensaService = require('./sevensaService');
  */
 
 const inMemoryContacts = new Map();
+const queueMetrics = {
+  totalEnqueued: 0,
+  totalFlushed: 0,
+  lastEnqueuedAt: null,
+  lastFlushAttemptAt: null,
+  lastFlushSuccessAt: null,
+  lastFlushError: null,
+  lastFlushCount: 0,
+  consecutiveFailures: 0,
+  lastFlushDurationMs: null
+};
+let flushInProgress = false;
 const HCAPTCHA_DEFAULT_VERIFY_URL = 'https://hcaptcha.com/siteverify';
+
+const contactLogger = logger.child({ service: 'contactService' });
+
+const CIRCUIT_DEFAULTS = {
+  rentGuy: { failureThreshold: 3, cooldownMs: 2 * 60 * 1000 },
+  sevensa: { failureThreshold: 3, cooldownMs: 2 * 60 * 1000 }
+};
+
+function resolveCircuitConfig(key) {
+  const defaults = CIRCUIT_DEFAULTS[key] || CIRCUIT_DEFAULTS.rentGuy;
+  const integration = config.integrations?.[key] || {};
+  const breaker = integration.circuitBreaker || {};
+  const failureThreshold = Number.isFinite(breaker.failureThreshold) && breaker.failureThreshold > 0
+    ? breaker.failureThreshold
+    : defaults.failureThreshold;
+  const cooldownMs = Number.isFinite(breaker.cooldownMs) && breaker.cooldownMs > 0
+    ? breaker.cooldownMs
+    : defaults.cooldownMs;
+
+  return { failureThreshold, cooldownMs };
+}
+
+const circuitConfig = {
+  rentGuy: resolveCircuitConfig('rentGuy'),
+  sevensa: resolveCircuitConfig('sevensa')
+};
+
+const circuitStates = {
+  rentGuy: { failures: 0, openUntil: 0 },
+  sevensa: { failures: 0, openUntil: 0 }
+};
+
+function getCircuitState(partner) {
+  return circuitStates[partner] || circuitStates.rentGuy;
+}
+
+function isCircuitOpen(partner) {
+  const state = getCircuitState(partner);
+  return state.openUntil && state.openUntil > Date.now();
+}
+
+function markSuccess(partner) {
+  const state = getCircuitState(partner);
+  state.failures = 0;
+  state.openUntil = 0;
+}
+
+function openCircuit(partner) {
+  const state = getCircuitState(partner);
+  const configEntry = circuitConfig[partner] || CIRCUIT_DEFAULTS[partner];
+  state.openUntil = Date.now() + (configEntry?.cooldownMs || CIRCUIT_DEFAULTS.rentGuy.cooldownMs);
+  contactLogger.warn(
+    {
+      partner,
+      circuit: {
+        state: 'open',
+        reopenAt: new Date(state.openUntil).toISOString()
+      }
+    },
+    'Opening circuit breaker for degraded partner'
+  );
+}
+
+function markFailure(partner) {
+  const state = getCircuitState(partner);
+  const configEntry = circuitConfig[partner] || CIRCUIT_DEFAULTS[partner];
+  state.failures += 1;
+
+  if (state.failures >= (configEntry?.failureThreshold || CIRCUIT_DEFAULTS.rentGuy.failureThreshold)) {
+    openCircuit(partner);
+    state.failures = 0;
+  }
+}
+
+function getCircuitMetadata(partner) {
+  const state = getCircuitState(partner);
+  const reopenInMs = state.openUntil ? Math.max(0, state.openUntil - Date.now()) : 0;
+  return {
+    open: isCircuitOpen(partner),
+    reopenAt: state.openUntil ? new Date(state.openUntil).toISOString() : null,
+    failures: state.failures,
+    reopenInMs
+  };
+}
 
 function getCaptchaSettings() {
   return config.integrations?.hcaptcha || {};
@@ -174,6 +272,120 @@ function normalizeEventDate(value) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
+async function syncWithPartner(partner, executor) {
+  const attemptId = randomUUID();
+  const partnerLogger = contactLogger.child({ partner, attemptId });
+  const initialCircuit = getCircuitMetadata(partner);
+
+  if (initialCircuit.open) {
+    partnerLogger.warn(
+      { circuit: initialCircuit },
+      'Circuit open; queueing lead without attempting partner delivery'
+    );
+
+    try {
+      const forced = await executor({
+        attemptId,
+        forceQueue: true,
+        forceQueueReason: 'circuit-open'
+      });
+      return {
+        ...forced,
+        delivered: false,
+        queued: true,
+        reason: forced.reason || 'circuit-open',
+        incidentId: attemptId,
+        circuit: getCircuitMetadata(partner)
+      };
+    } catch (error) {
+      partnerLogger.error(
+        { err: error, circuit: initialCircuit },
+        'Failed to enqueue lead while circuit was open'
+      );
+      return {
+        delivered: false,
+        queued: false,
+        reason: 'circuit-open-enqueue-failed',
+        lastError: error.message,
+        incidentId: attemptId,
+        circuit: getCircuitMetadata(partner)
+      };
+    }
+  }
+
+  try {
+    const result = await executor({ attemptId });
+
+    if (result.delivered) {
+      markSuccess(partner);
+      partnerLogger.info(
+        { queueSize: result.queueSize, circuit: getCircuitMetadata(partner) },
+        'Partner delivery succeeded'
+      );
+      return {
+        ...result,
+        incidentId: null,
+        circuit: getCircuitMetadata(partner)
+      };
+    }
+
+    markFailure(partner);
+    const circuitAfter = getCircuitMetadata(partner);
+    partnerLogger.warn(
+      {
+        queueSize: result.queueSize,
+        reason: result.reason || 'deferred',
+        circuit: circuitAfter
+      },
+      'Partner delivery deferred to queue'
+    );
+
+    return {
+      ...result,
+      reason: result.reason || 'deferred',
+      incidentId: attemptId,
+      circuit: circuitAfter
+    };
+  } catch (error) {
+    markFailure(partner);
+    const circuitAfterFailure = getCircuitMetadata(partner);
+    partnerLogger.error(
+      { err: error, circuit: circuitAfterFailure },
+      'Partner delivery threw an exception'
+    );
+
+    try {
+      const fallback = await executor({
+        attemptId,
+        forceQueue: true,
+        forceQueueReason: 'exception'
+      });
+      return {
+        ...fallback,
+        delivered: false,
+        queued: fallback?.queued ?? false,
+        reason: fallback?.reason || 'exception',
+        lastError: fallback?.lastError || error.message,
+        incidentId: attemptId,
+        circuit: getCircuitMetadata(partner)
+      };
+    } catch (queueError) {
+      partnerLogger.error(
+        { err: queueError, circuit: getCircuitMetadata(partner) },
+        'Failed to enqueue lead after partner exception'
+      );
+      return {
+        delivered: false,
+        queued: false,
+        reason: 'queue-failed',
+        lastError: queueError.message || error.message,
+        incidentId: attemptId,
+        circuit: getCircuitMetadata(partner)
+      };
+    }
+  }
+}
+
 async function saveContact(payload, options = {}) {
   await verifyCaptchaToken(options.captchaToken, options.remoteIp);
 
@@ -214,7 +426,13 @@ async function saveContact(payload, options = {}) {
         message: payload.message || null
       };
     } catch (error) {
-      console.error('[contactService] Database insert failed:', error.message);
+      logger.error(
+        {
+          event: 'contact.database.insert-error',
+          err: error
+        },
+        'Database insert failed for contact submission'
+      );
     }
   }
 
@@ -224,6 +442,8 @@ async function saveContact(payload, options = {}) {
       id,
       status: 'pending',
       createdAt: timestamp,
+      queuedAt: timestamp,
+      queueReason: db.isConfigured() ? 'insert-failed' : 'database-not-configured',
       persisted: false,
       eventType: payload.eventType || null,
       eventDate,
@@ -239,28 +459,43 @@ async function saveContact(payload, options = {}) {
       ...record
     });
 
-    result = record;
+    queueMetrics.totalEnqueued += 1;
+    queueMetrics.lastEnqueuedAt = timestamp;
+    logger.warn(
+      {
+        event: 'contact.queue.enqueue',
+        contactId: id,
+        queueSize: inMemoryContacts.size,
+        reason: record.queueReason
+      },
+      'Database unavailable, contact stored in in-memory queue'
+    );
+
+    result = {
+      ...record,
+      queued: true,
+      storageStrategy: 'in-memory'
+    };
   }
 
-  const rentGuySync = await rentGuyService.syncLead(
-    {
-      id: result.id,
-      status: result.status,
-      eventType: result.eventType,
-      eventDate: result.eventDate,
-      packageId: result.packageId,
-      name: result.name,
-      email: result.email,
-      phone: result.phone,
-      message: result.message,
-      persisted: result.persisted
-    },
-    {
-      source: 'contact-form'
-    }
+  const rentGuyLead = {
+    id: result.id,
+    status: result.status,
+    eventType: result.eventType,
+    eventDate: result.eventDate,
+    packageId: result.packageId,
+    name: result.name,
+    email: result.email,
+    phone: result.phone,
+    message: result.message,
+    persisted: result.persisted
+  };
+
+  const rentGuySync = await syncWithPartner('rentGuy', (metaOverrides = {}) =>
+    rentGuyService.syncLead(rentGuyLead, { source: 'contact-form', ...metaOverrides })
   );
 
-  const [firstName, ...lastNameParts] = (payload.name || '')
+  const [firstName, ...lastNameParts] = (result.name || '')
     .trim()
     .split(/\s+/)
     .filter(Boolean);
@@ -274,27 +509,58 @@ async function saveContact(payload, options = {}) {
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   })();
 
-  const sevensaSync = await sevensaService.submitLead(
-    {
-      id: result.id,
-      firstName: firstName || undefined,
-      lastName,
-      email: result.email,
-      phone: result.phone,
-      eventType: result.eventType,
-      eventDate: eventDateIso,
-      packageId: result.packageId,
-      message: result.message,
-      source: 'contact-form',
-      persisted: result.persisted
-    },
-    { source: 'contact-form' }
+  const sevensaLead = {
+    id: result.id,
+    firstName: firstName || undefined,
+    lastName,
+    email: result.email,
+    phone: result.phone,
+    eventType: result.eventType,
+    eventDate: eventDateIso,
+    packageId: result.packageId,
+    message: result.message,
+    source: 'contact-form',
+    persisted: result.persisted
+  };
+
+  const sevensaSync = await syncWithPartner('sevensa', (metaOverrides = {}) =>
+    sevensaService.submitLead(sevensaLead, { source: 'contact-form', ...metaOverrides })
   );
+
+  let surveyAutomation = {
+    survey: null,
+    automation: { delivered: false, reason: 'not-requested' }
+  };
+
+  try {
+    surveyAutomation = await surveyService.queueSurveyInvite(
+      {
+        id: result.id,
+        email: result.email,
+        name: result.name,
+        eventType: result.eventType,
+        eventDate: result.eventDate,
+        packageId: result.packageId,
+        source: 'contact-service'
+      },
+      {
+        rentGuy: rentGuySync,
+        sevensa: sevensaSync
+      }
+    );
+  } catch (error) {
+    console.error('[contactService] Failed to enqueue survey invite:', error.message);
+    surveyAutomation = {
+      survey: null,
+      automation: { delivered: false, reason: error.message }
+    };
+  }
 
   return {
     ...result,
     rentGuySync,
-    sevensaSync
+    sevensaSync,
+    surveyAutomation
   };
 }
 
@@ -314,7 +580,8 @@ function getContactServiceStatus() {
     databaseConnected: status.connected,
     storageStrategy: status.connected ? 'postgres' : 'in-memory',
     fallbackQueueSize: inMemoryContacts.size,
-    lastError: status.lastError
+    lastError: status.lastError,
+    queueMetrics: getQueueMetrics()
   };
 }
 
@@ -330,11 +597,24 @@ function ping() {
 
 function resetInMemoryStore() {
   inMemoryContacts.clear();
+  queueMetrics.totalEnqueued = 0;
+  queueMetrics.totalFlushed = 0;
+  queueMetrics.lastEnqueuedAt = null;
+  queueMetrics.lastFlushAttemptAt = null;
+  queueMetrics.lastFlushSuccessAt = null;
+  queueMetrics.lastFlushError = null;
+  queueMetrics.lastFlushCount = 0;
+  queueMetrics.consecutiveFailures = 0;
+  queueMetrics.lastFlushDurationMs = null;
+  flushInProgress = false;
 }
 
 module.exports = {
   saveContact,
   getContactServiceStatus,
   resetInMemoryStore,
-  ping
+  ping,
+  flushQueuedContacts,
+  getFallbackQueueSnapshot,
+  getQueueMetrics
 };

@@ -28,6 +28,7 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 - [ ] Open de tab **RentGuy integratie**, vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, `RENTGUY_WORKSPACE_ID` en controleer dat de statusindicator "API geconfigureerd" toont
 - [ ] Controleer in de RentGuy statuskaart dat de queue-grootte `0` is en gebruik eventueel **Queue flushen** om wachtrij-items te verwerken
 - [ ] Vul (indien gebruikt) `N8N_PERSONALIZATION_WEBHOOK_URL` in zodat CRO-events naar n8n worden doorgestuurd en herlaad het dashboard
+- [ ] Open de tab **Feature flags** en bevestig dat `FLAG_PERSONALIZATION`, `FLAG_RENTGUY_INTEGRATION`, `FLAG_SEVENSA_INTEGRATION` en `FLAG_TELEMETRY` ingeschakeld zijn (deze toggles worden opgeslagen in `managed.env` en zijn ook via `FLAG_*` omgevingsvariabelen aan te passen)
 - [ ] Open `/api/health` en verifieer dat `dependencies.integrations.personalization.automationWebhookConfigured` `true` is wanneer de webhook actief moet zijn
 - [ ] Controleer dat de status-indicatoren groen kleuren en de `managed.env` op de server is bijgewerkt (`docker exec mr-dj-backend cat /app/managed.env`)
 - [ ] Herlaad de health endpoint (`/api/health`) en verifieer dat de database status `connected: true` toont
@@ -36,11 +37,12 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 - [ ] Maak het deploy-script uitvoerbaar: `chmod +x deploy.sh`
 - [ ] Voer `./deploy.sh` uit vanaf de repository-root
 - [ ] Volg de scriptoutput om te bevestigen dat de containers opnieuw worden opgebouwd en starten zonder fouten (het script voert automatisch `npm run migrate` uit binnen `mr-dj-backend`)
+- [ ] Houd de [rollback & hotfix runbook](operations/deployment-rollback.md) bij de hand voor snelle herstelacties indien de uitrol faalt
 
 ## 6. Netlify (statische hosting / CMS)
 - [ ] Meld je aan bij Netlify en importeer de GitHub-repository (zie [`NETLIFY_DEPLOYMENT.md`](../NETLIFY_DEPLOYMENT.md))
-- [ ] Controleer dat de build command `echo 'Building Mr. DJ website...' && ls -la frontend/public` is en de publish map `frontend/public`
-- [ ] Activeer Netlify Identity en Git Gateway en nodig de beheerders uit
+- [ ] Controleer dat de build command `npm ci --prefix frontend && npm run build --prefix frontend` is en de publish map `frontend/dist`
+- [ ] Bevestig dat de caching-paden (`frontend/.npm` en `frontend/node_modules`) in `netlify.toml` blijven staan voor snellere builds
 - [ ] Koppel het gewenste (sub)domein aan Netlify en wacht op SSL-activatie
 
 ## 7. Post-deployment validatie
@@ -48,6 +50,7 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 - [ ] Voer een test-booking en contactformulier in en verifieer dat de responses `success: true` bevatten
 - [ ] Controleer via `docker compose logs` dat er geen fouten in de backend verschijnen
 - [ ] Draai `docker compose ps` om te bevestigen dat alle containers `Up` zijn
+- [ ] Bij afwijkingen: volg de [rollback & hotfix runbook](operations/deployment-rollback.md) voor herstel en communicatie
 - [ ] Bezoek de live site en valideer de belangrijkste pagina-secties (hero, pakketten, reviews, contactformulier)
 
 ## 8. Monitoring & nazorg
