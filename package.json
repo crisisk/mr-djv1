@@ -5,5 +5,8 @@
   "scripts": {
     "test:e2e": "cypress run --spec tests/e2e/booking-flow.cy.ts",
     "test:perf": "k6 run tests/performance/baseline.js"
+  },
+  "devDependencies": {
+    "cypress": "^13.7.3"
   }
 }
