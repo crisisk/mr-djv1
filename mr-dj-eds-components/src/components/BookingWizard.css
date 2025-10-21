@@ -2,23 +2,24 @@
 .booking-wizard {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--spacing-lg);
 }
 
 .progress-indicator {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-xl);
   position: relative;
 }
 
 .progress-indicator:before {
   content: '';
   position: absolute;
-  top: 15px;
+  top: calc(var(--spacing-xl) / 2);
+  transform: translateY(-50%);
   left: 0;
   right: 0;
-  height: 2px;
+  height: var(--spacing-xs);
   background: #ddd;
   z-index: 1;
 }
@@ -32,14 +33,14 @@
 }
 
 .step-number {
-  width: 30px;
-  height: 30px;
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
   border-radius: 50%;
   background: #ddd;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 5px;
+  margin-bottom: var(--spacing-sm);
   color: #fff;
 }
 
@@ -59,11 +60,11 @@
 }
 
 .step-content {
-  min-height: 300px;
-  padding: 20px;
+  min-height: calc(var(--spacing-3xl) * 5);
+  padding: var(--spacing-lg);
   border: 1px solid #eee;
-  border-radius: 5px;
-  margin-bottom: 20px;
+  border-radius: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
 }
 
 .navigation-buttons {
@@ -76,7 +77,7 @@
   .step-title {
     display: none;
   }
-  
+
   .progress-indicator {
     justify-content: space-around;
   }
