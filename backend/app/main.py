@@ -6,7 +6,7 @@ from typing import List
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import bookings, events
+from app.api.routes import bookings, events, internal
 
 
 def _get_allowed_origins() -> List[str]:
@@ -30,6 +30,7 @@ app.add_middleware(
 
 app.include_router(events.router, prefix="/api/events", tags=["events"])
 app.include_router(bookings.router, prefix="/api/bookings", tags=["bookings"])
+app.include_router(internal.router, prefix="/internal", tags=["classification"])
 
 
 @app.get("/")
