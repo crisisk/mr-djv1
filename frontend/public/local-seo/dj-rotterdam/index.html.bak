@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DJ Rotterdam | Mister DJ</title>
+  <meta name="description" content="Mister DJ voor events in Rotterdam. Skyline events met internationale gasten vragen om clubwaardige lichtsets en snelle change-overs." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://staging.sevensa.nl/local-seo/dj-rotterdam/" />
+  <link rel="alternate" href="https://staging.sevensa.nl/local-seo/dj-rotterdam/" hreflang="nl-nl" />
+  <link rel="alternate" href="https://staging.sevensa.nl/local-seo/dj-rotterdam/" hreflang="x-default" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="DJ Rotterdam | Mister DJ" />
+  <meta property="og:description" content="Mister DJ voor events in Rotterdam. Skyline events met internationale gasten vragen om clubwaardige lichtsets en snelle change-overs." />
+  <meta property="og:url" content="https://staging.sevensa.nl/local-seo/dj-rotterdam/" />
+  <meta property="og:image" content="https://staging.sevensa.nl/assets/images/logo.png" />
+  <meta property="og:site_name" content="Mister DJ" />
+  <meta property="og:locale" content="nl_NL" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DJ Rotterdam | Mister DJ" />
+  <meta name="twitter:description" content="Mister DJ voor events in Rotterdam. Skyline events met internationale gasten vragen om clubwaardige lichtsets en snelle change-overs." />
+  <meta name="twitter:image" content="https://staging.sevensa.nl/assets/images/logo.png" />
+  <meta name="twitter:site" content="@misterdj" />
+  <link rel="preload" href="/assets/css/style.css" as="style" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <link rel="modulepreload" href="/assets/js/pricing.js" />
+  <link rel="modulepreload" href="/assets/js/modules/analytics.js" />
+  <link rel="preload" href="/assets/data/packages.json" as="fetch" type="application/json" crossorigin="anonymous" />
+  <link rel="preload" href="/assets/data/testimonials.json" as="fetch" type="application/json" crossorigin="anonymous" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Service","@id":"https://staging.sevensa.nl/local-seo/dj-rotterdam/#service","name":"DJ Rotterdam","serviceType":"DJ en showproductie","areaServed":"Rotterdam","provider":{"@type":"Organization","name":"Mister DJ","url":"https://staging.sevensa.nl/"},"hasOfferCatalog":{"@type":"OfferCatalog","name":"Pakketten voor Rotterdam","itemListElement":[{"@type":"Offer","name":"De Rotterdam corporate","description":"CO₂ jets + live visuals @ De Rotterdam","priceCurrency":"EUR","availability":"https://schema.org/InStock"},{"@type":"Offer","name":"Bruiloft Onderzeebootloods","description":"Multiculturele set @ Onderzeebootloods","priceCurrency":"EUR","availability":"https://schema.org/InStock"}]}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Kunnen jullie samenwerken met externe AV-partners?","acceptedAnswer":{"@type":"Answer","text":"Ja, we koppelen naadloos met bestaande AV-leveranciers."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://staging.sevensa.nl/"},{"@type":"ListItem","position":2,"name":"DJ Rotterdam","item":"https://staging.sevensa.nl/local-seo/dj-rotterdam/"}]}]}</script>
+</head>
+<body class="pricing-page">
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <img src="/assets/images/logo.webp" alt="Mister DJ" class="logo" loading="lazy" decoding="async" />
+        <span class="brand-name">Mister DJ</span>
+      </div>
+      <a href="/" class="btn-secondary">Terug naar home</a>
+    </div>
+  </nav>
+
+  <main class="pricing-content">
+    <header class="pricing-hero">
+      <div class="container">
+        <h1>DJ Rotterdam</h1>
+        <p>Skyline events met internationale gasten vragen om clubwaardige lichtsets en snelle change-overs.</p>
+        <div class="hero-cta">
+          <a href="/#contact" class="btn-primary btn-large" data-track="contact-start">Check beschikbaarheid</a>
+          <a href="/pricing/" class="btn-secondary btn-large">Bekijk pakketten</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="pricing-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Recente cases in Rotterdam</h2>
+          <p>Evidence-based events waar Mister DJ de dansvloer vulde.</p>
+        </div>
+        <div class="case-grid">
+          
+        <article class="case-card">
+          <h3>De Rotterdam corporate</h3>
+          <p class="case-result">CO₂ jets + live visuals</p>
+          <p class="case-venue">Locatie: De Rotterdam</p>
+        </article>
+      
+        <article class="case-card">
+          <h3>Bruiloft Onderzeebootloods</h3>
+          <p class="case-result">Multiculturele set</p>
+          <p class="case-venue">Locatie: Onderzeebootloods</p>
+        </article>
+      
+        </div>
+      </div>
+    </section>
+
+    <section class="media-gallery-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Locaties waar we graag spelen</h2>
+          <p>Wij kennen de logistiek, geluidslimieten en hospitality van deze venues in Rotterdam.</p>
+        </div>
+        <ul class="media-gallery-grid venue-list">
+          <li>De Rotterdam</li><li>Onderzeebootloods</li><li>LP2</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="pricing-faq">
+      <div class="container">
+        <div class="section-header">
+          <h2>Veelgestelde vragen over Rotterdam</h2>
+          <p>Antwoorden die sales en planners direct kunnen delen met prospects.</p>
+        </div>
+        <div class="faq-grid">
+          
+        <article class="faq-item">
+          <h3>Kunnen jullie samenwerken met externe AV-partners?</h3>
+          <p>Ja, we koppelen naadloos met bestaande AV-leveranciers.</p>
+        </article>
+      
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 Mister DJ. Alle rechten voorbehouden.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

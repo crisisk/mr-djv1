@@ -1,4 +1,121 @@
+# robots.txt for Mr. DJ Website
+# Updated: 2025-10-21
+# Production: www.mr-dj.nl
+
+# Default rule for all bots
 User-agent: *
 Allow: /
+Crawl-delay: 1
 
-Sitemap: https://staging.sevensa.nl/sitemap.xml
+# Disallow admin and internal paths
+Disallow: /admin/
+Disallow: /api/
+Disallow: /backend/
+Disallow: /_next/static/
+Disallow: /preview/
+
+# Googlebot - Primary search crawler
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+Disallow: /admin/
+Disallow: /api/
+Disallow: /backend/
+
+# Googlebot for Images
+User-agent: Googlebot-Image
+Allow: /media/
+Allow: /assets/images/
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.png
+Allow: *.webp
+Allow: *.svg
+
+# Googlebot for Videos
+User-agent: Googlebot-Video
+Allow: /media/videos/
+Allow: *.mp4
+Allow: *.mov
+Allow: *.webm
+
+# Bingbot - Microsoft search crawler
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+Disallow: /admin/
+Disallow: /api/
+Disallow: /backend/
+
+# Social Media Crawlers (fast crawl for rich previews)
+User-agent: facebookexternalhit
+Crawl-delay: 0
+Allow: /
+
+User-agent: Twitterbot
+Crawl-delay: 0
+Allow: /
+
+User-agent: LinkedInBot
+Crawl-delay: 0
+Allow: /
+
+User-agent: WhatsApp
+Crawl-delay: 0
+Allow: /
+
+User-agent: TelegramBot
+Crawl-delay: 0
+Allow: /
+
+# SEO Tool Bots (slow down to preserve bandwidth)
+User-agent: SemrushBot
+Crawl-delay: 10
+Allow: /
+
+User-agent: AhrefsBot
+Crawl-delay: 10
+Allow: /
+
+User-agent: MJ12bot
+Crawl-delay: 10
+Allow: /
+
+User-agent: DataForSeoBot
+Crawl-delay: 10
+Allow: /
+
+# Block aggressive scrapers and bad bots
+User-agent: HTTrack
+Disallow: /
+
+User-agent: ia_archiver
+Disallow: /
+
+User-agent: duggmirror
+Disallow: /
+
+User-agent: psbot
+Disallow: /
+
+User-agent: grapeshot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemap locations
+Sitemap: https://www.mr-dj.nl/sitemap.xml
+
+# Disallow URLs with tracking parameters
+Disallow: /*?utm_source=
+Disallow: /*?utm_medium=
+Disallow: /*?utm_campaign=
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+Disallow: /*?ref=
+Disallow: /*?session=
+Disallow: /*?token=
+
+# Allow well-known paths
+Allow: /.well-known/

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professionele Bruiloft DJ met 100% dansgarantie. Vanaf €795. Premium apparatuur, sfeervolle lichtshows en persoonlijke muziekwensen. Boek nu!">
+    <title>Bruiloft DJ | 100% Dansgarantie vanaf €795 - Mister DJ</title>
+    <link rel="canonical" href="https://staging.sevensa.nl/diensten/bruiloft-dj.html">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Bruiloft DJ met 100% Dansgarantie - Mister DJ">
+    <meta property="og:description" content="Maak jouw bruiloft onvergetelijk met een professionele DJ. Premium pakk​etten vanaf €795.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://staging.sevensa.nl/diensten/bruiloft-dj.html">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(26, 44, 75, 0.85), rgba(0, 174, 239, 0.85)),
+                        url('/media/photos/gallery/weddings/bruiloft-001.jpg') center/cover;
+            color: white;
+            padding: 120px 20px 80px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .hero p { font-size: 1.3rem; margin-bottom: 30px; }
+        .hero-cta {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #00AEEF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .hero-cta:hover { background: #0098d4; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background: #00AEEF;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-link:hover { background: #0098d4; }
+
+        /* Intro Section */
+        .intro {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        .intro h2 {
+            color: #1A2C4B;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .intro p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        /* USP Grid */
+        .usp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .usp-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .usp-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .usp-card h3 {
+            color: #1A2C4B;
+            margin-bottom: 10px;
+        }
+
+        /* Pakketten Section */
+        .pakketten {
+            margin: 60px 0;
+        }
+        .pakketten h2 {
+            color: #1A2C4B;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .pakket-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .pakket-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        .pakket-card.popular {
+            border: 3px solid #00AEEF;
+            transform: scale(1.05);
+        }
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: #00AEEF;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .pakket-title {
+            font-size: 2rem;
+            color: #1A2C4B;
+            margin-bottom: 10px;
+        }
+        .pakket-price {
+            font-size: 2.5rem;
+            color: #00AEEF;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .pakket-description {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .pakket-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .pakket-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .pakket-features li:before {
+            content: "✓ ";
+            color: #00AEEF;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .pakket-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+        .pakket-btn:hover { opacity: 0.9; }
+
+        /* Gallery Section */
+        .gallery-section {
+            margin: 60px 0;
+        }
+        .gallery-section h2 {
+            color: #1A2C4B;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .gallery-item {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* FAQ Section */
+        .faq {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 60px 0;
+        }
+        .faq h2 {
+            color: #1A2C4B;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .faq-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .faq-question {
+            color: #00AEEF;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .faq-answer {
+            color: #555;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 60px 0;
+        }
+        .cta-section h2 { font-size: 2.2rem; margin-bottom: 20px; }
+        .cta-section p { font-size: 1.2rem; margin-bottom: 30px; }
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #00AEEF;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .cta-button:hover { background: #f0f0f0; }
+
+        footer {
+            background: #1A2C4B;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        footer a { color: white; text-decoration: none; margin: 0 10px; }
+        footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1.1rem; }
+            .gallery-grid { grid-template-columns: 1fr; }
+            .pakket-card.popular { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>🎵 Professionele Bruiloft DJ</h1>
+        <p>Maak jouw bruiloft onvergetelijk met 100% dansgarantie</p>
+        <a href="#pakketten" class="hero-cta">Bekijk Pakketten</a>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← Terug naar home</a>
+
+        <!-- Intro Section -->
+        <div class="intro">
+            <h2>De Perfecte Bruiloft DJ voor Jullie Grote Dag</h2>
+            <p>Een bruiloft is de mooiste dag van je leven - en de muziek maakt het feest compleet. Als professionele bruiloft DJ met 15+ jaar ervaring en 2500+ bruiloften op ons naam, weten wij precies hoe we jullie gasten de hele avond op de dansvloer houden.</p>
+
+            <p>Van de openingsdans tot de laatste song - wij zorgen voor de perfecte soundtrack bij jullie liefdesverhaal. Met persoonlijke aandacht, premium apparatuur en onze unieke <strong>100% dansgarantie</strong> maken wij van jullie bruiloft een onvergetelijk feest.</p>
+        </div>
+
+        <!-- USP Grid -->
+        <div class="usp-grid">
+            <div class="usp-card">
+                <div class="usp-icon">💎</div>
+                <h3>100% Dansgarantie</h3>
+                <p>Volle dansvloer de hele avond, of geld terug</p>
+            </div>
+            <div class="usp-card">
+                <div class="usp-icon">🎧</div>
+                <h3>15+ Jaar Ervaring</h3>
+                <p>2500+ bruiloften succesvol gedraaid</p>
+            </div>
+            <div class="usp-card">
+                <div class="usp-icon">🎵</div>
+                <h3>Persoonlijke Playlist</h3>
+                <p>Jullie muziekwensen staan centraal</p>
+            </div>
+            <div class="usp-card">
+                <div class="usp-icon">✨</div>
+                <h3>Premium Apparatuur</h3>
+                <p>State-of-the-art geluid en licht</p>
+            </div>
+        </div>
+
+        <!-- Pakketten Section -->
+        <div class="pakketten" id="pakketten">
+            <h2>Onze Bruiloft DJ Pakketten</h2>
+            <div class="pakket-grid">
+                <!-- Brons Pakket -->
+                <div class="pakket-card">
+                    <h3 class="pakket-title">Brons</h3>
+                    <div class="pakket-price">€795</div>
+                    <p class="pakket-description">Perfect voor kleinere feesten en budgetbewuste keuzes</p>
+                    <ul class="pakket-features">
+                        <li>Professionele DJ met 15+ jaar ervaring</li>
+                        <li>Hoogwaardige geluidsinstallatie</li>
+                        <li>Sfeervol licht (LED spots)</li>
+                        <li>Muziek op maat van jouw wensen</li>
+                        <li>Onbeperkt overleg vooraf</li>
+                        <li>Gratis intake gesprek</li>
+                    </ul>
+                    <a href="/contact.html" class="pakket-btn">Boek Nu</a>
+                </div>
+
+                <!-- Zilver Pakket (Popular) -->
+                <div class="pakket-card popular">
+                    <span class="popular-badge">Most Popular</span>
+                    <h3 class="pakket-title">Zilver</h3>
+                    <div class="pakket-price">€995</div>
+                    <p class="pakket-description">De meest gekozen optie met uitgebreide verlichting</p>
+                    <ul class="pakket-features">
+                        <li>Alles uit pakket Brons</li>
+                        <li>Uitgebreide lichtshow (moving heads)</li>
+                        <li>Rookmachine voor extra sfeer</li>
+                        <li>DJ booth met LED verlichting</li>
+                        <li>Persoonlijke afstemming muziek</li>
+                        <li>Gratis voorbespreking op locatie</li>
+                    </ul>
+                    <a href="/contact.html" class="pakket-btn">Boek Nu</a>
+                </div>
+
+                <!-- Goud Pakket -->
+                <div class="pakket-card">
+                    <h3 class="pakket-title">Goud</h3>
+                    <div class="pakket-price">€1295</div>
+                    <p class="pakket-description">Het ultieme feestpakket voor een onvergetelijke avond</p>
+                    <ul class="pakket-features">
+                        <li>Alles uit pakket Zilver</li>
+                        <li>Premium lichtshow (laser + moving heads)</li>
+                        <li>CO2 jets voor spectaculaire momenten</li>
+                        <li>LED dansvloer (optioneel)</li>
+                        <li>Saxofonist Leslie Moore (1 uur)</li>
+                        <li>Onbeperkte voorbespreking</li>
+                        <li>Persoonlijke muzieklijst samenstellen</li>
+                    </ul>
+                    <a href="/contact.html" class="pakket-btn">Boek Nu</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Section -->
+        <div class="gallery-section">
+            <h2>Bruiloft Impressies</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="/media/photos/gallery/weddings/bruiloft-001.jpg" alt="Bruiloft DJ Event 1" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/media/photos/gallery/weddings/bruiloft-002.jpg" alt="Bruiloft DJ Event 2" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/media/photos/gallery/weddings/bruiloft-003.jpg" alt="Bruiloft DJ Event 3" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/media/photos/gallery/weddings/bruiloft-005.jpg" alt="Bruiloft DJ Event 4" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/media/photos/gallery/weddings/bruiloft-006.jpg" alt="Bruiloft DJ Event 5" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/media/photos/gallery/weddings/bruiloft-007.jpg" alt="Bruiloft DJ Event 6" loading="lazy">
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq">
+            <h2>Veelgestelde Vragen</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">Hoe ver van tevoren moet ik een bruiloft DJ boeken?</div>
+                <div class="faq-answer">Wij adviseren 6-12 maanden van tevoren, vooral voor weekends in het huwelijksseizoen (mei-september). Maar neem gerust contact op - soms hebben we nog last-minute beschikbaarheid!</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Kunnen we onze eigen muziekwensen doorgeven?</div>
+                <div class="faq-answer">Absoluut! Jullie krijgen van ons een muziek-vragenlijst waarin je al jullie favoriete nummers, openingsdans, en no-go tracks kunt aangeven. We stemmen de muziek volledig af op jullie smaak en die van jullie gasten.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Wat houdt de 100% dansgarantie in?</div>
+                <div class="faq-answer">Wij garanderen dat jullie dansvloer minimaal 80% van de tijd vol staat. Als dit niet lukt, krijgen jullie je geld terug. Zo zeker zijn wij van onze kwaliteit en ervaring!</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Hoelang speelt de DJ op onze bruiloft?</div>
+                <div class="faq-answer">Standaard draaien we 4-5 uur, maar dit is volledig naar wens aan te passen. Langere feesten zijn uiteraard mogelijk tegen meerprijs.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Zorgen jullie zelf voor de apparatuur?</div>
+                <div class="faq-answer">Ja, wij komen met alle benodigde apparatuur: professioneel geluid, verlichting, DJ booth en alle kabels. Jullie hoeven alleen voor een stroombron (230V) te zorgen.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Kunnen we een kennismakingsgesprek inplannen?</div>
+                <div class="faq-answer">Zeker! Een gratis kennismakingsgesprek zit bij elk pakket inbegrepen. We kunnen dit online doen via videocall, of bij jullie thuis/op de locatie. Zo leren we elkaar kennen en bespreken we al jullie wensen.</div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>Klaar om jullie bruiloft onvergetelijk te maken?</h2>
+            <p>Vraag vandaag nog een vrijblijvende offerte aan en ontvang binnen 24 uur een persoonlijk voorstel</p>
+            <a href="/contact.html" class="cta-button">Vraag Offerte Aan</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Mister DJ - Sevensa BV. Alle rechten voorbehouden.</p>
+        <p>
+            <a href="/">Home</a> |
+            <a href="/over-ons.html">Over Ons</a> |
+            <a href="/diensten/bruiloft-dj.html">Bruiloft DJ</a> |
+            <a href="/diensten/bedrijfsfeest-dj.html">Bedrijfsfeest DJ</a> |
+            <a href="/diensten/private-dj.html">Private Events</a> |
+            <a href="/gallery.html">Galerij</a> |
+            <a href="/contact.html">Contact</a>
+        </p>
+    </footer>
+</body>
+</html>

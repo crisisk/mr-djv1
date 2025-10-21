@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Over Mister DJ - Dé feestspecialist van het Zuiden met 15+ jaar ervaring, 2500+ events en 100% dansgarantie voor professionele DJ services">
+    <title>Over Ons - Mister DJ | Dé Feestspecialist van het Zuiden</title>
+    <link rel="canonical" href="https://www.mr-dj.nl/over-ons.html">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        header {
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2rem; opacity: 0.9; margin-top: 10px; }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background: #00AEEF;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-link:hover { background: #0098d4; }
+
+        .content-section {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .content-section h2 {
+            color: #1A2C4B;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        .content-section h3 {
+            color: #00AEEF;
+            font-size: 1.3rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .content-section p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        .content-section ul {
+            margin: 20px 0 20px 30px;
+        }
+        .content-section li {
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .value-card {
+            background: #e3f2fd;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #00AEEF;
+        }
+        .value-card h3 {
+            color: #1A2C4B;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+        .value-card p {
+            margin: 0;
+            color: #555;
+        }
+
+        .team-section {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .team-info h3 {
+            color: #1A2C4B;
+            margin-bottom: 5px;
+        }
+        .team-role {
+            color: #00AEEF;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .highlight-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-left: 4px solid #ffc107;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        .highlight-box strong {
+            color: #1A2C4B;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .cta-section h2 { margin-bottom: 20px; }
+        .cta-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #00AEEF;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .cta-btn:hover { background: #f0f0f0; }
+
+        footer {
+            background: #1A2C4B;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        footer a { color: white; text-decoration: none; margin: 0 10px; }
+        footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .content-section { padding: 20px; }
+            .team-member { flex-direction: column; text-align: center; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Over Mister DJ</h1>
+        <p class="subtitle">Dé Feestspecialist van het Zuiden sinds 2010</p>
+    </header>
+
+    <div class="container">
+        <a href="/" class="back-link">← Terug naar home</a>
+
+        <!-- Intro Section -->
+        <div class="content-section">
+            <h2>Wie Zijn Wij?</h2>
+            <p>Welkom bij <strong>Mister DJ</strong> - dé professionele DJ service uit het hart van Brabant. Met meer dan 15 jaar ervaring en 2500+ succesvol uitgevoerde events, zijn wij dé partner voor jouw onvergetelijke feest.</p>
+
+            <p>Of het nu gaat om een romantische bruiloft, een stijlvol bedrijfsfeest of een spetterend verjaardagsfeest - wij zorgen ervoor dat jouw gasten de hele avond de dansvloer opzoeken. Met onze unieke <strong>100% dansgarantie</strong> maken wij van elk event een succes.</p>
+
+            <div class="highlight-box">
+                <strong>Onze Missie:</strong> Elk event tot een onvergetelijke ervaring maken door professionele DJ services, premium apparatuur en persoonlijke service te combineren met passie voor muziek en feesten.
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Jaar Ervaring</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2500+</div>
+                <div class="stat-label">Events Gedaan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Dansgarantie</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Steden Bereikt</div>
+            </div>
+        </div>
+
+        <!-- Onze Waarden -->
+        <div class="content-section">
+            <h2>Onze Kernwaarden</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <h3>🎵 Professionaliteit</h3>
+                    <p>Premium apparatuur, professionele presentatie en betrouwbare service bij elk event.</p>
+                </div>
+                <div class="value-card">
+                    <h3>💎 Kwaliteit</h3>
+                    <p>Topkwaliteit geluid, licht en entertainment voor een onvergetelijke ervaring.</p>
+                </div>
+                <div class="value-card">
+                    <h3>🤝 Persoonlijke Service</h3>
+                    <p>Elk event is uniek. Wij luisteren naar jouw wensen en zorgen voor maatwerk.</p>
+                </div>
+                <div class="value-card">
+                    <h3>🎉 Passie</h3>
+                    <p>Wij leven voor muziek en feesten. Die passie zie je terug in elke performance.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wat Maakt Ons Uniek -->
+        <div class="content-section">
+            <h2>Wat Maakt Ons Uniek?</h2>
+
+            <h3>🎧 Premium DJ Services</h3>
+            <ul>
+                <li><strong>Ervaren DJ's:</strong> Alle DJ's hebben 10+ jaar ervaring en kennis van alle muziekstijlen</li>
+                <li><strong>Lees de crowd:</strong> Wij voelen perfect aan wat jouw gasten willen horen</li>
+                <li><strong>Naadloze overgangen:</strong> Professionele mixing en beat-matching</li>
+                <li><strong>Gepersonaliseerde playlists:</strong> Afgestemd op jouw smaak en publiek</li>
+            </ul>
+
+            <h3>🔊 State-of-the-art Apparatuur</h3>
+            <ul>
+                <li><strong>Kristalhelder geluid:</strong> Professionele Bose en JBL sound systemen</li>
+                <li><strong>Spectaculaire lichtshows:</strong> LED-verlichting en moving heads</li>
+                <li><strong>Backup systemen:</strong> Altijd reserve apparatuur aanwezig</li>
+                <li><strong>Complete setup:</strong> Wij regelen alles van A tot Z</li>
+            </ul>
+
+            <h3>✨ 100% Dansgarantie</h3>
+            <p>Als unieke feature bieden wij als enige in de regio een <strong>100% dansgarantie</strong>. Wij zorgen ervoor dat jouw dansvloer de hele avond vol staat. Lukt dit niet? Dan krijg je je geld terug. Zo zeker zijn we van onze kwaliteit!</p>
+
+            <h3>🎯 All-in Service</h3>
+            <ul>
+                <li>Gratis intake gesprek om je wensen te bespreken</li>
+                <li>Persoonlijke muziekwensen verwerken</li>
+                <li>Timeline en planning voor de avond</li>
+                <li>Professionele presentatie en omroeping</li>
+                <li>Flexibele tijdsduur (4-8 uur)</li>
+            </ul>
+        </div>
+
+        <!-- Team Section -->
+        <div class="team-section">
+            <h2 style="color: #1A2C4B; margin-bottom: 30px;">Ons Team</h2>
+
+            <div class="team-member">
+                <div class="team-avatar">MR</div>
+                <div class="team-info">
+                    <h3>Mister DJ</h3>
+                    <div class="team-role">Founder & Lead DJ</div>
+                    <p>Met 15+ jaar ervaring in de DJ wereld en duizenden events op zijn naam, is Mister DJ dé specialist op het gebied van bruiloften en corporate events. Zijn passie voor muziek en perfectie zorgen ervoor dat elk event een succes wordt.</p>
+                </div>
+            </div>
+
+            <div class="team-member">
+                <div class="team-avatar">DJ</div>
+                <div class="team-info">
+                    <h3>DJ Team</h3>
+                    <div class="team-role">Professional DJ's</div>
+                    <p>Ons team bestaat uit ervaren DJ's die allemaal hun eigen specialisaties hebben. Van urban tot 90's hits, van klassiekers tot de nieuwste tracks - wij hebben voor elk feest de juiste DJ.</p>
+                </div>
+            </div>
+
+            <div class="team-member">
+                <div class="team-avatar">SM</div>
+                <div class="team-info">
+                    <h3>Support & Management</h3>
+                    <div class="team-role">Event Coördinatie</div>
+                    <p>Ons support team zorgt voor een perfecte voorbereiding en uitvoering. Van offerte tot nazorg - je hebt altijd een vast aanspreekpunt dat meedenkt over jouw event.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Waarom Kiezen Voor Ons -->
+        <div class="content-section">
+            <h2>Waarom Kiezen Voor Mister DJ?</h2>
+            <ul>
+                <li>✅ <strong>15+ jaar ervaring</strong> met 2500+ succesvolle events</li>
+                <li>✅ <strong>100% dansgarantie</strong> - uniek in de regio</li>
+                <li>✅ <strong>Premium apparatuur</strong> (geluid, licht, effecten)</li>
+                <li>✅ <strong>Professionele DJ's</strong> met passie voor muziek</li>
+                <li>✅ <strong>All-in service</strong> - wij regelen alles</li>
+                <li>✅ <strong>Transparante prijzen</strong> - geen verborgen kosten</li>
+                <li>✅ <strong>Flexibel en betrouwbaar</strong> - altijd backup DJ beschikbaar</li>
+                <li>✅ <strong>Persoonlijke aandacht</strong> - jouw wensen staan centraal</li>
+                <li>✅ <strong>Dekking heel Nederland</strong> - focus op Brabant en Zuid-Nederland</li>
+                <li>✅ <strong>Verzekeraar erkend</strong> - volledig verzekerd en AVG-proof</li>
+            </ul>
+        </div>
+
+        <!-- Ons Werkgebied -->
+        <div class="content-section">
+            <h2>Ons Werkgebied</h2>
+            <p>Met ons hoofdkantoor in Brabant bedienen wij heel Zuid-Nederland en daarbuiten. Onze primaire focus ligt op:</p>
+            <ul>
+                <li><strong>Noord-Brabant:</strong> Eindhoven, Tilburg, Breda, Den Bosch, Helmond, Veldhoven</li>
+                <li><strong>Zuid-Holland:</strong> Rotterdam, Dordrecht, Gouda</li>
+                <li><strong>Limburg:</strong> Maastricht, Venlo, Roermond</li>
+                <li><strong>Gelderland:</strong> Nijmegen, Arnhem</li>
+                <li><strong>Plus heel Nederland</strong> op aanvraag</li>
+            </ul>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>Klaar om jouw event onvergetelijk te maken?</h2>
+            <p>Neem contact op voor een vrijblijvend gesprek en persoonlijke offerte. Wij denken graag met je mee!</p>
+            <a href="/contact.html" class="cta-btn">Neem Contact Op</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Mister DJ - Sevensa BV. Alle rechten voorbehouden.</p>
+        <p>
+            <a href="/">Home</a> |
+            <a href="/over-ons.html">Over Ons</a> |
+            <a href="/gallery.html">Galerij</a> |
+            <a href="/contact.html">Contact</a> |
+            <a href="/privacy.html">Privacy</a> |
+            <a href="/terms.html">Voorwaarden</a> |
+            <a href="/cookie-policy.html">Cookies</a>
+        </p>
+    </footer>
+</body>
+</html>

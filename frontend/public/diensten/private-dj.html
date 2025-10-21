@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DJ voor Private Events - Verjaardagen, Jubilea, Tuinfeesten. Professioneel en persoonlijk. Vanaf €795. Boek nu!">
+    <title>Private DJ | Verjaardagen & Jubilea - Mister DJ</title>
+    <link rel="canonical" href="https://www.mr-dj.nl/diensten/private-dj.html">
+    <meta property="og:title" content="Private DJ voor Verjaardagen & Jubilea">
+    <meta property="og:description" content="Maak jouw feest onvergetelijk met een professionele DJ. Persoonlijke aandacht en 100% dansgarantie.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        .hero {
+            background: linear-gradient(rgba(26, 44, 75, 0.85), rgba(0, 174, 239, 0.85)),
+                        url('/media/photos/gallery/parties/party-001.jpg') center/cover;
+            color: white;
+            padding: 120px 20px 80px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .hero p { font-size: 1.3rem; margin-bottom: 30px; }
+        .hero-cta {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #00AEEF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .hero-cta:hover { background: #0098d4; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background: #00AEEF;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-link:hover { background: #0098d4; }
+        .intro {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        .intro h2 {
+            color: #1A2C4B;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .intro p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        .occasions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        .occasion-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .occasion-card:hover {
+            transform: translateY(-5px);
+        }
+        .occasion-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .occasion-card h3 {
+            color: #1A2C4B;
+            margin-bottom: 10px;
+        }
+        .pakketten {
+            margin: 60px 0;
+        }
+        .pakketten h2 {
+            color: #1A2C4B;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .pakket-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .pakket-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        .pakket-card.popular {
+            border: 3px solid #00AEEF;
+            transform: scale(1.05);
+        }
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: #00AEEF;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .pakket-title {
+            font-size: 2rem;
+            color: #1A2C4B;
+            margin-bottom: 10px;
+        }
+        .pakket-price {
+            font-size: 2.5rem;
+            color: #00AEEF;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .pakket-description {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .pakket-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .pakket-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .pakket-features li:before {
+            content: "✓ ";
+            color: #00AEEF;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .pakket-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .pakket-btn:hover { opacity: 0.9; }
+        .faq {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 60px 0;
+        }
+        .faq h2 {
+            color: #1A2C4B;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .faq-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .faq-question {
+            color: #00AEEF;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .faq-answer {
+            color: #555;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, #1A2C4B 0%, #00AEEF 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 60px 0;
+        }
+        .cta-section h2 { font-size: 2.2rem; margin-bottom: 20px; }
+        .cta-section p { font-size: 1.2rem; margin-bottom: 30px; }
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #00AEEF;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .cta-button:hover { background: #f0f0f0; }
+        footer {
+            background: #1A2C4B;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        footer a { color: white; text-decoration: none; margin: 0 10px; }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .pakket-card.popular { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>🎉 DJ voor Private Events</h1>
+        <p>Maak jouw feest onvergetelijk met persoonlijke aandacht</p>
+        <a href="#pakketten" class="hero-cta">Bekijk Pakketten</a>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← Terug naar home</a>
+
+        <div class="intro">
+            <h2>Professionele DJ voor Jouw Private Event</h2>
+            <p>Of het nu gaat om een spetterend verjaardagsfeest, een stijlvol jubileum, of een gezellig tuinfeest - wij zorgen ervoor dat jouw gasten de hele avond plezier hebben en de dansvloer vol staat.</p>
+
+            <p>Met onze persoonlijke aanpak stemmen we de muziek volledig af op jouw smaak en die van je gasten. Van young & wild tot classy & sophisticated - wij zorgen voor de perfecte soundtrack bij jouw feest.</p>
+        </div>
+
+        <div class="occasions">
+            <div class="occasion-card">
+                <div class="occasion-icon">🎂</div>
+                <h3>Verjaardagen</h3>
+                <p>Van 18e tot 80e verjaardag</p>
+            </div>
+            <div class="occasion-card">
+                <div class="occasion-icon">💍</div>
+                <h3>Jubilea</h3>
+                <p>Huwelijksjubilea & mijlpalen</p>
+            </div>
+            <div class="occasion-card">
+                <div class="occasion-icon">🌳</div>
+                <h3>Tuinfeesten</h3>
+                <p>Zomerse outdoor parties</p>
+            </div>
+            <div class="occasion-card">
+                <div class="occasion-icon">🎓</div>
+                <h3>Afstudeerfees​ten</h3>
+                <p>Vier je diploma in stijl</p>
+            </div>
+            <div class="occasion-card">
+                <div class="occasion-icon">🏠</div>
+                <h3>House Warmings</h3>
+                <p>Feestelijke opening nieuwe woning</p>
+            </div>
+            <div class="occasion-card">
+                <div class="occasion-icon">🎭</div>
+                <h3>Themafeesten</h3>
+                <p>Van 80's tot Tropical party</p>
+            </div>
+        </div>
+
+        <div class="pakketten" id="pakketten">
+            <h2>Private Event Pakketten</h2>
+            <div class="pakket-grid">
+                <div class="pakket-card">
+                    <h3 class="pakket-title">Brons</h3>
+                    <div class="pakket-price">€795</div>
+                    <p class="pakket-description">Perfect voor kleinere feesten en budgetbewuste keuzes</p>
+                    <ul class="pakket-features">
+                        <li>Professionele DJ met 15+ jaar ervaring</li>
+                        <li>Hoogwaardige geluidsinstallatie</li>
+                        <li>Sfeervol licht (LED spots)</li>
+                        <li>Muziek op maat van jouw wensen</li>
+                        <li>Onbeperkt overleg vooraf</li>
+                        <li>Gratis intake gesprek</li>
+                    </ul>
+                    <a href="/contact.html" class="pakket-btn">Boek Nu</a>
+                </div>
+
+                <div class="pakket-card popular">
+                    <span class="popular-badge">Most Popular</span>
+                    <h3 class="pakket-title">Zilver</h3>
+                    <div class="pakket-price">€995</div>
+                    <p class="pakket-description">De meest gekozen optie met uitgebreide verlichting</p>
+                    <ul class="pakket-features">
+                        <li>Alles uit pakket Brons</li>
+                        <li>Uitgebreide lichtshow (moving heads)</li>
+                        <li>Rookmachine voor extra sfeer</li>
+                        <li>DJ booth met LED verlichting</li>
+                        <li>Persoonlijke afstemming muziek</li>
+                        <li>Gratis voorbespreking op locatie</li>
+                    </ul>
+                    <a href="/contact.html" class="pakket-btn">Boek Nu</a>
+                </div>
+
+                <div class="pakket-card">
+                    <h3 class="pakket-title">Goud</h3>
+                    <div class="pakket-price">€1295</div>
+                    <p class="pakket-description">Het ultieme feestpakket voor een onvergetelijke avond</p>
+                    <ul class="pakket-features">
+                        <li>Alles uit pakket Zilver</li>
+                        <li>Premium lichtshow (laser + moving heads)</li>
+                        <li>CO2 jets voor spectaculaire momenten</li>
+                        <li>LED dansvloer (optioneel)</li>
+                        <li>Saxofonist Leslie Moore (1 uur)</li>
+                        <li>Onbeperkte voorbespreking</li>
+                        <li>Persoonlijke muzieklijst samenstellen</li>
+                    </ul>
+                    <a href="/contact.html" class="pakket-btn">Boek Nu</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq">
+            <h2>Veelgestelde Vragen</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">Voor hoeveel personen is een DJ geschikt?</div>
+                <div class="faq-answer">Onze DJ services zijn geschikt voor feesten vanaf 30 personen tot wel 500+ gasten. We passen de geluidsapparatuur aan op de grootte van je feest en de locatie.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Kan de DJ ook buiten draaien?</div>
+                <div class="faq-answer">Ja! We hebben ervaring met outdoor events zoals tuinfeesten en festivals. Wel vragen we om een overdekte opstelplek voor onze apparatuur in geval van regen, en een stroombron in de buurt.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Hoe werkt het met muziekwensen?</div>
+                <div class="faq-answer">Vooraf ontvang je van ons een muziek-vragenlijst waarin je je favoriete genres, artiesten en specifieke nummers kunt aangeven. Ook kun je aangeven welke muziek je absoluut niet wilt horen. We stemmen volledig af op jouw wensen!</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Hoelang speelt de DJ op mijn feest?</div>
+                <div class="faq-answer">Standaard draaien we 4-5 uur, maar dit is volledig flexibel. Kortere of langere sets zijn mogelijk tegen aangepaste prijzen.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Wat als er technische problemen zijn?</div>
+                <div class="faq-answer">Wij hebben altijd backup apparatuur bij ons, inclusief reserve laptop, controller en bekabeling. De kans op uitval is minimaal, maar mocht er iets zijn, dan kunnen we binnen enkele minuten overschakelen.</div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2>Maak jouw feest onvergetelijk</h2>
+            <p>Vraag een vrijblijvende offerte aan en ontvang binnen 24 uur een persoonlijk voorstel</p>
+            <a href="/contact.html" class="cta-button">Vraag Offerte Aan</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Mister DJ - Sevensa BV. Alle rechten voorbehouden.</p>
+        <p>
+            <a href="/">Home</a> |
+            <a href="/over-ons.html">Over Ons</a> |
+            <a href="/diensten/bruiloft-dj.html">Bruiloft DJ</a> |
+            <a href="/diensten/bedrijfsfeest-dj.html">Bedrijfsfeest DJ</a> |
+            <a href="/diensten/private-dj.html">Private Events</a> |
+            <a href="/gallery.html">Galerij</a> |
+            <a href="/contact.html">Contact</a>
+        </p>
+    </footer>
+</body>
+</html>
