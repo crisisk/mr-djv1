@@ -9,9 +9,10 @@
     "quote": "Van ceremonie tot laatste dans perfect begeleid. Onze gasten staan nog steeds op de aftermovie!",
     "category": "bruiloft",
     "media": {
-      "type": "image",
-      "src": "/assets/images/gallery/bruiloft-eindhoven.svg",
-      "alt": "Bruiloft DJ Eindhoven"
+      "type": "video",
+      "src": "/media/optimized/compressed/testimonial-001.mp4",
+      "poster": "/media/optimized/thumbnails/gallery/bruiloft-001.jpg",
+      "alt": "Bruiloft DJ Eindhoven - Sarah & Tom video testimonial"
     }
   },
   {
@@ -24,9 +25,10 @@
     "quote": "De saxofonist maakte onze openingsdans magisch en de dansvloer bleef vol tot sluitingstijd.",
     "category": "bruiloft",
     "media": {
-      "type": "image",
-      "src": "/assets/images/gallery/bruiloft-tilburg.svg",
-      "alt": "Bruiloft DJ Tilburg"
+      "type": "video",
+      "src": "/media/optimized/compressed/testimonial-002.mp4",
+      "poster": "/media/optimized/thumbnails/gallery/bruiloft-002.jpg",
+      "alt": "Bruiloft DJ Tilburg - Lotte & Wouter video testimonial"
     }
   },
   {
@@ -39,9 +41,10 @@
     "quote": "Audio voor de ceremonie, live vocalist en een knalfeest in Château Neercanne: alles liep vlekkeloos.",
     "category": "bruiloft",
     "media": {
-      "type": "image",
-      "src": "/assets/images/gallery/bruiloft-maastricht.svg",
-      "alt": "Bruiloft DJ Maastricht"
+      "type": "video",
+      "src": "/media/optimized/compressed/testimonial-003.mp4",
+      "poster": "/media/optimized/thumbnails/gallery/bruiloft-003.jpg",
+      "alt": "Bruiloft DJ Maastricht - Amber & Jelle video testimonial"
     }
   },
   {
@@ -54,9 +57,10 @@
     "quote": "Branding visuals, strakke cues en een energieke host. Onze awardshow voelde premium.",
     "category": "bedrijfsfeest",
     "media": {
-      "type": "image",
-      "src": "/assets/images/gallery/corporate-eindhoven.svg",
-      "alt": "Bedrijfsfeest Eindhoven"
+      "type": "video",
+      "src": "/media/optimized/compressed/testimonial-004.mp4",
+      "poster": "/media/optimized/thumbnails/gallery/feest-001.jpg",
+      "alt": "Bedrijfsfeest Eindhoven - Philips Health video testimonial"
     }
   },
   {

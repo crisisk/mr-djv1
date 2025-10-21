@@ -6,10 +6,19 @@ const loadTestimonials = async () => {
   return response.json();
 };
 
-const createCard = (testimonial) => `
+const createCard = (testimonial) => {
+  const isVideo = testimonial.media?.type === 'video';
+  const mediaContent = isVideo
+    ? `<video controls preload="metadata" poster="${testimonial.media?.poster || ''}" loading="lazy">
+         <source src="${testimonial.media?.src}" type="video/mp4">
+         Je browser ondersteunt geen video playback.
+       </video>`
+    : `<img src="${testimonial.media?.src}" alt="${testimonial.media?.alt || 'Mister DJ review'}" loading="lazy" decoding="async" />`;
+
+  return `
   <article class="social-proof-card" data-testimonial-id="${testimonial.id}" data-category="${testimonial.category}">
     <figure class="social-proof-media">
-      <img src="${testimonial.media?.src}" alt="${testimonial.media?.alt || 'Mister DJ review'}" loading="lazy" decoding="async" />
+      ${mediaContent}
     </figure>
     <div class="social-proof-content">
       <div class="social-proof-meta">
@@ -17,12 +26,12 @@ const createCard = (testimonial) => `
         <span>${testimonial.eventType} • ${testimonial.city}</span>
         <span>${testimonial.eventDate}</span>
       </div>
-      <p class="social-proof-quote">“${testimonial.quote}”</p>
+      <p class="social-proof-quote">"${testimonial.quote}"</p>
       <p class="social-proof-author">${testimonial.name}</p>
-      <button class="btn-link social-proof-cta" type="button" data-gallery="${testimonial.media?.src}">Bekijk moment</button>
+      <button class="btn-link social-proof-cta" type="button" data-gallery="${testimonial.media?.src}">Bekijk ${isVideo ? 'video' : 'moment'}</button>
     </div>
   </article>
-`;
+`;};
 
 export const initSocialProof = async (analytics) => {
   const container = document.getElementById('featured-reviews');
