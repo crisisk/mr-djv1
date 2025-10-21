@@ -2,29 +2,29 @@
 
 Deze takenlijst verdeelt de voorgestelde visuele verbeteringen voor de MR-DJ Next.js-componenten in afzonderlijke, commit-vriendelijke stappen. Elke taak is opgezet om binnen één commit afgerond te worden, zodat de voortgang duidelijk en beheersbaar blijft.
 
-## Commit-Ready Taken (22)
+## Nieuwe commit-taken (22)
 
-1. **HeroSection lay-out herstructureren** – Introduceer een tweekolomsopzet met ruimte voor fotografie of animatie naast de koptekst.
-2. **Hero achtergrondlaag toevoegen** – Implementeer een gradient-overlay of subtiele achtergrondvisual om de hero meer diepte te geven.
-3. **Hero CTA-micro-interacties** – Voeg hover-transities, iconen en een "scroll down"-indicator toe aan de hero-knoppen.
-4. **Button gradient-variant creëren** – Breid de Button-component uit met een opvallende gradient-stijl.
-5. **Button glass-variant ontwerpen** – Introduceer een glaseffect-stijl inclusief bijhorende thematisering.
-6. **Button loading-state toevoegen** – Voorzie een spinner en statusbeheer voor knoppen in laadmodus.
-7. **Button icon-slot implementeren** – Sta icoontjes toe links/rechts binnen knoppen en zorg voor uitlijning.
-8. **Button full-width optie maken** – Voeg een prop toe voor knoppen die volledige breedte gebruiken in mobiele formulieren.
-9. **Testimonials carrousel bouwen** – Zet de statische grid om naar een swiper met autoplay en swipe gestures.
-10. **Testimonials kaartstyling verfijnen** – Voeg profielfoto’s, gradient-borders en instap-animaties toe aan testimonialkaarten.
-11. **Pricing toggle-functionaliteit toevoegen** – Introduceer een toggle (bijv. bruiloft vs. bedrijfsfeest) met statebeheer.
-12. **Pricing badges en tooltips ontwerpen** – Voeg kortingsbadges en feature-tooltips toe aan de prijstabellen.
-13. **Pricing featured kaart highlighten** – Pas glaseffecten, glow en accentkleuren toe op het populairste pakket.
-14. **QuickBookingForm grid lay-out implementeren** – Vervang de kolomlay-out door een grid met icoonvelden en floating labels.
-15. **QuickBookingForm inline validatie introduceren** – Voorzie real-time validatiefeedback en contextuele tips.
-16. **LanguageSwitcher custom select bouwen** – Ontwerp een merkconsistente select met vlag-iconen en focus states.
-17. **LanguageSwitcher badge/pill styling** – Geef de switcher een badgevorm met hover-schaduw en duidelijke focusring.
-18. **Blog sectie kaarten redesignen** – Transformeer lijstitems naar kaarten met grotere hero-afbeeldingen en overlay-gradients.
-19. **Blog loading states en empty states** – Voeg skeletons of shimmer placeholders toe en introduceer illustratieve foutmeldingen.
-20. **ArticleSidebar card-styling toepassen** – Style sidebar-secties als cards met iconen en separators.
-21. **AuthorInfo branding verbeteren** – Voorzie de auteur van een branded kader, "Expert"-badge en social-iconkleuren.
-22. **RelatedArticles mini-grid creëren** – Zet gerelateerde artikelen in een mini-grid met thumbnails en meta-informatie.
+- [x] **Task 01 – HeroSection lay-out vernieuwen**: herstructureer de component naar een tweekolomsopzet met ruimte voor fotografie of animatie en borg responsiveness.
+- [x] **Task 02 – Hero achtergrondlaag ontwerpen**: implementeer een gradient-overlay of achtergrondvisual met configurabele intensiteit voor light/dark varianten.
+- [x] **Task 03 – Hero CTA-micro-interacties**: voeg hover-transities, iconen en een "scroll down"-indicator toe en documenteer animatieduur en easing.
+- [x] **Task 04 – Button gradient-variant introduceren**: breid de Button-component uit met een gradient preset inclusief themakleuren en hover-contrast.
+- [x] **Task 05 – Button glass-variant toevoegen**: creëer een glaseffect met blur, border en lichtaccenten plus fallback-styling voor oudere browsers.
+- [x] **Task 06 – Button loading-state realiseren**: implementeer een spinner-slot, aria-beschrijvingen en disabled-gedrag tijdens laden.
+- [x] **Task 07 – Button icon-slot mogelijk maken**: voorzie icon-posities links/rechts met spacing-tokens en support voor alleen-icoonknoppen.
+- [x] **Task 08 – Button full-width optie aanbieden**: voeg een `fullWidth` prop toe met responsive gedrag en documenteer gebruik in formulieren.
+- [x] **Task 09 – Testimonials carrousel bouwen**: vervang de statische grid door een swiper met autoplay, swipe gestures en pauzeknop voor toegankelijkheid.
+- [x] **Task 10 – Testimonials kaartstyling verfijnen**: verrijk kaarten met profielfoto’s, gradient-borders, quote-illustraties en in-view animaties.
+- [ ] **Task 11 – Pricing toggle-functionaliteit**: introduceer een toggle (bijv. bruiloft vs. bedrijfsfeest) met statebeheer en contextuele copywissel.
+- [ ] **Task 12 – Pricing badges en tooltips**: voeg badges voor kortingen toe en toon feature-tooltips met korte beschrijvingen.
+- [ ] **Task 13 – Pricing featured kaart highlight**: pas glaseffecten, glow en accentkleuren toe op het populairste pakket inclusief ARIA-labeling.
+- [ ] **Task 14 – QuickBookingForm grid lay-out**: vervang de kolomlay-out door een responsief grid met icoonvelden en floating labels.
+- [ ] **Task 15 – QuickBookingForm inline validatie**: implementeer real-time validatiefeedback, hulptekst en foutstatusstyling.
+- [ ] **Task 16 – LanguageSwitcher custom select**: ontwerp een merkconsistente select met vlag-iconen, toetsenbordbediening en aria-attributen.
+- [ ] **Task 17 – LanguageSwitcher badge/pill styling**: plaats de switcher in een pill met hover-schaduw, focusring en contrastratio-test.
+- [ ] **Task 18 – Blog kaarten redesign**: transformeer lijstitems naar kaarten met hero-afbeeldingen, overlay-gradients en hover-animaties.
+- [ ] **Task 19 – Blog loading & empty states**: voeg skeletons of shimmer placeholders toe en ontwerp illustratieve empty-state componenten.
+- [ ] **Task 20 – ArticleSidebar card-styling**: style sidebar-secties als cards met achtergrondtinten, iconen en separators.
+- [ ] **Task 21 – AuthorInfo branding**: geef de auteur een branded kader, "Expert"-badge en gestileerde social-iconen.
+- [ ] **Task 22 – RelatedArticles mini-grid**: zet gerelateerde artikelen in een mini-grid met thumbnails, meta-informatie en hover-animaties.
 
-Elke taak kan los van de anderen worden opgepakt, maar combineert samen tot de volledige visuele verbeteringsronde voor de MR-DJ website.
+Elke taak kan los van de anderen worden opgepakt en vormt samen de nieuwe uitvoerbare roadmap voor de MR-DJ website.
