@@ -51,6 +51,33 @@ const WhatsAppChat = () => {
     return null
   }
 
+  if (Array.isArray(window.dataLayer)) {
+    window.dataLayer.push(payload);
+  }
+
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'whatsapp_click', {
+      event_category: 'engagement',
+      event_label: 'whatsapp_chat',
+    });
+  }
+};
+
+const WhatsAppChat = () => {
+  const config = getWhatsAppConfig({ logger });
+
+  const handleClick = createWhatsAppClickHandler({
+    config,
+    fallbackUrl: FALLBACK_CONTACT_PATH,
+    track: trackWhatsAppInteraction,
+    logger,
+    openWindow: true,
+  });
+
+  const href = config.isValid && config.whatsappUrl ? config.whatsappUrl : FALLBACK_CONTACT_PATH;
+  const target = config.isValid ? '_blank' : undefined;
+  const rel = config.isValid ? 'noopener noreferrer' : undefined;
+
   return (
     <WhatsAppButton
       href={`https://wa.me/${phoneNumber}?text=${message}`}

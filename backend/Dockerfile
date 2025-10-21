@@ -1,28 +1,22 @@
-FROM node:22-alpine
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install curl for container health checks
-RUN apk add --no-cache curl \
-    && npm install --production
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
 COPY . .
 
-# Create non-root user (use different UID to avoid conflicts)
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 -G nodejs && \
-    chown -R nodejs:nodejs /app
-
-USER nodejs
-
-EXPOSE 3000
+EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+  CMD curl -f http://localhost:8000/health || exit 1
 
-CMD ["node", "src/server.js"]
-
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
