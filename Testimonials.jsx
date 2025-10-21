@@ -1,151 +1,384 @@
-import React from 'react'
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import IconBase from './mr-dj-eds-components/src/components/ui/icon-base.jsx'
 
-const StarRating = ({ rating }) => {
-  const stars = Array(5)
-    .fill(0)
-    .map((_, i) => (
-      <IconBase
-        key={i}
-        className={`h-5 w-5 ${i < rating ? 'text-secondary' : 'text-neutral-gray-500'}`}
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-      </IconBase>
-    ))
-  return <div className="flex">{stars}</div>
+const AUTOPLAY_INTERVAL = 6500
+const DRAG_THRESHOLD_PX = 40
+const MAX_RATING = 5
+
+const usePrefersReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQuery.matches)
+
+    const updatePreference = (event) => {
+      setPrefersReducedMotion(event.matches)
+    }
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', updatePreference)
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(updatePreference)
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', updatePreference)
+      } else if (mediaQuery.removeListener) {
+        mediaQuery.removeListener(updatePreference)
+      }
+    }
+  }, [])
+
+  return prefersReducedMotion
 }
 
-const TestimonialCard = ({ testimonial }) => {
+const VisuallyHidden = ({ as: Component = 'span', className = '', children, ...props }) => (
+  <Component className={`sr-only ${className}`.trim()} {...props}>
+    {children}
+  </Component>
+)
+
+const getInitials = (name = '') => {
+  if (!name) {
+    return 'MR'
+  }
+
+  const initials = name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((segment) => segment[0]?.toUpperCase() ?? '')
+    .join('')
+
+  return initials || 'MR'
+}
+
+const Star = ({ isActive }) => (
+  <svg
+    aria-hidden="true"
+    className={`h-4 w-4 transition-colors duration-200 ${
+      isActive ? 'text-secondary' : 'text-neutral-gray-400'
+    }`}
+    fill="currentColor"
+    viewBox="0 0 20 20"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+  </svg>
+)
+
+const Rating = ({ rating }) => (
+  <div className="flex items-center gap-0.5" aria-hidden="true">
+    {Array.from({ length: MAX_RATING }, (_, index) => (
+      <Star key={index} isActive={index < rating} />
+    ))}
+  </div>
+)
+
+const TestimonialCard = ({ testimonial, prefersReducedMotion }) => {
+  const cardRef = useRef(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setIsVisible(true)
+      return
+    }
+
+    const node = cardRef.current
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.disconnect()
+        }
+      },
+      {
+        threshold: 0.45,
+      }
+    )
+
+    observer.observe(node)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [prefersReducedMotion])
+
+  const initials = useMemo(() => getInitials(testimonial.author), [testimonial.author])
+
   return (
-    <div className="bg-neutral-light p-spacing-xl rounded-lg shadow-xl flex flex-col h-full">
-      <StarRating rating={testimonial.rating} />
-      <p className="text-font-size-h3 text-neutral-dark italic my-spacing-lg flex-grow">"{testimonial.quote}"</p>
-      <div className="border-t border-neutral-gray-100 pt-spacing-md">
-        <p className="text-font-size-body font-bold text-primary">{testimonial.author}</p>
-        <p className="text-font-size-small text-neutral-gray-500">{testimonial.source}</p>
+    <article
+      ref={cardRef}
+      className={`h-full w-full max-w-[360px] shrink-0 snap-center px-spacing-sm transition duration-500 ease-out ${
+        isVisible ? 'opacity-100 [transform:translateY(0)]' : 'opacity-0 [transform:translateY(16px)]'
+      }`}
+    >
+      <div className="relative h-full rounded-3xl border border-white/10 bg-gradient-to-br from-neutral-light/95 via-white to-white/80 p-[1px] shadow-[0_30px_60px_rgba(15,23,42,0.25)]">
+        <div className="relative flex h-full flex-col gap-spacing-lg rounded-[calc(theme(borderRadius.3xl)-1px)] bg-white p-spacing-xl">
+          <span className="absolute -top-6 left-spacing-xl inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary via-secondary to-primary text-font-size-h5 font-bold text-neutral-light shadow-[0_12px_25px_rgba(79,70,229,0.3)]">
+            {initials}
+          </span>
+          <Rating rating={testimonial.rating ?? MAX_RATING} />
+          <p className="text-font-size-body italic text-neutral-gray-700">
+            “{testimonial.quote}”
+          </p>
+          <footer className="mt-auto flex flex-col gap-spacing-xs border-t border-neutral-gray-100 pt-spacing-md">
+            <p className="text-font-size-body font-semibold text-neutral-dark">
+              {testimonial.author}
+            </p>
+            {testimonial.source ? (
+              <p className="text-font-size-small text-neutral-gray-500">{testimonial.source}</p>
+            ) : null}
+          </footer>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+const TestimonialsCarousel = ({ testimonials, title, prefersReducedMotion }) => {
+  const carouselId = useId()
+  const autoplayAnnouncementId = useId()
+  const trackRef = useRef(null)
+  const pointerStartRef = useRef(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [isManuallyPaused, setIsManuallyPaused] = useState(prefersReducedMotion)
+  const [isInteractionPaused, setIsInteractionPaused] = useState(false)
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setIsManuallyPaused(true)
+      setIsInteractionPaused(false)
+    }
+  }, [prefersReducedMotion])
+
+  const totalItems = testimonials.length
+  const isPaused = prefersReducedMotion || isManuallyPaused || isInteractionPaused
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || isPaused || totalItems <= 1) {
+      return undefined
+    }
+
+    const interval = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % totalItems)
+    }, AUTOPLAY_INTERVAL)
+
+    return () => window.clearInterval(interval)
+  }, [isPaused, totalItems])
+
+  useEffect(() => {
+    const node = trackRef.current
+    if (!node) {
+      return
+    }
+
+    const child = node.children[activeIndex]
+    if (!child) {
+      return
+    }
+
+    node.scrollTo({
+      left: child.offsetLeft,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    })
+  }, [activeIndex, prefersReducedMotion])
+
+  const goToIndex = useCallback(
+    (index) => {
+      setActiveIndex((current) => {
+        if (index < 0) {
+          return totalItems - 1
+        }
+        if (index >= totalItems) {
+          return 0
+        }
+        return index
+      })
+    },
+    [totalItems]
+  )
+
+  const handlePointerDown = useCallback(
+    (event) => {
+      pointerStartRef.current = event.clientX ?? event.touches?.[0]?.clientX ?? null
+      setIsInteractionPaused(true)
+    },
+    []
+  )
+
+  const handlePointerUp = useCallback(
+    (event) => {
+      if (pointerStartRef.current == null) {
+        setIsInteractionPaused(false)
+        return
+      }
+
+      const endX = event.clientX ?? event.changedTouches?.[0]?.clientX ?? null
+      if (endX == null) {
+        pointerStartRef.current = null
+        setIsInteractionPaused(false)
+        return
+      }
+
+      const delta = endX - pointerStartRef.current
+      if (Math.abs(delta) > DRAG_THRESHOLD_PX) {
+        goToIndex(activeIndex + (delta < 0 ? 1 : -1))
+      }
+
+      setIsInteractionPaused(false)
+      pointerStartRef.current = null
+    },
+    [activeIndex, goToIndex]
+  )
+
+  const handlePointerLeave = useCallback(() => {
+    pointerStartRef.current = null
+    if (!prefersReducedMotion) {
+      setIsInteractionPaused(false)
+    }
+  }, [prefersReducedMotion])
+
+  const toggleAutoplay = useCallback(() => {
+    if (prefersReducedMotion) {
+      return
+    }
+
+    setIsManuallyPaused((previous) => !previous)
+  }, [prefersReducedMotion])
+
+  const autoplayButtonLabel = prefersReducedMotion
+    ? 'Autoplay uitgeschakeld (voorkeuren)'
+    : isManuallyPaused
+    ? 'Start autoplay'
+    : 'Pauzeer autoplay'
+
+  return (
+    <div className="flex flex-col gap-spacing-xl">
+      <div className="flex flex-wrap items-center justify-between gap-spacing-sm">
+        <h2 className="text-font-size-h2 font-extrabold text-neutral-dark">{title}</h2>
+        <button
+          aria-controls={carouselId}
+          aria-describedby={autoplayAnnouncementId}
+          aria-pressed={!isManuallyPaused}
+          className="rounded-full border border-neutral-gray-200 bg-white px-spacing-md py-spacing-xs text-font-size-small font-semibold text-neutral-gray-600 shadow-sm transition hover:border-neutral-gray-300 hover:text-neutral-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          disabled={prefersReducedMotion}
+          onClick={toggleAutoplay}
+          type="button"
+        >
+          {autoplayButtonLabel}
+        </button>
+      </div>
+
+      <div
+        aria-describedby={autoplayAnnouncementId}
+        aria-label={title}
+        aria-live="polite"
+        className="relative"
+        id={carouselId}
+        role="group"
+      >
+        <VisuallyHidden id={autoplayAnnouncementId}>
+          {prefersReducedMotion
+            ? 'Automatisch afspelen is uitgeschakeld vanwege systeeminstellingen.'
+            : isPaused
+            ? 'Carrousel gepauzeerd. Gebruik de pijlen of swipe om testimonials te bekijken.'
+            : 'Carrousel speelt automatisch af. Gebruik de pauzeknop om te stoppen.'}
+        </VisuallyHidden>
+
+        <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] border border-white/20 bg-gradient-to-r from-white/30 via-white/0 to-white/30" aria-hidden="true" />
+
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-neutral-light/70 p-spacing-lg">
+          <div className="flex items-center justify-between gap-spacing-sm pb-spacing-md">
+            <p className="text-font-size-small font-semibold uppercase tracking-[0.3em] text-secondary">
+              Social proof
+            </p>
+            <div className="flex items-center gap-spacing-xs text-font-size-small text-neutral-gray-500">
+              <span>
+                {activeIndex + 1} / {totalItems}
+              </span>
+            </div>
+          </div>
+
+          <div
+            className="flex snap-x snap-mandatory overflow-x-hidden"
+            onMouseDown={handlePointerDown}
+            onMouseLeave={handlePointerLeave}
+            onMouseUp={handlePointerUp}
+            onTouchCancel={handlePointerLeave}
+            onTouchEnd={handlePointerUp}
+            onTouchStart={handlePointerDown}
+            ref={trackRef}
+            role="presentation"
+          >
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard
+                key={`${testimonial.author}-${index}`}
+                prefersReducedMotion={prefersReducedMotion}
+                testimonial={testimonial}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-spacing-md flex items-center justify-center gap-spacing-xs">
+          {testimonials.map((testimonial, index) => {
+            const isActive = index === activeIndex
+            return (
+              <button
+                key={`${testimonial.author}-indicator-${index}`}
+                aria-label={`Toon testimonial ${index + 1}`}
+                className={`h-2.5 w-8 rounded-full transition-all duration-300 ${
+                  isActive
+                    ? 'bg-secondary shadow-[0_6px_16px_rgba(56,189,248,0.45)]'
+                    : 'bg-neutral-gray-300 hover:bg-neutral-gray-400'
+                }`}
+                onClick={() => goToIndex(index)}
+                type="button"
+              />
+            )
+          })}
+        </div>
       </div>
     </div>
   )
 }
 
-const InitialsAvatar = ({ initials, className = '' }) => (
-    <div
-        className={`w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-bold flex items-center justify-center ${className}`}
-        aria-hidden="true"
-    >
-        {initials}
-    </div>
-);
-
-const TestimonialCard = ({ testimonial }) => {
-    return (
-        <article className="bg-white border-2 border-neutral-gray-100 rounded-xl p-spacing-xl shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg" aria-label={`Testimonial van ${testimonial.name}`}>
-            <header className="flex items-start justify-between gap-spacing-md mb-spacing-lg">
-                <div className="flex items-center gap-spacing-md">
-                    <InitialsAvatar initials={testimonial.initials} className="w-11 h-11 text-font-size-h5" />
-                    <div>
-                        <p className="text-font-size-body font-extrabold text-neutral-dark leading-tight">{testimonial.name}</p>
-                        <p className="text-font-size-small text-neutral-gray-500">{testimonial.event}</p>
-                    </div>
-                </div>
-                <StarRating rating={testimonial.rating} label={`${testimonial.rating} van 5 sterren`} />
-            </header>
-            <p className="text-font-size-body text-neutral-gray-700 italic mb-spacing-lg">“{testimonial.quote}”</p>
-            <footer className="flex items-center justify-between border-t border-neutral-gray-100 pt-spacing-md text-font-size-small text-neutral-gray-500">
-                <time dateTime={testimonial.dateISO}>{testimonial.date}</time>
-                <span className="flex items-center gap-1 font-semibold text-primary">
-                    <span aria-hidden="true">{testimonial.platform.icon}</span>
-                    {testimonial.platform.label}
-                </span>
-            </footer>
-        </article>
-    );
-};
-
-const StatsSection = () => (
-    <section className="bg-neutral-light border-2 border-primary rounded-xl p-spacing-xl grid grid-cols-2 md:grid-cols-4 gap-spacing-lg" aria-label="Service statistieken">
-        {statsData.map((stat) => (
-            <div key={stat.id} className="relative text-center">
-                <VisuallyHidden>{stat.srLabel}</VisuallyHidden>
-                {stat.highlight ? (
-                    <p className="text-font-size-h4 text-secondary mb-spacing-xs" aria-hidden="true">
-                        {stat.highlight}
-                    </p>
-                ) : null}
-                <p className="text-font-size-h2 font-black text-neutral-dark">{stat.value}</p>
-                <p className="text-font-size-small font-semibold text-neutral-gray-600 uppercase tracking-wide">
-                    {stat.label}
-                </p>
-            </div>
-        ))}
-    </section>
-);
-
-const FeaturedTestimonial = () => (
-    <article className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary to-neutral-dark text-white p-spacing-2xl" aria-label={`Uitgelichte testimonial van ${featuredTestimonial.author}`}>
-        <div className="absolute inset-y-0 right-0 w-64 bg-gradient-to-b from-secondary/30 to-transparent opacity-50 pointer-events-none" aria-hidden="true" />
-        <div className="relative z-10 flex flex-col gap-spacing-xl md:flex-row md:items-start md:justify-between">
-            <div className="md:max-w-2xl">
-                <p className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-spacing-md py-spacing-xs text-font-size-small font-bold text-secondary">
-                    {featuredTestimonial.badge}
-                </p>
-                <p className="mt-spacing-lg text-font-size-h4 font-semibold leading-relaxed italic">
-                    “{featuredTestimonial.quote}”
-                </p>
-                <div className="mt-spacing-xl flex items-center gap-spacing-md">
-                    <InitialsAvatar initials={featuredTestimonial.initials} className="w-12 h-12 text-font-size-h4" />
-                    <div>
-                        <p className="text-font-size-body font-extrabold">{featuredTestimonial.author}</p>
-                        <p className="text-font-size-small text-neutral-gray-100">{featuredTestimonial.event}</p>
-                    </div>
-                </div>
-                <CallToAction
-                    className="mt-spacing-2xl"
-                    eyebrow="Plan uw feest"
-                    title="Ook een onvergetelijk evenement?"
-                    description="Neem vandaag nog contact op en wij zorgen voor muziek, sfeer en begeleiding op maat."
-                    align="center"
-                    primaryButton={{
-                        label: 'Check Beschikbaarheid',
-                        variant: 'secondary',
-                    }}
-                    secondaryButton={{
-                        label: 'Vraag Offerte Aan',
-                        variant: 'outline',
-                    }}
-                />
-            </div>
-            <div className="flex flex-col items-center justify-center gap-spacing-md text-center md:text-right">
-                <StarRating rating={featuredTestimonial.rating} label={`${featuredTestimonial.rating} van 5 sterren`} />
-                <p className="text-font-size-body font-semibold text-secondary">{featuredTestimonial.ratingText}</p>
-                <p className="flex items-center gap-2 rounded-lg bg-white/10 px-spacing-md py-spacing-xs text-font-size-small font-semibold">
-                    <span aria-hidden="true">{featuredTestimonial.platform.icon}</span>
-                    {featuredTestimonial.platform.label}
-                </p>
-            </div>
-        </div>
-    </article>
-);
-
 const Testimonials = () => {
   const { t } = useTranslation()
+  const prefersReducedMotion = usePrefersReducedMotion()
   const testimonialsTranslation = t('testimonials.items', { returnObjects: true })
-  const testimonialsData = Array.isArray(testimonialsTranslation) ? testimonialsTranslation : []
+  const testimonialsData = Array.isArray(testimonialsTranslation)
+    ? testimonialsTranslation
+    : []
+  const resolvedTitle = t('testimonials.title', {
+    defaultValue: 'Wat klanten zeggen',
+  })
+
+  if (testimonialsData.length === 0) {
+    return null
+  }
 
   return (
-    <section className="py-spacing-3xl bg-neutral-gray-100">
+    <section className="bg-neutral-gray-100 py-spacing-4xl">
       <div className="container mx-auto px-spacing-md">
-        <h2 className="text-font-size-h2 text-center text-neutral-dark mb-spacing-2xl font-extrabold">
-          {t('testimonials.title')}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl">
-          {testimonialsData.map((testimonial, index) => (
-            <TestimonialCard key={index} testimonial={testimonial} />
-          ))}
-        </div>
+        <TestimonialsCarousel
+          prefersReducedMotion={prefersReducedMotion}
+          testimonials={testimonialsData}
+          title={resolvedTitle}
+        />
       </div>
     </section>
   )
