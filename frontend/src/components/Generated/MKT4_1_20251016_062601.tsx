@@ -41,37 +41,45 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
+const SuccessMessage = styled.div`
+  margin-top: 1rem;
+  background: #dcfce7;
+  color: #065f46;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+`
+
 const ExitIntentPopup = () => {
-  const [showPopup, setShowPopup] = useState(false);
-  
+  const [showPopup, setShowPopup] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [closing, setClosing] = useState(false)
+
   useEffect(() => {
-    // Check if popup was already shown
-    const hasSeenPopup = localStorage.getItem('djExitPopupShown');
-    if (hasSeenPopup) return;
+    const hasSeenPopup = localStorage.getItem('djExitPopupShown')
+    if (hasSeenPopup) return
 
     const handleMouseLeave = (e) => {
-      // Only trigger when mouse moves to top of window
       if (e.clientY <= 0) {
-        setShowPopup(true);
-        localStorage.setItem('djExitPopupShown', 'true');
+        setShowPopup(true)
+        localStorage.setItem('djExitPopupShown', 'true')
       }
-    };
+    }
 
-    // Mobile trigger after 30 seconds
     const timeoutId = window.setTimeout(() => {
       if (!hasSeenPopup && window.innerWidth <= 768) {
-        setShowPopup(true);
-        localStorage.setItem('djExitPopupShown', 'true');
+        setShowPopup(true)
+        localStorage.setItem('djExitPopupShown', 'true')
       }
-    }, 30000);
+    }, 30000)
 
-    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseleave', handleMouseLeave)
 
     return () => {
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      clearTimeout(timeoutId);
-    };
-  }, []);
+      document.removeEventListener('mouseleave', handleMouseLeave)
+      clearTimeout(timeoutId)
+    }
+  }, [])
 
   const handleClose = useCallback(() => {
     setShowPopup(false);
@@ -107,7 +115,13 @@ const ExitIntentPopup = () => {
         </button>
       </PopupContent>
     </PopupOverlay>
-  );
-};
+  )
+}
 
-export default ExitIntentPopup;
+const HelperText = styled.p`
+  margin: 0.5rem 0 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+`
+
+export default ExitIntentPopup

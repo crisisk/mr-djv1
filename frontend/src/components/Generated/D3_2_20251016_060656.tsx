@@ -1,10 +1,10 @@
 // components/WhatsAppChat.jsx
-import React from 'react';
-import styled from 'styled-components';
-import { WhatsAppIcon } from '../../icons';
+import React, { useCallback } from 'react'
+import styled from 'styled-components'
 
-import { IconBase, mergeClassNames } from '../shared/IconBase';
-import type { IconBaseProps } from '../shared/IconBase';
+import { WhatsAppIcon } from '../../icons'
+import { CONTACT_PHONE_NUMBER, CONTACT_PHONE_NUMBER_WHATSAPP, CONTACT_WHATSAPP_MESSAGE, HAS_WHATSAPP_NUMBER } from '../../config/contact'
+import { trackContactChannelClick } from '../../lib/analytics/events'
 
 const WhatsAppButton = styled.a`
   position: fixed;
@@ -35,48 +35,33 @@ const WhatsAppButton = styled.a`
   }
 `;
 
-const WhatsAppIcon = ({ className, ...props }: IconBaseProps) => (
-  <IconBase
-    className={mergeClassNames('h-8 w-8 text-neutral-light md:h-10 md:w-10', className)}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
-    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z" />
-  </IconBase>
-);
-
 const WhatsAppChat = () => {
-  // Replace with actual business phone number
-  const phoneNumber = '1234567890';
-  const message = 'Hi! I would like to book a DJ.';
-  
-  const handleClick = () => {
-    try {
-      // Track analytics event
-      if (window.gtag) {
-        window.gtag('event', 'whatsapp_click', {
-          'event_category': 'engagement',
-          'event_label': 'whatsapp_chat'
-        });
-      }
-    } catch (error) {
-      console.error('Analytics error:', error);
-    }
-  };
+  const message = encodeURIComponent(CONTACT_WHATSAPP_MESSAGE)
+  const phoneNumber = CONTACT_PHONE_NUMBER_WHATSAPP
+
+  const handleClick = useCallback(() => {
+    trackContactChannelClick({
+      channel: 'whatsapp',
+      origin: 'floating-action',
+      phoneNumber: CONTACT_PHONE_NUMBER,
+    })
+  }, [])
+
+  if (!HAS_WHATSAPP_NUMBER) {
+    return null
+  }
 
   return (
-    <WhatsAppButton 
-      href={`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`}
+    <WhatsAppButton
+      href={`https://wa.me/${phoneNumber}?text=${message}`}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat with us on WhatsApp"
+      aria-label="Chat met Mister DJ via WhatsApp"
       onClick={handleClick}
     >
-      <WhatsAppIcon aria-hidden />
+      <WhatsAppIcon aria-hidden className="h-8 w-8 text-neutral-light md:h-10 md:w-10" />
     </WhatsAppButton>
-  );
-};
+  )
+}
 
-export default WhatsAppChat;
+export default WhatsAppChat

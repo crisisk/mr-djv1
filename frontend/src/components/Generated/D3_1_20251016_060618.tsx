@@ -3,14 +3,16 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { recordBookingCta } from '../../lib/ctaTracking';
 
-const StickyCTAWrapper = styled.div`
+import QuickBookingForm from '../booking/QuickBookingForm'
+
+const StickyCTAWrapper = styled.div<{ $visible: boolean }>`
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-  transform: translateY(${props => props.isVisible ? '0' : '100px'});
+  transform: translateY(${(props) => (props.$visible ? '0' : '120px')});
   transition: transform 0.3s ease-in-out;
-  
+
   @media (max-width: 768px) {
     bottom: 0;
     right: 0;
@@ -19,10 +21,10 @@ const StickyCTAWrapper = styled.div`
     background: rgba(255, 255, 255, 0.95);
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   }
-`;
+`
 
 const BookButton = styled.button`
-  background: #FF4136;
+  background: #ff4136;
   color: white;
   padding: 15px 30px;
   border-radius: 30px;
@@ -30,18 +32,72 @@ const BookButton = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s;
-  
+
   &:hover {
-    background: #E03026;
+    background: #e03026;
   }
 
   @media (max-width: 768px) {
     width: 100%;
   }
-`;
+`
+
+const FormCard = styled.div`
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.2);
+  padding: 1.5rem;
+  width: clamp(280px, 90vw, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`
+
+const FormHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+`
+
+const Title = styled.h3`
+  margin: 0;
+  font-size: 1.25rem;
+  color: #111827;
+`
+
+const CloseButton = styled.button`
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+
+  &:hover {
+    background: rgba(17, 24, 39, 0.05);
+  }
+`
+
+const SuccessBanner = styled.div`
+  background: #dcfce7;
+  color: #065f46;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: inset 0 0 0 1px rgba(6, 95, 70, 0.1);
+  font-size: 0.95rem;
+`
 
 const StickyBookingCTA = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,8 +130,10 @@ const StickyBookingCTA = () => {
       <BookButton onClick={handleBooking}>
         Book a DJ Now
       </BookButton>
-    </StickyCTAWrapper>
-  );
-};
+    )
+  }, [handleCloseForm, handleOpenForm, handleSuccess, isFormOpen, successMessage])
 
-export default StickyBookingCTA;
+  return <StickyCTAWrapper $visible={isVisible}>{ctaContent}</StickyCTAWrapper>
+}
+
+export default StickyBookingCTA
