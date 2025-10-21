@@ -86,6 +86,17 @@ const envValidationSchema = Joi.object({
   }),
   CITY_AUTOMATION_LLM_API_KEY: Joi.string().allow('', null),
   OPENAI_API_KEY: Joi.string().allow('', null),
+  META_GRAPH_API_BASE_URL: Joi.string().uri({ allowRelative: false }).allow('', null),
+  META_IG_BUSINESS_ID: Joi.string().allow('', null),
+  META_IG_ACCESS_TOKEN: Joi.string().allow('', null),
+  META_IG_REELS_CACHE_TTL: Joi.number().integer().min(0).optional(),
+  META_IG_REQUEST_TIMEOUT_MS: Joi.number().integer().min(0).optional(),
+  WHATSAPP_API_BASE_URL: Joi.string().uri({ allowRelative: false }).allow('', null),
+  WHATSAPP_ACCESS_TOKEN: Joi.string().allow('', null),
+  WHATSAPP_PHONE_NUMBER_ID: Joi.string().allow('', null),
+  WHATSAPP_APP_SECRET: Joi.string().allow('', null),
+  WHATSAPP_INTEGRATION_SECRETS: Joi.string().allow('', null),
+  WHATSAPP_REQUEST_TIMEOUT_MS: Joi.number().integer().min(0).optional(),
   CONFIG_DASHBOARD_ENABLED: Joi.string().valid('true', 'false').optional(),
   CONFIG_DASHBOARD_USER: Joi.string().allow('', null),
   CONFIG_DASHBOARD_PASS: Joi.string().allow('', null)
@@ -304,17 +315,25 @@ function withDefault(value, fallback, key, tracker, reason = 'missing') {
 }
 
 function parseNumber(value, fallback, key, tracker) {
+  const hasTracker = tracker && typeof tracker.record === 'function';
+  const resolvedKey = typeof key === 'string' ? key : 'UNKNOWN';
+  const record = (reason) => {
+    if (hasTracker) {
+      tracker.record(resolvedKey, fallback, reason);
+    }
+  };
+
   if (hasValue(value)) {
     const parsed = Number(value);
     if (Number.isFinite(parsed) && parsed > 0) {
       return parsed;
     }
 
-    tracker.record(key, fallback, 'invalid');
+    record('invalid');
     return fallback;
   }
 
-  tracker.record(key, fallback, 'missing');
+  record('missing');
   return fallback;
 }
 
@@ -563,6 +582,51 @@ function buildConfig() {
           DEFAULT_SEVENSA_MAX_ATTEMPTS,
           'SEVENSA_QUEUE_MAX_ATTEMPTS',
           tracker
+        )
+      },
+      instagram: {
+        enabled: Boolean(process.env.META_IG_BUSINESS_ID && process.env.META_IG_ACCESS_TOKEN),
+        graphApiBaseUrl: withDefault(
+          process.env.META_GRAPH_API_BASE_URL,
+          'https://graph.facebook.com/v19.0/',
+          'META_GRAPH_API_BASE_URL',
+          tracker
+        ),
+        igBusinessId: process.env.META_IG_BUSINESS_ID || null,
+        accessToken: process.env.META_IG_ACCESS_TOKEN || null,
+        cacheTtlSeconds: parseOptionalNumber(
+          process.env.META_IG_REELS_CACHE_TTL,
+          300,
+          'META_IG_REELS_CACHE_TTL',
+          tracker,
+          { min: 0 }
+        ),
+        requestTimeoutMs: parseOptionalNumber(
+          process.env.META_IG_REQUEST_TIMEOUT_MS,
+          5000,
+          'META_IG_REQUEST_TIMEOUT_MS',
+          tracker,
+          { min: 0 }
+        )
+      },
+      whatsapp: {
+        enabled: Boolean(process.env.WHATSAPP_PHONE_NUMBER_ID && process.env.WHATSAPP_ACCESS_TOKEN),
+        baseUrl: withDefault(
+          process.env.WHATSAPP_API_BASE_URL,
+          'https://graph.facebook.com/v19.0/',
+          'WHATSAPP_API_BASE_URL',
+          tracker
+        ),
+        phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || null,
+        accessToken: process.env.WHATSAPP_ACCESS_TOKEN || null,
+        appSecret: process.env.WHATSAPP_APP_SECRET || null,
+        integrationSecrets: parseList(process.env.WHATSAPP_INTEGRATION_SECRETS),
+        requestTimeoutMs: parseOptionalNumber(
+          process.env.WHATSAPP_REQUEST_TIMEOUT_MS,
+          5000,
+          'WHATSAPP_REQUEST_TIMEOUT_MS',
+          tracker,
+          { min: 0 }
         )
       },
       hcaptcha: {

@@ -363,10 +363,49 @@ const InstagramReelsSection = ({ feedConfig }: InstagramReelsSectionProps) => {
                 <span>👁️ {reel.views}</span>
               </div>
               <p className={styles.description}>{reel.description}</p>
+              {reel.permalink ? (
+                <a
+                  href={reel.permalink}
+                  className={styles.permalink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Bekijk op Instagram
+                </a>
+              ) : null}
             </div>
           </div>
         ))}
       </div>
+      {!reels.length && !isLoading && !error ? (
+        <div className={styles.emptyState}>Er zijn nog geen reels beschikbaar.</div>
+      ) : null}
+      {hasMore ? (
+        <div className={styles.loadMoreContainer}>
+          <button
+            type="button"
+            className={styles.loadMoreButton}
+            onClick={() => {
+              loadPage(nextCursor).catch((loadError) => {
+                console.error('Failed to load more reels', loadError);
+              });
+            }}
+            disabled={isLoading && currentLoadingKey === (nextCursor ?? START_CURSOR_KEY)}
+          >
+            {isLoading && currentLoadingKey === (nextCursor ?? START_CURSOR_KEY)
+              ? 'Bezig met laden…'
+              : 'Laad meer reels'}
+          </button>
+        </div>
+      ) : null}
+      {error && reels.length ? (
+        <div className={styles.inlineError} role="alert">
+          <span>{error}</span>
+          <button type="button" onClick={() => loadPage(nextCursor, { force: true })}>
+            Opnieuw proberen
+          </button>
+        </div>
+      ) : null}
     </section>
   )
 }
