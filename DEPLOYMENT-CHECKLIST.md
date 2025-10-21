@@ -126,26 +126,19 @@ curl -I https://staging.sevensa.nl/eds/favicon.ico
 
 ---
 
-## Production Release (After Staging Sign-off)
+## Primary Deployment Workflow
 
-### Target Environment
-- URL: https://mr-dj.sevensa.nl/
-- Objective: execute the live deployment once staging validation is complete.
-
-### Build for Production
+### Run the deployment script
 ```bash
-cd /opt/mr-dj/mr-dj-eds-components
-npm run build
+./deploy.sh
 ```
 
-### Deploy Built Files
-```bash
-# Copy dist/ folder to production web server
-# OR deploy via your CI/CD pipeline
-# OR deploy to Netlify/Vercel
-```
+### Automated actions performed by `deploy.sh`
+- **Backend verification** – Installs backend dependencies (`npm install`) and runs the full backend test suite locally before packaging.
+- **Packaging & transfer** – Builds a clean deployment archive (frontend, backend, database, and `docker-compose.yml`) and securely uploads it to the VPS.
+- **Remote Docker release** – Recreates the stack on the VPS by extracting the archive, rebuilding Docker images without cache, running `docker-compose up -d`, executing database migrations, and tailing recent service logs.
 
-### Verify Production Deployment
+### Post-run verification
 - [ ] Visit https://mr-dj.sevensa.nl/
 - [ ] Check favicon appears in browser tab
 - [ ] Inspect page source for meta tags
@@ -153,7 +146,36 @@ npm run build
 - [ ] Check footer social media links
 - [ ] Test "Over Ons" section
 
-### Post-Deployment Testing (Production)
+---
+
+## Appendix A: Manual Fallback Deployment
+
+Use these steps only if `./deploy.sh` is unavailable.
+
+### 1. Build for production
+```bash
+cd /opt/mr-dj/mr-dj-eds-components
+npm run build
+```
+
+### 2. Deploy built files
+```bash
+# Copy the generated dist/ folder to the web server
+# OR deploy via the existing CI/CD pipeline
+# OR publish to Netlify/Vercel if configured
+```
+
+### 3. Recreate services on the VPS (if needed)
+```bash
+cd /opt/mr-dj
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+---
+
+## Post-Deployment Testing
 
 #### SEO Testing (30 minutes after production deployment)
 - [ ] Test with Google Rich Results: https://search.google.com/test/rich-results
@@ -341,9 +363,7 @@ curl -I https://mr-dj.sevensa.nl/favicon.ico
 
 **Deploy Command:**
 ```bash
-cd /opt/mr-dj/mr-dj-eds-components
-npm run build
-# Deploy dist/ folder to production after staging sign-off
+./deploy.sh
 ```
 
 ---
