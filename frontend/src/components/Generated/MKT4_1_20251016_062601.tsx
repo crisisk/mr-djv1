@@ -1,6 +1,7 @@
 // ExitIntentPopup.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { recordBookingCta } from '../../lib/ctaTracking';
 
 const PopupOverlay = styled.div`
   position: fixed;
@@ -72,9 +73,26 @@ const ExitIntentPopup = () => {
     };
   }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setShowPopup(false);
-  };
+  }, []);
+
+  const handleBookNow = useCallback(() => {
+    void recordBookingCta({
+      cta: 'exit-intent-popup',
+      metadata: {
+        surface: 'exit_intent_popup',
+        trigger: 'exit_intent',
+      },
+      navigateTo: '/#contact',
+    }).catch((error) => {
+      if (import.meta.env?.MODE !== 'production') {
+        console.warn('[ExitIntentPopup] Failed to record CTA', error);
+      }
+    });
+
+    handleClose();
+  }, [handleClose]);
 
   return (
     <PopupOverlay show={showPopup} onClick={handleClose}>
@@ -84,12 +102,7 @@ const ExitIntentPopup = () => {
         <p>Don't miss out on your perfect DJ experience!</p>
         <h3>Get 15% OFF your first booking</h3>
         <p>Use code: FIRSTMIX</p>
-        <button 
-          onClick={() => {
-            // Add booking logic here
-            handleClose();
-          }}
-        >
+        <button onClick={handleBookNow}>
           Book Now
         </button>
       </PopupContent>
