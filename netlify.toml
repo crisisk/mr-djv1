@@ -1,20 +1,26 @@
 [build]
-  # Build command - we're using static HTML so just copy files
-  command = "echo 'Building Mr. DJ website...' && ls -la frontend/public"
+  # Build command - install frontend deps and run the Vite production build
+  command = "npm ci --prefix frontend && npm run build --prefix frontend"
 
-  # Publish directory - where the static files are
-  publish = "frontend/public"
+  # Publish directory - where the Vite build outputs production assets
+  publish = "frontend/dist"
 
   # Functions directory (for serverless functions if needed later)
   functions = "backend/functions"
 
 [[build.cache]]
-  # Cache dependencies to speed up subsequent builds
-  path = "node_modules"
+  # Cache the npm download directory so subsequent installs reuse tarballs
+  path = "frontend/.npm"
+
+[[build.cache]]
+  # Cache the built node_modules directory for quicker local Netlify CLI runs
+  path = "frontend/node_modules"
 
 [build.environment]
   # Node version
   NODE_VERSION = "18"
+  # Store the npm cache inside the frontend workspace so Netlify can persist it
+  NPM_CONFIG_CACHE = "frontend/.npm"
 
 # Redirect rules
 [[redirects]]

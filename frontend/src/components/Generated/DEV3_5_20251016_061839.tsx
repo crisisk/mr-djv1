@@ -1,47 +1,82 @@
 // src/components/UserBehaviorTracker.jsx
 import { useEffect } from 'react';
 import posthog from 'posthog-js';
+import { isValidPosthogKey, runtimeConfig } from '../../config/runtimeConfig';
+
+let posthogInitialized = false;
+
+const isBrowser = typeof window !== 'undefined';
 
 const UserBehaviorTracker = () => {
   useEffect(() => {
-    // Initialize PostHog
-    posthog.init('YOUR_POSTHOG_API_KEY', {
-      api_host: 'https://app.posthog.com',
-      loaded: () => {
-        console.log('PostHog initialized');
-      },
-    });
+    if (!isBrowser) {
+      return;
+    }
 
-    // Track page views
-    posthog.capture('$pageview');
+    const { apiKey, apiHost } = runtimeConfig.analytics.posthog;
 
-    const handleClick = (e) => {
-      const target = e.target;
+    if (!isValidPosthogKey(apiKey)) {
+      console.warn('PostHog initialisatie overgeslagen: ontbrekende of ongeldige API-sleutel.');
+      return;
+    }
+
+    if (posthogInitialized) {
+      console.debug('PostHog is al geïnitialiseerd; tweede initialisatie wordt voorkomen.');
+      return;
+    }
+
+    try {
+      posthog.init(apiKey, {
+        api_host: apiHost,
+        loaded: () => {
+          console.log('PostHog initialized');
+        },
+      });
+
+      posthog.capture('$pageview');
+      posthogInitialized = true;
+    } catch (error) {
+      console.error('PostHog kon niet worden geïnitialiseerd.', error);
+      return;
+    }
+
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+
+      if (!target) {
+        return;
+      }
+
       if (target.tagName === 'A' || target.tagName === 'BUTTON') {
         posthog.capture('click', { element: target.tagName, text: target.innerText });
       }
     };
 
-    const handleSubmit = (e) => {
-      const form = e.target;
+    const handleSubmit = (event: SubmitEvent) => {
+      const form = event.target as HTMLFormElement | null;
+
+      if (!form) {
+        return;
+      }
+
       posthog.capture('form_submit', { formId: form.id });
     };
 
     const handleScroll = () => {
-      const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+      if (scrollableHeight <= 0) {
+        return;
+      }
+
+      const scrollPercentage = (window.scrollY / scrollableHeight) * 100;
       posthog.capture('scroll', { scrollPercentage: Math.round(scrollPercentage) });
     };
 
-    // Track clicks
     document.addEventListener('click', handleClick);
-
-    // Track form submissions
     document.addEventListener('submit', handleSubmit);
-
-    // Track scroll events
     document.addEventListener('scroll', handleScroll);
 
-    // Cleanup on unmount
     return () => {
       document.removeEventListener('click', handleClick);
       document.removeEventListener('submit', handleSubmit);

@@ -21,6 +21,8 @@ VPS_HOST="147.93.57.40"
 VPS_USER="root"
 DEPLOY_DIR="/opt/mr-dj"
 DOMAIN="staging.sevensa.nl"
+SITE_PATH="/eds"
+SITE_URL="https://${DOMAIN}${SITE_PATH}"
 PACKAGE_NAME="mr-dj-deploy.tar.gz"
 
 command -v ssh >/dev/null 2>&1 || { echo "❌ ssh command not found"; exit 1; }
@@ -32,6 +34,14 @@ echo "📦 Installing backend dependencies (if needed)..."
 npm install --no-audit --progress=false
 echo "🧪 Executing backend test suite..."
 npm test -- --runInBand
+popd >/dev/null
+
+echo "🧱 Building production frontend bundle..."
+pushd "$ROOT_DIR/frontend" >/dev/null
+echo "📦 Installing frontend dependencies via npm ci..."
+npm ci --no-audit --progress=false
+echo "🏗️ Running frontend build..."
+npm run build
 popd >/dev/null
 
 echo "🧹 Preparing clean deployment artifact..."
@@ -56,14 +66,43 @@ scp -o StrictHostKeyChecking=no \
     "$ROOT_DIR/$PACKAGE_NAME" ${VPS_USER}@${VPS_HOST}:/tmp/
 
 echo "🔧 Deploying on VPS..."
+
+echo "🔍 Detecting Docker Compose availability on VPS..."
+COMPOSE_CMD=$(ssh -o StrictHostKeyChecking=no \
+    ${VPS_USER}@${VPS_HOST} \
+    "if command -v docker-compose >/dev/null 2>&1; then echo docker-compose; elif docker compose version >/dev/null 2>&1; then echo 'docker compose'; fi")
+
+if [[ -z "${COMPOSE_CMD}" ]]; then
+    echo "❌ Neither docker-compose nor the Docker Compose plugin is available on the VPS."
+    echo "   Please install Docker Compose before running the deployment script again."
+    exit 1
+fi
+
+echo "ℹ️ Using '$COMPOSE_CMD' on the VPS."
+
 ssh -o StrictHostKeyChecking=no \
-    ${VPS_USER}@${VPS_HOST} << 'ENDSSH'
+    ${VPS_USER}@${VPS_HOST} "COMPOSE_CMD='${COMPOSE_CMD}' bash -s" <<'ENDSSH'
+
+set -euo pipefail
+IFS=$'\n\t'
 
 # Check if the 'web' network exists and create it as external if it doesn't
-if ! docker network ls | grep -q " web "; then
+if ! docker network inspect web >/dev/null 2>&1; then
     echo "Creating external 'web' network for Traefik integration..."
-    docker network create web
+    # Use an attachable bridge so Traefik and compose-managed services can share the network.
+    if ! docker network create --driver bridge --attachable web; then
+        echo "❌ Failed to create 'web' network. Aborting deployment." >&2
+        exit 1
+    fi
 fi
+
+# Ensure Compose command is available
+if [[ -z "${COMPOSE_CMD:-}" ]]; then
+    echo "❌ COMPOSE_CMD is not set. Aborting deployment."
+    exit 1
+fi
+
+export COMPOSE_CMD
 
 # Stop existing containers for this project (using the new container names)
 DEPLOY_DIR="/opt/mr-dj"
@@ -99,7 +138,7 @@ fi
 "${DOCKER_COMPOSE[@]}" down || true
 
 # Extract new version
-tar -xzf /tmp/mr-dj-deploy.tar.gz
+tar -xzf /tmp/mr-dj-deploy.tar.gz || { echo "❌ Failed to extract deployment archive"; exit 1; }
 rm /tmp/mr-dj-deploy.tar.gz
 
 # Create letsencrypt directory (if Traefik is managed by this compose file, which it is not anymore)
@@ -134,7 +173,7 @@ echo "Recent logs for eds-frontend:"
 "${DOCKER_COMPOSE[@]}" logs eds-frontend --tail=50
 
 echo "✅ Deployment complete!"
-echo "🌐 Website should be available at: https://staging.sevensa.nl/eds"
+echo "🌐 Website should be available at: ${SITE_URL}"
 echo ""
 echo "Useful commands (inside /opt/mr-dj on VPS):"
 echo "  docker compose logs -f eds-frontend # View frontend logs"
@@ -145,7 +184,7 @@ echo "  docker compose down                 # Stop all services"
 ENDSSH
 
 echo "✅ Deployment script completed!"
-echo "🌐 Check your website at: https://staging.sevensa.nl/eds"
+echo "🌐 Check your website at: ${SITE_URL}"
 echo "📊 Post-deploy: Import docs/observability/grafana.json into Grafana via Dashboards → New → Import."
 
 # Cleanup local tar

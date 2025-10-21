@@ -13,6 +13,14 @@ const Header = ({ transparent = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const handleSkipToContent = (event) => {
+    event.preventDefault();
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.focus();
+    }
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -146,8 +154,9 @@ const Header = ({ transparent = false }) => {
             </div>
           </nav>
         )}
-      </div>
-    </header>
+        </div>
+      </header>
+    </>
   );
 };
 

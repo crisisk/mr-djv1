@@ -41,8 +41,8 @@ Deze checklist beschrijft **alle stappen** om de Mister DJ website productieklaa
 
 ## 6. Netlify (statische hosting / CMS)
 - [ ] Meld je aan bij Netlify en importeer de GitHub-repository (zie [`NETLIFY_DEPLOYMENT.md`](../NETLIFY_DEPLOYMENT.md))
-- [ ] Controleer dat de build command `echo 'Building Mr. DJ website...' && ls -la frontend/public` is en de publish map `frontend/public`
-- [ ] Activeer Netlify Identity en Git Gateway en nodig de beheerders uit
+- [ ] Controleer dat de build command `npm ci --prefix frontend && npm run build --prefix frontend` is en de publish map `frontend/dist`
+- [ ] Bevestig dat de caching-paden (`frontend/.npm` en `frontend/node_modules`) in `netlify.toml` blijven staan voor snellere builds
 - [ ] Koppel het gewenste (sub)domein aan Netlify en wacht op SSL-activatie
 
 ## 7. Post-deployment validatie

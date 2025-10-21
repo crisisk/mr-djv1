@@ -53,7 +53,7 @@
 **Local Changes:**
 - Changed domain from `staging.sevensa.nl` to `mr-dj.sevensa.nl`
 - Simplified Traefik labels (removed `/eds` path prefix)
-- Updated CORS_ORIGIN to new domain
+- Updated CORS_ORIGIN_LIST to new domain
 
 **Remote Changes:**
 - Uses `staging.sevensa.nl` domain

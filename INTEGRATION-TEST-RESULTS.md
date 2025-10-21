@@ -116,7 +116,8 @@ mr-dj-postgres       Up (healthy)            5432/tcp
 ### Environment Variables
 - `DATABASE_URL`: Configured correctly
 - `JWT_SECRET`: Configured (not yet in use)
-- `CORS_ORIGIN`: Set to `https://mr-dj.sevensa.nl`
+- `CORS_ORIGIN_LIST`: Set to `https://mr-dj.sevensa.nl`
+- `CORS_PUBLIC_ORIGINS`: Uses Netlify defaults for read-only requests
 - `PORT`: 3000
 
 ### Database Schema Updates
