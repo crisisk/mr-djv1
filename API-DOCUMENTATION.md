@@ -402,7 +402,13 @@ DATABASE_URL=postgresql://mrdj_user:mrdj_secure_password_2025@mr-dj-postgres:543
 
 # Security
 JWT_SECRET=mrdj_jwt_secret_key_2025_very_secure
-CORS_ORIGIN=https://mr-dj.sevensa.nl
+CORS_ORIGIN_LIST=https://mr-dj.sevensa.nl
+CORS_PUBLIC_ORIGINS=https://*.netlify.app,https://app.netlify.com
+CSP_DIRECTIVES="connect-src 'self' https://mr-dj.sevensa.nl"
+REFERRER_POLICY=strict-origin-when-cross-origin
+HSTS_MAX_AGE=15552000
+HSTS_INCLUDE_SUBDOMAINS=true
+HSTS_PRELOAD=false
 ```
 
 ### Frontend Configuration
@@ -492,7 +498,7 @@ docker exec mr-dj-postgres psql -U mrdj_user -d mrdj_db \
    - Test connection: `docker exec mr-dj-backend node -e "const pg = require('pg'); const client = new pg.Client({connectionString: process.env.DATABASE_URL}); client.connect().then(() => console.log('Connected')).catch(err => console.error(err));"`
 
 3. **CORS Errors**
-   - Verify CORS_ORIGIN environment variable matches frontend domain
+   - Verify `CORS_ORIGIN_LIST` includes every credentialed frontend domain and that `CORS_PUBLIC_ORIGINS` is set for read-only endpoints
    - Check browser console for CORS-specific error messages
 
 4. **Validation Errors Not Showing**

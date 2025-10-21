@@ -1,8 +1,7 @@
 // ExitIntentPopup.jsx
-import React, { useEffect, useMemo, useState } from 'react'
-import styled from 'styled-components'
-
-import QuickBookingForm from '../booking/QuickBookingForm'
+import React, { useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { recordBookingCta } from '../../lib/ctaTracking';
 
 const PopupOverlay = styled.div`
   position: fixed;
@@ -82,32 +81,26 @@ const ExitIntentPopup = () => {
     }
   }, [])
 
-  const handleClose = () => {
-    setShowPopup(false)
-    setClosing(false)
-    setSuccessMessage(null)
-  }
+  const handleClose = useCallback(() => {
+    setShowPopup(false);
+  }, []);
 
-  const handleSuccess = (response: { message?: string }) => {
-    setSuccessMessage(response?.message ?? 'Bedankt! We nemen snel contact op.')
-    setClosing(true)
+  const handleBookNow = useCallback(() => {
+    void recordBookingCta({
+      cta: 'exit-intent-popup',
+      metadata: {
+        surface: 'exit_intent_popup',
+        trigger: 'exit_intent',
+      },
+      navigateTo: '/#contact',
+    }).catch((error) => {
+      if (import.meta.env?.MODE !== 'production') {
+        console.warn('[ExitIntentPopup] Failed to record CTA', error);
+      }
+    });
 
-    window.setTimeout(() => {
-      setShowPopup(false)
-      setClosing(false)
-      setSuccessMessage(null)
-    }, 2000)
-  }
-
-  const content = useMemo(() => {
-    if (successMessage) {
-      return <SuccessMessage role="status">{successMessage}</SuccessMessage>
-    }
-
-    return (
-      <QuickBookingForm origin="exit-intent" onSuccess={handleSuccess} onCancel={handleClose} />
-    )
-  }, [handleClose, handleSuccess, successMessage])
+    handleClose();
+  }, [handleClose]);
 
   return (
     <PopupOverlay show={showPopup} onClick={handleClose}>
@@ -117,8 +110,9 @@ const ExitIntentPopup = () => {
         <p>Don't miss out on your perfect DJ experience!</p>
         <h3>Get 15% OFF your first booking</h3>
         <p>Use code: FIRSTMIX</p>
-        {content}
-        {closing ? <HelperText role="status">We verwerken je aanvraag…</HelperText> : null}
+        <button onClick={handleBookNow}>
+          Book Now
+        </button>
       </PopupContent>
     </PopupOverlay>
   )

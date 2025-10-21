@@ -13,8 +13,8 @@
 Netlify detecteert automatisch de `netlify.toml` configuratie!
 
 **Verify deze settings:**
-- **Build command:** `echo 'Building Mr. DJ website...' && ls -la frontend/public`
-- **Publish directory:** `frontend/public`
+- **Build command:** `npm ci --prefix frontend && npm run build --prefix frontend`
+- **Publish directory:** `frontend/dist`
 - **Branch:** `main`
 
 Klik "Deploy site"
@@ -25,38 +25,12 @@ Netlify bouwt en deploy automatisch!
 Je krijgt een URL zoals: `https://mr-dj-abc123.netlify.app`
 
 ### Stap 3b: Snellere vervolgbuilds met caching
-- De `netlify.toml` cachet nu automatisch de `node_modules` directory.
+- De `netlify.toml` cachet nu standaard `frontend/.npm` (npm package tarballs) en `frontend/node_modules`.
 - Eerste build: blijft ~1-2 minuten (download + caching van dependencies).
-- Vervolgbuilds: besparen gemiddeld 20-30 seconden omdat npm install wordt overgeslagen.
-- Resultaat: snellere previews en minder build-minuten verbruik.
+- Vervolgbuilds: npm kan direct uit de cache installeren en hoeft alleen gewijzigde packages binnen te halen.
+- Resultaat: snellere previews, minder build-minuten en sneller lokaal testen via de Netlify CLI.
 
-### Stap 4: Enable Netlify Identity
-1. Ga naar Site settings → Identity
-2. Klik "Enable Identity"
-3. Scroll naar "Registration preferences"
-4. Selecteer "Invite only" (voor security)
-5. Klik "Save"
-
-### Stap 5: Enable Git Gateway
-1. Blijf in Identity settings
-2. Scroll naar "Services" → "Git Gateway"
-3. Klik "Enable Git Gateway"
-4. Klik "Generate access token" (Netlify doet dit automatisch)
-5. Klaar!
-
-### Stap 6: Invite Bart
-1. Ga naar Identity tab
-2. Klik "Invite users"
-3. Vul Bart's email in
-4. Klik "Send"
-5. Bart krijgt email met invite link
-
-### Stap 7: Bart's First Login
-1. Bart klikt op link in email
-2. Bart maakt wachtwoord aan
-3. Bart gaat naar: `https://jouw-site.netlify.app/admin`
-4. Bart logt in met email + wachtwoord
-5. Bart kan nu content editten! 🎉
+> ℹ️ **Geen CMS/Identity nodig:** Deze site wordt als statische Vite-build geleverd. Netlify Identity en Git Gateway hoeven niet geactiveerd te worden.
 
 ---
 
@@ -104,17 +78,11 @@ Je krijgt een URL zoals: `https://mr-dj-abc123.netlify.app`
 
 ## 🔧 Troubleshooting
 
-### CMS Login Werkt Niet?
-1. Check of Identity is enabled
-2. Check of Git Gateway is enabled
-3. Check of Bart is invited
-4. Check spam folder voor invite email
-
 ### Content Updates Niet Zichtbaar?
-1. Check of Bart op "Publish" heeft geklikt (niet alleen "Save")
-2. Wait 1-2 minuten voor rebuild
-3. Hard refresh browser (Ctrl+Shift+R)
-4. Check Netlify deploy log
+1. Controleer of de laatste commit met content-wijzigingen naar `main` is gepusht
+2. Wacht 1-2 minuten voor de Netlify rebuild
+3. Doe een harde refresh in de browser (Ctrl+Shift+R)
+4. Bekijk de Netlify deploy log op build-fouten
 
 ### Build Fails?
 1. Check Netlify deploy log
@@ -131,7 +99,7 @@ Je krijgt een URL zoals: `https://mr-dj-abc123.netlify.app`
 - ✅ Unlimited sites
 - ✅ HTTPS/SSL included
 - ✅ CDN included
-- ✅ Identity: 1,000 users
+- ✅ Identity (optioneel): 1,000 users (niet nodig voor deze site)
 
 **Genoeg voor Mr. DJ!** 🎉
 
@@ -149,8 +117,7 @@ Alleen betalen als:
 ✅ **Blazing Fast:** CDN worldwide  
 ✅ **Auto HTTPS:** SSL certificates included  
 ✅ **Auto Deploy:** Push to GitHub → Live in 2 min  
-✅ **CMS Included:** Netlify Identity + Git Gateway  
-✅ **Rollback:** Easy rollback to previous version  
+✅ **Rollback:** Easy rollback to previous version
 ✅ **Preview:** Deploy previews for every PR  
 ✅ **Forms:** Netlify Forms included (100/mnd free)
 

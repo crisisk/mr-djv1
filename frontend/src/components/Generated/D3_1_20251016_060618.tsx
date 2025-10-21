@@ -1,6 +1,7 @@
 // components/StickyBookingCTA.jsx
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import styled from 'styled-components'
+import React, { useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { recordBookingCta } from '../../lib/ctaTracking';
 
 import QuickBookingForm from '../booking/QuickBookingForm'
 
@@ -100,51 +101,34 @@ const StickyBookingCTA = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const shouldShow = window.scrollY > 300
-      setIsVisible(shouldShow)
-    }
+      // Show CTA after scrolling 300px
+      const shouldShow = window.scrollY > 300;
+      setIsVisible(shouldShow);
+    };
 
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-  const handleOpenForm = useCallback(() => {
-    setSuccessMessage(null)
-    setIsFormOpen(true)
-  }, [])
+  const handleBooking = useCallback(() => {
+    void recordBookingCta({
+      cta: 'sticky-booking-cta',
+      metadata: {
+        surface: 'sticky_booking_cta',
+        trigger: 'scroll_depth',
+      },
+      navigateTo: '/#contact',
+    }).catch((error) => {
+      if (import.meta.env?.MODE !== 'production') {
+        console.warn('[StickyBookingCTA] Failed to record CTA', error);
+      }
+    });
+  }, []);
 
-  const handleCloseForm = useCallback(() => {
-    setIsFormOpen(false)
-  }, [])
-
-  const handleSuccess = useCallback((response: { message?: string }) => {
-    setSuccessMessage(response?.message ?? 'Bedankt! We nemen binnen 24 uur contact op.')
-    setIsFormOpen(false)
-  }, [])
-
-  const ctaContent = useMemo(() => {
-    if (successMessage) {
-      return <SuccessBanner role="status">{successMessage}</SuccessBanner>
-    }
-
-    if (isFormOpen) {
-      return (
-        <FormCard>
-          <FormHeader>
-            <Title>Plan je DJ</Title>
-            <CloseButton type="button" aria-label="Sluit formulier" onClick={handleCloseForm}>
-              &times;
-            </CloseButton>
-          </FormHeader>
-          <QuickBookingForm origin="sticky-cta" onSuccess={handleSuccess} onCancel={handleCloseForm} autoFocus />
-        </FormCard>
-      )
-    }
-
-    return (
-      <BookButton type="button" onClick={handleOpenForm}>
-        Boek direct een DJ
+  return (
+    <StickyCTAWrapper isVisible={isVisible}>
+      <BookButton onClick={handleBooking}>
+        Book a DJ Now
       </BookButton>
     )
   }, [handleCloseForm, handleOpenForm, handleSuccess, isFormOpen, successMessage])
