@@ -1,10 +1,14 @@
 // components/WhatsAppChat.jsx
 import React from 'react';
 import styled from 'styled-components';
-import { WhatsAppIcon } from '../../icons';
+import { getWhatsAppConfig, createWhatsAppClickHandler } from '../../../../config/whatsappConfig.js';
 
 import { IconBase, mergeClassNames } from '../shared/IconBase';
 import type { IconBaseProps } from '../shared/IconBase';
+import type { WhatsAppConfig } from '../../../../config/whatsappConfig';
+
+const FALLBACK_CONTACT_PATH = '/contact';
+const logger = console;
 
 const WhatsAppButton = styled.a`
   position: fixed;
@@ -47,32 +51,55 @@ const WhatsAppIcon = ({ className, ...props }: IconBaseProps) => (
   </IconBase>
 );
 
-const WhatsAppChat = () => {
-  // Replace with actual business phone number
-  const phoneNumber = '1234567890';
-  const message = 'Hi! I would like to book a DJ.';
-  
-  const handleClick = () => {
-    try {
-      // Track analytics event
-      if (window.gtag) {
-        window.gtag('event', 'whatsapp_click', {
-          'event_category': 'engagement',
-          'event_label': 'whatsapp_chat'
-        });
-      }
-    } catch (error) {
-      console.error('Analytics error:', error);
-    }
+const trackWhatsAppInteraction = async (config: WhatsAppConfig) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const payload = {
+    event: 'conversion',
+    conversion_type: 'whatsapp_click',
+    channel: 'whatsapp',
+    timestamp: new Date().toISOString(),
+    phone_mask: config.phoneNumber.slice(-4),
   };
 
+  if (Array.isArray(window.dataLayer)) {
+    window.dataLayer.push(payload);
+  }
+
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'whatsapp_click', {
+      event_category: 'engagement',
+      event_label: 'whatsapp_chat',
+    });
+  }
+};
+
+const WhatsAppChat = () => {
+  const config = getWhatsAppConfig({ logger });
+
+  const handleClick = createWhatsAppClickHandler({
+    config,
+    fallbackUrl: FALLBACK_CONTACT_PATH,
+    track: trackWhatsAppInteraction,
+    logger,
+    openWindow: true,
+  });
+
+  const href = config.isValid && config.whatsappUrl ? config.whatsappUrl : FALLBACK_CONTACT_PATH;
+  const target = config.isValid ? '_blank' : undefined;
+  const rel = config.isValid ? 'noopener noreferrer' : undefined;
+
   return (
-    <WhatsAppButton 
-      href={`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Chat with us on WhatsApp"
-      onClick={handleClick}
+    <WhatsAppButton
+      href={href}
+      target={target}
+      rel={rel}
+      aria-label={config.isValid ? 'Chat with us on WhatsApp' : 'Open contact form'}
+      onClick={(event) => {
+        void handleClick(event);
+      }}
     >
       <WhatsAppIcon aria-hidden />
     </WhatsAppButton>
