@@ -86,6 +86,17 @@ const envValidationSchema = Joi.object({
   }),
   CITY_AUTOMATION_LLM_API_KEY: Joi.string().allow('', null),
   OPENAI_API_KEY: Joi.string().allow('', null),
+  META_GRAPH_API_BASE_URL: Joi.string().uri({ allowRelative: false }).allow('', null),
+  META_IG_BUSINESS_ID: Joi.string().allow('', null),
+  META_IG_ACCESS_TOKEN: Joi.string().allow('', null),
+  META_IG_REELS_CACHE_TTL: Joi.number().integer().min(0).optional(),
+  META_IG_REQUEST_TIMEOUT_MS: Joi.number().integer().min(0).optional(),
+  WHATSAPP_API_BASE_URL: Joi.string().uri({ allowRelative: false }).allow('', null),
+  WHATSAPP_ACCESS_TOKEN: Joi.string().allow('', null),
+  WHATSAPP_PHONE_NUMBER_ID: Joi.string().allow('', null),
+  WHATSAPP_APP_SECRET: Joi.string().allow('', null),
+  WHATSAPP_INTEGRATION_SECRETS: Joi.string().allow('', null),
+  WHATSAPP_REQUEST_TIMEOUT_MS: Joi.number().integer().min(0).optional(),
   CONFIG_DASHBOARD_ENABLED: Joi.string().valid('true', 'false').optional(),
   CONFIG_DASHBOARD_USER: Joi.string().allow('', null),
   CONFIG_DASHBOARD_PASS: Joi.string().allow('', null)
@@ -146,6 +157,15 @@ const DEFAULT_RENTGUY_TIMEOUT_MS = 5000;
 const DEFAULT_SEVENSA_RETRY_DELAY_MS = 15000;
 const DEFAULT_SEVENSA_MAX_ATTEMPTS = 5;
 const DEFAULT_ALERT_THROTTLE_MS = 2 * 60 * 1000;
+const DEFAULT_PUBLIC_CORS_ORIGINS = [
+  'https://*.netlify.app',
+  'https://*.netlify.com',
+  'https://netlify.app',
+  'https://app.netlify.com',
+  'https://api.netlify.com'
+];
+const DEFAULT_REFERRER_POLICY = 'strict-origin-when-cross-origin';
+const DEFAULT_HSTS_MAX_AGE = 60 * 60 * 24 * 180; // 180 days
 const DEFAULT_ALERT_QUEUE_THRESHOLDS = {
   warningBacklog: 25,
   criticalBacklog: 75,
@@ -168,7 +188,7 @@ const DEFAULT_SECTION_CONFIG = [
       'PORT',
       'SERVICE_NAME',
       'LOG_FORMAT',
-      'CORS_ORIGIN',
+      'CORS_PUBLIC_ORIGINS',
       'RATE_LIMIT_WINDOW_MS',
       'RATE_LIMIT_MAX',
       'DATABASE_URL',
@@ -197,7 +217,18 @@ const DEFAULT_SECTION_CONFIG = [
     id: 'security',
     label: 'Beveiliging',
     description: 'Instellingen voor hCaptcha-validatie van formulieren en spam-preventie.',
-    keys: ['HCAPTCHA_SITE_KEY', 'HCAPTCHA_SECRET_KEY', 'HCAPTCHA_VERIFY_URL']
+    keys: [
+      'HCAPTCHA_SITE_KEY',
+      'HCAPTCHA_SECRET_KEY',
+      'HCAPTCHA_VERIFY_URL',
+      'CORS_ORIGIN',
+      'CORS_ORIGIN_LIST',
+      'CSP_DIRECTIVES',
+      'REFERRER_POLICY',
+      'HSTS_MAX_AGE',
+      'HSTS_INCLUDE_SUBDOMAINS',
+      'HSTS_PRELOAD'
+    ]
   },
   {
     id: 'rentguy',
@@ -284,18 +315,45 @@ function withDefault(value, fallback, key, tracker, reason = 'missing') {
 }
 
 function parseNumber(value, fallback, key, tracker) {
+  const hasTracker = tracker && typeof tracker.record === 'function';
+  const resolvedKey = typeof key === 'string' ? key : 'UNKNOWN';
+  const record = (reason) => {
+    if (hasTracker) {
+      tracker.record(resolvedKey, fallback, reason);
+    }
+  };
+
   if (hasValue(value)) {
     const parsed = Number(value);
     if (Number.isFinite(parsed) && parsed > 0) {
       return parsed;
     }
 
-    tracker.record(key, fallback, 'invalid');
+    record('invalid');
     return fallback;
   }
 
-  tracker.record(key, fallback, 'missing');
+  record('missing');
   return fallback;
+}
+
+function parseBoolean(value, fallback) {
+  if (value === undefined || value === null || value === '') {
+    return fallback;
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.toLowerCase();
+    if (normalized === 'true') {
+      return true;
+    }
+
+    if (normalized === 'false') {
+      return false;
+    }
+  }
+
+  return Boolean(value);
 }
 
 function parseList(value) {
@@ -307,6 +365,68 @@ function parseList(value) {
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function parseCredentialOrigins(value) {
+  return parseList(value).filter((entry) => entry && entry !== '*');
+}
+
+function parsePublicOrigins(value) {
+  const entries = parseList(value);
+
+  if (entries.some((entry) => entry === '*')) {
+    return '*';
+  }
+
+  return entries.filter(Boolean);
+}
+
+function buildCorsConfig() {
+  const credentialOrigins = parseCredentialOrigins(
+    process.env.CORS_ORIGIN_LIST || process.env.CORS_ORIGIN
+  );
+
+  const publicOriginsRaw = parsePublicOrigins(process.env.CORS_PUBLIC_ORIGINS);
+  const publicOrigins =
+    publicOriginsRaw === '*'
+      ? '*'
+      : publicOriginsRaw.length
+        ? publicOriginsRaw
+        : DEFAULT_PUBLIC_CORS_ORIGINS;
+
+  const origin = credentialOrigins.length ? credentialOrigins : publicOrigins;
+  const credentials = credentialOrigins.length > 0;
+  const methods = credentials
+    ? ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+    : ['GET', 'HEAD', 'OPTIONS'];
+
+  return {
+    origin,
+    credentials,
+    methods,
+    allowCredentialsOrigins: credentialOrigins,
+    publicOrigins
+  };
+}
+
+function parseCspDirectives(value) {
+  if (!value) {
+    return {};
+  }
+
+  return value
+    .split(';')
+    .map((directive) => directive.trim())
+    .filter(Boolean)
+    .reduce((acc, directive) => {
+      const [name, ...sources] = directive.split(/\s+/);
+      if (!name) {
+        return acc;
+      }
+
+      acc[name] = sources.length ? sources : ["'none'"];
+      return acc;
+    }, {});
 }
 
 function parseKeyValueMap(value) {
@@ -462,6 +582,51 @@ function buildConfig() {
           DEFAULT_SEVENSA_MAX_ATTEMPTS,
           'SEVENSA_QUEUE_MAX_ATTEMPTS',
           tracker
+        )
+      },
+      instagram: {
+        enabled: Boolean(process.env.META_IG_BUSINESS_ID && process.env.META_IG_ACCESS_TOKEN),
+        graphApiBaseUrl: withDefault(
+          process.env.META_GRAPH_API_BASE_URL,
+          'https://graph.facebook.com/v19.0/',
+          'META_GRAPH_API_BASE_URL',
+          tracker
+        ),
+        igBusinessId: process.env.META_IG_BUSINESS_ID || null,
+        accessToken: process.env.META_IG_ACCESS_TOKEN || null,
+        cacheTtlSeconds: parseOptionalNumber(
+          process.env.META_IG_REELS_CACHE_TTL,
+          300,
+          'META_IG_REELS_CACHE_TTL',
+          tracker,
+          { min: 0 }
+        ),
+        requestTimeoutMs: parseOptionalNumber(
+          process.env.META_IG_REQUEST_TIMEOUT_MS,
+          5000,
+          'META_IG_REQUEST_TIMEOUT_MS',
+          tracker,
+          { min: 0 }
+        )
+      },
+      whatsapp: {
+        enabled: Boolean(process.env.WHATSAPP_PHONE_NUMBER_ID && process.env.WHATSAPP_ACCESS_TOKEN),
+        baseUrl: withDefault(
+          process.env.WHATSAPP_API_BASE_URL,
+          'https://graph.facebook.com/v19.0/',
+          'WHATSAPP_API_BASE_URL',
+          tracker
+        ),
+        phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || null,
+        accessToken: process.env.WHATSAPP_ACCESS_TOKEN || null,
+        appSecret: process.env.WHATSAPP_APP_SECRET || null,
+        integrationSecrets: parseList(process.env.WHATSAPP_INTEGRATION_SECRETS),
+        requestTimeoutMs: parseOptionalNumber(
+          process.env.WHATSAPP_REQUEST_TIMEOUT_MS,
+          5000,
+          'WHATSAPP_REQUEST_TIMEOUT_MS',
+          tracker,
+          { min: 0 }
         )
       },
       hcaptcha: {

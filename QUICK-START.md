@@ -122,7 +122,10 @@ docker exec mr-dj-eds-frontend curl -s http://localhost/api/health
 - `PORT=3000`
 - `DATABASE_URL=postgresql://mrdj_user:password@mr-dj-postgres:5432/mrdj_db`
 - `JWT_SECRET=...`
-- `CORS_ORIGIN=https://mr-dj.sevensa.nl`
+- `CORS_ORIGIN_LIST=https://mr-dj.sevensa.nl`
+- `CORS_PUBLIC_ORIGINS=https://*.netlify.app`
+- `CSP_DIRECTIVES="connect-src 'self' https://mr-dj.sevensa.nl"`
+- `REFERRER_POLICY=strict-origin-when-cross-origin`
 
 > ℹ️ **Runtime validation** – The backend now validates critical environment variables (`DATABASE_URL`, RentGuy/Sevensa API keys, dashboard credentials, etc.) on startup and during `config.reload()`. Missing keys abort the boot process with a descriptive error, while optional values that fall back to defaults are emitted as JSON warnings (e.g. `PORT` → `3000`, rate-limit windows, hCaptcha verify URL). Override any default by setting the corresponding variable in `.env`, `managed.env`, or via the configuration dashboard before reloading the service.
 
@@ -150,8 +153,8 @@ docker exec mr-dj-backend node -e "const pg=require('pg'); const c=new pg.Client
 ```
 
 ### CORS error in browser
-- Verify request is coming from `https://mr-dj.sevensa.nl`
-- Check CORS_ORIGIN environment variable in backend
+- Verify the request originates from an allowed domain in `CORS_ORIGIN_LIST`
+- Confirm public read-only endpoints are covered by `CORS_PUBLIC_ORIGINS`
 
 ## Quick Reference
 

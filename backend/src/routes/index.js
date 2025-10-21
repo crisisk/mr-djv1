@@ -31,7 +31,12 @@ router.get('/', async (_req, res, next) => {
       integrations: {
         rentGuy: '/integrations/rentguy/status',
         sevensa: '/integrations/sevensa/status',
-        crmExport: '/integrations/crm/export'
+        crmExport: '/integrations/crm/export',
+        instagramReels: '/integrations/instagram/reels',
+        whatsapp: {
+          bookingConfirmation: '/integrations/whatsapp/booking-confirmation',
+          customMessage: '/integrations/whatsapp/custom-message'
+        }
       },
       metrics: '/metrics/queues',
       personalization: {

@@ -1,4 +1,8 @@
 const http = require('http');
+const { buildRequiredEnv } = require('../testUtils/env');
+
+process.env = { ...process.env, ...buildRequiredEnv() };
+
 const app = require('../app');
 
 function startTestServer() {
@@ -14,8 +18,8 @@ function startTestServer() {
   });
 }
 
-async function request(baseUrl, path = '/') {
-  const response = await fetch(new URL(path, baseUrl));
+async function request(baseUrl, path = '/', options = {}) {
+  const response = await fetch(new URL(path, baseUrl), options);
   const bodyText = await response.text();
   let parsedBody;
 
@@ -65,6 +69,8 @@ describe('Security headers', () => {
     expect(response.headers.get('x-content-type-options')).toBe('nosniff');
     expect(response.headers.get('x-frame-options')).toBe('SAMEORIGIN');
     expect(response.headers.get('x-dns-prefetch-control')).toBe('off');
+    expect(response.headers.get('referrer-policy')).toBe('strict-origin-when-cross-origin');
+    expect(response.headers.get('strict-transport-security')).toBeNull();
 
     const cspHeader = response.headers.get('content-security-policy');
     expect(cspHeader).toBeTruthy();
@@ -84,6 +90,19 @@ describe('Security headers', () => {
     );
     expect(directives['frame-ancestors']).toEqual(
       expect.arrayContaining(["'self'", 'https://app.netlify.com', 'https://*.netlify.app'])
+    );
+  });
+
+  it('enables HSTS only for secure requests', async () => {
+    const insecure = await request(baseUrl, '/health');
+    expect(insecure.headers.get('strict-transport-security')).toBeNull();
+
+    const secure = await request(baseUrl, '/health', {
+      headers: { 'X-Forwarded-Proto': 'https' }
+    });
+
+    expect(secure.headers.get('strict-transport-security')).toBe(
+      'max-age=15552000; includeSubDomains'
     );
   });
 });

@@ -1,11 +1,15 @@
 # Deployment Checklist - Content, SEO & Branding Updates
-**Mr. DJ Website - Ready for Production**
+**Mr. DJ Website - Release Readiness**
 
 Date: 2025-10-19
 
 ---
 
-## Pre-Deployment Verification
+## Staging Validation (Required Before Production Release)
+
+### Target Environment
+- URL: https://staging.sevensa.nl/eds
+- Objective: confirm the release build is production-ready before go-live.
 
 ### Automated Release Gate ✅
 - [ ] Run the repository-wide readiness script to verify linting, tests and build output:
@@ -34,24 +38,107 @@ Date: 2025-10-19
 - [x] `src/components/Templates/DjSaxLanding.jsx` - Added Schema.org
 - [x] `src/components/Organisms/AboutUs.jsx` - Updated content
 
----
-
-## Deployment Steps
-
-### 1. Build for Production
+### Stage the Release Build
 ```bash
 cd /opt/mr-dj/mr-dj-eds-components
 npm run build
+# Deploy dist/ folder to the staging environment
 ```
 
-### 2. Deploy Built Files
+### Verify Staging Deployment
+- [ ] Visit https://staging.sevensa.nl/eds
+- [ ] Check favicon appears in browser tab
+- [ ] Inspect page source for meta tags
+- [ ] Verify logo displays in header
+- [ ] Check footer social media links
+- [ ] Test "Over Ons" section
+
+### Post-Validation Testing on Staging
+
+#### SEO Testing (30 minutes after staging deployment)
+- [ ] Test with Google Rich Results: https://search.google.com/test/rich-results (use staging URL if publicly accessible)
+- [ ] Validate Schema.org: https://validator.schema.org/
+- [ ] Check meta tags in browser DevTools
+- [ ] Verify canonical URL is correct for staging
+
+#### Social Media Testing (Staging Preview)
+- [ ] Facebook Sharing Debugger: https://developers.facebook.com/tools/debug/
+  - [ ] Enter staging URL and scrape
+  - [ ] Verify image, title, description
+  - [ ] Clear cache if needed
+- [ ] Twitter Card Validator: https://cards-dev.twitter.com/validator
+  - [ ] Enter staging URL
+  - [ ] Verify preview card
+- [ ] LinkedIn Post Inspector: https://www.linkedin.com/post-inspector/
+  - [ ] Inspect staging URL
+  - [ ] Verify preview
+
+#### Functionality Testing (Staging)
+- [ ] Click all social media links in footer
+- [ ] Verify links open in new tab
+- [ ] Test on mobile device
+- [ ] Test on tablet
+- [ ] Test on desktop
+- [ ] Check iOS Safari (favicon)
+- [ ] Check Android Chrome (favicon)
+
+### Quick Command Reference (Staging)
+
+#### Extract Schema from Page
 ```bash
-# Copy dist/ folder to web server
-# OR deploy via your CI/CD pipeline
-# OR deploy to Netlify/Vercel
+curl https://staging.sevensa.nl/eds | \
+  grep -oP '(?<=<script type="application/ld\+json">).*?(?=</script>)'
 ```
 
-### 3. Verify Deployment
+#### Validate JSON-LD Syntax
+```bash
+curl https://staging.sevensa.nl/eds | \
+  grep -oP '(?<=<script type="application/ld\+json">).*?(?=</script>)' | \
+  python3 -m json.tool
+```
+
+#### Check Response Headers
+```bash
+curl -I https://staging.sevensa.nl/eds
+```
+
+#### Test Favicon
+```bash
+curl -I https://staging.sevensa.nl/eds/favicon.ico
+```
+
+### Staging Success Criteria
+
+#### Immediate (Within 24 hours of staging deployment)
+- [x] Site loads without errors
+- [ ] All images display correctly
+- [ ] Social links work properly
+- [ ] Favicon appears in all browsers
+
+#### Short-term (Within 1 week on staging)
+- [ ] Schema.org validates without errors
+- [ ] Social sharing previews show correctly
+- [ ] No critical issues reported by stakeholders
+
+#### Staging Sign-off
+- [ ] Product owner approval received
+- [ ] QA sign-off recorded
+
+---
+
+## Primary Deployment Workflow
+
+### Run the deployment script
+```bash
+./deploy.sh
+```
+
+### Automated actions performed by `deploy.sh`
+- **Backend verification** – Installs backend dependencies (`npm install`) and runs the full backend test suite locally before packaging.
+- **Packaging & transfer** – Builds a clean deployment archive (frontend, backend, database, and `docker-compose.yml`) and securely uploads it to the VPS.
+- **Remote Docker release** – Recreates the stack on the VPS by extracting the archive, rebuilding Docker images without cache, running `docker-compose up -d`, executing database migrations, and tailing recent service logs.
+
+### Post-run verification
 - [ ] Visit https://mr-dj.sevensa.nl/
 - [ ] Check favicon appears in browser tab
 - [ ] Inspect page source for meta tags
@@ -61,27 +148,54 @@ npm run build
 
 ---
 
+## Appendix A: Manual Fallback Deployment
+
+Use these steps only if `./deploy.sh` is unavailable.
+
+### 1. Build for production
+```bash
+cd /opt/mr-dj/mr-dj-eds-components
+npm run build
+```
+
+### 2. Deploy built files
+```bash
+# Copy the generated dist/ folder to the web server
+# OR deploy via the existing CI/CD pipeline
+# OR publish to Netlify/Vercel if configured
+```
+
+### 3. Recreate services on the VPS (if needed)
+```bash
+cd /opt/mr-dj
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+---
+
 ## Post-Deployment Testing
 
-### SEO Testing (30 minutes after deployment)
+#### SEO Testing (30 minutes after production deployment)
 - [ ] Test with Google Rich Results: https://search.google.com/test/rich-results
 - [ ] Validate Schema.org: https://validator.schema.org/
 - [ ] Check meta tags in browser DevTools
 - [ ] Verify canonical URL is correct
 
-### Social Media Testing
+#### Social Media Testing (Production)
 - [ ] Facebook Sharing Debugger: https://developers.facebook.com/tools/debug/
-  - [ ] Enter URL and scrape
+  - [ ] Enter production URL and scrape
   - [ ] Verify image, title, description
   - [ ] Clear cache if needed
 - [ ] Twitter Card Validator: https://cards-dev.twitter.com/validator
-  - [ ] Enter URL
+  - [ ] Enter production URL
   - [ ] Verify preview card
 - [ ] LinkedIn Post Inspector: https://www.linkedin.com/post-inspector/
-  - [ ] Inspect URL
+  - [ ] Inspect production URL
   - [ ] Verify preview
 
-### Functionality Testing
+#### Functionality Testing (Production)
 - [ ] Click all social media links in footer
 - [ ] Verify links open in new tab
 - [ ] Test on mobile device
@@ -90,183 +204,148 @@ npm run build
 - [ ] Check iOS Safari (favicon)
 - [ ] Check Android Chrome (favicon)
 
----
+### Google Search Console Actions
 
-## Google Search Console Actions
-
-### Submit Updated Sitemap
+#### Submit Updated Sitemap
 ```
 1. Go to Google Search Console
 2. Navigate to Sitemaps
 3. Submit: https://mr-dj.sevensa.nl/sitemap.xml
 ```
 
-### Request Indexing
+#### Request Indexing
 ```
 1. Go to URL Inspection tool
 2. Enter: https://mr-dj.sevensa.nl/
 3. Click "Request Indexing"
 ```
 
-### Monitor for Errors
+#### Monitor for Errors
 ```
 1. Check "Coverage" report daily for 1 week
 2. Monitor "Enhancements" for rich results
 3. Check for structured data errors
 ```
 
----
+### Quick Command Reference (Production)
 
-## Quick Command Reference
-
-### Extract Schema from Page
+#### Extract Schema from Page
 ```bash
-curl https://mr-dj.sevensa.nl/ | grep -oP '(?<=<script type="application/ld\+json">).*?(?=</script>)'
+curl https://mr-dj.sevensa.nl/ | \
+  grep -oP '(?<=<script type="application/ld\+json">).*?(?=</script>)'
 ```
 
-### Validate JSON-LD Syntax
+#### Validate JSON-LD Syntax
 ```bash
 curl https://mr-dj.sevensa.nl/ | \
   grep -oP '(?<=<script type="application/ld\+json">).*?(?=</script>)' | \
   python3 -m json.tool
 ```
 
-### Check Response Headers
+#### Check Response Headers
 ```bash
 curl -I https://mr-dj.sevensa.nl/
 ```
 
-### Test Favicon
+#### Test Favicon
 ```bash
 curl -I https://mr-dj.sevensa.nl/favicon.ico
 ```
 
----
+### Monitoring Schedule (Production)
 
-## Monitoring Schedule
-
-### Week 1 (Daily)
+#### Week 1 (Daily)
 - [ ] Check Google Search Console for errors
 - [ ] Monitor website analytics
 - [ ] Check for console errors in browser
 - [ ] Verify all pages load correctly
 
-### Week 2-4 (Every 3 Days)
+#### Week 2-4 (Every 3 Days)
 - [ ] Review Search Console coverage
 - [ ] Check rich results appearance
 - [ ] Monitor social media referral traffic
 - [ ] Review page load times
 
-### Monthly (Ongoing)
+#### Monthly (Ongoing)
 - [ ] Analyze SEO performance
 - [ ] Review social media metrics
 - [ ] Check for broken links
 - [ ] Update statistics if changed
 - [ ] Review and update content
 
----
+### Rollback Plan (If Needed)
 
-## Rollback Plan (If Needed)
-
-### If Issues Occur:
+#### If Issues Occur
 1. Restore previous version from Git
 2. Rebuild: `npm run build`
 3. Redeploy previous dist/ folder
 4. Monitor for resolution
 
-### Backup Locations:
+#### Backup Locations
 - Git repository (if version controlled)
 - Server backup (check with hosting provider)
 - Local copy of previous dist/ folder
 
----
+### Success Criteria (Production)
 
-## Success Criteria
-
-### Immediate (Within 24 hours)
+#### Immediate (Within 24 hours)
 - [x] Site loads without errors
 - [ ] All images display correctly
 - [ ] Social links work properly
 - [ ] Favicon appears in all browsers
 
-### Short-term (Within 1 week)
+#### Short-term (Within 1 week)
 - [ ] Schema.org validates without errors
 - [ ] Social sharing previews show correctly
 - [ ] Google indexes updated pages
 - [ ] No errors in Search Console
 
-### Long-term (Within 1 month)
+#### Long-term (Within 1 month)
 - [ ] Improved search rankings
 - [ ] Increased organic traffic
 - [ ] Better social media engagement
 - [ ] Rich results appearing in search
 
----
+### Documentation Reference
 
-## Documentation Reference
-
-### Key Documents
+#### Key Documents
 1. **CONTENT-SEO-BRANDING-UPDATES.md** - Complete overview
 2. **SCHEMA-ORG-STATUS.md** - Schema implementation details
 3. **SOCIAL-MEDIA-CONFIGURATION.md** - Social media setup
 
-### Technical References
+#### Technical References
 - Schema.org utility: `/src/utils/schemaOrg.js`
 - Main HTML: `index.html`
 - Landing page: `/src/components/Templates/DjSaxLanding.jsx`
 - About section: `/src/components/Organisms/AboutUs.jsx`
 
----
+### Support Contacts
 
-## Support Contacts
-
-### Testing Tools
+#### Testing Tools
 - Google Rich Results: https://search.google.com/test/rich-results
 - Schema Validator: https://validator.schema.org/
 - Facebook Debugger: https://developers.facebook.com/tools/debug/
 - Twitter Validator: https://cards-dev.twitter.com/validator
 
-### Documentation
+#### Documentation
 - Schema.org: https://schema.org/
 - Open Graph: https://ogp.me/
 - Google Search Central: https://developers.google.com/search
 
----
+### Final Checklist
 
-## Notes
-
-### What Changed
-1. Added comprehensive Schema.org structured data
-2. Enhanced Open Graph and Twitter Card meta tags
-3. Created multiple favicon sizes for all devices
-4. Updated "Over Ons" content with better storytelling
-5. Created detailed documentation for maintenance
-
-### What Stayed the Same
-1. Logo implementation (already correct)
-2. Header and navigation structure
-3. Footer social media links (verified as configured)
-4. Overall site design and layout
-5. Existing functionality
-
-### No Breaking Changes
-- All changes are additive
-- No existing functionality removed
-- Backward compatible
-- SEO improvements only
-
----
-
-## Final Checklist
-
-Before marking as complete:
-
+#### Staging Completion
 - [x] All code changes tested locally
 - [x] Build successful with no errors
 - [x] Documentation created and reviewed
 - [x] Files verified in correct locations
+- [ ] Deployed to staging environment
+- [ ] Staging post-deployment tests completed
+- [ ] Staging approvals captured
+
+#### Production Completion
 - [ ] Deployed to production server
-- [ ] Post-deployment tests completed
+- [ ] Production post-deployment tests completed
 - [ ] Google Search Console updated
 - [ ] Social media sharing tested
 - [ ] Monitoring enabled
@@ -284,21 +363,23 @@ Before marking as complete:
 
 **Deploy Command:**
 ```bash
-cd /opt/mr-dj/mr-dj-eds-components
-npm run build
-# Deploy dist/ folder to production
+./deploy.sh
 ```
 
 ---
 
-**Deployment Date:** _______________
+**Staging Deployment Date:** _______________
 
-**Deployed By:** _______________
+**Staging Validated By:** _______________
 
-**Verification Completed:** _______________
+**Production Deployment Date:** _______________
+
+**Production Deployed By:** _______________
+
+**Production Verification Completed:** _______________
 
 **Google Search Console Updated:** _______________
 
 ---
 
-**Next Review Date:** 2025-11-19 (30 days from deployment)
+**Next Review Date:** 2025-11-19 (30 days from production deployment)
