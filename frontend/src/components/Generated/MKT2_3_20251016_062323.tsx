@@ -1,151 +1,316 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { apiClient } from '../../lib/apiClient';
-import styles from './InstagramReelsSection.module.css';
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { apiClient } from '../../lib/apiClient'
+import {
+  useGeneratedContentConfig,
+  type InstagramReelsFeedConfig as SharedReelsFeedConfig,
+} from '../../context/GeneratedContentConfigContext'
+import styles from './InstagramReelsSection.module.css'
 
 type ReelAudioSource = {
-  src: string;
-  type: string;
-};
+  src: string
+  type: string
+}
 
-export type Reel = {
-  id: string;
-  videoUrl: string;
-  posterUrl?: string | null;
-  audioTitle: string;
-  audioSources: ReelAudioSource[];
-  downloadUrl: string;
-  likes: number;
-  views: number;
-  description: string;
-  permalink?: string | null;
-  captions?: string | null;
-  publishedAt?: string | null;
-};
+type Reel = {
+  id: string
+  videoUrl: string
+  audioTitle: string
+  audioSources: ReelAudioSource[]
+  downloadUrl: string
+  likes: number
+  views: number
+  description: string
+  captions?: string
+  thumbnailUrl?: string
+}
 
-type InstagramReelsResponse = {
-  reels: Reel[];
-  paging?: {
-    nextCursor: string | null;
-    previousCursor?: string | null;
-    hasMore?: boolean;
-    total?: number | null;
-  };
-};
+type ReelsFeedConfig = Omit<SharedReelsFeedConfig, 'transform' | 'mockData'> & {
+  transform?: (payload: unknown) => Reel[] | Promise<Reel[]>
+  mockData?: Reel[]
+}
 
-type CachedPage = {
-  cursor: string | null;
-  data: Reel[];
-  nextCursor: string | null;
-};
+const DEFAULT_RATE_LIMIT_MS = 60_000
 
-const PAGE_SIZE = 6;
-const START_CURSOR_KEY = 'start';
+const parseNumber = (value: unknown): number => {
+  const asNumber = typeof value === 'number' ? value : Number(value)
+  if (Number.isFinite(asNumber)) {
+    return asNumber
+  }
 
-const InstagramReelsSection = () => {
-  const [pages, setPages] = useState<CachedPage[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [initialised, setInitialised] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loadingCursor, setLoadingCursor] = useState<string | null>(null);
-  const pageCache = useRef(new Map<string, CachedPage>());
+  return 0
+}
 
-  const updatePages = useCallback((page: CachedPage) => {
-    setPages((current) => {
-      const index = current.findIndex((entry) => entry.cursor === page.cursor);
-      if (index >= 0) {
-        const next = [...current];
-        next[index] = page;
-        return next;
-      }
-      return [...current, page];
-    });
-  }, []);
+const parseString = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') {
+    return undefined
+  }
 
-  const loadPage = useCallback(
-    async (cursor: string | null = null, { force = false } = {}) => {
-      const cacheKey = cursor ?? START_CURSOR_KEY;
+  const trimmed = value.trim()
+  return trimmed ? trimmed : undefined
+}
 
-      if (!force && pageCache.current.has(cacheKey)) {
-        updatePages(pageCache.current.get(cacheKey)!);
-        setInitialised(true);
-        return;
-      }
+const normaliseAudioSources = (value: unknown, downloadUrl: string): ReelAudioSource[] => {
+  if (!value) {
+    return []
+  }
 
-      setIsLoading(true);
-      setLoadingCursor(cacheKey);
-      setError(null);
-
-      try {
-        const params = new URLSearchParams({ limit: String(PAGE_SIZE) });
-        if (cursor) {
-          params.set('after', cursor);
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => {
+        if (
+          entry &&
+          typeof entry === 'object' &&
+          'src' in entry &&
+          typeof (entry as { src: unknown }).src === 'string'
+        ) {
+          const type = parseString((entry as { type?: unknown }).type)
+          return { src: (entry as { src: string }).src, type: type ?? 'audio/mpeg' }
         }
+        return null
+      })
+      .filter((entry): entry is ReelAudioSource => Boolean(entry))
+  }
 
-        const response = await apiClient.get<InstagramReelsResponse>(
-          `/integrations/instagram/reels?${params.toString()}`
-        );
+  const audioUrl = parseString(value)
+  if (audioUrl) {
+    return [
+      {
+        src: audioUrl,
+        type: 'audio/mpeg',
+      },
+    ]
+  }
 
-        const nextCursor = response?.paging?.nextCursor ?? null;
-        const page: CachedPage = {
-          cursor,
-          data: Array.isArray(response?.reels) ? response.reels : [],
-          nextCursor
-        };
+  return downloadUrl ? [{ src: downloadUrl, type: 'audio/mpeg' }] : []
+}
 
-        pageCache.current.set(cacheKey, page);
-        updatePages(page);
-      } catch (fetchError) {
-        console.error('Failed to load Instagram reels', fetchError);
-        const message =
-          fetchError instanceof Error ? fetchError.message : 'Kon de Instagram reels niet laden.';
-        setError(message);
-      } finally {
-        setIsLoading(false);
-        setLoadingCursor(null);
-        setInitialised(true);
-      }
-    },
-    [updatePages]
-  );
+const normaliseReelRecord = (record: unknown): Reel | null => {
+  if (!record || typeof record !== 'object') {
+    return null
+  }
 
-  const handleRetry = useCallback(() => {
-    pageCache.current.clear();
-    setPages([]);
-    setError(null);
-    loadPage(null, { force: true }).catch((retryError) => {
-      console.error('Retry failed', retryError);
-    });
-  }, [loadPage]);
+  const data = record as Record<string, unknown>
+  const videoUrl =
+    parseString(data.videoUrl) ??
+    parseString(data.video_url) ??
+    parseString(data.media_url) ??
+    parseString(data.permalink) ??
+    undefined
+
+  if (!videoUrl) {
+    return null
+  }
+
+  const id = parseString(data.id) ?? videoUrl
+  const downloadUrl = parseString(data.downloadUrl) ?? videoUrl
+  const audioTitle =
+    parseString(data.audioTitle) ?? parseString(data.audio_title) ?? parseString(data.song_title) ?? 'DJ Performance'
+  const likes = parseNumber(data.likes ?? data.like_count)
+  const views = parseNumber(data.views ?? data.view_count ?? data.play_count)
+  const description =
+    parseString(data.description) ?? parseString(data.caption) ?? 'Bekijk onze laatste DJ-optredens!'
+  const captions = parseString(data.captions ?? data.captions_url ?? data.captionUrl)
+  const thumbnailUrl =
+    parseString(data.thumbnailUrl) ?? parseString(data.thumbnail_url) ?? parseString(data.thumbnail)
+  const audioSources = normaliseAudioSources(data.audioSources ?? data.audio_sources ?? data.audioUrl, downloadUrl)
+
+  return {
+    id,
+    videoUrl,
+    audioTitle,
+    audioSources,
+    downloadUrl,
+    likes,
+    views,
+    description,
+    captions: captions ?? undefined,
+    thumbnailUrl: thumbnailUrl ?? undefined,
+  }
+}
+
+const normaliseReelsArray = (value: unknown): Reel[] => {
+  if (!value) {
+    return []
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => normaliseReelRecord(entry))
+      .filter((entry): entry is Reel => Boolean(entry))
+  }
+
+  if (typeof value === 'object' && value !== null && Array.isArray((value as { data?: unknown }).data)) {
+    return normaliseReelsArray((value as { data: unknown }).data)
+  }
+
+  return []
+}
+
+const ensureReels = (value: unknown): Reel[] => {
+  const normalised = normaliseReelsArray(value)
+  if (normalised.length) {
+    return normalised
+  }
+  return []
+}
+
+const MOCK_REELS: Reel[] = [
+  {
+    id: '1',
+    videoUrl: '/videos/dj-event-1.mp4',
+    audioTitle: 'Trending Song 1',
+    audioSources: [
+      {
+        src: 'https://cdn.pixabay.com/download/audio/2023/10/12/audio_4a4d2d51cb.mp3?filename=future-bass-hip-hop-169380.mp3',
+        type: 'audio/mpeg',
+      },
+      {
+        src: 'https://cdn.pixabay.com/download/audio/2023/10/12/audio_a0ecb26227.ogg?filename=future-bass-hip-hop-169380.ogg',
+        type: 'audio/ogg',
+      },
+    ],
+    downloadUrl:
+      'https://cdn.pixabay.com/download/audio/2023/10/12/audio_4a4d2d51cb.mp3?filename=future-bass-hip-hop-169380.mp3',
+    likes: 1200,
+    views: 5000,
+    description: 'Amazing wedding party! 🎵 #DJLife',
+    captions: '/captions/dj-event-1.vtt',
+    thumbnailUrl: '/images/reel-thumbnail.jpg',
+  },
+]
+
+const normaliseFeedConfig = (config?: SharedReelsFeedConfig | ReelsFeedConfig): ReelsFeedConfig | undefined => {
+  if (!config) {
+    return undefined
+  }
+
+  const typedConfig = config as ReelsFeedConfig
+  return {
+    ...typedConfig,
+    mockData: typedConfig.mockData ?? undefined,
+    transform: typedConfig.transform,
+  }
+}
+
+interface InstagramReelsSectionProps {
+  feedConfig?: ReelsFeedConfig
+}
+
+const InstagramReelsSection = ({ feedConfig }: InstagramReelsSectionProps) => {
+  const generatedConfig = useGeneratedContentConfig()
+  const instagramReelsFeed = generatedConfig.dataFeeds?.instagramReels
+  const contextFeed = useMemo(
+    () => normaliseFeedConfig(instagramReelsFeed),
+    [instagramReelsFeed],
+  )
+
+  const resolvedFeedConfig = useMemo<ReelsFeedConfig>(() => {
+    const baseConfig = feedConfig ?? contextFeed ?? { source: 'mock', mockData: MOCK_REELS }
+    const mockData = baseConfig.mockData ? ensureReels(baseConfig.mockData) : MOCK_REELS
+    return {
+      ...baseConfig,
+      mockData: mockData.length ? mockData : MOCK_REELS,
+    }
+  }, [contextFeed, feedConfig])
+
+  const [reels, setReels] = useState<Reel[]>(resolvedFeedConfig.mockData ?? MOCK_REELS)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isRateLimited, setIsRateLimited] = useState(false)
+  const lastFetchRef = useRef<number | null>(null)
+  const previousEndpointRef = useRef<string | undefined>()
 
   useEffect(() => {
-    loadPage().catch((initialError) => {
-      console.error('Initial reels fetch failed', initialError);
-    });
-  }, [loadPage]);
+    if (resolvedFeedConfig.endpoint !== previousEndpointRef.current) {
+      lastFetchRef.current = null
+      previousEndpointRef.current = resolvedFeedConfig.endpoint
+    }
 
-  const reels = useMemo(() => pages.flatMap((page) => page.data), [pages]);
-  const nextCursor = useMemo(() => (pages.length ? pages[pages.length - 1].nextCursor : null), [pages]);
-  const hasMore = Boolean(nextCursor);
-  const currentLoadingKey = loadingCursor ?? undefined;
+    let isMounted = true
+    const abortController = new AbortController()
 
-  if (!initialised && isLoading) {
-    return <div className={styles.loader}>Reels aan het laden…</div>;
-  }
+    const loadReels = async () => {
+      setIsLoading(true)
+      setError(null)
 
-  if (error && !reels.length) {
+      if (resolvedFeedConfig.source === 'mock') {
+        setReels(resolvedFeedConfig.mockData ?? MOCK_REELS)
+        setIsLoading(false)
+        setIsRateLimited(false)
+        return
+      }
+
+      if (!resolvedFeedConfig.endpoint) {
+        setError('Geen endpoint geconfigureerd voor Instagram Reels')
+        setIsLoading(false)
+        return
+      }
+
+      const rateLimitMs = resolvedFeedConfig.rateLimitMs ?? DEFAULT_RATE_LIMIT_MS
+      if (rateLimitMs > 0 && lastFetchRef.current) {
+        const elapsed = Date.now() - lastFetchRef.current
+        if (elapsed < rateLimitMs) {
+          setIsLoading(false)
+          setIsRateLimited(true)
+          return
+        }
+      }
+
+      lastFetchRef.current = Date.now()
+      setIsRateLimited(false)
+
+      try {
+        const payload = await apiClient.get<unknown>(resolvedFeedConfig.endpoint, {
+          ...(resolvedFeedConfig.requestOptions ?? {}),
+          signal: abortController.signal,
+        })
+
+        if (!isMounted) {
+          return
+        }
+
+        const transformed = resolvedFeedConfig.transform
+          ? await Promise.resolve(resolvedFeedConfig.transform(payload))
+          : normaliseReelsArray(payload)
+
+        const nextReels = ensureReels(transformed)
+        setReels(nextReels.length ? nextReels : resolvedFeedConfig.mockData ?? MOCK_REELS)
+        setIsLoading(false)
+      } catch (fetchError) {
+        if (abortController.signal.aborted || !isMounted) {
+          return
+        }
+
+        console.error(fetchError)
+        setError('Failed to load Instagram Reels')
+        setIsLoading(false)
+      }
+    }
+
+    void loadReels()
+
+    return () => {
+      isMounted = false
+      abortController.abort()
+    }
+  }, [resolvedFeedConfig])
+
+  if (isLoading) return <div className={styles.loader}>Loading...</div>
+  if (error)
     return (
       <div className={styles.error} role="alert">
-        <p>{error}</p>
-        <button type="button" className={styles.retryButton} onClick={handleRetry}>
-          Probeer opnieuw
-        </button>
+        {error}
       </div>
-    );
-  }
+    )
 
   return (
     <section className={styles.reelsSection}>
       <h2>Latest DJ Performances</h2>
+      {isRateLimited ? (
+        <p className={styles.rateLimit} role="status">
+          Content recently refreshed. Please wait before requesting new reels.
+        </p>
+      ) : null}
       <div className={styles.reelsGrid}>
         {reels.map((reel) => (
           <div key={reel.id} className={styles.reelCard}>
@@ -153,18 +318,12 @@ const InstagramReelsSection = () => {
               <video
                 controls
                 playsInline
-                poster={reel.posterUrl || '/images/reel-thumbnail.jpg'}
+                poster={reel.thumbnailUrl ?? '/images/reel-thumbnail.jpg'}
                 className={styles.video}
               >
                 <source src={reel.videoUrl} type="video/mp4" />
                 {reel.captions ? (
-                  <track
-                    kind="captions"
-                    src={reel.captions}
-                    label="Ondertitels"
-                    srclang="en"
-                    default
-                  />
+                  <track kind="captions" src={reel.captions} label="English captions" srclang="en" default />
                 ) : null}
                 Your browser does not support video playback.
               </video>
@@ -180,7 +339,7 @@ const InstagramReelsSection = () => {
                     aria-label={`Audio track for ${reel.audioTitle}`}
                   >
                     {reel.audioSources.map((source) => (
-                      <source key={source.type} src={source.src} type={source.type} />
+                      <source key={`${reel.id}-${source.type}`} src={source.src} type={source.type} />
                     ))}
                     <span>
                       Your browser does not support embedded audio.{' '}
@@ -248,7 +407,7 @@ const InstagramReelsSection = () => {
         </div>
       ) : null}
     </section>
-  );
-};
+  )
+}
 
-export default InstagramReelsSection;
+export default InstagramReelsSection
