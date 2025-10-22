@@ -5,7 +5,7 @@ const sanitize = (value: string | undefined): string | null => {
 
   const trimmed = value.trim();
 
-  if (!trimmed || trimmed === 'undefined' || trimmed === 'null') {
+  if (!trimmed || trimmed === "undefined" || trimmed === "null") {
     return null;
   }
 
@@ -18,7 +18,7 @@ const sanitize = (value: string | undefined): string | null => {
 
 const env = import.meta.env as Record<string, string | undefined>;
 
-const fallbackPosthogHost = 'https://app.posthog.com';
+const fallbackPosthogHost = "https://app.posthog.com";
 
 export const FALLBACK_RETARGETING_CONFIG = {
   META_PIXEL_ID: null,

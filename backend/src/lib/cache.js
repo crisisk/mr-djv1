@@ -67,7 +67,7 @@ async function get(key) {
   if (client) {
     try {
       const payload = await client.get(buildKey(key));
-      if (payload == null) {
+      if (payload === null || payload === undefined) {
         return undefined;
       }
       return JSON.parse(payload);

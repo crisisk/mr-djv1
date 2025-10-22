@@ -1,11 +1,11 @@
-import React, { useId } from 'react'
-import { useTranslation } from 'react-i18next'
-import Button from './Buttons.jsx'
+import React, { useId } from "react";
+import { useTranslation } from "react-i18next";
+import Button from "./Buttons.jsx";
 
-const defaultOverlayGradient = 'from-neutral-dark/90 via-neutral-dark/60 to-primary/80'
+const defaultOverlayGradient = "from-neutral-dark/90 via-neutral-dark/60 to-primary/80";
 
-const ArrowIcon = ({ direction = 'right' }) => {
-  const rotation = direction === 'right' ? 'rotate-0' : 'rotate-180'
+const ArrowIcon = ({ direction = "right" }) => {
+  const rotation = direction === "right" ? "rotate-0" : "rotate-180";
 
   return (
     <svg
@@ -23,8 +23,8 @@ const ArrowIcon = ({ direction = 'right' }) => {
         strokeWidth="1.5"
       />
     </svg>
-  )
-}
+  );
+};
 
 const ScrollIndicatorIcon = () => (
   <svg
@@ -35,15 +35,7 @@ const ScrollIndicatorIcon = () => (
     viewBox="0 0 48 48"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <rect
-      x="17"
-      y="6"
-      width="14"
-      height="24"
-      rx="7"
-      className="opacity-60"
-      strokeWidth="2"
-    />
+    <rect x="17" y="6" width="14" height="24" rx="7" className="opacity-60" strokeWidth="2" />
     <path
       d="M24 32v10m0 0l-6-6m6 6 6-6"
       strokeLinecap="round"
@@ -51,7 +43,7 @@ const ScrollIndicatorIcon = () => (
       strokeWidth="2"
     />
   </svg>
-)
+);
 
 const HeroDecorativeVisual = () => (
   <div className="relative mx-auto h-[320px] w-full max-w-[420px]">
@@ -66,7 +58,7 @@ const HeroDecorativeVisual = () => (
       </p>
     </div>
   </div>
-)
+);
 
 const HeroSection = ({
   title,
@@ -79,58 +71,56 @@ const HeroSection = ({
   ctaSecondaryText,
   ctaPrimaryProps = {},
   ctaSecondaryProps = {},
-  backgroundClass = 'bg-neutral-dark',
+  backgroundClass = "bg-neutral-dark",
   overlayGradient = defaultOverlayGradient,
-  overlayOpacityClass = 'opacity-90',
+  overlayOpacityClass = "opacity-90",
   backgroundImage,
   mediaContent,
   showScrollIndicator = true,
   onScrollIndicatorClick,
-  titleColor = 'text-secondary',
-  subtitleColor = 'text-neutral-light',
-  supportingColor = 'text-neutral-light/90',
+  titleColor = "text-secondary",
+  subtitleColor = "text-neutral-light",
+  supportingColor = "text-neutral-light/90",
   children,
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const resolvedTitle = title ?? t('hero.title')
-  const resolvedSubtitle = subtitle ?? t('hero.subtitle')
-  const resolvedPrimaryCta = ctaPrimaryText ?? t('hero.ctaPrimaryText')
-  const resolvedSecondaryCta = ctaSecondaryText ?? t('hero.ctaSecondaryText')
-  const resolvedBadge = badge ?? t('hero.badge')
-  const resolvedSupportingCopy = supportingCopy ?? t('hero.supportingCopy')
-  const translatedStats = stats ?? t('hero.stats', { returnObjects: true })
-  const resolvedStats = Array.isArray(translatedStats) ? translatedStats : []
-  const translatedTestimonial = testimonial ?? t('hero.testimonial', { returnObjects: true })
+  const resolvedTitle = title ?? t("hero.title");
+  const resolvedSubtitle = subtitle ?? t("hero.subtitle");
+  const resolvedPrimaryCta = ctaPrimaryText ?? t("hero.ctaPrimaryText");
+  const resolvedSecondaryCta = ctaSecondaryText ?? t("hero.ctaSecondaryText");
+  const resolvedBadge = badge ?? t("hero.badge");
+  const resolvedSupportingCopy = supportingCopy ?? t("hero.supportingCopy");
+  const translatedStats = stats ?? t("hero.stats", { returnObjects: true });
+  const resolvedStats = Array.isArray(translatedStats) ? translatedStats : [];
+  const translatedTestimonial = testimonial ?? t("hero.testimonial", { returnObjects: true });
   const resolvedTestimonial =
-    translatedTestimonial && typeof translatedTestimonial === 'object'
-      ? translatedTestimonial
-      : {}
+    translatedTestimonial && typeof translatedTestimonial === "object" ? translatedTestimonial : {};
 
-  const heroTitleId = useId()
-  const ctaGroupLabelId = useId()
-  const ctaGroupDescriptionId = useId()
-  const statsGroupLabelId = useId()
+  const heroTitleId = useId();
+  const ctaGroupLabelId = useId();
+  const ctaGroupDescriptionId = useId();
+  const statsGroupLabelId = useId();
 
   const {
-    className: primaryClassName = '',
+    className: primaryClassName = "",
     leadingIcon: primaryLeadingIcon,
     trailingIcon: primaryTrailingIcon,
-    variant: primaryVariant = 'secondary',
+    variant: primaryVariant = "secondary",
     ...primaryButtonRest
-  } = ctaPrimaryProps
+  } = ctaPrimaryProps;
   const {
-    className: secondaryClassName = '',
+    className: secondaryClassName = "",
     leadingIcon: secondaryLeadingIcon,
     trailingIcon: secondaryTrailingIcon,
-    variant: secondaryVariant = 'outline',
+    variant: secondaryVariant = "outline",
     ...secondaryButtonRest
-  } = ctaSecondaryProps
+  } = ctaSecondaryProps;
 
   const resolvedPrimaryTrailingIcon =
-    primaryTrailingIcon === undefined ? <ArrowIcon /> : primaryTrailingIcon
+    primaryTrailingIcon === undefined ? <ArrowIcon /> : primaryTrailingIcon;
   const resolvedSecondaryLeadingIcon =
-    secondaryLeadingIcon === undefined ? <ArrowIcon direction="left" /> : secondaryLeadingIcon
+    secondaryLeadingIcon === undefined ? <ArrowIcon direction="left" /> : secondaryLeadingIcon;
 
   return (
     <section
@@ -139,15 +129,13 @@ const HeroSection = ({
     >
       <div className="absolute inset-0" aria-hidden="true">
         {backgroundImage ? (
-          <img
-            alt=""
-            className="h-full w-full object-cover"
-            src={backgroundImage}
-          />
+          <img alt="" className="h-full w-full object-cover" src={backgroundImage} />
         ) : (
           <div className="h-full w-full bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.15)_0%,_rgba(255,255,255,0)_60%)]" />
         )}
-        <div className={`absolute inset-0 bg-gradient-to-br ${overlayGradient} ${overlayOpacityClass}`} />
+        <div
+          className={`absolute inset-0 bg-gradient-to-br ${overlayGradient} ${overlayOpacityClass}`}
+        />
       </div>
 
       <div className="relative z-10 px-spacing-xl py-spacing-4xl">
@@ -167,9 +155,7 @@ const HeroSection = ({
               >
                 {resolvedTitle}
               </h1>
-              <p className={`text-font-size-h3 max-w-2xl ${subtitleColor}`}>
-                {resolvedSubtitle}
-              </p>
+              <p className={`text-font-size-h3 max-w-2xl ${subtitleColor}`}>{resolvedSubtitle}</p>
               <p className={`max-w-2xl text-font-size-body ${supportingColor}`}>
                 {resolvedSupportingCopy}
               </p>
@@ -182,14 +168,14 @@ const HeroSection = ({
               role="group"
             >
               <span id={ctaGroupLabelId} className="sr-only">
-                {t('hero.ctaGroupLabel', {
-                  defaultValue: 'Hero call to action knoppen',
+                {t("hero.ctaGroupLabel", {
+                  defaultValue: "Hero call to action knoppen",
                 })}
               </span>
               <p id={ctaGroupDescriptionId} className="sr-only">
-                {t('hero.ctaGroupDescription', {
+                {t("hero.ctaGroupDescription", {
                   defaultValue:
-                    'Knoppen hebben 220ms ease-out hover-animaties en geven richting met pijltjesiconen.',
+                    "Knoppen hebben 220ms ease-out hover-animaties en geven richting met pijltjesiconen.",
                 })}
               </p>
 
@@ -221,8 +207,8 @@ const HeroSection = ({
             {resolvedStats.length > 0 || children ? (
               <div className="space-y-spacing-md">
                 <h2 id={statsGroupLabelId} className="sr-only">
-                  {t('hero.statsLabel', {
-                    defaultValue: 'Belangrijkste MR-DJ statistieken',
+                  {t("hero.statsLabel", {
+                    defaultValue: "Belangrijkste MR-DJ statistieken",
                   })}
                 </h2>
                 <dl
@@ -231,7 +217,7 @@ const HeroSection = ({
                 >
                   {resolvedStats.map((stat, index) => (
                     <div
-                      key={`${stat.label ?? 'stat'}-${index}`}
+                      key={`${stat.label ?? "stat"}-${index}`}
                       className="rounded-2xl border border-white/10 bg-white/5 p-spacing-md backdrop-blur-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:border-white/25"
                     >
                       <dt className="text-font-size-small font-semibold uppercase tracking-[0.2em] text-neutral-light/80">
@@ -275,8 +261,8 @@ const HeroSection = ({
             >
               <ScrollIndicatorIcon />
               <span className="text-font-size-small font-semibold uppercase tracking-[0.4em]">
-                {t('hero.scrollIndicator', {
-                  defaultValue: 'Scroll naar beneden',
+                {t("hero.scrollIndicator", {
+                  defaultValue: "Scroll naar beneden",
                 })}
               </span>
             </button>
@@ -284,7 +270,7 @@ const HeroSection = ({
         ) : null}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default HeroSection
+export default HeroSection;

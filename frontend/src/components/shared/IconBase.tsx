@@ -1,5 +1,5 @@
-import { forwardRef } from 'react';
-import type { SVGProps } from 'react';
+import { forwardRef } from "react";
+import type { SVGProps } from "react";
 
 export type IconBaseProps = SVGProps<SVGSVGElement>;
 
@@ -7,10 +7,10 @@ export const IconBase = forwardRef<SVGSVGElement, IconBaseProps>(
   (
     {
       className,
-      role = 'img',
-      focusable = 'false',
-      'aria-label': ariaLabel,
-      'aria-labelledby': ariaLabelledby,
+      role = "img",
+      focusable = "false",
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledby,
       ...props
     },
     ref,
@@ -30,8 +30,8 @@ export const IconBase = forwardRef<SVGSVGElement, IconBaseProps>(
   },
 );
 
-IconBase.displayName = 'IconBase';
+IconBase.displayName = "IconBase";
 
 export function mergeClassNames(...values: Array<string | false | null | undefined>) {
-  return values.filter(Boolean).join(' ');
+  return values.filter(Boolean).join(" ");
 }

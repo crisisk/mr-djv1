@@ -35,7 +35,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-secondary-gold, #D4AF37);
+  color: var(--color-secondary-gold, #d4af37);
 }
 
 .title {
@@ -88,7 +88,12 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
   text-decoration: none;
   min-width: 10.5rem;
 }
@@ -110,8 +115,8 @@
 }
 
 .primaryButton {
-  background-color: var(--color-primary-blue, #00AEEF);
-  color: var(--color-neutral-light, #FFFFFF);
+  background-color: var(--color-primary-blue, #00aeef);
+  color: var(--color-neutral-light, #ffffff);
   box-shadow: 0 12px 24px -12px rgba(0, 174, 239, 0.65);
 }
 
@@ -121,8 +126,8 @@
 }
 
 .secondaryButton {
-  background-color: var(--color-secondary-gold, #D4AF37);
-  color: var(--color-neutral-dark, #1A2C4B);
+  background-color: var(--color-secondary-gold, #d4af37);
+  color: var(--color-neutral-dark, #1a2c4b);
   box-shadow: 0 12px 24px -12px rgba(212, 175, 55, 0.6);
 }
 
@@ -133,7 +138,7 @@
 
 .outlineButton {
   background-color: transparent;
-  color: var(--color-neutral-dark, #1A2C4B);
+  color: var(--color-neutral-dark, #1a2c4b);
   border-color: rgba(26, 44, 75, 0.6);
 }
 
@@ -144,7 +149,7 @@
 
 .outlineLightButton {
   background-color: transparent;
-  color: var(--color-neutral-light, #FFFFFF);
+  color: var(--color-neutral-light, #ffffff);
   border-color: rgba(255, 255, 255, 0.65);
 }
 

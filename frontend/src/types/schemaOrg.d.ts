@@ -1,4 +1,4 @@
-declare module '*schemaOrg.js' {
+declare module "*schemaOrg.js" {
   export function generateOrganizationSchema(): Record<string, unknown>;
   export function generateLocalBusinessSchema(args: {
     city: string;
@@ -14,10 +14,12 @@ declare module '*schemaOrg.js' {
     startDate?: string;
     endDate?: string;
   }): Record<string, unknown>;
-  export function generateBreadcrumbSchema(breadcrumbs: Array<{
-    name: string;
-    url: string;
-  }>): Record<string, unknown>;
+  export function generateBreadcrumbSchema(
+    breadcrumbs: Array<{
+      name: string;
+      url: string;
+    }>,
+  ): Record<string, unknown>;
   export function generateServiceSchema(args: {
     serviceName: string;
     description: string;
@@ -29,10 +31,12 @@ declare module '*schemaOrg.js' {
     ratingValue: string | number;
     datePublished: string;
   }): Record<string, unknown>;
-  export function generateFAQSchema(faqs: Array<{
-    question: string;
-    answer: string;
-  }>): Record<string, unknown>;
+  export function generateFAQSchema(
+    faqs: Array<{
+      question: string;
+      answer: string;
+    }>,
+  ): Record<string, unknown>;
   export function generateWebPageSchema(args: {
     title: string;
     description: string;

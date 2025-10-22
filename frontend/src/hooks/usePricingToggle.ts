@@ -1,21 +1,21 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
-export type BillingMode = 'event' | 'monthly';
+export type BillingMode = "event" | "monthly";
 
-const usePricingToggle = (initialMode: BillingMode = 'event') => {
+const usePricingToggle = (initialMode: BillingMode = "event") => {
   const [billingMode, setBillingMode] = useState<BillingMode>(initialMode);
 
-  const selectMonthly = useCallback(() => setBillingMode('monthly'), []);
-  const selectEvent = useCallback(() => setBillingMode('event'), []);
+  const selectMonthly = useCallback(() => setBillingMode("monthly"), []);
+  const selectEvent = useCallback(() => setBillingMode("event"), []);
   const toggleBillingMode = useCallback(
-    () => setBillingMode((prev) => (prev === 'event' ? 'monthly' : 'event')),
-    []
+    () => setBillingMode((prev) => (prev === "event" ? "monthly" : "event")),
+    [],
   );
 
   return {
     billingMode,
-    isMonthly: billingMode === 'monthly',
-    isEvent: billingMode === 'event',
+    isMonthly: billingMode === "monthly",
+    isEvent: billingMode === "event",
     selectMonthly,
     selectEvent,
     toggleBillingMode,

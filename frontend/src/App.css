@@ -1,5 +1,11 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   color: #0f172a;
   background-color: #f7f9fc;
 }
@@ -57,7 +63,7 @@ main {
   gap: 1.75rem;
 }
 
-.conversion-panel[data-loading='true'] {
+.conversion-panel[data-loading="true"] {
   opacity: 0.75;
 }
 
@@ -89,7 +95,9 @@ main {
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 140ms ease, box-shadow 140ms ease;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .conversion-panel__refresh:disabled {
@@ -233,7 +241,7 @@ main {
   gap: 1.5rem;
 }
 
-.testimonial-panel[data-loading='true'] {
+.testimonial-panel[data-loading="true"] {
   opacity: 0.75;
 }
 
@@ -265,7 +273,9 @@ main {
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 140ms ease, box-shadow 140ms ease;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .testimonial-panel__refresh:disabled {
@@ -397,7 +407,10 @@ main {
   padding: 0.5rem 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  transition:
+    background 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
 }
 
 .testimonial-card__action:disabled {

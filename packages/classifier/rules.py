@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable, Optional
 
 from .types import ClassificationResult
 
@@ -14,20 +14,22 @@ class RulingCandidate:
 
     id: str
     hs_code8: str
-    taric_code: Optional[str]
+    taric_code: str | None
     precedence: int
-    valid_from: Optional[str]
-    valid_to: Optional[str]
-    source: Optional[str]
+    valid_from: str | None
+    valid_to: str | None
+    source: str | None
 
 
-def choose_ruling(candidates: Iterable[RulingCandidate]) -> Optional[RulingCandidate]:
+def choose_ruling(candidates: Iterable[RulingCandidate]) -> RulingCandidate | None:
     """Return the highest precedence ruling (lowest precedence value).
 
     Candidates are expected to be pre-filtered on validity and country scope.
     """
 
-    return min(candidates, key=lambda c: (c.precedence, c.valid_from or ""), default=None)
+    return min(
+        candidates, key=lambda c: (c.precedence, c.valid_from or ""), default=None
+    )
 
 
 def ambiguous_result(hs_code8: str) -> ClassificationResult:

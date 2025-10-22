@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { Button } from './Button';
+import type { ReactNode } from "react";
+import { Button } from "./Button";
 
 export interface HeroSectionProps {
   title: string;
@@ -17,13 +17,15 @@ export function HeroSection({
   subtitle,
   ctaPrimaryText,
   ctaSecondaryText,
-  backgroundClass = 'bg-neutral-dark',
-  titleColor = 'text-secondary',
-  subtitleColor = 'text-neutral-light',
+  backgroundClass = "bg-neutral-dark",
+  titleColor = "text-secondary",
+  subtitleColor = "text-neutral-light",
   children,
 }: HeroSectionProps) {
   return (
-    <section className={`${backgroundClass} py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}>
+    <section
+      className={`${backgroundClass} py-spacing-3xl px-spacing-xl min-h-[60vh] flex items-center`}
+    >
       <div className="container mx-auto text-center space-y-spacing-xl">
         <div>
           <h1 className={`heading-1 ${titleColor} mb-spacing-md`}>{title}</h1>

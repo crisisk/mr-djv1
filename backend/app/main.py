@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import os
-from typing import List
 
+from app.api.routes import bookings, events, internal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import bookings, events, internal
 
-
-def _get_allowed_origins() -> List[str]:
+def _get_allowed_origins() -> list[str]:
     raw_origins = os.getenv(
         "BACKEND_CORS_ORIGINS",
         "http://localhost:5173,http://localhost:3000",
@@ -42,9 +40,11 @@ async def root():
 async def health():
     events_status = events.health_status()
     bookings_status = bookings.health_status()
-    status_flag = "healthy" if all(
-        check.get("status") == "ok" for check in (events_status, bookings_status)
-    ) else "degraded"
+    status_flag = (
+        "healthy"
+        if all(check.get("status") == "ok" for check in (events_status, bookings_status))
+        else "degraded"
+    )
     return {
         "status": status_flag,
         "checks": {
@@ -53,6 +53,8 @@ async def health():
         },
     }
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

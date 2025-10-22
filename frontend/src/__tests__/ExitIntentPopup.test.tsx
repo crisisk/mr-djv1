@@ -2,43 +2,43 @@ import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import ExitIntentPopup from '../components/Generated/MKT4_1_20251016_062601'
+import ExitIntentPopup from "../components/Generated/MKT4_1_20251016_062601";
 
-const submitMock = vi.fn()
-const resetMock = vi.fn()
+const submitMock = vi.fn();
+const resetMock = vi.fn();
 
-vi.mock('../hooks/useBooking', () => ({
+vi.mock("../hooks/useBooking", () => ({
   __esModule: true,
   default: () => ({
     submit: submitMock,
-    status: 'idle',
+    status: "idle",
     error: null,
     reset: resetMock,
   }),
-}))
+}));
 
-describe('ExitIntentPopup', () => {
+describe("ExitIntentPopup", () => {
   beforeEach(() => {
-    localStorage.clear()
-    submitMock.mockReset()
-    resetMock.mockReset()
-  })
+    localStorage.clear();
+    submitMock.mockReset();
+    resetMock.mockReset();
+  });
 
   afterEach(() => {
-    vi.useRealTimers()
-  })
+    vi.useRealTimers();
+  });
 
   it.skip('submits booking and closes popup after success', async () => {
     submitMock.mockResolvedValueOnce({ success: true, message: 'Top!' })
 
-    vi.useFakeTimers()
+    vi.useFakeTimers();
 
-    render(<ExitIntentPopup />)
+    render(<ExitIntentPopup />);
 
     act(() => {
-      const event = new MouseEvent('mouseleave', { clientY: 0, bubbles: true })
-      document.dispatchEvent(event)
-    })
+      const event = new MouseEvent("mouseleave", { clientY: 0, bubbles: true });
+      document.dispatchEvent(event);
+    });
 
     const form = await waitFor(() => screen.getByTestId('exit-booking-form'))
     const formUtils = within(form)
@@ -53,16 +53,15 @@ describe('ExitIntentPopup', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText(/top!/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/top!/i)).toBeInTheDocument();
+    });
 
     act(() => {
-      vi.advanceTimersByTime(2000)
-    })
+      vi.advanceTimersByTime(2000);
+    });
 
     await waitFor(() => {
-      expect(screen.queryByText(/special offer/i)).not.toBeInTheDocument()
-    })
-
-  })
-})
+      expect(screen.queryByText(/special offer/i)).not.toBeInTheDocument();
+    });
+  });
+});

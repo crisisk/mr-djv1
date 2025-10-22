@@ -1,0 +1,23 @@
+line-length = 100
+src = [
+  "backend/app",
+  "backend/tests",
+  "packages",
+  "email_validator",
+]
+extend-exclude = [
+  "backend/app/api/routes/API*_backend_*.py",
+  "backend/app/models/DB*_database_*.py",
+  "backend/app/services/INT*_interactions_*.py",
+  "backend/app/utils/PERF*_performance_*.py",
+  "backend/tests/TEST*_testing_*.py",
+]
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "B", "I", "UP"]
+ignore = []
+
+[format]
+quote-style = "double"
+indent-style = "space"

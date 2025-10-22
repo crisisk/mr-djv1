@@ -1,13 +1,13 @@
-import CheckSvg from './svgs/check.svg?react';
-import type { IconProps } from './types';
-import { mergeClassNames } from './types';
+import CheckSvg from "./svgs/check.svg?react";
+import type { IconProps } from "./types";
+import { mergeClassNames } from "./types";
 
-const defaultClassName = 'h-5 w-5 text-primary';
+const defaultClassName = "h-5 w-5 text-primary";
 
 export const CheckIcon = ({
   className,
-  role = 'img',
-  'aria-label': ariaLabel,
+  role = "img",
+  "aria-label": ariaLabel,
   ...props
 }: IconProps) => (
   <CheckSvg

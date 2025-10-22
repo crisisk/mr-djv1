@@ -63,7 +63,9 @@
   padding: 10px 20px;
   border-radius: 999px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .retryButton:hover {
@@ -98,7 +100,9 @@
   background: #1a2c4b;
   color: #ffffff;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .paginationButton:hover:not(:disabled) {

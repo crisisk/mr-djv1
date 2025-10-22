@@ -5,23 +5,23 @@ import React, {
   type ButtonHTMLAttributes,
   type ReactElement,
   type ReactNode,
-} from 'react';
-import styles from './CallToAction.module.css';
+} from "react";
+import styles from "./CallToAction.module.css";
 
-type Alignment = 'left' | 'center' | 'right';
+type Alignment = "left" | "center" | "right";
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'outlineLight' | 'ghost';
+type ButtonVariant = "primary" | "secondary" | "outline" | "outlineLight" | "ghost";
 
 type CTAButtonAsButton = {
-  as?: 'button';
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
+  as?: "button";
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
     label: string;
     variant?: ButtonVariant;
   };
 
 type CTAButtonAsAnchor = {
-  as: 'a';
-} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'children'> & {
+  as: "a";
+} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children"> & {
     label: string;
     variant?: ButtonVariant;
   };
@@ -33,7 +33,7 @@ export interface CallToActionProps {
   title?: string;
   description?: ReactNode;
   align?: Alignment;
-  spacing?: 'comfortable' | 'compact';
+  spacing?: "comfortable" | "compact";
   stackOnMobile?: boolean;
   className?: string;
   primaryButton: CTAButtonProps;
@@ -50,7 +50,7 @@ const buttonVariantClasses: Record<ButtonVariant, string> = {
 };
 
 const classNames = (...tokens: Array<string | false | null | undefined>): string =>
-  tokens.filter(Boolean).join(' ');
+  tokens.filter(Boolean).join(" ");
 
 const capitalize = (value: string): string => value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -59,7 +59,7 @@ const normalizeDescription = (description: ReactNode): ReactNode => {
     return null;
   }
 
-  if (typeof description === 'string' || typeof description === 'number') {
+  if (typeof description === "string" || typeof description === "number") {
     return <p className={styles.description}>{description}</p>;
   }
 
@@ -74,9 +74,9 @@ const normalizeDescription = (description: ReactNode): ReactNode => {
 };
 
 const resolveVariant = (variant?: ButtonVariant): ButtonVariant =>
-  (variant && buttonVariantClasses[variant] ? variant : 'primary');
+  variant && buttonVariantClasses[variant] ? variant : "primary";
 
-const isAnchorConfig = (config: CTAButtonProps): config is CTAButtonAsAnchor => config.as === 'a';
+const isAnchorConfig = (config: CTAButtonProps): config is CTAButtonAsAnchor => config.as === "a";
 
 const renderCTAButton = (config: CTAButtonProps, key?: string) => {
   if (isAnchorConfig(config)) {
@@ -89,10 +89,15 @@ const renderCTAButton = (config: CTAButtonProps, key?: string) => {
     );
   }
 
-  const { as: _as, label, variant, className, type = 'button', ...buttonProps } = config;
+  const { as: _as, label, variant, className, type = "button", ...buttonProps } = config;
   const variantClass = buttonVariantClasses[resolveVariant(variant)];
   return (
-    <button key={key} type={type} className={classNames(styles.button, variantClass, className)} {...buttonProps}>
+    <button
+      key={key}
+      type={type}
+      className={classNames(styles.button, variantClass, className)}
+      {...buttonProps}
+    >
       {label}
     </button>
   );
@@ -102,22 +107,31 @@ const CallToAction: React.FC<CallToActionProps> = ({
   eyebrow,
   title,
   description,
-  align = 'center',
-  spacing = 'comfortable',
+  align = "center",
+  spacing = "comfortable",
   stackOnMobile = true,
   className,
   primaryButton,
   secondaryButton,
   children,
 }) => {
-  const alignmentClass = styles[`align${capitalize(align) as 'Left' | 'Center' | 'Right'}`] ?? styles.alignCenter;
-  const spacingClass = spacing === 'compact' ? styles.compactSpacing : undefined;
+  const alignmentClass =
+    styles[`align${capitalize(align) as "Left" | "Center" | "Right"}`] ?? styles.alignCenter;
+  const spacingClass = spacing === "compact" ? styles.compactSpacing : undefined;
   const stackingClass = stackOnMobile ? styles.stackOnMobile : undefined;
 
   const normalizedDescription = normalizeDescription(description);
 
   return (
-    <div className={classNames(styles.callToAction, alignmentClass, spacingClass, stackingClass, className)}>
+    <div
+      className={classNames(
+        styles.callToAction,
+        alignmentClass,
+        spacingClass,
+        stackingClass,
+        className,
+      )}
+    >
       {(eyebrow || title || normalizedDescription || children) && (
         <div className={styles.textGroup}>
           {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}

@@ -1,18 +1,18 @@
-import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
-import enCommon from '../locales/en/common.json'
-import nlCommon from '../locales/nl/common.json'
+import enCommon from "../locales/en/common.json";
+import nlCommon from "../locales/nl/common.json";
 
-type DefaultNamespace = 'common'
+type DefaultNamespace = "common";
 
-declare module 'i18next' {
+declare module "i18next" {
   interface CustomTypeOptions {
-    defaultNS: DefaultNamespace
+    defaultNS: DefaultNamespace;
   }
 }
 
-export const defaultNS: DefaultNamespace = 'common'
+export const defaultNS: DefaultNamespace = "common";
 
 export const resources = {
   en: {
@@ -21,16 +21,16 @@ export const resources = {
   nl: {
     [defaultNS]: nlCommon,
   },
-} as const
+} as const;
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: 'en',
-  fallbackLng: 'en',
+  lng: "en",
+  fallbackLng: "en",
   defaultNS,
   interpolation: {
     escapeValue: false,
   },
-})
+});
 
-export default i18n
+export default i18n;
