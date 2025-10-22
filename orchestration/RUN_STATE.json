@@ -1,37 +1,42 @@
 {
-  "active_batch": "B2-platform-integration",
-  "updated_at": "2025-10-22T20:48:22Z",
+  "active_batch": "B3-compliance-analytics",
+  "updated_at": "2025-10-22T21:15:00Z",
   "workers": [
     {
       "id": "worker-1",
-      "task": "RG-FE-ADAPT",
+      "task": "LB-COMPLIANZ",
       "status": "in_progress",
-      "notes": "Adapting frontend data fetching to RentGuy endpoints with loading + error states"
+      "notes": "Rolling out consent automation updates and compliance checks"
     },
     {
       "id": "worker-2",
-      "task": "T2-1-API-INTEGRATION",
+      "task": "T1-1-GTM",
       "status": "in_progress",
-      "notes": "Coordinating backend API handshake and authentication wiring"
+      "notes": "Replacing GTM placeholder IDs and validating container publish"
     },
     {
       "id": "worker-3",
-      "task": "LB-SEVENSA-FLOW",
+      "task": "T1-2-COMPLIANZ",
       "status": "in_progress",
-      "notes": "Aligning Sevensa availability sync with lead routing"
+      "notes": "Configuring Complianz site ID and verifying banner behavior"
     },
     {
       "id": "worker-4",
-      "task": "T2-3-CONTACT-FLOW",
+      "task": "LB-STAGING-VALIDATION",
       "status": "in_progress",
-      "notes": "Contact form validation, notifications, and analytics capture"
+      "notes": "Executing staging validation checklist and logging findings"
     }
   ],
   "queue": [
     {
+      "task": "RG-DOCS",
+      "status": "queued",
+      "notes": "Documenting integration steps once compliance tasks free a worker"
+    },
+    {
       "task": "T3-4-AB-TESTING",
       "status": "queued",
-      "notes": "Will start once a worker becomes available to configure tracking"
+      "notes": "Resuming after compliance batch to configure experimentation tracking"
     }
   ],
   "blocked": [
