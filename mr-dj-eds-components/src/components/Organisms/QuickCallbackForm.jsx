@@ -157,7 +157,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
     return (
       <div className={`bg-green-50 border-2 border-green-500 p-spacing-xl rounded-lg text-center ${className}`}>
         <div className="text-5xl mb-spacing-md">✓</div>
-        <h3 className="text-2xl font-bold text-green-700 mb-spacing-sm">Bedankt!</h3>
+        <h2 className="text-2xl font-bold text-green-700 mb-spacing-sm">Bedankt!</h2>
         <p className="text-neutral-dark">
           {successMessage || 'We bellen je zo snel mogelijk terug!'}
         </p>
@@ -167,7 +167,7 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
 
   return (
     <div className={`bg-secondary p-spacing-xl rounded-lg shadow-xl ${className}`}>
-      <h3 className="text-2xl md:text-3xl font-bold text-neutral-dark mb-spacing-sm text-center">📞 Bel Mij Terug</h3>
+      <h2 className="text-2xl md:text-3xl font-bold text-neutral-dark mb-spacing-sm text-center">📞 Bel Mij Terug</h2>
       <p className="text-neutral-dark mb-spacing-lg text-center">Vul je gegevens in en wij bellen je vandaag nog!</p>
 
       {submitError && (
@@ -179,7 +179,10 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           <strong className="font-semibold block mb-1">Oops!</strong>
           <span>
             {submitError}{' '}
-            <a href="tel:+31408422594" className="font-semibold underline">
+            <a
+              href="tel:+31408422594"
+              className="font-semibold underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary focus-visible:ring-offset-white"
+            >
               Bel ons direct
             </a>
           </span>
@@ -279,11 +282,11 @@ const QuickCallbackForm = ({ variant = 'A', className = '' }) => {
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={isSubmitting || (HCAPTCHA_SITE_KEY ? !captcha.isReady : false)}
-          className="w-full bg-[var(--color-primary-blue)] text-white p-4 md:p-5 rounded-lg font-bold text-lg hover:bg-[#00487A] transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-[#66A6D9] focus:ring-offset-2 focus:ring-offset-white disabled:bg-neutral-gray-500 disabled:text-white disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-        >
+          <button
+            type="submit"
+            disabled={isSubmitting || (HCAPTCHA_SITE_KEY ? !captcha.isReady : false)}
+            className="w-full bg-[var(--color-primary-blue)] text-white p-4 md:p-5 rounded-lg font-bold text-lg hover:bg-[#00487A] transition-colors duration-300 focus:outline-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#66A6D9] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:bg-neutral-gray-500 disabled:text-white disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+          >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
               <IconBase className="animate-spin h-5 w-5" viewBox="0 0 24 24">
