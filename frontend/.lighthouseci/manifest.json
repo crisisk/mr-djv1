@@ -1,0 +1,14 @@
+[
+  {
+    "url": "http://localhost:3000/",
+    "isRepresentativeRun": true,
+    "htmlPath": "/workspace/mr-djv1/frontend/.lighthouseci/localhost-_-2025_10_22_19_29_02.report.html",
+    "jsonPath": "/workspace/mr-djv1/frontend/.lighthouseci/localhost-_-2025_10_22_19_29_02.report.json",
+    "summary": {
+      "performance": 0.91,
+      "accessibility": 0.96,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  }
+]

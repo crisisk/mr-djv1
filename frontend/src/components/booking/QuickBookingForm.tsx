@@ -237,7 +237,7 @@ const QuickBookingForm = ({
           onChange={handleChange}
           placeholder="Uw naam"
           required
-          autoFocus={autoFocus}
+          ref={firstFieldRef}
         />
       </Field>
 

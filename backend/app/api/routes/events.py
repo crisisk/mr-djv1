@@ -87,7 +87,9 @@ def get_event(event_id: int) -> Event:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
 
-@router.post("/", response_model=Event, status_code=status.HTTP_201_CREATED, tags=["events"])
+@router.post(
+    "/", response_model=Event, status_code=status.HTTP_201_CREATED, tags=["events"]
+)
 def create_event(payload: EventCreate) -> Event:
     new_id = max((event.id for event in _EVENTS), default=0) + 1
     event = Event(id=new_id, **payload.model_dump())

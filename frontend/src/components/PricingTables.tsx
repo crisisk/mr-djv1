@@ -136,4 +136,3 @@ export function PricingTables({ packages = defaultPackages }: PricingTablesProps
 }
 
 export default PricingTables;
-export { defaultPackages as defaultPricingPackages };

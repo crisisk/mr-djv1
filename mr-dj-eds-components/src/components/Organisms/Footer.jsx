@@ -73,9 +73,12 @@ const Footer = () => {
       });
   };
 
-  const { facebook, instagram, linkedin } = socialLinks;
+  const { facebook, instagram, linkedin, youtube, tiktok, twitter } = socialLinks;
 
   const isValidUrl = (url) => typeof url === 'string' && url.trim() !== '';
+
+  const focusRingClasses =
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary focus-visible:ring-offset-[#1A2C4B]';
 
   const socialItems = [
     {
@@ -155,7 +158,7 @@ const Footer = () => {
               <a
                 href="tel:+31408422594"
                 onClick={handlePhoneClick}
-                className="flex items-center gap-3 text-base hover:text-primary transition group"
+                className={`flex items-center gap-3 text-base hover:text-primary transition group ${focusRingClasses}`}
                 aria-label="Bel Mister DJ via +31 (0) 40 842 2594"
                 title="Bel Mister DJ via +31 (0) 40 842 2594"
               >
@@ -167,7 +170,7 @@ const Footer = () => {
               </a>
               <a
                 href="mailto:info@mr-dj.nl"
-                className="flex items-center gap-3 text-base hover:text-primary transition group"
+                className={`flex items-center gap-3 text-base hover:text-primary transition group ${focusRingClasses}`}
                 aria-label="Stuur een e-mail naar info@mr-dj.nl"
                 title="Stuur een e-mail naar info@mr-dj.nl"
               >
@@ -185,7 +188,7 @@ const Footer = () => {
             <h4 className="text-lg font-bold text-primary mb-4">Onze Diensten</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/bruiloft-dj" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/bruiloft-dj" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -193,7 +196,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/zakelijk" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/zakelijk" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -201,7 +204,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/feest-dj" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/feest-dj" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -209,7 +212,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/verhuur" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/verhuur" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -217,7 +220,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/#" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/#" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -232,7 +235,7 @@ const Footer = () => {
             <h4 className="text-lg font-bold text-primary mb-4">Informatie</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/over-ons" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/over-ons" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -240,7 +243,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/faq" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/faq" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -248,7 +251,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/contact" onClick={handleContactClick} className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/contact" onClick={handleContactClick} className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -256,7 +259,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/#reviews" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/#reviews" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -264,7 +267,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/#pakketten" className="text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group">
+                <a href="/#pakketten" className={`text-base text-gray-300 hover:text-secondary transition flex items-center gap-2 group ${focusRingClasses}`}>
                   <IconBase className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </IconBase>
@@ -289,7 +292,7 @@ const Footer = () => {
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-12 h-12 bg-white/10 text-white rounded-lg flex items-center justify-center transition-all hover:scale-110 ${hoverClass}`}
+                  className={`w-12 h-12 bg-white/10 text-white rounded-lg flex items-center justify-center transition-all hover:scale-110 ${hoverClass} ${focusRingClasses}`}
                   aria-label={name}
                 >
                   <Icon className="w-6 h-6" />
@@ -324,13 +327,13 @@ const Footer = () => {
               © {currentYear} Mr. DJ. Alle rechten voorbehouden. | Kvk: 12345678
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-gray-400">
-              <a href="/privacy-policy" className="hover:text-primary transition">
+              <a href="/privacy-policy" className={`hover:text-primary transition ${focusRingClasses}`}>
                 Privacybeleid
               </a>
-              <a href="/algemene-voorwaarden" className="hover:text-primary transition">
+              <a href="/algemene-voorwaarden" className={`hover:text-primary transition ${focusRingClasses}`}>
                 Algemene Voorwaarden
               </a>
-              <a href="/cookie-policy" className="hover:text-primary transition">
+              <a href="/cookie-policy" className={`hover:text-primary transition ${focusRingClasses}`}>
                 Cookiebeleid
               </a>
             </div>

@@ -48,10 +48,14 @@ def get_booking(booking_id: int) -> Booking:
     for booking in _BOOKINGS:
         if booking.id == booking_id:
             return booking
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Booking not found")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Booking not found"
+    )
 
 
-@router.post("/", response_model=Booking, status_code=status.HTTP_201_CREATED, tags=["bookings"])
+@router.post(
+    "/", response_model=Booking, status_code=status.HTTP_201_CREATED, tags=["bookings"]
+)
 def create_booking(payload: BookingCreate) -> Booking:
     booking = Booking(
         id=_next_booking_id(),
