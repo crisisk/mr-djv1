@@ -72,8 +72,12 @@ def _filter_events(
 
 @router.get("/", response_model=List[Event], tags=["events"])
 def list_events(
-    location: Optional[str] = Query(default=None, description="Filter events by location (contains match)"),
-    is_active: Optional[bool] = Query(default=None, description="Filter on active status"),
+    location: Optional[str] = Query(
+        default=None, description="Filter events by location (contains match)"
+    ),
+    is_active: Optional[bool] = Query(
+        default=None, description="Filter on active status"
+    ),
 ) -> List[Event]:
     return _filter_events(location=location, is_active=is_active)
 
@@ -86,7 +90,9 @@ def get_event(event_id: int) -> Event:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
 
-@router.post("/", response_model=Event, status_code=status.HTTP_201_CREATED, tags=["events"])
+@router.post(
+    "/", response_model=Event, status_code=status.HTTP_201_CREATED, tags=["events"]
+)
 def create_event(payload: EventCreate) -> Event:
     new_id = max((event.id for event in _EVENTS), default=0) + 1
     event = Event(id=new_id, **payload.model_dump())

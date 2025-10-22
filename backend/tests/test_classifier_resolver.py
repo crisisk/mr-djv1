@@ -132,7 +132,9 @@ def test_ambiguous_when_taric_candidates_without_measure(monkeypatch):
 
 def test_missing_hs_hint_raises(monkeypatch):
     monkeypatch.setattr(resolver.repo, "get_connection", _fake_conn)
-    monkeypatch.setattr(resolver.repo, "derive_hs_from_text", lambda conn, text, ref: None)
+    monkeypatch.setattr(
+        resolver.repo, "derive_hs_from_text", lambda conn, text, ref: None
+    )
 
     with pytest.raises(ValueError):
         resolver.classify(
