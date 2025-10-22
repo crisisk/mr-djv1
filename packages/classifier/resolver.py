@@ -40,13 +40,18 @@ def classify(ctx: ClassificationContext) -> ClassificationResult:
         )
 
         ruling_candidates = repo.get_applicable_rulings(
-            conn, hs_code8, taric_record.taric_code if taric_record else None, ctx.origin_country, ctx.ref_date
+            conn,
+            hs_code8,
+            taric_record.taric_code if taric_record else None,
+            ctx.origin_country,
+            ctx.ref_date,
         )
         selected_ruling = choose_ruling(ruling_candidates)
         if selected_ruling:
             validity = repo.taric_validity(
                 conn,
-                selected_ruling.taric_code or (taric_record.taric_code if taric_record else hs_code8),
+                selected_ruling.taric_code
+                or (taric_record.taric_code if taric_record else hs_code8),
             )
             return ClassificationResult(
                 hs_code8=selected_ruling.hs_code8,

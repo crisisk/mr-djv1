@@ -27,7 +27,9 @@ def choose_ruling(candidates: Iterable[RulingCandidate]) -> Optional[RulingCandi
     Candidates are expected to be pre-filtered on validity and country scope.
     """
 
-    return min(candidates, key=lambda c: (c.precedence, c.valid_from or ""), default=None)
+    return min(
+        candidates, key=lambda c: (c.precedence, c.valid_from or ""), default=None
+    )
 
 
 def ambiguous_result(hs_code8: str) -> ClassificationResult:

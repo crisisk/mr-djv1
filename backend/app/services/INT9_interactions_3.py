@@ -29,14 +29,18 @@ __all__ = [
 
 DEFAULT_API_BASE_URL = "https://graph.facebook.com/v19.0"
 DEFAULT_TIMEOUT_SECONDS = 5.0
-DEFAULT_BOOKING_TEMPLATE = os.getenv("WHATSAPP_BOOKING_TEMPLATE", "mr_dj_booking_confirmation")
+DEFAULT_BOOKING_TEMPLATE = os.getenv(
+    "WHATSAPP_BOOKING_TEMPLATE", "mr_dj_booking_confirmation"
+)
 DEFAULT_LANGUAGE_CODE = os.getenv("WHATSAPP_DEFAULT_LANGUAGE", "en_US")
 
 
 class WhatsAppServiceError(RuntimeError):
     """Base exception for WhatsApp service failures."""
 
-    def __init__(self, message: str, *, code: str = "whatsapp_error", status_code: int = 500) -> None:
+    def __init__(
+        self, message: str, *, code: str = "whatsapp_error", status_code: int = 500
+    ) -> None:
         super().__init__(message)
         self.code = code
         self.status_code = status_code
@@ -45,7 +49,12 @@ class WhatsAppServiceError(RuntimeError):
 class WhatsAppAuthenticationError(WhatsAppServiceError):
     """Raised when requests fail authentication or signature checks."""
 
-    def __init__(self, message: str = "Authentication failed", *, code: str = "whatsapp_auth_error") -> None:
+    def __init__(
+        self,
+        message: str = "Authentication failed",
+        *,
+        code: str = "whatsapp_auth_error",
+    ) -> None:
         super().__init__(message, code=code, status_code=401)
 
 
@@ -54,7 +63,9 @@ class WhatsAppNotConfiguredError(WhatsAppServiceError):
 
     def __init__(self) -> None:
         super().__init__(
-            "WhatsApp integration is not configured", code="whatsapp_not_configured", status_code=503
+            "WhatsApp integration is not configured",
+            code="whatsapp_not_configured",
+            status_code=503,
         )
 
 
@@ -73,7 +84,11 @@ class WhatsAppConfig:
         env = env or os.environ
         timeout_ms = env.get("WHATSAPP_REQUEST_TIMEOUT_MS")
         try:
-            timeout = max(float(timeout_ms) / 1000.0, 0.5) if timeout_ms else DEFAULT_TIMEOUT_SECONDS
+            timeout = (
+                max(float(timeout_ms) / 1000.0, 0.5)
+                if timeout_ms
+                else DEFAULT_TIMEOUT_SECONDS
+            )
         except (TypeError, ValueError):
             timeout = DEFAULT_TIMEOUT_SECONDS
 
@@ -91,13 +106,21 @@ class WhatsAppConfig:
 
     @property
     def normalised_base_url(self) -> str:
-        return self.api_base_url if self.api_base_url.endswith("/") else f"{self.api_base_url}/"
+        return (
+            self.api_base_url
+            if self.api_base_url.endswith("/")
+            else f"{self.api_base_url}/"
+        )
 
 
-def _create_app_secret_proof(access_token: str, app_secret: Optional[str]) -> Optional[str]:
+def _create_app_secret_proof(
+    access_token: str, app_secret: Optional[str]
+) -> Optional[str]:
     if not access_token or not app_secret:
         return None
-    digest = hmac.new(app_secret.encode("utf-8"), access_token.encode("utf-8"), hashlib.sha256)
+    digest = hmac.new(
+        app_secret.encode("utf-8"), access_token.encode("utf-8"), hashlib.sha256
+    )
     return digest.hexdigest()
 
 
@@ -150,22 +173,32 @@ def verify_integration_signature(
     timestamp, digest = _parse_signature_header(header)
     now = int(time.time())
     if tolerance_seconds and abs(now - timestamp) > tolerance_seconds:
-        raise WhatsAppAuthenticationError("Signature timestamp outside tolerance", code="timestamp_out_of_range")
+        raise WhatsAppAuthenticationError(
+            "Signature timestamp outside tolerance", code="timestamp_out_of_range"
+        )
 
     message = f"{timestamp}.{payload_bytes.decode('utf-8')}".encode("utf-8")
 
     for secret in secrets:
-        candidate = hmac.new(secret.encode("utf-8"), message, hashlib.sha256).hexdigest()
+        candidate = hmac.new(
+            secret.encode("utf-8"), message, hashlib.sha256
+        ).hexdigest()
         if hmac.compare_digest(candidate, digest):
             return secret
 
-    raise WhatsAppAuthenticationError("Signature verification failed", code="signature_mismatch")
+    raise WhatsAppAuthenticationError(
+        "Signature verification failed", code="signature_mismatch"
+    )
 
 
 class WhatsAppService:
     """Helper around the WhatsApp Business messaging endpoints."""
 
-    def __init__(self, config: Optional[WhatsAppConfig] = None, client: Optional[httpx.Client] = None) -> None:
+    def __init__(
+        self,
+        config: Optional[WhatsAppConfig] = None,
+        client: Optional[httpx.Client] = None,
+    ) -> None:
         self.config = config or WhatsAppConfig.from_env()
         self._owns_client = client is None
         self._client = client or httpx.Client(timeout=self.config.request_timeout)
@@ -178,10 +211,14 @@ class WhatsAppService:
         if not self.config.is_configured:
             raise WhatsAppNotConfiguredError()
 
-    def _build_url(self, path: str, params: Optional[MutableMapping[str, str]] = None) -> str:
+    def _build_url(
+        self, path: str, params: Optional[MutableMapping[str, str]] = None
+    ) -> str:
         base = self.config.normalised_base_url
         params = params or {}
-        if (proof := _create_app_secret_proof(self.config.access_token, self.config.app_secret)):
+        if proof := _create_app_secret_proof(
+            self.config.access_token, self.config.app_secret
+        ):
             params.setdefault("appsecret_proof", proof)
         query = "&".join(f"{key}={value}" for key, value in params.items())
         return f"{base}{path}?{query}" if query else f"{base}{path}"
@@ -194,9 +231,15 @@ class WhatsAppService:
             "Content-Type": "application/json",
         }
         try:
-            response = self._client.post(url, headers=headers, content=json.dumps(payload))
+            response = self._client.post(
+                url, headers=headers, content=json.dumps(payload)
+            )
         except httpx.TimeoutException as exc:
-            raise WhatsAppServiceError("WhatsApp API request timed out", code="whatsapp_timeout", status_code=504) from exc
+            raise WhatsAppServiceError(
+                "WhatsApp API request timed out",
+                code="whatsapp_timeout",
+                status_code=504,
+            ) from exc
         except httpx.HTTPError as exc:
             raise WhatsAppServiceError("WhatsApp API request failed") from exc
 
@@ -219,7 +262,11 @@ class WhatsAppService:
     ) -> Mapping[str, object]:
         number = _normalise_phone_number(phone_number or "")
         if not number:
-            raise WhatsAppServiceError("Invalid phone number provided", code="invalid_phone_number", status_code=400)
+            raise WhatsAppServiceError(
+                "Invalid phone number provided",
+                code="invalid_phone_number",
+                status_code=400,
+            )
 
         payload = {
             "messaging_product": "whatsapp",
@@ -235,14 +282,22 @@ class WhatsAppService:
 
         return self._post(f"{self.config.phone_number_id}/messages", payload)
 
-    def send_text_message(self, *, phone_number: str, message: str) -> Mapping[str, object]:
+    def send_text_message(
+        self, *, phone_number: str, message: str
+    ) -> Mapping[str, object]:
         number = _normalise_phone_number(phone_number or "")
         if not number:
-            raise WhatsAppServiceError("Invalid phone number provided", code="invalid_phone_number", status_code=400)
+            raise WhatsAppServiceError(
+                "Invalid phone number provided",
+                code="invalid_phone_number",
+                status_code=400,
+            )
 
         body = (message or "").strip()
         if not body:
-            raise WhatsAppServiceError("Message body is required", code="invalid_message", status_code=400)
+            raise WhatsAppServiceError(
+                "Message body is required", code="invalid_message", status_code=400
+            )
 
         payload = {
             "messaging_product": "whatsapp",
@@ -260,12 +315,14 @@ class WhatsAppService:
     ) -> Mapping[str, object]:
         booking_details = booking_details or {}
         parameters = []
-        if (event_date := booking_details.get("eventDate")):
+        if event_date := booking_details.get("eventDate"):
             parameters.append({"type": "text", "text": str(event_date)})
-        if (location := booking_details.get("location")):
+        if location := booking_details.get("location"):
             parameters.append({"type": "text", "text": str(location)})
 
-        components = [{"type": "body", "parameters": parameters}] if parameters else None
+        components = (
+            [{"type": "body", "parameters": parameters}] if parameters else None
+        )
         return self.send_template_message(
             phone_number=phone_number,
             template_name=DEFAULT_BOOKING_TEMPLATE,
