@@ -1,42 +1,57 @@
 {
-  "active_batch": "B3-compliance-analytics",
-  "updated_at": "2025-10-22T21:15:00Z",
+  "active_batch": "B4-brand-experience",
+  "updated_at": "2025-10-22T22:00:00Z",
   "workers": [
     {
       "id": "worker-1",
-      "task": "LB-COMPLIANZ",
+      "task": "T2-2-BRANDING",
       "status": "in_progress",
-      "notes": "Rolling out consent automation updates and compliance checks"
+      "notes": "Refreshing favicon and header assets to align with brand kit"
     },
     {
       "id": "worker-2",
-      "task": "T1-1-GTM",
+      "task": "T2-4-SCHEMA",
       "status": "in_progress",
-      "notes": "Replacing GTM placeholder IDs and validating container publish"
+      "notes": "Extending Schema.org coverage across city landing pages"
     },
     {
       "id": "worker-3",
-      "task": "T1-2-COMPLIANZ",
+      "task": "T2-5-TESTIMONIALS",
       "status": "in_progress",
-      "notes": "Configuring Complianz site ID and verifying banner behavior"
+      "notes": "Centralizing testimonials via CMS feed with fallback logic"
     },
     {
       "id": "worker-4",
-      "task": "LB-STAGING-VALIDATION",
+      "task": "RG-DOCS",
       "status": "in_progress",
-      "notes": "Executing staging validation checklist and logging findings"
+      "notes": "Documenting RentGuy integration rollout and playbooks"
     }
   ],
   "queue": [
     {
-      "task": "RG-DOCS",
-      "status": "queued",
-      "notes": "Documenting integration steps once compliance tasks free a worker"
-    },
-    {
       "task": "T3-4-AB-TESTING",
       "status": "queued",
-      "notes": "Resuming after compliance batch to configure experimentation tracking"
+      "notes": "Resume experimentation tracking setup once analytics capacity frees up"
+    },
+    {
+      "task": "T3-1-CAROUSEL",
+      "status": "queued",
+      "notes": "Design and build testimonials carousel per brand guidelines"
+    },
+    {
+      "task": "T3-2-CLIENT-LOGOS",
+      "status": "queued",
+      "notes": "Prep social proof logo strip with optimized assets"
+    },
+    {
+      "task": "T3-3-ABOUT",
+      "status": "queued",
+      "notes": "Draft and implement \"Over ons\" section content"
+    },
+    {
+      "task": "T3-6-SOCIAL",
+      "status": "queued",
+      "notes": "Finalize social media links and metadata configuration"
     }
   ],
   "blocked": [
