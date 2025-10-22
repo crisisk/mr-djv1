@@ -1,0 +1,487 @@
+{
+  "tasks": [
+    {
+      "id": "RG-TST-ENV",
+      "title": "Provision mocked RentGuy test environment",
+      "tags": ["backend", "integration", "critical"],
+      "paths": [
+        "backend/",
+        "ops/",
+        "docs/"
+      ],
+      "outputs": [
+        "Set up dedicated test or mock services for RentGuy API calls",
+        "Document connection details and environment variables",
+        "Ensure integration tests can run without production dependencies"
+      ],
+      "acceptance": [
+        "Mocked RentGuy endpoints available locally and in CI",
+        "Integration tests execute without reaching production services",
+        "Documentation updated with usage instructions"
+      ],
+      "est": { "hours": 6 }
+    },
+    {
+      "id": "RG-FE-ADAPT",
+      "title": "Update frontend data fetching for RentGuy API",
+      "tags": ["frontend", "integration", "critical"],
+      "paths": [
+        "frontend/",
+        "src/",
+        "config/"
+      ],
+      "outputs": [
+        "Refactor data fetching logic to call RentGuy endpoints",
+        "Implement authentication handling and loading states",
+        "Add error boundaries and retry flows"
+      ],
+      "acceptance": [
+        "Frontend fetches data from configured RentGuy services",
+        "Auth tokens managed securely via env vars",
+        "UX shows proper loading and error feedback"
+      ],
+      "est": { "hours": 8 }
+    },
+    {
+      "id": "RG-BE-PROXY",
+      "title": "Implement backend proxy middleware for RentGuy",
+      "tags": ["backend", "security", "integration"],
+      "paths": [
+        "backend/",
+        "backend/src/",
+        "config/"
+      ],
+      "outputs": [
+        "Create secure proxy layer for RentGuy communication",
+        "Manage secrets through environment configuration",
+        "Provide validation and sanitization for requests"
+      ],
+      "acceptance": [
+        "Proxy handles RentGuy traffic without exposing secrets",
+        "Configuration passes backend strict validation",
+        "Integration tests cover success and failure cases"
+      ],
+      "est": { "hours": 7 }
+    },
+    {
+      "id": "RG-DOCS",
+      "title": "Document RentGuy integration rollout",
+      "tags": ["documentation", "integration"],
+      "paths": [
+        "docs/",
+        "README.md",
+        "PROJECT.md"
+      ],
+      "outputs": [
+        "Write end-to-end integration steps",
+        "List configuration and secret requirements",
+        "Describe testing scenarios and rollback plan"
+      ],
+      "acceptance": [
+        "Documentation reviewed and published",
+        "Setup reproducible from docs alone",
+        "QA sign-off recorded"
+      ],
+      "est": { "hours": 4 }
+    },
+    {
+      "id": "RG-PERF-AUTO",
+      "title": "Automate k6 performance and regression tests",
+      "tags": ["testing", "performance", "ci"],
+      "paths": [
+        "automation/",
+        "scripts/",
+        "package.json"
+      ],
+      "outputs": [
+        "Add containerized k6 tooling",
+        "Create npm script `npm run test:perf`",
+        "Integrate k6 execution into CI pipeline"
+      ],
+      "acceptance": [
+        "Performance tests run with a single command",
+        "CI artifacts collected for each run",
+        "Thresholds defined for regressions"
+      ],
+      "est": { "hours": 5 }
+    },
+    {
+      "id": "LB-SECRET-PROVISION",
+      "title": "Provision backend runtime secrets",
+      "tags": ["backend", "security", "critical"],
+      "paths": [
+        "backend/.env",
+        "backend/managed.env",
+        "backend/src/config.js"
+      ],
+      "outputs": [
+        "Populate required secrets for RentGuy/Sevensa/N8N",
+        "Ensure validation passes during boot",
+        "Document secret management process"
+      ],
+      "acceptance": [
+        "Backend starts without configuration errors",
+        "Secrets stored securely",
+        "Secrets rotation strategy defined"
+      ],
+      "est": { "hours": 3 }
+    },
+    {
+      "id": "LB-COMPLIANZ",
+      "title": "Configure Complianz consent and tracking tags",
+      "tags": ["frontend", "compliance", "analytics"],
+      "paths": [
+        "index.html",
+        "public/",
+        "config/"
+      ],
+      "outputs": [
+        "Replace placeholder Complianz site ID",
+        "Update Facebook Pixel and GTM variables",
+        "Verify consent banner activates correct scripts"
+      ],
+      "acceptance": [
+        "Consent manager reflects production IDs",
+        "Tracking scripts gated behind consent",
+        "No placeholder IDs remaining"
+      ],
+      "est": { "hours": 3 }
+    },
+    {
+      "id": "LB-SEVENSA-FLOW",
+      "title": "Connect AvailabilityChecker to Sevensa backend",
+      "tags": ["frontend", "integration"],
+      "paths": [
+        "AvailabilityChecker.jsx",
+        "backend/",
+        "docs/"
+      ],
+      "outputs": [
+        "Replace placeholder Sevensa account and form IDs",
+        "Wire component into backend lead flow",
+        "Add fallback behavior when Sevensa unavailable"
+      ],
+      "acceptance": [
+        "Checker submits to correct Sevensa endpoints",
+        "Lead flow tested end-to-end",
+        "Errors handled gracefully"
+      ],
+      "est": { "hours": 4 }
+    },
+    {
+      "id": "LB-STAGING-VALIDATION",
+      "title": "Complete staging validation walkthrough",
+      "tags": ["qa", "analytics", "compliance"],
+      "paths": [
+        "STAGING-VALIDATION-STATUS.md",
+        "docs/",
+        "monitoring/"
+      ],
+      "outputs": [
+        "Resolve console errors on staging",
+        "Verify GA4 DebugView and GTM/GA4 IDs",
+        "Document validation results"
+      ],
+      "acceptance": [
+        "Staging checklist fully complete",
+        "Analytics telemetry verified",
+        "Updated status report committed"
+      ],
+      "est": { "hours": 4 }
+    },
+    {
+      "id": "T1-1-GTM",
+      "title": "Configure Google Tag Manager IDs",
+      "tags": ["analytics", "frontend"],
+      "paths": [
+        "index.html",
+        "frontend/",
+        "config/"
+      ],
+      "outputs": [
+        "Replace all GTM-PLACEHOLDER references",
+        "Update deployment configuration for GTM",
+        "Verify dataLayer initialization"
+      ],
+      "acceptance": [
+        "Correct GTM ID present across builds",
+        "Tag firing confirmed in preview",
+        "Deployment notes updated"
+      ],
+      "est": { "hours": 2 }
+    },
+    {
+      "id": "T1-2-COMPLIANZ",
+      "title": "Finalize Complianz cookie consent setup",
+      "tags": ["compliance", "frontend"],
+      "paths": [
+        "index.html",
+        "public/",
+        "config/"
+      ],
+      "outputs": [
+        "Provide production Complianz Site ID",
+        "Ensure consent categories map to scripts",
+        "Add documentation for consent management"
+      ],
+      "acceptance": [
+        "Consent banner references live site",
+        "Non-essential scripts blocked until consent",
+        "Docs explain override procedure"
+      ],
+      "est": { "hours": 2 }
+    },
+    {
+      "id": "T2-1-API-INTEGRATION",
+      "title": "Integrate backend API with frontend apps",
+      "tags": ["fullstack", "integration"],
+      "paths": [
+        "frontend/",
+        "backend/",
+        "src/"
+      ],
+      "outputs": [
+        "Implement healthcheck and booking/contact endpoints",
+        "Connect frontend components to backend APIs",
+        "Add shared types and error handling"
+      ],
+      "acceptance": [
+        "Frontend consumes backend data successfully",
+        "Automated tests cover core flows",
+        "Monitoring alerts configured"
+      ],
+      "est": { "hours": 9 }
+    },
+    {
+      "id": "T2-2-BRANDING",
+      "title": "Update branding assets and favicon",
+      "tags": ["design", "frontend", "marketing"],
+      "paths": [
+        "public/",
+        "frontend/",
+        "styles/"
+      ],
+      "outputs": [
+        "Refresh logo usage in headers",
+        "Update favicon and manifest",
+        "Ensure brand guidelines applied"
+      ],
+      "acceptance": [
+        "New branding visible site-wide",
+        "Assets optimized and referenced",
+        "Design review approved"
+      ],
+      "est": { "hours": 3 }
+    },
+    {
+      "id": "T2-3-CONTACT-FLOW",
+      "title": "Deliver production-ready contact form",
+      "tags": ["frontend", "backend", "analytics"],
+      "paths": [
+        "frontend/",
+        "backend/",
+        "tests/"
+      ],
+      "outputs": [
+        "Implement validation and submission",
+        "Send notifications via email/CRM",
+        "Track conversions and consent"
+      ],
+      "acceptance": [
+        "Form submission succeeds and is tracked",
+        "Validation prevents bad data",
+        "E2E tests cover happy and error paths"
+      ],
+      "est": { "hours": 6 }
+    },
+    {
+      "id": "T2-4-SCHEMA",
+      "title": "Expand Schema.org structured data",
+      "tags": ["seo", "frontend"],
+      "paths": [
+        "templates_/",
+        "public/",
+        "docs/"
+      ],
+      "outputs": [
+        "Verify existing structured data",
+        "Add markup to all city pages",
+        "Validate with Google Rich Results"
+      ],
+      "acceptance": [
+        "Structured data passes validation",
+        "Coverage documented per page",
+        "No schema warnings remain"
+      ],
+      "est": { "hours": 4 }
+    },
+    {
+      "id": "T2-5-TESTIMONIALS",
+      "title": "Centralize testimonials via API/CMS",
+      "tags": ["frontend", "backend", "content"],
+      "paths": [
+        "content/",
+        "frontend/",
+        "backend/"
+      ],
+      "outputs": [
+        "Move testimonial data to API or CMS",
+        "Provide fallback content",
+        "Add automated tests"
+      ],
+      "acceptance": [
+        "Testimonials load dynamically",
+        "Fallback activates when API unavailable",
+        "Content editors documented"
+      ],
+      "est": { "hours": 5 }
+    },
+    {
+      "id": "T3-1-CAROUSEL",
+      "title": "Implement testimonials carousel",
+      "tags": ["frontend", "ui"],
+      "paths": [
+        "frontend/",
+        "components/",
+        "styles/"
+      ],
+      "outputs": [
+        "Build carousel component per brand guidelines",
+        "Ensure responsive behavior",
+        "Add accessibility support"
+      ],
+      "acceptance": [
+        "Carousel passes accessibility checks",
+        "Responsive breakpoints covered",
+        "Design QA approved"
+      ],
+      "est": { "hours": 4 }
+    },
+    {
+      "id": "T3-2-CLIENT-LOGOS",
+      "title": "Add client logos for social proof",
+      "tags": ["frontend", "marketing"],
+      "paths": [
+        "public/",
+        "frontend/",
+        "components/"
+      ],
+      "outputs": [
+        "Collect optimized logo assets",
+        "Display logos in marketing sections",
+        "Document sourcing and licensing"
+      ],
+      "acceptance": [
+        "Logos render without layout shift",
+        "Assets optimized and licensed",
+        "Marketing sign-off obtained"
+      ],
+      "est": { "hours": 3 }
+    },
+    {
+      "id": "T3-3-ABOUT",
+      "title": "Create 'Over ons' section",
+      "tags": ["frontend", "content"],
+      "paths": [
+        "frontend/",
+        "content/",
+        "styles/"
+      ],
+      "outputs": [
+        "Design and implement about section",
+        "Include key differentiators and CTA",
+        "Ensure responsive layout"
+      ],
+      "acceptance": [
+        "Section live on DjSaxLanding",
+        "Content reviewed by marketing",
+        "No layout regressions"
+      ],
+      "est": { "hours": 3 }
+    },
+    {
+      "id": "T3-4-AB-TESTING",
+      "title": "Finalize A/B testing configuration",
+      "tags": ["frontend", "analytics", "testing"],
+      "paths": [
+        "frontend/",
+        "analytics/",
+        "docs/"
+      ],
+      "outputs": [
+        "Complete A/B test setup and documentation",
+        "Ensure variant tracking integrated",
+        "Provide rollout and analysis guide"
+      ],
+      "acceptance": [
+        "A/B tests configurable without code changes",
+        "Analytics capturing variant events",
+        "Documentation includes governance"
+      ],
+      "est": { "hours": 5 }
+    },
+    {
+      "id": "T3-5-PERFORMANCE",
+      "title": "Deliver performance optimizations",
+      "tags": ["performance", "frontend", "devops"],
+      "paths": [
+        "frontend/",
+        "scripts/",
+        "lighthouse-budgets.json"
+      ],
+      "outputs": [
+        "Optimize for <2s FCP and >90 Lighthouse",
+        "Automate performance monitoring",
+        "Document budget compliance"
+      ],
+      "acceptance": [
+        "Lighthouse reports meet targets",
+        "Budgets enforced in CI",
+        "Regression alerts configured"
+      ],
+      "est": { "hours": 6 }
+    },
+    {
+      "id": "T3-6-SOCIAL",
+      "title": "Complete social media integration",
+      "tags": ["marketing", "seo"],
+      "paths": [
+        "frontend/",
+        "content/",
+        "public/"
+      ],
+      "outputs": [
+        "Update social links with real URLs",
+        "Ensure metadata for sharing",
+        "Document social campaign tracking"
+      ],
+      "acceptance": [
+        "All social links functional",
+        "OG/Twitter metadata validated",
+        "Marketing playbook updated"
+      ],
+      "est": { "hours": 3 }
+    },
+    {
+      "id": "T4-1-REPO-CLEANUP",
+      "title": "Clean up Git repository",
+      "tags": ["devops", "maintenance"],
+      "paths": [
+        ".gitignore",
+        "docker-compose.yml",
+        "ops/"
+      ],
+      "outputs": [
+        "Remove stale stashes and config overrides",
+        "Update gitignore for environment files",
+        "Tag release v1.0-react-spa"
+      ],
+      "acceptance": [
+        "Repository free of stray files",
+        "Release tag created",
+        "Documentation updated"
+      ],
+      "est": { "hours": 2 }
+    }
+  ]
+}

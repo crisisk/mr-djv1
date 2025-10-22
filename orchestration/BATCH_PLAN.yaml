@@ -1,0 +1,85 @@
+version: 1
+global:
+  max_parallel_workers: 4
+  commit_size_guard:
+    max_changed_files: 25
+    max_diff_kb: 250
+  gates:
+    - lint
+    - typecheck
+    - unit
+    - build
+    - e2e_smoke
+    - accessibility
+    - performance
+batches:
+  - id: B1-foundation
+    rationale: "Establish secure integrations and test infrastructure"
+    tasks:
+      - LB-SECRET-PROVISION
+      - RG-BE-PROXY
+      - RG-TST-ENV
+      - RG-PERF-AUTO
+    parallel: false
+  - id: B2-platform-integration
+    rationale: "Connect frontend flows to backend and analytics"
+    tasks:
+      - RG-FE-ADAPT
+      - T2-1-API-INTEGRATION
+      - LB-SEVENSA-FLOW
+      - T2-3-CONTACT-FLOW
+      - T3-4-AB-TESTING
+    parallel: true
+  - id: B3-compliance-analytics
+    rationale: "Complete consent, tracking, and staging validation"
+    tasks:
+      - LB-COMPLIANZ
+      - T1-1-GTM
+      - T1-2-COMPLIANZ
+      - LB-STAGING-VALIDATION
+      - RG-DOCS
+    parallel: true
+  - id: B4-brand-content
+    rationale: "Deliver marketing assets and structured content"
+    tasks:
+      - T2-2-BRANDING
+      - T2-4-SCHEMA
+      - T2-5-TESTIMONIALS
+      - T3-1-CAROUSEL
+      - T3-2-CLIENT-LOGOS
+      - T3-3-ABOUT
+      - T3-6-SOCIAL
+    parallel: true
+  - id: B5-performance-hardening
+    rationale: "Optimize performance and finalize repository housekeeping"
+    tasks:
+      - T3-5-PERFORMANCE
+      - T4-1-REPO-CLEANUP
+    parallel: false
+parallel_overview:
+  - batch: B2-platform-integration
+    rationale: "Connect frontend flows to backend and analytics"
+    tasks:
+      - RG-FE-ADAPT
+      - T2-1-API-INTEGRATION
+      - LB-SEVENSA-FLOW
+      - T2-3-CONTACT-FLOW
+      - T3-4-AB-TESTING
+  - batch: B3-compliance-analytics
+    rationale: "Complete consent, tracking, and staging validation"
+    tasks:
+      - LB-COMPLIANZ
+      - T1-1-GTM
+      - T1-2-COMPLIANZ
+      - LB-STAGING-VALIDATION
+      - RG-DOCS
+  - batch: B4-brand-content
+    rationale: "Deliver marketing assets and structured content"
+    tasks:
+      - T2-2-BRANDING
+      - T2-4-SCHEMA
+      - T2-5-TESTIMONIALS
+      - T3-1-CAROUSEL
+      - T3-2-CLIENT-LOGOS
+      - T3-3-ABOUT
+      - T3-6-SOCIAL
