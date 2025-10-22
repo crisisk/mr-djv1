@@ -2,7 +2,7 @@
 
 ## Summary
 - Status: 🔴 Not Ready
-- Notes: Initial orchestration artifacts created. Technical tasks pending execution.
+- Notes: Batch B1 awaiting secret handoff; Batch B2-platform-integration is running with four parallel workers.
 
 ## Checklist Snapshot
 - [ ] CI build clean (`npm run build`)
@@ -14,5 +14,6 @@
 - [ ] Accessibility scan < 5 minor issues
 
 ## Next Steps
-1. Execute Batch B1-foundation to stabilize backend integrations and performance tooling.
-2. Run guard scripts and update report status after each batch.
+1. Resolve secret provisioning to unblock Batch B1-foundation deliverables.
+2. Monitor Batch B2 progress across RG-FE-ADAPT, T2-1-API-INTEGRATION, LB-SEVENSA-FLOW, and T2-3-CONTACT-FLOW.
+3. Run guard scripts and update report status after each batch.

@@ -1,3 +1,3 @@
 # Known Issues & Triage
 
-_No failures recorded yet. This log will capture blocking issues discovered during batch execution._
+- **B1-foundation** → Blocked awaiting secure secret provisioning and performance tooling credentials. Follow up with DevOps to obtain `backend/.env` + `backend/managed.env` and k6 container access tokens.
