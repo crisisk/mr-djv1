@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from datetime import date
 from functools import lru_cache
@@ -81,9 +81,8 @@ def get_connection() -> Iterator[Connection]:
 
 
 def _fetchall(conn: Connection, statement: str, **params) -> Sequence[dict]:
-    result: Result = conn.execute(text(statement), params)
-    rows = [dict(row._mapping) for row in result]
-    result.close()
+    with closing(conn.execute(text(statement), params)) as result:
+        rows = [dict(row._mapping) for row in result]
     return rows
 
 

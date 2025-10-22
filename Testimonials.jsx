@@ -221,13 +221,13 @@ const TestimonialsCarousel = ({ testimonials, title, prefersReducedMotion }) => 
 
   const handlePointerUp = useCallback(
     (event) => {
-      if (pointerStartRef.current == null) {
+      if (pointerStartRef.current === null || pointerStartRef.current === undefined) {
         setIsInteractionPaused(false)
         return
       }
 
       const endX = event.clientX ?? event.changedTouches?.[0]?.clientX ?? null
-      if (endX == null) {
+      if (endX === null) {
         pointerStartRef.current = null
         setIsInteractionPaused(false)
         return
