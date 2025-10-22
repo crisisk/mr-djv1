@@ -1,0 +1,15 @@
+{
+  "provinces": ["Noord-Brabant", "Limburg"],
+  "cities": [
+    {"slug":"eindhoven","name":"Eindhoven"},
+    {"slug":"den-bosch","name":"Den Bosch"},
+    {"slug":"tilburg","name":"Tilburg"},
+    {"slug":"breda","name":"Breda"},
+    {"slug":"helmond","name":"Helmond"},
+    {"slug":"weert","name":"Weert"},
+    {"slug":"roermond","name":"Roermond"},
+    {"slug":"venlo","name":"Venlo"},
+    {"slug":"sittard","name":"Sittard"},
+    {"slug":"maastricht","name":"Maastricht"}
+  ]
+}
