@@ -4,5 +4,6 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [{ userAgent: "*", allow: "/" }],
     sitemap: "https://mr-dj.sevensa.nl/sitemap.xml",
+    host: "https://mr-dj.sevensa.nl",
   };
 }

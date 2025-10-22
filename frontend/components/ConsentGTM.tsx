@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 
 type ConsentGTMProps = {
@@ -9,8 +10,14 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
   const [consented, setConsented] = useState(false);
 
   useEffect(() => {
-    const hasConsent = localStorage.getItem("consent:analytics") === "true";
-    setConsented(hasConsent);
+    if (!gtmId) return;
+
+    const ok = localStorage.getItem("consent:analytics") === "true";
+    setConsented(ok);
+  }, [gtmId]);
+
+  useEffect(() => {
+    if (!consented || !gtmId) return;
 
     if (!hasConsent) return;
 
@@ -22,11 +29,7 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
         })(window,document,'script','dataLayer','${gtmId}');
       `;
     document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, [gtmId]);
+  }, [consented, gtmId]);
 
     return consented ? (
       <noscript>

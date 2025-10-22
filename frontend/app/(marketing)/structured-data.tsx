@@ -8,11 +8,9 @@ export default function StructuredData() {
     address: { "@type": "PostalAddress", addressCountry: "NL" },
     sameAs: [],
   };
+  const json = JSON.stringify(data).replace(/</g, "\\u003c");
 
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />
   );
 }
