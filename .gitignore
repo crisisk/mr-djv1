@@ -13,6 +13,11 @@ yarn-error.log*
 .env.local
 .env.production
 
+# Credentials vault (NEVER commit!)
+vault/
+/vault/
+**/vault/
+
 # Docker
 letsencrypt/
 *.tar.gz
@@ -41,4 +46,22 @@ build/
 # Database
 *.sql.backup
 postgres_data/
+
+# Test artifacts
+test-screenshots/
+*.png
+*.jpg
+*.jpeg
+
+# Video files (too large for GitHub, use CDN/S3)
+*.mov
+*.mp4
+*.avi
+*.wmv
+*.flv
+*.webm
+content/media/videos/
+frontend/public/media/videos/
+**/videos/*.mov
+**/videos/*.mp4
 
