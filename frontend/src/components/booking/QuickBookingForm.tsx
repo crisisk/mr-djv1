@@ -1,5 +1,5 @@
 import type { ChangeEvent, FormEvent } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import type { BookingResponse } from '../../services/booking'
@@ -146,13 +146,14 @@ type QuickBookingFormProps = {
   onSuccess?: (response: BookingResponse) => void
   onCancel?: () => void
   className?: string
-  autoFocus?: boolean
+  focusOnMount?: boolean
 }
 
-const QuickBookingForm = ({ origin, onSuccess, onCancel, className, autoFocus }: QuickBookingFormProps) => {
+const QuickBookingForm = ({ origin, onSuccess, onCancel, className, focusOnMount }: QuickBookingFormProps) => {
   const [formState, setFormState] = useState<FormState>(INITIAL_STATE)
   const { submit, status, error, reset } = useBooking()
   const [showValidationError, setShowValidationError] = useState(false)
+  const nameInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     if (status === 'success') {
@@ -160,6 +161,15 @@ const QuickBookingForm = ({ origin, onSuccess, onCancel, className, autoFocus }:
       setShowValidationError(false)
     }
   }, [reset, status])
+
+  useEffect(() => {
+    if (!focusOnMount) {
+      return
+    }
+
+    const node = nameInputRef.current
+    node?.focus({ preventScroll: true })
+  }, [focusOnMount])
 
   const isSubmitting = status === 'loading'
 
@@ -201,7 +211,6 @@ const QuickBookingForm = ({ origin, onSuccess, onCancel, className, autoFocus }:
         eventDate: formState.eventDate ? formState.eventDate : undefined,
         message: formState.message.trim() ? formState.message.trim() : undefined,
       })
-
       setFormState(INITIAL_STATE)
       onSuccess?.(response)
     } catch (submissionError) {
@@ -219,13 +228,13 @@ const QuickBookingForm = ({ origin, onSuccess, onCancel, className, autoFocus }:
       <Field>
         Naam*
         <Input
+          ref={nameInputRef}
           name="name"
           type="text"
           value={formState.name}
           onChange={handleChange}
           placeholder="Uw naam"
           required
-          autoFocus={autoFocus}
         />
       </Field>
 

@@ -3,10 +3,8 @@ import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import SocialMediaAd from '../components/Generated/MKT3_2_20251016_062454'
 import InstagramReelsSection from '../components/Generated/MKT2_3_20251016_062323'
-import {
-  GeneratedContentConfigProvider,
-  type GeneratedContentConfig,
-} from '../context/GeneratedContentConfigContext'
+import type { GeneratedContentConfig } from '../context/generatedContentTypes'
+import { GeneratedContentConfigProvider } from '../context/GeneratedContentConfigProvider'
 import { apiClient } from '../lib/apiClient'
 
 describe('SocialMediaAd analytics integration', () => {

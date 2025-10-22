@@ -32,15 +32,13 @@ describe('createWhatsAppClickHandler (frontend)', () => {
     if (originalWindow) {
       globalThis.window = originalWindow;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (globalThis as any).window;
+      Reflect.deleteProperty(globalThis as { window?: unknown }, 'window');
     }
 
     if (originalLocation) {
       globalThis.location = originalLocation;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (globalThis as any).location;
+      Reflect.deleteProperty(globalThis as { location?: unknown }, 'location');
     }
 
     vi.restoreAllMocks();

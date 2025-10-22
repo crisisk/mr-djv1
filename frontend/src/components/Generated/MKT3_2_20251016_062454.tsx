@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { useGeneratedContentConfig } from '../../context/GeneratedContentConfigContext'
+import { useGeneratedContentConfig } from '../../context/useGeneratedContentConfig'
 
 const DEFAULT_EVENT_PREFIX = 'social_media_ad_impression'
 const EMPTY_ANALYTICS_PAYLOAD: Record<string, unknown> = Object.freeze({})

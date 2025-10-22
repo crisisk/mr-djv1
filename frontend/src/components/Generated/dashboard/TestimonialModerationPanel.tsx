@@ -55,7 +55,7 @@ function formatDate(value: string | null | undefined, hydrated: boolean): string
 
   try {
     return dateTimeFormatter.format(date)
-  } catch (_error) {
+  } catch {
     return date.toISOString()
   }
 }

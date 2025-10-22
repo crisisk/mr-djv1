@@ -1,4 +1,3 @@
-import { createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
 import type { ApiClientOptions } from '../lib/apiClient'
 
@@ -28,16 +27,7 @@ export interface GeneratedContentConfig {
   }
 }
 
-const GeneratedContentConfigContext = createContext<GeneratedContentConfig>({})
-
-export const GeneratedContentConfigProvider = ({
-  value,
-  children,
-}: {
+export interface GeneratedContentProviderProps {
   value: GeneratedContentConfig
   children: ReactNode
-}) => <GeneratedContentConfigContext.Provider value={value}>{children}</GeneratedContentConfigContext.Provider>
-
-export const useGeneratedContentConfig = () => useContext(GeneratedContentConfigContext)
-
-export default GeneratedContentConfigContext
+}

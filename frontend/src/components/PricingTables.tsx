@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from './Button';
-import { IconBase, mergeClassNames } from './shared/IconBase';
-import type { IconBaseProps } from './shared/IconBase';
+import CheckIcon from '../icons/CheckIcon';
 
 export interface PricingFeatureSet {
   name: string;
@@ -59,21 +58,6 @@ const defaultPackages: PricingFeatureSet[] = [
   },
 ];
 
-function CheckIcon({ className, ...props }: IconBaseProps) {
-  return (
-    <IconBase
-      className={mergeClassNames('mr-spacing-sm h-5 w-5 flex-shrink-0', className)}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-    </IconBase>
-  );
-}
-
 function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
   const { name, subtitle, price, features, isFeatured, buttonText } = pkg;
 
@@ -105,15 +89,10 @@ function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
       <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
         {features.map((feature) => (
           <li key={feature} className="flex items-start body-md">
-            <svg
-              className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
+            <CheckIcon
+              className={`mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`}
+              aria-hidden
+            />
             {feature}
           </li>
         ))}
@@ -141,4 +120,3 @@ export function PricingTables({ packages = defaultPackages }: PricingTablesProps
 }
 
 export default PricingTables;
-export { defaultPackages as defaultPricingPackages };

@@ -80,7 +80,10 @@ const isAnchorConfig = (config: CTAButtonProps): config is CTAButtonAsAnchor => 
 
 const renderCTAButton = (config: CTAButtonProps, key?: string) => {
   if (isAnchorConfig(config)) {
-    const { as: _as, label, variant, className, ...anchorProps } = config;
+    const { as, label, variant, className, ...anchorProps } = config;
+    if (as !== 'a') {
+      throw new Error(`Unsupported CTA anchor element: ${String(as)}`);
+    }
     const variantClass = buttonVariantClasses[resolveVariant(variant)];
     return (
       <a key={key} className={classNames(styles.button, variantClass, className)} {...anchorProps}>
@@ -89,7 +92,10 @@ const renderCTAButton = (config: CTAButtonProps, key?: string) => {
     );
   }
 
-  const { as: _as, label, variant, className, type = 'button', ...buttonProps } = config;
+  const { as, label, variant, className, type = 'button', ...buttonProps } = config;
+  if (as && as !== 'button') {
+    throw new Error(`Unsupported CTA button element: ${String(as)}`);
+  }
   const variantClass = buttonVariantClasses[resolveVariant(variant)];
   return (
     <button key={key} type={type} className={classNames(styles.button, variantClass, className)} {...buttonProps}>

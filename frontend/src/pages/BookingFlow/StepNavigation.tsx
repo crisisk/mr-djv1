@@ -100,7 +100,7 @@ function hasMeaningfulValue(value: unknown): boolean {
 function serializeData(data: Record<string, unknown>): string {
   try {
     return JSON.stringify(data ?? {})
-  } catch (_error) {
+  } catch {
     return ''
   }
 }

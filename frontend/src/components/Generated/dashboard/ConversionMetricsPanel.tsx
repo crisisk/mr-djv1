@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export type FunnelStep = {
   id: string
@@ -120,7 +120,7 @@ export default function ConversionMetricsPanel({ endpoint = DEFAULT_ENDPOINT }: 
     []
   )
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: undefined }))
 
     try {
@@ -138,12 +138,11 @@ export default function ConversionMetricsPanel({ endpoint = DEFAULT_ENDPOINT }: 
       const message = error instanceof Error ? error.message : 'Onbekende fout bij laden van metrics'
       setState((prev) => ({ ...prev, loading: false, error: message }))
     }
-  }
+  }, [endpoint])
 
   useEffect(() => {
-    fetchStats()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [endpoint])
+    void fetchStats()
+  }, [fetchStats])
 
   const totals = state.data?.totals
   const updatedAtLabel = useMemo(() => {
@@ -162,7 +161,7 @@ export default function ConversionMetricsPanel({ endpoint = DEFAULT_ENDPOINT }: 
 
     try {
       return dateTimeFormatter.format(parsed)
-    } catch (_error) {
+    } catch {
       return parsed.toISOString()
     }
   }, [hydrated, state.data?.updatedAt])
@@ -180,7 +179,7 @@ export default function ConversionMetricsPanel({ endpoint = DEFAULT_ENDPOINT }: 
       } else {
         try {
           formattedTimestamp = dateTimeFormatter.format(timestamp)
-        } catch (_error) {
+        } catch {
           formattedTimestamp = timestamp.toISOString()
         }
       }
@@ -195,7 +194,7 @@ export default function ConversionMetricsPanel({ endpoint = DEFAULT_ENDPOINT }: 
         if (typeof amount === 'number' && Number.isFinite(amount)) {
           try {
             revenue = ` · omzet: ${currencyFormatter.format(amount)}`
-          } catch (_error) {
+          } catch {
             revenue = ` · omzet: €${formatNumber(Math.round(amount))}`
           }
         }

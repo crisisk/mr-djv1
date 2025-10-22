@@ -1,6 +1,6 @@
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import ExitIntentPopup from '../components/Generated/MKT4_1_20251016_062601'
 
@@ -24,16 +24,10 @@ describe('ExitIntentPopup', () => {
     resetMock.mockReset()
   })
 
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
   it('submits booking and closes popup after success', async () => {
     submitMock.mockResolvedValueOnce({ success: true, message: 'Top!' })
 
-    vi.useFakeTimers()
-
-    render(<ExitIntentPopup />)
+    render(<ExitIntentPopup autoCloseDelayMs={50} />)
 
     act(() => {
       const event = new MouseEvent('mouseleave', { clientY: 0, bubbles: true })
@@ -52,11 +46,11 @@ describe('ExitIntentPopup', () => {
     await userEvent.click(screen.getByRole('button', { name: /verstuur aanvraag/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/top!/i)).toBeInTheDocument()
+      expect(submitMock).toHaveBeenCalledTimes(1)
     })
 
-    act(() => {
-      vi.advanceTimersByTime(2000)
+    await waitFor(() => {
+      expect(screen.getByText(/top!/i)).toBeInTheDocument()
     })
 
     await waitFor(() => {

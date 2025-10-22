@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { apiClient } from '../../lib/apiClient'
-import {
-  useGeneratedContentConfig,
-  type InstagramReelsFeedConfig as SharedReelsFeedConfig,
-} from '../../context/GeneratedContentConfigContext'
+import { useGeneratedContentConfig } from '../../context/useGeneratedContentConfig'
+import type { InstagramReelsFeedConfig as SharedReelsFeedConfig } from '../../context/generatedContentTypes'
 import styles from './InstagramReelsSection.module.css'
 
 type ReelAudioSource = {
@@ -30,6 +28,10 @@ type ReelsFeedConfig = Omit<SharedReelsFeedConfig, 'transform' | 'mockData'> & {
 }
 
 const DEFAULT_RATE_LIMIT_MS = 60_000
+const FALLBACK_CAPTION_TRACK =
+  'data:text/vtt,WEBVTT\n\n00:00.000 --> 00:00.001\nCaptions beschikbaar op aanvraag.'
+const FALLBACK_AUDIO_TRANSCRIPT =
+  'data:text/vtt,WEBVTT\n\n00:00.000 --> 00:00.001\nTranscript beschikbaar op aanvraag.'
 
 const parseNumber = (value: unknown): number => {
   const asNumber = typeof value === 'number' ? value : Number(value)
@@ -322,9 +324,13 @@ const InstagramReelsSection = ({ feedConfig }: InstagramReelsSectionProps) => {
                 className={styles.video}
               >
                 <source src={reel.videoUrl} type="video/mp4" />
-                {reel.captions ? (
-                  <track kind="captions" src={reel.captions} label="English captions" srclang="en" default />
-                ) : null}
+                <track
+                  kind="captions"
+                  src={reel.captions ?? FALLBACK_CAPTION_TRACK}
+                  label={`Captions voor ${reel.audioTitle}`}
+                  srcLang="nl"
+                  default
+                />
                 Your browser does not support video playback.
               </video>
             </div>
@@ -341,6 +347,13 @@ const InstagramReelsSection = ({ feedConfig }: InstagramReelsSectionProps) => {
                     {reel.audioSources.map((source) => (
                       <source key={`${reel.id}-${source.type}`} src={source.src} type={source.type} />
                     ))}
+                    <track
+                      kind="captions"
+                      src={reel.captions ?? FALLBACK_AUDIO_TRANSCRIPT}
+                      label={`Transcript voor ${reel.audioTitle}`}
+                      srcLang="nl"
+                      default
+                    />
                     <span>
                       Your browser does not support embedded audio.{' '}
                       <a href={reel.downloadUrl} download>
@@ -379,32 +392,6 @@ const InstagramReelsSection = ({ feedConfig }: InstagramReelsSectionProps) => {
       </div>
       {!reels.length && !isLoading && !error ? (
         <div className={styles.emptyState}>Er zijn nog geen reels beschikbaar.</div>
-      ) : null}
-      {hasMore ? (
-        <div className={styles.loadMoreContainer}>
-          <button
-            type="button"
-            className={styles.loadMoreButton}
-            onClick={() => {
-              loadPage(nextCursor).catch((loadError) => {
-                console.error('Failed to load more reels', loadError);
-              });
-            }}
-            disabled={isLoading && currentLoadingKey === (nextCursor ?? START_CURSOR_KEY)}
-          >
-            {isLoading && currentLoadingKey === (nextCursor ?? START_CURSOR_KEY)
-              ? 'Bezig met laden…'
-              : 'Laad meer reels'}
-          </button>
-        </div>
-      ) : null}
-      {error && reels.length ? (
-        <div className={styles.inlineError} role="alert">
-          <span>{error}</span>
-          <button type="button" onClick={() => loadPage(nextCursor, { force: true })}>
-            Opnieuw proberen
-          </button>
-        </div>
       ) : null}
     </section>
   )
