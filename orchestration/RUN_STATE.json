@@ -1,37 +1,42 @@
 {
-  "active_batch": "B2-platform-integration",
-  "updated_at": "2025-10-22T20:48:22Z",
+  "active_batch": "B5-performance-hardening",
+  "updated_at": "2025-10-22T22:45:00Z",
   "workers": [
     {
       "id": "worker-1",
-      "task": "RG-FE-ADAPT",
-      "status": "in_progress",
-      "notes": "Adapting frontend data fetching to RentGuy endpoints with loading + error states"
+      "task": "idle",
+      "status": "waiting",
+      "notes": "Cleared T2-2-BRANDING and T3-1-CAROUSEL; awaiting B5-performance-hardening kickoff"
     },
     {
       "id": "worker-2",
-      "task": "T2-1-API-INTEGRATION",
-      "status": "in_progress",
-      "notes": "Coordinating backend API handshake and authentication wiring"
+      "task": "idle",
+      "status": "waiting",
+      "notes": "Wrapped T2-4-SCHEMA and delivered T3-2-CLIENT-LOGOS in the parallel wave"
     },
     {
       "id": "worker-3",
-      "task": "LB-SEVENSA-FLOW",
-      "status": "in_progress",
-      "notes": "Aligning Sevensa availability sync with lead routing"
+      "task": "idle",
+      "status": "waiting",
+      "notes": "Completed T2-5-TESTIMONIALS and authored the T3-3-ABOUT narrative"
     },
     {
       "id": "worker-4",
-      "task": "T2-3-CONTACT-FLOW",
-      "status": "in_progress",
-      "notes": "Contact form validation, notifications, and analytics capture"
+      "task": "idle",
+      "status": "waiting",
+      "notes": "Published RG-DOCS and finalized T3-6-SOCIAL plus the queued T3-4-AB-TESTING suite"
     }
   ],
   "queue": [
     {
-      "task": "T3-4-AB-TESTING",
-      "status": "queued",
-      "notes": "Will start once a worker becomes available to configure tracking"
+      "task": "T3-5-PERFORMANCE",
+      "status": "queued_serial",
+      "notes": "Sequential B5-performance-hardening run begins with Lighthouse and k6 validations"
+    },
+    {
+      "task": "T4-1-REPO-CLEANUP",
+      "status": "queued_serial",
+      "notes": "Repository cleanup follows the performance pass in the same batch"
     }
   ],
   "blocked": [
