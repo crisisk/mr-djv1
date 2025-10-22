@@ -54,7 +54,9 @@ def _classification_from_snapshot(snapshot: Mapping[str, Any]) -> Classification
     )
 
 
-def _should_reclassify(record: Any, snapshot: Optional[Mapping[str, Any]], force: bool) -> bool:
+def _should_reclassify(
+    record: Any, snapshot: Optional[Mapping[str, Any]], force: bool
+) -> bool:
     if force or not snapshot:
         return True
     arrival = _get_attr(record, "arrived_at")

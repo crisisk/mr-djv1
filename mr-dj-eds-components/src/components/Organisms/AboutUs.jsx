@@ -120,7 +120,8 @@ const AboutUs = () => {
           </p>
           <a
             href="tel:+31408422594"
-            className="inline-block bg-primary text-white px-12 py-6 rounded-lg text-font-size-h4 font-bold hover:bg-primary-600 transition shadow-lg"
+            className="inline-block bg-primary text-white px-12 py-6 rounded-lg text-font-size-h4 font-bold hover:bg-primary-600 transition shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A2C4B]"
+            aria-label="Bel Mister DJ via +31 (0) 40 842 2594"
           >
             Bel +31 (0) 40 842 2594
           </a>

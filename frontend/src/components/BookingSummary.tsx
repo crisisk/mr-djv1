@@ -1,41 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import type { PricingBreakdownItem, PricingSummary } from '../lib/bookingSessionStore'
 import { useBookingSession } from '../lib/bookingSessionStore'
-
-const DATE_FORMATTER = typeof Intl !== 'undefined'
-  ? new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
-  : null
-
-function formatDate(value: string | null): string | null {
-  if (!value) {
-    return null
-  }
-
-  const parsed = new Date(value)
-
-  if (Number.isNaN(parsed.getTime())) {
-    return value
-  }
-
-  try {
-    return DATE_FORMATTER ? DATE_FORMATTER.format(parsed) : parsed.toISOString().split('T')[0]
-  } catch (_error) {
-    return parsed.toISOString().split('T')[0]
-  }
-}
-
-function formatCurrencyValue(amount: number, currency?: string | null): string {
-  const resolvedCurrency = currency && typeof currency === 'string' && currency.trim().length > 0 ? currency : 'EUR'
-
-  try {
-    return new Intl.NumberFormat('nl-NL', {
-      style: 'currency',
-      currency: resolvedCurrency
-    }).format(amount)
-  } catch (_error) {
-    return `${amount.toFixed(2)} ${resolvedCurrency}`.trim()
-  }
-}
+import { fmtCurrency, fmtDate } from '../../lib/format'
 
 function summarisePricing(pricing: PricingSummary | null): string | null {
   if (!pricing) {
@@ -47,7 +13,12 @@ function summarisePricing(pricing: PricingSummary | null): string | null {
   }
 
   if (typeof pricing.total === 'number') {
-    return formatCurrencyValue(pricing.total, typeof pricing.currency === 'string' ? pricing.currency : undefined)
+    const currencyOption =
+      typeof pricing.currency === 'string' && pricing.currency.trim().length > 0
+        ? pricing.currency.trim()
+        : undefined
+
+    return fmtCurrency(pricing.total, currencyOption ? { currency: currencyOption } : undefined)
   }
 
   return null
@@ -70,7 +41,12 @@ function formatBreakdownItem(
         ? ((item as Record<string, unknown>).currency as string)
         : fallbackCurrency
 
-    return { label, value: formatCurrencyValue(item.amount, derivedCurrency) }
+    const formattedAmount = fmtCurrency(
+      item.amount,
+      derivedCurrency && derivedCurrency.trim().length > 0 ? { currency: derivedCurrency.trim() } : undefined
+    )
+
+    return { label, value: formattedAmount }
   }
 
   return null
@@ -87,7 +63,13 @@ const FALLBACK_TEXT = {
 const BookingSummary = () => {
   const { selections, status, error, optimistic, refresh } = useBookingSession()
 
-  const formattedDate = useMemo(() => formatDate(selections.date), [selections.date])
+  const formattedDate = useMemo(() => {
+    if (!selections.date) {
+      return null
+    }
+
+    return fmtDate(selections.date) ?? selections.date
+  }, [selections.date])
 
   const packageLabel = useMemo(() => {
     if (!selections.package) {

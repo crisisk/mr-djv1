@@ -8,7 +8,7 @@ describe('PricingTables', () => {
   it('renders event-based pricing by default', () => {
     const { asFragment } = render(<PricingTables />);
 
-    expect(screen.getAllByText('€495')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('€\u00a0495,00')[0]).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /per event/i })).toHaveAttribute('aria-pressed', 'true');
     expect(asFragment()).toMatchSnapshot();
   });
@@ -19,7 +19,7 @@ describe('PricingTables', () => {
 
     await user.click(screen.getByRole('button', { name: /per maand/i }));
 
-    expect(screen.getAllByText('€99')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('€\u00a099,00')[0]).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /per maand/i })).toHaveAttribute('aria-pressed', 'true');
     expect(asFragment()).toMatchSnapshot();
   });

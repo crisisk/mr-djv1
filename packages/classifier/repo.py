@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from datetime import date
 from functools import lru_cache
@@ -81,9 +81,8 @@ def get_connection() -> Iterator[Connection]:
 
 
 def _fetchall(conn: Connection, statement: str, **params) -> Sequence[dict]:
-    result: Result = conn.execute(text(statement), params)
-    rows = [dict(row._mapping) for row in result]
-    result.close()
+    with closing(conn.execute(text(statement), params)) as result:
+        rows = [dict(row._mapping) for row in result]
     return rows
 
 
@@ -124,7 +123,9 @@ def get_applicable_rulings(
                 hs_code8=row["hs_code8"],
                 taric_code=row["taric_code"],
                 precedence=row["precedence"],
-                valid_from=(row["valid_from"].isoformat() if row["valid_from"] else None),
+                valid_from=(
+                    row["valid_from"].isoformat() if row["valid_from"] else None
+                ),
                 valid_to=(row["valid_to"].isoformat() if row["valid_to"] else None),
                 source=row.get("source"),
             )
@@ -162,7 +163,9 @@ def get_applicable_rulings(
     return candidates
 
 
-def taric_validity(conn: Connection, taric_code: str) -> tuple[Optional[date], Optional[date]]:
+def taric_validity(
+    conn: Connection, taric_code: str
+) -> tuple[Optional[date], Optional[date]]:
     rows = _fetchall(
         conn,
         """
@@ -207,7 +210,9 @@ def _taric_candidates(
     ]
 
 
-def taric_candidates(conn: Connection, hs_code8: str, ref_date: date) -> List[TaricRecord]:
+def taric_candidates(
+    conn: Connection, hs_code8: str, ref_date: date
+) -> List[TaricRecord]:
     """Public wrapper around the TARIC candidate query."""
 
     return _taric_candidates(conn, hs_code8, ref_date)
@@ -233,7 +238,9 @@ def _measure_matches(
     return bool(rows)
 
 
-def measure_matches(conn: Connection, taric_code: str, country: str, ref_date: date) -> bool:
+def measure_matches(
+    conn: Connection, taric_code: str, country: str, ref_date: date
+) -> bool:
     """Expose whether a TARIC code has a valid measure for the country/date."""
 
     return _measure_matches(conn, taric_code, country, ref_date)
@@ -256,7 +263,9 @@ def cached_taric_lookup(hs_code8: str, country: str, ref_date: date) -> Optional
         return record.taric_code if record else None
 
 
-def derive_hs_from_text(conn: Connection, text_hint: Optional[str], ref_date: date) -> Optional[str]:
+def derive_hs_from_text(
+    conn: Connection, text_hint: Optional[str], ref_date: date
+) -> Optional[str]:
     if not text_hint:
         return None
     rows = _fetchall(

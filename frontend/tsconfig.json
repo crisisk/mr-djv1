@@ -1,4 +1,11 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "resolveJsonModule": true
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

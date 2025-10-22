@@ -1,8 +1,7 @@
 "use client";
 
+import { fmtCurrency } from '../../lib/format';
 import { Button } from './Button';
-import { IconBase, mergeClassNames } from './shared/IconBase';
-import type { IconBaseProps } from './shared/IconBase';
 
 export interface PricingFeatureSet {
   name: string;
@@ -17,23 +16,18 @@ export interface PricingTablesProps {
   packages?: PricingFeatureSet[];
 }
 
-const euroFormatter = new Intl.NumberFormat('nl-NL', {
-  style: 'currency',
-  currency: 'EUR'
-});
-
 const defaultPackages: PricingFeatureSet[] = [
   {
     name: 'Brons',
     subtitle: 'Entry-level pakket',
-    price: euroFormatter.format(495),
+    price: fmtCurrency(495),
     features: ['4 uur DJ-set', 'Basis licht- en geluidsset', 'Persoonlijk intakegesprek', 'Muziekvoorkeuren formulier'],
     buttonText: 'Meer Info',
   },
   {
     name: 'Zilver',
     subtitle: 'Meest gekozen',
-    price: euroFormatter.format(795),
+    price: fmtCurrency(795),
     features: [
       '6 uur DJ-set',
       'Uitgebreide lichtshow',
@@ -47,7 +41,7 @@ const defaultPackages: PricingFeatureSet[] = [
   {
     name: 'Goud',
     subtitle: 'Premium All-Inclusive',
-    price: euroFormatter.format(1295),
+    price: fmtCurrency(1295),
     features: [
       '8 uur DJ-set',
       'Luxe licht- en geluidsset',
@@ -58,21 +52,6 @@ const defaultPackages: PricingFeatureSet[] = [
     buttonText: 'Vraag Offerte Aan',
   },
 ];
-
-function CheckIcon({ className, ...props }: IconBaseProps) {
-  return (
-    <IconBase
-      className={mergeClassNames('mr-spacing-sm h-5 w-5 flex-shrink-0', className)}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-    </IconBase>
-  );
-}
 
 function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
   const { name, subtitle, price, features, isFeatured, buttonText } = pkg;
@@ -105,15 +84,7 @@ function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
       <ul className="flex-grow space-y-spacing-sm mb-spacing-xl">
         {features.map((feature) => (
           <li key={feature} className="flex items-start body-md">
-            <svg
-              className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
+            <CheckIcon className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`} />
             {feature}
           </li>
         ))}
@@ -141,4 +112,3 @@ export function PricingTables({ packages = defaultPackages }: PricingTablesProps
 }
 
 export default PricingTables;
-export { defaultPackages as defaultPricingPackages };

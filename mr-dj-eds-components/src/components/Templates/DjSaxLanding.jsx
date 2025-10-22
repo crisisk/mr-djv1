@@ -239,9 +239,16 @@ const DjSaxLanding = ({ variant = 'A' }) => {
 
       {/* 10. Call to Action (Simple Footer CTA) */}
       <div className="bg-primary text-neutral-light py-spacing-2xl text-center">
-        <h3 className="text-font-size-h2 font-bold mb-spacing-md">Klaar voor de show?</h3>
+        <h2 className="text-font-size-h2 font-bold mb-spacing-md">Klaar voor de show?</h2>
         <p className="text-neutral-light mb-spacing-lg">
-          Bel ons direct op <a href="tel:+31408422594" className="font-bold underline hover:text-secondary">+31 (0) 40 8422594</a>
+          Bel ons direct op{' '}
+          <a
+            href="tel:+31408422594"
+            className="font-bold underline hover:text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-light focus-visible:ring-offset-primary"
+            aria-label="Bel Mister DJ op telefoonnummer +31 (0) 40 842 2594"
+          >
+            +31 (0) 40 8422594
+          </a>
         </p>
       </div>
 
