@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary-blue: #00AEEF;
-  --color-secondary-gold: #D4AF37;
-  --color-neutral-dark: #1A2C4B;
-  --color-neutral-light: #FFFFFF;
-  --color-neutral-gray-100: #F3F4F6;
-  --color-neutral-gray-500: #6B7280;
-  --color-semantic-success: #4CAF50;
-  --color-semantic-error: #FF4D4D;
-  --color-semantic-warning: #FFC107;
+  --color-primary-blue: #00aeef;
+  --color-secondary-gold: #d4af37;
+  --color-neutral-dark: #1a2c4b;
+  --color-neutral-light: #ffffff;
+  --color-neutral-gray-100: #f3f4f6;
+  --color-neutral-gray-500: #6b7280;
+  --color-semantic-success: #4caf50;
+  --color-semantic-error: #ff4d4d;
+  --color-semantic-warning: #ffc107;
 
-  --font-family-primary: 'Montserrat', sans-serif;
+  --font-family-primary: "Montserrat", sans-serif;
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
@@ -124,7 +124,9 @@ small,
 }
 
 .hero-motion__cta {
-  transition: transform 240ms var(--ease-out-fluid), filter 240ms ease;
+  transition:
+    transform 240ms var(--ease-out-fluid),
+    filter 240ms ease;
   will-change: transform;
 }
 
@@ -199,7 +201,7 @@ small,
 }
 
 pre {
-  font-family: 'Fira Code', 'Courier New', monospace;
+  font-family: "Fira Code", "Courier New", monospace;
 }
 
 .button {
@@ -213,7 +215,11 @@ pre {
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .button:disabled {

@@ -1,13 +1,14 @@
-from pathlib import Path
 import sys
+from importlib import import_module
+from pathlib import Path
+
+from fastapi.testclient import TestClient
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
-from fastapi.testclient import TestClient
-
-from app.main import app
+app = import_module("app.main").app
 
 client = TestClient(app)
 

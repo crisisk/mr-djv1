@@ -5,7 +5,6 @@ from datetime import date
 from types import SimpleNamespace
 
 import pytest
-
 from packages.classifier import resolver
 from packages.classifier.rules import RulingCandidate
 from packages.classifier.types import ClassificationContext

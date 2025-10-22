@@ -3,11 +3,9 @@ from __future__ import annotations
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import text
-
-from packages.emissions_linker import classify_and_link
 from packages.classifier import repo as classifier_repo
-
+from packages.emissions_linker import classify_and_link
+from sqlalchemy import text
 
 router = APIRouter()
 

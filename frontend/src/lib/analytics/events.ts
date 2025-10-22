@@ -1,25 +1,25 @@
-import { pushEvent } from './ga4'
+import { pushEvent } from "./ga4";
 
-type Fbq = ((...args: unknown[]) => void) | null
+type Fbq = ((...args: unknown[]) => void) | null;
 
 const getFbq = (): Fbq => {
-  if (typeof window === 'undefined') {
-    return null
+  if (typeof window === "undefined") {
+    return null;
   }
 
-  const candidate = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq
-  return typeof candidate === 'function' ? candidate : null
-}
+  const candidate = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
+  return typeof candidate === "function" ? candidate : null;
+};
 
 export type BookingTrackingPayload = {
-  origin: string
-  bookingId?: string | null
-  eventType?: string | null
-  packageId?: string | null
-  status?: string | null
-  value?: number | null
-  currency?: string | null
-}
+  origin: string;
+  bookingId?: string | null;
+  eventType?: string | null;
+  packageId?: string | null;
+  status?: string | null;
+  value?: number | null;
+  currency?: string | null;
+};
 
 export const trackBookingLead = ({
   origin,
@@ -36,33 +36,33 @@ export const trackBookingLead = ({
     event_type: eventType ?? undefined,
     package_id: packageId ?? undefined,
     booking_status: status ?? undefined,
-    value: typeof value === 'number' ? value : undefined,
+    value: typeof value === "number" ? value : undefined,
     currency: currency ?? undefined,
-  }
+  };
 
   pushEvent({
-    name: 'generate_lead',
+    name: "generate_lead",
     params,
-  })
+  });
 
-  const fbq = getFbq()
+  const fbq = getFbq();
   if (fbq) {
-    fbq('track', 'Lead', {
+    fbq("track", "Lead", {
       content_name: origin,
       content_category: eventType ?? undefined,
       status: status ?? undefined,
       package: packageId ?? undefined,
-      value: typeof value === 'number' ? value : undefined,
+      value: typeof value === "number" ? value : undefined,
       currency: currency ?? undefined,
-    })
+    });
   }
-}
+};
 
 export type ContactChannelPayload = {
-  channel: string
-  origin?: string
-  phoneNumber?: string
-}
+  channel: string;
+  origin?: string;
+  phoneNumber?: string;
+};
 
 export const trackContactChannelClick = ({
   channel,
@@ -70,21 +70,21 @@ export const trackContactChannelClick = ({
   phoneNumber,
 }: ContactChannelPayload): void => {
   pushEvent({
-    name: 'select_content',
+    name: "select_content",
     params: {
-      content_type: 'contact_channel',
+      content_type: "contact_channel",
       item_id: channel,
       item_variant: origin ?? undefined,
       phone_number: phoneNumber ?? undefined,
     },
-  })
+  });
 
-  const fbq = getFbq()
+  const fbq = getFbq();
   if (fbq) {
-    fbq('trackCustom', 'ContactChannelClick', {
+    fbq("trackCustom", "ContactChannelClick", {
       channel,
       origin,
       phoneNumber,
-    })
+    });
   }
-}
+};

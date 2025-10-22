@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import os
-from contextlib import closing, contextmanager
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date
 from functools import lru_cache
-from typing import Iterator, List, Optional, Sequence
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Connection, Engine, Result
@@ -20,38 +20,38 @@ from .types import ClassificationResult
 class TaricRecord:
     taric_code: str
     hs_code8: str
-    valid_from: Optional[date]
-    valid_to: Optional[date]
-    description: Optional[str]
+    valid_from: date | None
+    valid_to: date | None
+    description: str | None
 
 
 @dataclass
 class MeasureRecord:
     taric_code: str
-    country_code: Optional[str]
-    valid_from: Optional[date]
-    valid_to: Optional[date]
+    country_code: str | None
+    valid_from: date | None
+    valid_to: date | None
 
 
 @dataclass
 class RulingRow:
     id: str
     hs_code8: str
-    taric_code: Optional[str]
+    taric_code: str | None
     precedence: int
-    valid_from: Optional[date]
-    valid_to: Optional[date]
-    source: Optional[str]
+    valid_from: date | None
+    valid_to: date | None
+    source: str | None
 
 
 @dataclass
 class EmissionDefault:
     hs_code8: str
-    country_code: Optional[str]
+    country_code: str | None
     emission_intensity: float
-    source: Optional[str]
-    valid_from: Optional[date]
-    valid_to: Optional[date]
+    source: str | None
+    valid_from: date | None
+    valid_to: date | None
 
 
 _ENGINE: Engine | None = None
@@ -89,10 +89,10 @@ def _fetchall(conn: Connection, statement: str, **params) -> Sequence[dict]:
 def get_applicable_rulings(
     conn: Connection,
     hs_code8: str,
-    taric_code: Optional[str],
+    taric_code: str | None,
     country: str,
     ref_date: date,
-) -> List[RulingCandidate]:
+) -> list[RulingCandidate]:
     """Fetch applicable rulings sorted by precedence."""
 
     params = {
@@ -101,7 +101,7 @@ def get_applicable_rulings(
         "country": country,
         "ref_date": ref_date,
     }
-    candidates: List[RulingCandidate] = []
+    candidates: list[RulingCandidate] = []
     if taric_code:
         rows = _fetchall(
             conn,
@@ -163,9 +163,7 @@ def get_applicable_rulings(
     return candidates
 
 
-def taric_validity(
-    conn: Connection, taric_code: str
-) -> tuple[Optional[date], Optional[date]]:
+def taric_validity(conn: Connection, taric_code: str) -> tuple[date | None, date | None]:
     rows = _fetchall(
         conn,
         """
@@ -183,9 +181,7 @@ def taric_validity(
     return row.get("valid_from"), row.get("valid_to")
 
 
-def _taric_candidates(
-    conn: Connection, hs_code8: str, ref_date: date
-) -> List[TaricRecord]:
+def _taric_candidates(conn: Connection, hs_code8: str, ref_date: date) -> list[TaricRecord]:
     rows = _fetchall(
         conn,
         """
@@ -210,17 +206,13 @@ def _taric_candidates(
     ]
 
 
-def taric_candidates(
-    conn: Connection, hs_code8: str, ref_date: date
-) -> List[TaricRecord]:
+def taric_candidates(conn: Connection, hs_code8: str, ref_date: date) -> list[TaricRecord]:
     """Public wrapper around the TARIC candidate query."""
 
     return _taric_candidates(conn, hs_code8, ref_date)
 
 
-def _measure_matches(
-    conn: Connection, taric_code: str, country: str, ref_date: date
-) -> bool:
+def _measure_matches(conn: Connection, taric_code: str, country: str, ref_date: date) -> bool:
     rows = _fetchall(
         conn,
         """
@@ -248,7 +240,7 @@ def measure_matches(
 
 def pick_most_specific_taric(
     conn: Connection, hs_code8: str, country: str, ref_date: date
-) -> Optional[TaricRecord]:
+) -> TaricRecord | None:
     candidates = _taric_candidates(conn, hs_code8, ref_date)
     for candidate in candidates:
         if _measure_matches(conn, candidate.taric_code, country, ref_date):
@@ -257,15 +249,15 @@ def pick_most_specific_taric(
 
 
 @lru_cache(maxsize=1024)
-def cached_taric_lookup(hs_code8: str, country: str, ref_date: date) -> Optional[str]:
+def cached_taric_lookup(hs_code8: str, country: str, ref_date: date) -> str | None:
     with get_connection() as conn:
         record = pick_most_specific_taric(conn, hs_code8, country, ref_date)
         return record.taric_code if record else None
 
 
 def derive_hs_from_text(
-    conn: Connection, text_hint: Optional[str], ref_date: date
-) -> Optional[str]:
+    conn: Connection, text_hint: str | None, ref_date: date
+) -> str | None:
     if not text_hint:
         return None
     rows = _fetchall(
@@ -290,8 +282,8 @@ def persist_classification_snapshot(
     conn: Connection,
     shipment_id: str,
     result_hs: str,
-    result_taric: Optional[str],
-    ruling_id: Optional[str],
+    result_taric: str | None,
+    ruling_id: str | None,
     source: str,
     ref_date: date,
 ) -> None:
@@ -299,10 +291,22 @@ def persist_classification_snapshot(
         text(
             """
             INSERT INTO shipment_classifications (
-                id, shipment_id, hs_code8, taric_code, ruling_id, classification_source, ref_date
+                id,
+                shipment_id,
+                hs_code8,
+                taric_code,
+                ruling_id,
+                classification_source,
+                ref_date
             )
             VALUES (
-                gen_random_uuid(), :shipment_id, :hs_code8, :taric_code, :ruling_id, :source, :ref_date
+                gen_random_uuid(),
+                :shipment_id,
+                :hs_code8,
+                :taric_code,
+                :ruling_id,
+                :source,
+                :ref_date
             )
             ON CONFLICT (id) DO NOTHING
             """
@@ -319,7 +323,7 @@ def persist_classification_snapshot(
     conn.commit()
 
 
-def latest_snapshot(conn: Connection, shipment_id: str) -> Optional[dict]:
+def latest_snapshot(conn: Connection, shipment_id: str) -> dict | None:
     rows = _fetchall(
         conn,
         """
@@ -336,7 +340,7 @@ def latest_snapshot(conn: Connection, shipment_id: str) -> Optional[dict]:
 
 def get_cbam_default(
     conn: Connection, hs_code8: str, country: str, ref_date: date
-) -> Optional[EmissionDefault]:
+) -> EmissionDefault | None:
     rows = _fetchall(
         conn,
         """
@@ -369,17 +373,29 @@ def upsert_cbam_report_draft(
     conn: Connection,
     shipment_id: str,
     result: ClassificationResult,
-    emission_intensity: Optional[float],
-    emission_source: Optional[str],
+    emission_intensity: float | None,
+    emission_source: str | None,
 ) -> None:
     conn.execute(
         text(
             """
             INSERT INTO cbam_report_drafts (
-                shipment_id, hs_code8, taric_code, ruling_id, classification_source, emission_intensity, emission_source
+                shipment_id,
+                hs_code8,
+                taric_code,
+                ruling_id,
+                classification_source,
+                emission_intensity,
+                emission_source
             )
             VALUES (
-                :shipment_id, :hs_code8, :taric_code, :ruling_id, :source, :emission_intensity, :emission_source
+                :shipment_id,
+                :hs_code8,
+                :taric_code,
+                :ruling_id,
+                :source,
+                :emission_intensity,
+                :emission_source
             )
             ON CONFLICT (shipment_id) DO UPDATE SET
                 hs_code8 = EXCLUDED.hs_code8,

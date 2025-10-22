@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Mapping, Optional
+from typing import Any
 
 from packages.classifier import ClassificationContext, ClassificationResult, classify
 from packages.classifier import repo as classifier_repo
@@ -14,8 +15,8 @@ from packages.classifier import repo as classifier_repo
 class EmissionLinkResult:
     shipment_id: str
     classification: ClassificationResult
-    emission_intensity: Optional[float]
-    emission_source: Optional[str]
+    emission_intensity: float | None
+    emission_source: str | None
 
 
 def _get_attr(record: Any, name: str) -> Any:
@@ -54,9 +55,7 @@ def _classification_from_snapshot(snapshot: Mapping[str, Any]) -> Classification
     )
 
 
-def _should_reclassify(
-    record: Any, snapshot: Optional[Mapping[str, Any]], force: bool
-) -> bool:
+def _should_reclassify(record: Any, snapshot: Mapping[str, Any] | None, force: bool) -> bool:
     if force or not snapshot:
         return True
     arrival = _get_attr(record, "arrived_at")

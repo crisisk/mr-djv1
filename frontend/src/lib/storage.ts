@@ -1,4 +1,4 @@
-const isBrowser = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+const isBrowser = typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 
 type JsonValue = Record<string, unknown> | Array<unknown> | string | number | boolean | null;
 
@@ -10,7 +10,7 @@ function getStorage(): Storage | null {
   try {
     return window.localStorage;
   } catch (error) {
-    console.warn('Local storage is not accessible.', error);
+    console.warn("Local storage is not accessible.", error);
     return null;
   }
 }

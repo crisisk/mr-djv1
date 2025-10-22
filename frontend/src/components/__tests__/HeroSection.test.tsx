@@ -1,8 +1,8 @@
-import { render } from '@testing-library/react';
-import { HeroSection } from '../HeroSection';
+import { render } from "@testing-library/react";
+import { HeroSection } from "../HeroSection";
 
-describe('HeroSection', () => {
-  it('matches the default snapshot', () => {
+describe("HeroSection", () => {
+  it("matches the default snapshot", () => {
     const { container } = render(
       <HeroSection
         title="Ervaar de ultieme avond"

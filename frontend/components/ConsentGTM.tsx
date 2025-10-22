@@ -31,15 +31,15 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
     document.head.appendChild(script);
   }, [consented, gtmId]);
 
-    return consented ? (
-      <noscript>
-        <iframe
-          title="Google Tag Manager"
-          src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-        />
-      </noscript>
-    ) : null;
+  return consented ? (
+    <noscript>
+      <iframe
+        title="Google Tag Manager"
+        src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+        height="0"
+        width="0"
+        style={{ display: "none", visibility: "hidden" }}
+      />
+    </noscript>
+  ) : null;
 }

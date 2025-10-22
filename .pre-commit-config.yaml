@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      - id: ruff
+        args: ["--config", "ruff.toml"]
+      - id: ruff-format
+        args: ["--config", "ruff.toml"]
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.3.3
+    hooks:
+      - id: prettier
+        additional_dependencies:
+          - prettier@3.3.3
+        args:
+          - "--config"
+          - "prettier.config.cjs"
+        files: \.(js|jsx|ts|tsx|json|css|md)$

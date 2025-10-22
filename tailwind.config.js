@@ -1,17 +1,13 @@
 /** @type {import('tailwindcss').Config} */
-import tokens from './frontend/src/theme/tokens.json' assert { type: 'json' };
+import tokens from "./frontend/src/theme/tokens.json" assert { type: "json" };
 
-const toKebabCase = (value) => value
-  .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-  .replace(/\s+/g, '-')
-  .toLowerCase();
-
-const toRem = (value) => {
-  if (typeof value !== 'string') return value;
-  if (!value.endsWith('px')) return value;
-  const numeric = Number.parseFloat(value.replace('px', ''));
-  return Number.isNaN(numeric) ? value : `${numeric / 16}rem`;
-};
+// Function to convert design tokens to Tailwind format
+const convertTokens = (tokens) => {
+  const toKebabCase = (value) =>
+    value
+      .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+      .replace(/\s+/g, "-")
+      .toLowerCase();
 
 // Function to convert design tokens to Tailwind format
 const convertTokens = (themeTokens) => {
@@ -24,8 +20,8 @@ const convertTokens = (themeTokens) => {
   const fontWeight = { ...themeTokens.typography.fontWeight };
   const lineHeight = { ...themeTokens.typography.lineHeight };
 
-  for (const [group, entries] of Object.entries(themeTokens.colors)) {
-    if (typeof entries === 'string') {
+  for (const [group, entries] of Object.entries(tokens.colors)) {
+    if (typeof entries === "string") {
       colors[group] = entries;
       continue;
     }
@@ -35,10 +31,8 @@ const convertTokens = (themeTokens) => {
     }
   }
 
-  for (const [name, family] of Object.entries(themeTokens.typography.fontFamily)) {
-    fontFamily[name] = family
-      .split(',')
-      .map((part) => part.trim().replace(/^['"]|['"]$/g, ''));
+  for (const [name, family] of Object.entries(tokens.typography.fontFamily)) {
+    fontFamily[name] = family.split(",").map((part) => part.trim().replace(/^['"]|['"]$/g, ""));
   }
 
   return {
@@ -88,12 +82,7 @@ const augmentedFontFamily = {
 };
 
 export default {
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-    './frontend/app/**/*.{ts,tsx,js,jsx}',
-    './frontend/components/**/*.{ts,tsx,js,jsx}',
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     container: {
       center: true,
@@ -113,17 +102,13 @@ export default {
     extend: {
       colors: {
         ...colors,
-        primary: colors['primary-main'],
-        'primary-dark': colors['primary-dark'],
-        secondary: colors['secondary-main'],
-        success: colors['semantic-success'],
-        warning: colors['semantic-warning'],
-        destructive: colors['semantic-error'],
-        'neutral-gray-100': colors['neutral-gray100'],
-        'neutral-gray-300': colors['neutral-gray300'],
-        'neutral-gray-500': colors['neutral-gray500'],
-        'neutral-dark': colors['neutral-dark'],
-        'neutral-light': colors['neutral-light'],
+        primary: colors["primary-main"],
+        "primary-dark": colors["primary-dark"],
+        secondary: colors["secondary-main"],
+        success: colors["semantic-success"],
+        warning: colors["semantic-warning"],
+        destructive: colors["semantic-error"],
+        "neutral-gray-300": colors["neutral-gray300"],
       },
       spacing: {
         ...spacing,

@@ -1,9 +1,11 @@
 /* Typography tokens mapped to semantic utilities */
 :root {
-  --font-family-primary: 'Montserrat', 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont,
-    'Helvetica Neue', Arial, sans-serif;
-  --font-family-mono: 'Roboto Mono', 'SFMono-Regular', ui-monospace, 'Cascadia Mono', 'Source Code Pro', Menlo,
-    Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-family-primary:
+    "Montserrat", "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono:
+    "Roboto Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", "Source Code Pro", Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;

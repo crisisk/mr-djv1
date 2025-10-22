@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from . import repo
 from .rules import ambiguous_result, choose_ruling
 from .types import ClassificationContext, ClassificationResult
 
 
-def _normalise_hs_code(value: Optional[str]) -> Optional[str]:
+def _normalise_hs_code(value: str | None) -> str | None:
     if not value:
         return None
     digits = "".join(ch for ch in value if ch.isalnum())

@@ -1,7 +1,7 @@
-import React from 'react';
-import Button from './Buttons.jsx';
-import usePricingToggle from './usePricingToggle';
-import { BILLING_MODES, pricingPackages } from './src/data/pricing_packages.js';
+import React from "react";
+import Button from "./Buttons.jsx";
+import usePricingToggle from "./usePricingToggle";
+import { BILLING_MODES, pricingPackages } from "./src/data/pricing_packages.js";
 
 const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
   const { name, subtitle, pricing, features, isFeatured, buttonText, localHighlights } = pkg;
@@ -60,7 +60,7 @@ const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
         {features.map((feature, index) => (
           <li key={index} className="flex items-start text-font-size-body">
             <svg
-              className={`mr-spacing-sm h-5 w-5 ${isFeatured ? 'text-secondary' : 'text-primary'}`}
+              className={`mr-spacing-sm h-5 w-5 ${isFeatured ? "text-secondary" : "text-primary"}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -68,7 +68,12 @@ const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
               aria-hidden="true"
               focusable="false"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 13l4 4L19 7"
+              ></path>
             </svg>
             {feature}
           </li>
@@ -82,13 +87,9 @@ const PricingCard = ({ pkg, billingMode, localHighlight, activeCitySlug }) => {
 };
 
 const PricingTables = ({ citySlug, localSeo }) => {
-  const {
-    billingMode,
-    isMonthly,
-    isEvent,
-    selectMonthly,
-    selectEvent,
-  } = usePricingToggle(BILLING_MODES.EVENT);
+  const { billingMode, isMonthly, isEvent, selectMonthly, selectEvent } = usePricingToggle(
+    BILLING_MODES.EVENT,
+  );
 
   const resolvedLocalSeo = React.useMemo(() => {
     if (localSeo) {
@@ -120,7 +121,11 @@ const PricingTables = ({ citySlug, localSeo }) => {
         <h2 className="mb-spacing-2xl text-center text-font-size-h2 font-extrabold text-neutral-dark md:mb-spacing-3xl">
           Onze Pakketten
         </h2>
-        <div className="mb-spacing-2xl flex flex-col items-center md:mb-spacing-3xl" role="group" aria-label="Kies facturering">
+        <div
+          className="mb-spacing-2xl flex flex-col items-center md:mb-spacing-3xl"
+          role="group"
+          aria-label="Kies facturering"
+        >
           <div className="inline-flex rounded-full bg-neutral-light p-spacing-xs shadow md:p-spacing-sm">
             <button
               type="button"
@@ -128,8 +133,8 @@ const PricingTables = ({ citySlug, localSeo }) => {
               aria-pressed={isEvent}
               className={`rounded-full px-spacing-md py-spacing-sm text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-light sm:px-spacing-lg md:py-spacing-md ${
                 isEvent
-                  ? 'bg-primary text-neutral-light'
-                  : 'bg-transparent text-neutral-dark hover:bg-neutral-gray-200'
+                  ? "bg-primary text-neutral-light"
+                  : "bg-transparent text-neutral-dark hover:bg-neutral-gray-200"
               }`}
             >
               Per event
@@ -140,8 +145,8 @@ const PricingTables = ({ citySlug, localSeo }) => {
               aria-pressed={isMonthly}
               className={`rounded-full px-spacing-md py-spacing-sm text-font-size-body transition-colors duration-300 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-light sm:px-spacing-lg md:py-spacing-md ${
                 isMonthly
-                  ? 'bg-primary text-neutral-light'
-                  : 'bg-transparent text-neutral-dark hover:bg-neutral-gray-200'
+                  ? "bg-primary text-neutral-light"
+                  : "bg-transparent text-neutral-dark hover:bg-neutral-gray-200"
               }`}
             >
               Per maand
@@ -163,16 +168,16 @@ const PricingTables = ({ citySlug, localSeo }) => {
           description="Plan een vrijblijvend adviesgesprek en we helpen u binnen enkele minuten het ideale pakket samen te stellen."
           align="center"
           primaryButton={{
-            label: 'Vraag Offerte Aan',
-            variant: 'secondary',
-            'data-conversion_type': 'pricing_cta',
+            label: "Vraag Offerte Aan",
+            variant: "secondary",
+            "data-conversion_type": "pricing_cta",
           }}
           secondaryButton={{
-            as: 'a',
-            href: 'tel:+31851234567',
-            label: 'Bel Direct',
-            variant: 'outline',
-            'aria-label': 'Bel ons direct op +31 85 123 4567',
+            as: "a",
+            href: "tel:+31851234567",
+            label: "Bel Direct",
+            variant: "outline",
+            "aria-label": "Bel ons direct op +31 85 123 4567",
           }}
         />
       </div>

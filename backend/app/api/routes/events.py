@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -15,7 +14,7 @@ class Event(BaseModel):
     date: date
     location: str
     price: float = Field(..., ge=0)
-    description: Optional[str] = None
+    description: str | None = None
     is_active: bool = True
 
 
@@ -24,11 +23,11 @@ class EventCreate(BaseModel):
     date: date
     location: str
     price: float = Field(..., ge=0)
-    description: Optional[str] = None
+    description: str | None = None
     is_active: bool = True
 
 
-_EVENTS: List[Event] = [
+_EVENTS: list[Event] = [
     Event(
         id=1,
         name="Summer Beats Festival",
@@ -58,9 +57,9 @@ _EVENTS: List[Event] = [
 
 def _filter_events(
     *,
-    location: Optional[str] = None,
-    is_active: Optional[bool] = None,
-) -> List[Event]:
+    location: str | None = None,
+    is_active: bool | None = None,
+) -> list[Event]:
     events = list(_EVENTS)
     if location:
         location_lower = location.lower()
@@ -70,15 +69,13 @@ def _filter_events(
     return events
 
 
-@router.get("/", response_model=List[Event], tags=["events"])
+@router.get("/", response_model=list[Event], tags=["events"])
 def list_events(
-    location: Optional[str] = Query(
+    location: str | None = Query(
         default=None, description="Filter events by location (contains match)"
     ),
-    is_active: Optional[bool] = Query(
-        default=None, description="Filter on active status"
-    ),
-) -> List[Event]:
+    is_active: bool | None = Query(default=None, description="Filter on active status"),
+) -> list[Event]:
     return _filter_events(location=location, is_active=is_active)
 
 
