@@ -1,47 +1,47 @@
-const dataLayerName = 'dataLayer'
+const dataLayerName = "dataLayer";
 
-type Ga4EventParams = Record<string, unknown>
+type Ga4EventParams = Record<string, unknown>;
 
 export interface Ga4Event {
-  name: string
-  params?: Ga4EventParams
+  name: string;
+  params?: Ga4EventParams;
 }
 
-const isBrowser = typeof window !== 'undefined'
+const isBrowser = typeof window !== "undefined";
 
 const getDataLayer = (): unknown[] | null => {
   if (!isBrowser) {
-    return null
+    return null;
   }
 
-  const globalWindow = window as unknown as Record<string, unknown>
-  const dataLayer = (globalWindow[dataLayerName] as unknown[]) ?? []
+  const globalWindow = window as unknown as Record<string, unknown>;
+  const dataLayer = (globalWindow[dataLayerName] as unknown[]) ?? [];
 
   if (!globalWindow[dataLayerName]) {
-    globalWindow[dataLayerName] = dataLayer
+    globalWindow[dataLayerName] = dataLayer;
   }
 
-  return dataLayer
-}
+  return dataLayer;
+};
 
 export const pushEvent = ({ name, params }: Ga4Event): void => {
   if (!name) {
-    if (import.meta.env?.MODE !== 'production') {
-      console.warn('[ga4] Event name is required before pushing to the dataLayer.')
+    if (import.meta.env?.MODE !== "production") {
+      console.warn("[ga4] Event name is required before pushing to the dataLayer.");
     }
-    return
+    return;
   }
 
-  const dataLayer = getDataLayer()
+  const dataLayer = getDataLayer();
 
   if (!dataLayer) {
-    return
+    return;
   }
 
   const payload = {
     event: name,
     ...(params ?? {}),
-  }
+  };
 
-  dataLayer.push(payload)
-}
+  dataLayer.push(payload);
+};

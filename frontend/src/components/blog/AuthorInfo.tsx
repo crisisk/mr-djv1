@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 type Fetcher = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
@@ -26,67 +26,67 @@ const defaultFetcher: Fetcher = (input, init) => fetch(input, init);
 
 const buildRequestUrl = (endpoint: string, slug: string) => {
   if (!endpoint) {
-    endpoint = '/api/blog/author';
+    endpoint = "/api/blog/author";
   }
 
   try {
-    const base = endpoint.includes('://')
+    const base = endpoint.includes("://")
       ? endpoint
       : new URL(
           endpoint,
-          typeof window === 'undefined' ? 'http://localhost' : window.location.origin,
+          typeof window === "undefined" ? "http://localhost" : window.location.origin,
         ).toString();
     const url = new URL(base);
-    url.searchParams.set('slug', slug);
+    url.searchParams.set("slug", slug);
     return url.toString();
   } catch (error) {
-    console.error('Failed to construct author endpoint', error);
+    console.error("Failed to construct author endpoint", error);
     return `${endpoint}?slug=${encodeURIComponent(slug)}`;
   }
 };
 
 const normalizeAuthor = (record: unknown, fallbackSlug: string): AuthorRecord | null => {
-  if (!record || typeof record !== 'object') {
+  if (!record || typeof record !== "object") {
     return null;
   }
 
   const data = record as Record<string, unknown>;
-  const name = typeof data.name === 'string' ? data.name : 'Unknown author';
+  const name = typeof data.name === "string" ? data.name : "Unknown author";
 
   const headshotUrl =
-    typeof data.headshotUrl === 'string'
+    typeof data.headshotUrl === "string"
       ? data.headshotUrl
-      : typeof data.headshot_url === 'string'
+      : typeof data.headshot_url === "string"
         ? data.headshot_url
         : undefined;
 
   const websiteUrl =
-    typeof data.websiteUrl === 'string'
+    typeof data.websiteUrl === "string"
       ? data.websiteUrl
-      : typeof data.website_url === 'string'
+      : typeof data.website_url === "string"
         ? data.website_url
         : undefined;
 
   const twitterHandle =
-    typeof data.twitterHandle === 'string'
+    typeof data.twitterHandle === "string"
       ? data.twitterHandle
-      : typeof data.twitter_handle === 'string'
+      : typeof data.twitter_handle === "string"
         ? data.twitter_handle
         : undefined;
 
   const linkedinUrl =
-    typeof data.linkedinUrl === 'string'
+    typeof data.linkedinUrl === "string"
       ? data.linkedinUrl
-      : typeof data.linkedin_url === 'string'
+      : typeof data.linkedin_url === "string"
         ? data.linkedin_url
         : undefined;
 
   return {
-    id: typeof data.id === 'string' ? data.id : undefined,
-    slug: typeof data.slug === 'string' ? data.slug : fallbackSlug,
+    id: typeof data.id === "string" ? data.id : undefined,
+    slug: typeof data.slug === "string" ? data.slug : fallbackSlug,
     name,
-    title: typeof data.title === 'string' ? data.title : undefined,
-    bio: typeof data.bio === 'string' ? data.bio : undefined,
+    title: typeof data.title === "string" ? data.title : undefined,
+    bio: typeof data.bio === "string" ? data.bio : undefined,
     headshotUrl,
     websiteUrl,
     twitterHandle,
@@ -98,8 +98,8 @@ const getInitials = (name: string) => {
   const initials = name
     .split(/\s+/)
     .filter(Boolean)
-    .map((part) => part[0] ?? '')
-    .join('')
+    .map((part) => part[0] ?? "")
+    .join("")
     .slice(0, 2)
     .toUpperCase();
 
@@ -109,9 +109,9 @@ const getInitials = (name: string) => {
 export function AuthorInfo({
   authorSlug,
   className,
-  title = 'About the author',
+  title = "About the author",
   fetcher = defaultFetcher,
-  endpoint = '/api/blog/author',
+  endpoint = "/api/blog/author",
 }: AuthorInfoProps) {
   const [author, setAuthor] = useState<AuthorRecord | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -134,7 +134,7 @@ export function AuthorInfo({
       try {
         const response = await fetcher(buildRequestUrl(endpoint, authorSlug), {
           signal: controller.signal,
-          headers: { Accept: 'application/json' },
+          headers: { Accept: "application/json" },
         });
 
         if (!response.ok) {
@@ -142,7 +142,10 @@ export function AuthorInfo({
         }
 
         const payload: unknown = await response.json();
-        const record = normalizeAuthor((payload as { author?: unknown })?.author ?? payload, authorSlug);
+        const record = normalizeAuthor(
+          (payload as { author?: unknown })?.author ?? payload,
+          authorSlug,
+        );
 
         setAuthor(record);
       } catch (err) {
@@ -150,7 +153,7 @@ export function AuthorInfo({
           return;
         }
 
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        setError(err instanceof Error ? err.message : "Unknown error");
         setAuthor(null);
       } finally {
         if (!controller.signal.aborted) {
@@ -191,28 +194,40 @@ export function AuthorInfo({
           <div className="space-y-spacing-xs">
             <div>
               <p className="text-base font-semibold text-neutral-dark">{author.name}</p>
-              {author.title ? (
-                <p className="text-sm text-neutral-medium">{author.title}</p>
-              ) : null}
+              {author.title ? <p className="text-sm text-neutral-medium">{author.title}</p> : null}
             </div>
             {author.bio ? (
               <p className="text-sm leading-relaxed text-neutral-dark">{author.bio}</p>
             ) : null}
             <div className="flex flex-wrap gap-spacing-xs text-sm">
               {author.websiteUrl ? (
-                <a className="text-secondary hover:underline" href={author.websiteUrl} target="_blank" rel="noreferrer">
+                <a
+                  className="text-secondary hover:underline"
+                  href={author.websiteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Website
                 </a>
               ) : null}
               {author.linkedinUrl ? (
-                <a className="text-secondary hover:underline" href={author.linkedinUrl} target="_blank" rel="noreferrer">
+                <a
+                  className="text-secondary hover:underline"
+                  href={author.linkedinUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   LinkedIn
                 </a>
               ) : null}
               {author.twitterHandle ? (
                 <a
                   className="text-secondary hover:underline"
-                  href={author.twitterHandle.startsWith('http') ? author.twitterHandle : `https://twitter.com/${author.twitterHandle.replace(/^@/, '')}`}
+                  href={
+                    author.twitterHandle.startsWith("http")
+                      ? author.twitterHandle
+                      : `https://twitter.com/${author.twitterHandle.replace(/^@/, "")}`
+                  }
                   target="_blank"
                   rel="noreferrer"
                 >

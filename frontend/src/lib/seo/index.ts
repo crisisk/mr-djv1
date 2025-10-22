@@ -8,4 +8,4 @@ export {
   generateFAQSchema,
   generateWebPageSchema,
   generateProductSchema,
-} from '../../../../mr-dj-eds-components/src/utils/schemaOrg.js';
+} from "../../../../mr-dj-eds-components/src/utils/schemaOrg.js";

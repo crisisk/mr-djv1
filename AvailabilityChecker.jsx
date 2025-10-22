@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
-import Button from './Buttons.jsx';
-import { getJSON, removeItem, setJSON } from './frontend/src/lib/storage.ts';
+import React, { useEffect, useState } from "react";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import Button from "./Buttons.jsx";
+import { getJSON, removeItem, setJSON } from "./frontend/src/lib/storage.ts";
 
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
-const STORAGE_KEY = 'availabilityCheckerForm';
+const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+const STORAGE_KEY = "availabilityCheckerForm";
 
 function resolvePageContext() {
   if (!isBrowser) {
@@ -14,7 +14,7 @@ function resolvePageContext() {
 
   return {
     pageUri: window.location.href,
-    pageName: document.title || 'Mister DJ'
+    pageName: document.title || "Mister DJ",
   };
 }
 
@@ -23,23 +23,23 @@ const pendingSevensaRequests = new Map();
 
 // Sevensa Form Submission Logic (Placeholder)
 const submitToSevensa = async (formData) => {
-  const accountId = 'YOUR_SEVENSA_ACCOUNT_ID'; // VERVANGEN
-  const formId = 'YOUR_SEVENSA_FORM_ID'; // VERVANGEN
+  const accountId = "YOUR_SEVENSA_ACCOUNT_ID"; // VERVANGEN
+  const formId = "YOUR_SEVENSA_FORM_ID"; // VERVANGEN
   const url = `https://api.sevensa.com/forms/${accountId}/${formId}/submit`;
 
   const fields = Object.keys(formData).map((key) => ({
     name: key,
-    value: formData[key]
+    value: formData[key],
   }));
 
   const data = {
     fields: fields,
-    context: resolvePageContext()
+    context: resolvePageContext(),
   };
 
   const dedupeKey = JSON.stringify({
     eventDate: formData.event_date,
-    email: formData.email
+    email: formData.email,
   });
 
   if (pendingSevensaRequests.has(dedupeKey)) {
@@ -49,18 +49,18 @@ const submitToSevensa = async (formData) => {
   const requestPromise = (async () => {
     try {
       const response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
       if (response.ok) {
-        return { success: true, message: 'Aanvraag succesvol verzonden!' };
+        return { success: true, message: "Aanvraag succesvol verzonden!" };
       }
 
-      let errorMessage = 'Onbekende fout';
+      let errorMessage = "Onbekende fout";
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
@@ -82,7 +82,7 @@ const submitToSevensa = async (formData) => {
 
 const AvailabilityChecker = () => {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [status, setStatus] = useState(null); // 'success', 'error', 'loading'
 
   useEffect(() => {
@@ -95,11 +95,11 @@ const AvailabilityChecker = () => {
       return;
     }
 
-    if (typeof savedState.email === 'string') {
+    if (typeof savedState.email === "string") {
       setEmail(savedState.email);
     }
 
-    if (typeof savedState.selectedDate === 'string') {
+    if (typeof savedState.selectedDate === "string") {
       const parsedDate = new Date(savedState.selectedDate);
       if (!Number.isNaN(parsedDate.getTime())) {
         setSelectedDate(parsedDate);
@@ -126,14 +126,14 @@ const AvailabilityChecker = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedDate || !email) {
-      setStatus({ type: 'error', message: 'Vul alstublieft een datum en e-mailadres in.' });
+      setStatus({ type: "error", message: "Vul alstublieft een datum en e-mailadres in." });
       return;
     }
 
-    setStatus({ type: 'loading', message: 'Bezig met controleren...' });
+    setStatus({ type: "loading", message: "Bezig met controleren..." });
 
     const formData = {
-      event_date: selectedDate.toLocaleDateString('nl-NL'),
+      event_date: selectedDate.toLocaleDateString("nl-NL"),
       email: email,
       // Voeg hier meer velden toe indien nodig
     };
@@ -142,16 +142,23 @@ const AvailabilityChecker = () => {
     const result = await submitToSevensa(formData);
 
     if (result.success) {
-      setStatus({ type: 'success', message: 'Beschikbaarheid gecontroleerd! We nemen contact op via e-mail.' });
+      setStatus({
+        type: "success",
+        message: "Beschikbaarheid gecontroleerd! We nemen contact op via e-mail.",
+      });
       setSelectedDate(null);
-      setEmail('');
+      setEmail("");
       removeItem(STORAGE_KEY);
     } else {
-      setStatus({ type: 'error', message: result.message });
+      setStatus({ type: "error", message: result.message });
     }
   };
 
-  const statusClasses = status ? (status.type === 'success' ? 'bg-semantic-success' : 'bg-semantic-error') : 'hidden';
+  const statusClasses = status
+    ? status.type === "success"
+      ? "bg-semantic-success"
+      : "bg-semantic-error"
+    : "hidden";
 
   return (
     <section className="py-spacing-3xl bg-neutral-light">
@@ -171,19 +178,22 @@ const AvailabilityChecker = () => {
               selected={selectedDate}
               onSelect={setSelectedDate}
               modifiersClassNames={{
-                selected: 'bg-primary text-neutral-light rounded-full',
-                today: 'border border-primary rounded-full',
+                selected: "bg-primary text-neutral-light rounded-full",
+                today: "border border-primary rounded-full",
               }}
               styles={{
-                caption: { color: 'var(--color-primary-blue)' },
-                head: { color: 'var(--color-neutral-dark)' },
+                caption: { color: "var(--color-primary-blue)" },
+                head: { color: "var(--color-neutral-dark)" },
               }}
             />
           </div>
 
           {/* Email Input */}
           <div>
-            <label htmlFor="email" className="block text-font-size-body font-medium text-neutral-dark mb-spacing-sm">
+            <label
+              htmlFor="email"
+              className="block text-font-size-body font-medium text-neutral-dark mb-spacing-sm"
+            >
               Uw E-mailadres
             </label>
             <input
@@ -199,7 +209,9 @@ const AvailabilityChecker = () => {
 
           {/* Status Message */}
           {status && (
-            <div className={`p-spacing-md rounded-md text-neutral-light text-center ${statusClasses}`}>
+            <div
+              className={`p-spacing-md rounded-md text-neutral-light text-center ${statusClasses}`}
+            >
               {status.message}
             </div>
           )}
@@ -210,9 +222,9 @@ const AvailabilityChecker = () => {
             variant="primary"
             size="lg"
             className="w-full"
-            disabled={status && status.type === 'loading'}
+            disabled={status && status.type === "loading"}
           >
-            {status && status.type === 'loading' ? 'Bezig...' : 'Controleer & Vraag Aan'}
+            {status && status.type === "loading" ? "Bezig..." : "Controleer & Vraag Aan"}
           </Button>
         </form>
       </div>

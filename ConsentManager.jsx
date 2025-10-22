@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 
-const LOCAL_STORAGE_KEY = 'mr-dj-consent-preferences';
+const LOCAL_STORAGE_KEY = "mr-dj-consent-preferences";
 
 const defaultConsent = {
   functional: true,
@@ -8,14 +8,14 @@ const defaultConsent = {
   marketing: false,
 };
 
-const FACEBOOK_PIXEL_SCRIPT_ID = 'mr-dj-facebook-pixel-script';
-const FACEBOOK_PIXEL_NOSCRIPT_ID = 'mr-dj-facebook-pixel-noscript';
-const MARKETING_CONSENT_EVENT = 'mr-dj:marketing-consent-change';
+const FACEBOOK_PIXEL_SCRIPT_ID = "mr-dj-facebook-pixel-script";
+const FACEBOOK_PIXEL_NOSCRIPT_ID = "mr-dj-facebook-pixel-noscript";
+const MARKETING_CONSENT_EVENT = "mr-dj:marketing-consent-change";
 
 const marketingConsentSubscribers = new Set();
 
 const getFacebookPixelId = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
 
@@ -25,7 +25,7 @@ const getFacebookPixelId = () => {
     window.facebookPixelId ||
     null;
 
-  if (typeof fromWindow === 'string' && fromWindow.trim()) {
+  if (typeof fromWindow === "string" && fromWindow.trim()) {
     return fromWindow.trim();
   }
 
@@ -38,7 +38,7 @@ const getFacebookPixelId = () => {
 };
 
 const removeFacebookPixelNodes = () => {
-  if (typeof document === 'undefined') {
+  if (typeof document === "undefined") {
     return;
   }
 
@@ -54,20 +54,20 @@ const removeFacebookPixelNodes = () => {
 };
 
 const injectFacebookPixel = () => {
-  if (typeof window === 'undefined' || typeof document === 'undefined') {
+  if (typeof window === "undefined" || typeof document === "undefined") {
     return;
   }
 
   const pixelId = getFacebookPixelId();
   if (!pixelId) {
-    console.warn('Facebook Pixel ID is not configured. Skipping pixel injection.');
+    console.warn("Facebook Pixel ID is not configured. Skipping pixel injection.");
     return;
   }
 
   if (!document.getElementById(FACEBOOK_PIXEL_SCRIPT_ID)) {
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.id = FACEBOOK_PIXEL_SCRIPT_ID;
-    script.setAttribute('data-testid', FACEBOOK_PIXEL_SCRIPT_ID);
+    script.setAttribute("data-testid", FACEBOOK_PIXEL_SCRIPT_ID);
     script.innerHTML =
       "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?" +
       "n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;" +
@@ -83,9 +83,9 @@ const injectFacebookPixel = () => {
   }
 
   if (!document.getElementById(FACEBOOK_PIXEL_NOSCRIPT_ID)) {
-    const noscript = document.createElement('noscript');
+    const noscript = document.createElement("noscript");
     noscript.id = FACEBOOK_PIXEL_NOSCRIPT_ID;
-    noscript.setAttribute('data-testid', FACEBOOK_PIXEL_NOSCRIPT_ID);
+    noscript.setAttribute("data-testid", FACEBOOK_PIXEL_NOSCRIPT_ID);
     noscript.innerHTML = `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1" />`;
     if (document.body) {
       document.body.appendChild(noscript);
@@ -94,21 +94,21 @@ const injectFacebookPixel = () => {
     }
   }
 
-  if (typeof window.fbq === 'function') {
-    window.fbq('consent', 'grant');
+  if (typeof window.fbq === "function") {
+    window.fbq("consent", "grant");
   }
 };
 
 const disableFacebookPixel = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
-  if (typeof window.fbq === 'function') {
+  if (typeof window.fbq === "function") {
     try {
-      window.fbq('consent', 'revoke');
+      window.fbq("consent", "revoke");
     } catch (error) {
-      console.warn('Unable to notify Facebook Pixel about revoked consent', error);
+      console.warn("Unable to notify Facebook Pixel about revoked consent", error);
     }
   }
 
@@ -131,16 +131,18 @@ const notifyMarketingConsentChange = (isGranted) => {
     try {
       callback(isGranted);
     } catch (error) {
-      console.error('Marketing consent subscriber threw an error', error);
+      console.error("Marketing consent subscriber threw an error", error);
     }
   });
 
   if (
-    typeof window !== 'undefined' &&
-    typeof window.dispatchEvent === 'function' &&
-    typeof window.CustomEvent === 'function'
+    typeof window !== "undefined" &&
+    typeof window.dispatchEvent === "function" &&
+    typeof window.CustomEvent === "function"
   ) {
-    window.dispatchEvent(new window.CustomEvent(MARKETING_CONSENT_EVENT, { detail: { granted: isGranted } }));
+    window.dispatchEvent(
+      new window.CustomEvent(MARKETING_CONSENT_EVENT, { detail: { granted: isGranted } }),
+    );
   }
 };
 
@@ -148,7 +150,7 @@ const notifyMarketingConsentChange = (isGranted) => {
 const ConsentContext = createContext(null);
 
 const getComplianzPreferences = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
 
@@ -158,14 +160,14 @@ const getComplianzPreferences = () => {
   }
 
   return {
-    functional: preferences.functional === 'allow',
-    statistics: preferences.statistics === 'allow',
-    marketing: preferences.marketing === 'allow',
+    functional: preferences.functional === "allow",
+    statistics: preferences.statistics === "allow",
+    marketing: preferences.marketing === "allow",
   };
 };
 
 const getStoredPreferences = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
 
@@ -182,13 +184,13 @@ const getStoredPreferences = () => {
       marketing: Boolean(parsed?.marketing),
     };
   } catch (error) {
-    console.warn('Unable to read stored consent preferences', error);
+    console.warn("Unable to read stored consent preferences", error);
     return null;
   }
 };
 
 const shouldDisplayBanner = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return false;
   }
 
@@ -200,7 +202,8 @@ const shouldDisplayBanner = () => {
 };
 
 // Helper function to get the current consent status from Complianz
-const getConsentStatus = () => getComplianzPreferences() ?? getStoredPreferences() ?? defaultConsent;
+const getConsentStatus = () =>
+  getComplianzPreferences() ?? getStoredPreferences() ?? defaultConsent;
 
 // 2. Create the Provider Component
 export const ConsentManager = ({ children }) => {
@@ -220,7 +223,7 @@ export const ConsentManager = ({ children }) => {
   );
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return undefined;
     }
 
@@ -238,7 +241,7 @@ export const ConsentManager = ({ children }) => {
   }, [consent.marketing]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return undefined;
     }
 
@@ -260,13 +263,13 @@ export const ConsentManager = ({ children }) => {
     };
 
     // Complianz fires a custom event when consent is set or changed
-    window.addEventListener('cmplz_fire_categories', handleConsentChange);
+    window.addEventListener("cmplz_fire_categories", handleConsentChange);
 
     // Initial check in case the banner is already dismissed
     handleConsentChange();
 
     return () => {
-      window.removeEventListener('cmplz_fire_categories', handleConsentChange);
+      window.removeEventListener("cmplz_fire_categories", handleConsentChange);
     };
   }, []);
 
@@ -286,7 +289,7 @@ export const ConsentManager = ({ children }) => {
   }, [consent.statistics, consent.marketing]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -300,34 +303,34 @@ export const ConsentManager = ({ children }) => {
         }),
       );
     } catch (error) {
-      console.warn('Unable to persist consent preferences', error);
+      console.warn("Unable to persist consent preferences", error);
     }
   }, [consent]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
     const { marketing, statistics } = consent;
 
-    if (typeof window.gtag === 'function') {
-      window.gtag('consent', 'update', {
-        ad_storage: marketing ? 'granted' : 'denied',
-        analytics_storage: statistics ? 'granted' : 'denied',
-        ad_user_data: marketing ? 'granted' : 'denied',
-        ad_personalization: marketing ? 'granted' : 'denied',
+    if (typeof window.gtag === "function") {
+      window.gtag("consent", "update", {
+        ad_storage: marketing ? "granted" : "denied",
+        analytics_storage: statistics ? "granted" : "denied",
+        ad_user_data: marketing ? "granted" : "denied",
+        ad_personalization: marketing ? "granted" : "denied",
       });
       return;
     }
 
     if (Array.isArray(window.dataLayer)) {
       window.dataLayer.push({
-        event: 'consent_update',
-        ad_storage: marketing ? 'granted' : 'denied',
-        analytics_storage: statistics ? 'granted' : 'denied',
-        ad_user_data: marketing ? 'granted' : 'denied',
-        ad_personalization: marketing ? 'granted' : 'denied',
+        event: "consent_update",
+        ad_storage: marketing ? "granted" : "denied",
+        analytics_storage: statistics ? "granted" : "denied",
+        ad_user_data: marketing ? "granted" : "denied",
+        ad_personalization: marketing ? "granted" : "denied",
       });
     }
   }, [consent]);
@@ -375,7 +378,7 @@ export const ConsentManager = ({ children }) => {
   // The value provided to consumers
   const subscribeToMarketingConsent = useCallback(
     (callback) => {
-      if (typeof callback !== 'function') {
+      if (typeof callback !== "function") {
         return () => {};
       }
 
@@ -384,7 +387,7 @@ export const ConsentManager = ({ children }) => {
       try {
         callback(Boolean(consent.marketing));
       } catch (error) {
-        console.error('Marketing consent subscriber threw an error', error);
+        console.error("Marketing consent subscriber threw an error", error);
       }
 
       return () => {
@@ -418,23 +421,26 @@ export const ConsentManager = ({ children }) => {
               Cookie preferences
             </h2>
             <p id="consent-banner-description" className="consent-banner__description">
-              We use cookies to deliver the best online experience. Some cookies are essential for our site to function, while
-              others help us improve services and deliver personalized marketing. Under GDPR, we only load non-essential
-              cookies after you opt in. You can update or withdraw your consent at any time by reopening these preferences.
+              We use cookies to deliver the best online experience. Some cookies are essential for
+              our site to function, while others help us improve services and deliver personalized
+              marketing. Under GDPR, we only load non-essential cookies after you opt in. You can
+              update or withdraw your consent at any time by reopening these preferences.
             </p>
             <ul className="consent-banner__list">
               <li>
-                <strong>Essential cookies</strong> – Required for security and core features such as remembering your session.
+                <strong>Essential cookies</strong> – Required for security and core features such as
+                remembering your session.
               </li>
               <li>
                 <label className="consent-banner__option">
                   <div>
-                    <strong>Analytics cookies</strong> – Help us understand how visitors use the site so we can improve it.
+                    <strong>Analytics cookies</strong> – Help us understand how visitors use the
+                    site so we can improve it.
                   </div>
                   <input
                     type="checkbox"
                     checked={Boolean(pendingConsent.statistics)}
-                    onChange={togglePreference('statistics')}
+                    onChange={togglePreference("statistics")}
                     aria-label="Toggle analytics cookies"
                   />
                 </label>
@@ -442,27 +448,37 @@ export const ConsentManager = ({ children }) => {
               <li>
                 <label className="consent-banner__option">
                   <div>
-                    <strong>Marketing cookies</strong> – Enable personalized offers and measure campaign performance.
+                    <strong>Marketing cookies</strong> – Enable personalized offers and measure
+                    campaign performance.
                   </div>
                   <input
                     type="checkbox"
                     checked={Boolean(pendingConsent.marketing)}
-                    onChange={togglePreference('marketing')}
+                    onChange={togglePreference("marketing")}
                     aria-label="Toggle marketing cookies"
                   />
                 </label>
               </li>
             </ul>
             <p className="consent-banner__choices">
-              By choosing “Accept all”, you agree to the use of all cookies described above. Selecting “Decline non-essential”
-              allows us to store only essential cookies. Use “Save preferences” to fine-tune your consent by category. You can
-              revisit this banner at any time through the “Cookie settings” link in the footer.
+              By choosing “Accept all”, you agree to the use of all cookies described above.
+              Selecting “Decline non-essential” allows us to store only essential cookies. Use “Save
+              preferences” to fine-tune your consent by category. You can revisit this banner at any
+              time through the “Cookie settings” link in the footer.
             </p>
             <div className="consent-banner__actions">
-              <button type="button" className="button button--ghost" onClick={handleDeclineNonEssential}>
+              <button
+                type="button"
+                className="button button--ghost"
+                onClick={handleDeclineNonEssential}
+              >
                 Decline non-essential
               </button>
-              <button type="button" className="button button--secondary" onClick={handleSavePreferences}>
+              <button
+                type="button"
+                className="button button--secondary"
+                onClick={handleSavePreferences}
+              >
                 Save preferences
               </button>
               <button type="button" className="button button--primary" onClick={handleAcceptAll}>
@@ -473,7 +489,11 @@ export const ConsentManager = ({ children }) => {
         </section>
       )}
       {!isBannerVisible && (
-        <button type="button" className="button button--ghost consent-banner__settings" onClick={() => setIsBannerVisible(true)}>
+        <button
+          type="button"
+          className="button button--ghost consent-banner__settings"
+          onClick={() => setIsBannerVisible(true)}
+        >
           Cookie settings
         </button>
       )}
@@ -486,7 +506,7 @@ export const ConsentManager = ({ children }) => {
 export const useConsent = () => {
   const context = useContext(ConsentContext);
   if (context === undefined || context === null) {
-    throw new Error('useConsent must be used within a ConsentManager');
+    throw new Error("useConsent must be used within a ConsentManager");
   }
   return context;
 };

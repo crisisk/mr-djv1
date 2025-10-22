@@ -1,5 +1,5 @@
-import { IconBase, mergeClassNames } from './shared/IconBase';
-import type { IconBaseProps } from './shared/IconBase';
+import { IconBase, mergeClassNames } from "./shared/IconBase";
+import type { IconBaseProps } from "./shared/IconBase";
 
 export interface TestimonialEntry {
   quote: string;
@@ -14,21 +14,23 @@ export interface TestimonialsProps {
 
 const defaultTestimonials: TestimonialEntry[] = [
   {
-    quote: 'De combinatie van DJ en Saxofonist was het hoogtepunt van onze bruiloft. De sfeer was onvergetelijk!',
-    author: 'Jan & Marieke',
-    source: 'Bruiloft, Amsterdam',
+    quote:
+      "De combinatie van DJ en Saxofonist was het hoogtepunt van onze bruiloft. De sfeer was onvergetelijk!",
+    author: "Jan & Marieke",
+    source: "Bruiloft, Amsterdam",
     rating: 5,
   },
   {
-    quote: 'Professioneel, energiek en ze wisten precies de juiste snaar te raken. Een absolute aanrader voor elk bedrijfsfeest.',
-    author: 'Suzanne van Dijk',
-    source: 'Bedrijfsfeest, Utrecht',
+    quote:
+      "Professioneel, energiek en ze wisten precies de juiste snaar te raken. Een absolute aanrader voor elk bedrijfsfeest.",
+    author: "Suzanne van Dijk",
+    source: "Bedrijfsfeest, Utrecht",
     rating: 5,
   },
   {
-    quote: 'De muziek was perfect afgestemd op onze gasten. De saxofonist maakte het helemaal af!',
-    author: 'Mark de Vries',
-    source: 'Verjaardagsfeest, Eindhoven',
+    quote: "De muziek was perfect afgestemd op onze gasten. De saxofonist maakte het helemaal af!",
+    author: "Mark de Vries",
+    source: "Verjaardagsfeest, Eindhoven",
     rating: 5,
   },
 ];
@@ -36,7 +38,7 @@ const defaultTestimonials: TestimonialEntry[] = [
 function StarIcon({ className, ...props }: IconBaseProps) {
   return (
     <IconBase
-      className={mergeClassNames('h-5 w-5', className)}
+      className={mergeClassNames("h-5 w-5", className)}
       fill="currentColor"
       viewBox="0 0 20 20"
       xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +55,7 @@ function StarRating({ rating }: { rating: number }) {
       {Array.from({ length: 5 }).map((_, index) => (
         <StarIcon
           key={index}
-          className={index < rating ? 'text-secondary' : 'text-neutral-gray-500'}
+          className={index < rating ? "text-secondary" : "text-neutral-gray-500"}
         />
       ))}
     </div>
@@ -62,9 +64,14 @@ function StarRating({ rating }: { rating: number }) {
 
 function TestimonialCard({ testimonial }: { testimonial: TestimonialEntry }) {
   return (
-    <article className="bg-neutral-light p-spacing-xl rounded-lg shadow-xl flex flex-col h-full" aria-label={`Testimonial van ${testimonial.author}`}>
+    <article
+      className="bg-neutral-light p-spacing-xl rounded-lg shadow-xl flex flex-col h-full"
+      aria-label={`Testimonial van ${testimonial.author}`}
+    >
       <StarRating rating={testimonial.rating} />
-      <p className="lead text-neutral-dark text-emphasis my-spacing-lg flex-grow">“{testimonial.quote}”</p>
+      <p className="lead text-neutral-dark text-emphasis my-spacing-lg flex-grow">
+        “{testimonial.quote}”
+      </p>
       <footer className="border-t border-neutral-gray-100 pt-spacing-md">
         <p className="body-md text-strong text-primary">{testimonial.author}</p>
         <p className="body-sm text-neutral-gray-500">{testimonial.source}</p>
@@ -77,10 +84,15 @@ export function Testimonials({ testimonials = defaultTestimonials }: Testimonial
   return (
     <section className="py-spacing-3xl bg-neutral-gray-100">
       <div className="container mx-auto px-spacing-md">
-        <h2 className="heading-2 text-center text-neutral-dark mb-spacing-2xl">Wat Klanten Zeggen</h2>
+        <h2 className="heading-2 text-center text-neutral-dark mb-spacing-2xl">
+          Wat Klanten Zeggen
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-spacing-xl">
           {testimonials.map((testimonial) => (
-            <TestimonialCard key={`${testimonial.author}-${testimonial.source}`} testimonial={testimonial} />
+            <TestimonialCard
+              key={`${testimonial.author}-${testimonial.source}`}
+              testimonial={testimonial}
+            />
           ))}
         </div>
       </div>

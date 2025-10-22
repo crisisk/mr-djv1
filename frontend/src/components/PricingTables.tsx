@@ -1,8 +1,6 @@
 "use client";
 
-import { Button } from './Button';
-import { IconBase, mergeClassNames } from './shared/IconBase';
-import type { IconBaseProps } from './shared/IconBase';
+import { Button } from "./Button";
 
 export interface PricingFeatureSet {
   name: string;
@@ -17,78 +15,70 @@ export interface PricingTablesProps {
   packages?: PricingFeatureSet[];
 }
 
-const euroFormatter = new Intl.NumberFormat('nl-NL', {
-  style: 'currency',
-  currency: 'EUR'
+const euroFormatter = new Intl.NumberFormat("nl-NL", {
+  style: "currency",
+  currency: "EUR",
 });
 
 const defaultPackages: PricingFeatureSet[] = [
   {
-    name: 'Brons',
-    subtitle: 'Entry-level pakket',
+    name: "Brons",
+    subtitle: "Entry-level pakket",
     price: euroFormatter.format(495),
-    features: ['4 uur DJ-set', 'Basis licht- en geluidsset', 'Persoonlijk intakegesprek', 'Muziekvoorkeuren formulier'],
-    buttonText: 'Meer Info',
+    features: [
+      "4 uur DJ-set",
+      "Basis licht- en geluidsset",
+      "Persoonlijk intakegesprek",
+      "Muziekvoorkeuren formulier",
+    ],
+    buttonText: "Meer Info",
   },
   {
-    name: 'Zilver',
-    subtitle: 'Meest gekozen',
+    name: "Zilver",
+    subtitle: "Meest gekozen",
     price: euroFormatter.format(795),
     features: [
-      '6 uur DJ-set',
-      'Uitgebreide lichtshow',
-      'DJ + Saxofonist optie',
-      '100% dansgarantie',
-      'Onbeperkt aantal gasten',
+      "6 uur DJ-set",
+      "Uitgebreide lichtshow",
+      "DJ + Saxofonist optie",
+      "100% dansgarantie",
+      "Onbeperkt aantal gasten",
     ],
     isFeatured: true,
-    buttonText: 'Boek Nu',
+    buttonText: "Boek Nu",
   },
   {
-    name: 'Goud',
-    subtitle: 'Premium All-Inclusive',
+    name: "Goud",
+    subtitle: "Premium All-Inclusive",
     price: euroFormatter.format(1295),
     features: [
-      '8 uur DJ-set',
-      'Luxe licht- en geluidsset',
-      'DJ + Saxofonist (inbegrepen)',
-      'Ceremonie & receptie muziek',
-      'Professionele apparatuur',
+      "8 uur DJ-set",
+      "Luxe licht- en geluidsset",
+      "DJ + Saxofonist (inbegrepen)",
+      "Ceremonie & receptie muziek",
+      "Professionele apparatuur",
     ],
-    buttonText: 'Vraag Offerte Aan',
+    buttonText: "Vraag Offerte Aan",
   },
 ];
-
-function CheckIcon({ className, ...props }: IconBaseProps) {
-  return (
-    <IconBase
-      className={mergeClassNames('mr-spacing-sm h-5 w-5 flex-shrink-0', className)}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-    </IconBase>
-  );
-}
 
 function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
   const { name, subtitle, price, features, isFeatured, buttonText } = pkg;
 
   const cardClasses = isFeatured
-    ? 'bg-neutral-dark text-neutral-light shadow-2xl transform scale-105'
-    : 'bg-neutral-light text-neutral-dark shadow-lg';
+    ? "bg-neutral-dark text-neutral-light shadow-2xl transform scale-105"
+    : "bg-neutral-light text-neutral-dark shadow-lg";
 
   const headerClasses = isFeatured
-    ? 'text-secondary border-b border-secondary/50'
-    : 'text-primary border-b border-neutral-gray-100';
+    ? "text-secondary border-b border-secondary/50"
+    : "text-primary border-b border-neutral-gray-100";
 
-  const buttonVariant = isFeatured ? 'secondary' : 'primary';
+  const buttonVariant = isFeatured ? "secondary" : "primary";
 
   return (
-    <div className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}>
+    <div
+      className={`relative flex flex-col p-spacing-xl rounded-lg transition duration-300 ${cardClasses}`}
+    >
       {isFeatured ? (
         <div className="absolute top-0 right-0 bg-secondary text-neutral-dark body-sm text-strong px-spacing-md py-spacing-xs rounded-tr-lg rounded-bl-lg">
           Populair
@@ -106,13 +96,18 @@ function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
         {features.map((feature) => (
           <li key={feature} className="flex items-start body-md">
             <svg
-              className={`w-5 h-5 mr-spacing-sm ${isFeatured ? 'text-secondary' : 'text-primary'}`}
+              className={`w-5 h-5 mr-spacing-sm ${isFeatured ? "text-secondary" : "text-primary"}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
             {feature}
           </li>

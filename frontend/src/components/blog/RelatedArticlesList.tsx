@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 
 type Fetcher = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
@@ -34,21 +34,21 @@ const defaultFetcher: Fetcher = (input, init) => fetch(input, init);
 
 const buildRequestUrl = (endpoint: string, slug: string) => {
   if (!endpoint) {
-    endpoint = '/api/blog/related';
+    endpoint = "/api/blog/related";
   }
 
   try {
-    const base = endpoint.includes('://')
+    const base = endpoint.includes("://")
       ? endpoint
       : new URL(
           endpoint,
-          typeof window === 'undefined' ? 'http://localhost' : window.location.origin,
+          typeof window === "undefined" ? "http://localhost" : window.location.origin,
         ).toString();
     const url = new URL(base);
-    url.searchParams.set('slug', slug);
+    url.searchParams.set("slug", slug);
     return url.toString();
   } catch (error) {
-    console.error('Failed to construct related articles endpoint', error);
+    console.error("Failed to construct related articles endpoint", error);
     return `${endpoint}?slug=${encodeURIComponent(slug)}`;
   }
 };
@@ -56,10 +56,10 @@ const buildRequestUrl = (endpoint: string, slug: string) => {
 export function RelatedArticlesList({
   slug,
   className,
-  title = 'Related articles',
+  title = "Related articles",
   limit,
   fetcher = defaultFetcher,
-  endpoint = '/api/blog/related',
+  endpoint = "/api/blog/related",
 }: RelatedArticlesListProps) {
   const [articles, setArticles] = useState<RelatedArticleSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +82,7 @@ export function RelatedArticlesList({
       try {
         const response = await fetcher(buildRequestUrl(endpoint, slug), {
           signal: controller.signal,
-          headers: { Accept: 'application/json' },
+          headers: { Accept: "application/json" },
         });
 
         if (!response.ok) {
@@ -111,7 +111,7 @@ export function RelatedArticlesList({
           return;
         }
 
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        setError(err instanceof Error ? err.message : "Unknown error");
         setArticles([]);
       } finally {
         if (!controller.signal.aborted) {
@@ -126,7 +126,7 @@ export function RelatedArticlesList({
   }, [slug, fetcher, endpoint]);
 
   const articlesToRender = useMemo(() => {
-    if (typeof limit === 'number' && limit > 0) {
+    if (typeof limit === "number" && limit > 0) {
       return articles.slice(0, limit);
     }
 

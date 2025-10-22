@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
@@ -13,21 +12,21 @@ class BookingBase(BaseModel):
     event_id: int = Field(..., ge=1)
     customer_name: str = Field(..., min_length=2, max_length=120)
     customer_email: EmailStr
-    message: Optional[str] = Field(default=None, max_length=2000)
+    message: str | None = Field(default=None, max_length=2000)
 
 
 class BookingCreate(BookingBase):
-    preferred_date: Optional[datetime] = None
+    preferred_date: datetime | None = None
 
 
 class Booking(BookingBase):
     id: int
     status: str = Field(default="pending", pattern=r"^(pending|confirmed|cancelled)$")
     created_at: datetime
-    preferred_date: Optional[datetime] = None
+    preferred_date: datetime | None = None
 
 
-_BOOKINGS: List[Booking] = []
+_BOOKINGS: list[Booking] = []
 _BOOKING_SEQUENCE = 0
 
 
@@ -37,8 +36,8 @@ def _next_booking_id() -> int:
     return _BOOKING_SEQUENCE
 
 
-@router.get("/", response_model=List[Booking], tags=["bookings"])
-def list_bookings(status_filter: Optional[str] = None) -> List[Booking]:
+@router.get("/", response_model=list[Booking], tags=["bookings"])
+def list_bookings(status_filter: str | None = None) -> list[Booking]:
     if status_filter is None:
         return list(_BOOKINGS)
     return [booking for booking in _BOOKINGS if booking.status == status_filter]

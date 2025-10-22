@@ -1,23 +1,26 @@
-import type { ChangeEvent } from 'react'
-import { useTranslation } from 'react-i18next'
+import type { ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
 
 const LANGUAGES: Array<{ code: string; labelKey: string }> = [
-  { code: 'en', labelKey: 'language.options.en' },
-  { code: 'nl', labelKey: 'language.options.nl' },
-]
+  { code: "en", labelKey: "language.options.en" },
+  { code: "nl", labelKey: "language.options.nl" },
+];
 
 const LanguageSwitcher = () => {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation();
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const language = event.target.value
-    void i18n.changeLanguage(language)
-  }
+    const language = event.target.value;
+    void i18n.changeLanguage(language);
+  };
 
   return (
-    <div className="language-switcher" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+    <div
+      className="language-switcher"
+      style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+    >
       <label htmlFor="language-select" className="language-switcher__label">
-        {t('language.label')}
+        {t("language.label")}
       </label>
       <select
         id="language-select"
@@ -32,7 +35,7 @@ const LanguageSwitcher = () => {
         ))}
       </select>
     </div>
-  )
-}
+  );
+};
 
-export default LanguageSwitcher
+export default LanguageSwitcher;

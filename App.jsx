@@ -1,6 +1,6 @@
-import './App.css';
-import MrDjApp from './mr-dj-eds-components/src/App.jsx';
-import HeroSection from './HeroSection.jsx';
+import "./App.css";
+import MrDjApp from "./mr-dj-eds-components/src/App.jsx";
+import HeroSection from "./HeroSection.jsx";
 
 // Export a registry of hero-centric components so that downstream
 // instrumentation (analytics, personalization, etc.) can reliably

@@ -1,5 +1,5 @@
-declare module 'structured-data-testing-tool' {
-  import { Readable } from 'node:stream';
+declare module "structured-data-testing-tool" {
+  import { Readable } from "node:stream";
 
   interface TestResult {
     schemas: string[];
@@ -16,6 +16,6 @@ declare module 'structured-data-testing-tool' {
 
   export function structuredDataTest(
     input: string | Buffer | Readable,
-    options?: TestOptions
+    options?: TestOptions,
   ): Promise<TestResult>;
 }

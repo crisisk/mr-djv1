@@ -1,4 +1,4 @@
-@import './styles/typography.css';
+@import "./styles/typography.css";
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -29,7 +29,7 @@
   --layout-gap: clamp(1rem, 2vw, 3rem);
 }
 
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
   --color-background: #0f172a;
   --color-surface: #1e293b;
   --color-text: #e2e8f0;
@@ -86,7 +86,9 @@ button {
   background-color: var(--color-button-bg);
   color: var(--color-button-text);
   cursor: pointer;
-  transition: border-color 0.25s, background-color 0.25s;
+  transition:
+    border-color 0.25s,
+    background-color 0.25s;
 }
 button:hover {
   border-color: var(--color-button-hover-border);

@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from . import repo
 from .rules import ambiguous_result, choose_ruling
 from .types import ClassificationContext, ClassificationResult
 
 
-def _normalise_hs_code(value: Optional[str]) -> Optional[str]:
+def _normalise_hs_code(value: str | None) -> str | None:
     if not value:
         return None
     digits = "".join(ch for ch in value if ch.isalnum())
@@ -40,13 +38,18 @@ def classify(ctx: ClassificationContext) -> ClassificationResult:
         )
 
         ruling_candidates = repo.get_applicable_rulings(
-            conn, hs_code8, taric_record.taric_code if taric_record else None, ctx.origin_country, ctx.ref_date
+            conn,
+            hs_code8,
+            taric_record.taric_code if taric_record else None,
+            ctx.origin_country,
+            ctx.ref_date,
         )
         selected_ruling = choose_ruling(ruling_candidates)
         if selected_ruling:
             validity = repo.taric_validity(
                 conn,
-                selected_ruling.taric_code or (taric_record.taric_code if taric_record else hs_code8),
+                selected_ruling.taric_code
+                or (taric_record.taric_code if taric_record else hs_code8),
             )
             return ClassificationResult(
                 hs_code8=selected_ruling.hs_code8,

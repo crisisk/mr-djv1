@@ -1,51 +1,45 @@
-import React, { useMemo } from 'react'
-import BlogListItem from './BlogListItem'
-import styles from './BlogOverview.module.css'
-import { useCmsBlogPosts } from '../../hooks/useCmsBlogPosts'
+import React, { useMemo } from "react";
+import BlogListItem from "./BlogListItem";
+import styles from "./BlogOverview.module.css";
+import { useCmsBlogPosts } from "../../hooks/useCmsBlogPosts";
 
 const buildKeyForPost = (post, index) => {
-  if (!post) return `post-${index}`
+  if (!post) return `post-${index}`;
   return (
     post.id ??
     post.slug ??
     post.uuid ??
     post._id ??
-    (typeof post.title === 'string' ? `post-${post.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}` : `post-${index}`)
-  )
-}
+    (typeof post.title === "string"
+      ? `post-${post.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
+      : `post-${index}`)
+  );
+};
 
 const BlogOverview = ({
   posts: postsProp,
   initialPage = 1,
   pageSize = 6,
   cmsEndpoint,
-  title = 'Templates: Blog & Nieuws',
-  subtitle = 'Blijf op de hoogte van de nieuwste tips, trends en verhalen uit de Mr. DJ community.',
+  title = "Templates: Blog & Nieuws",
+  subtitle = "Blijf op de hoogte van de nieuwste tips, trends en verhalen uit de Mr. DJ community.",
 }) => {
-  const shouldFetch = !Array.isArray(postsProp)
-  const {
-    posts,
-    isLoading,
-    error,
-    pagination,
-    page,
-    goToPage,
-    refetch,
-  } = useCmsBlogPosts({
+  const shouldFetch = !Array.isArray(postsProp);
+  const { posts, isLoading, error, pagination, page, goToPage, refetch } = useCmsBlogPosts({
     initialPage,
     pageSize,
     endpoint: cmsEndpoint,
     enabled: shouldFetch,
     initialData: shouldFetch ? undefined : postsProp,
-  })
+  });
 
   const displayPosts = useMemo(() => {
-    if (Array.isArray(postsProp)) return postsProp
-    return posts
-  }, [postsProp, posts])
+    if (Array.isArray(postsProp)) return postsProp;
+    return posts;
+  }, [postsProp, posts]);
 
-  const pageCount = pagination?.pageCount ?? 1
-  const totalItems = pagination?.total
+  const pageCount = pagination?.pageCount ?? 1;
+  const totalItems = pagination?.total;
 
   return (
     <section className={styles.container}>
@@ -101,7 +95,7 @@ const BlogOverview = ({
 
                 <div className={styles.paginationInfo}>
                   Pagina {page} van {pageCount}
-                  {typeof totalItems === 'number' ? ` • ${totalItems} artikelen` : ''}
+                  {typeof totalItems === "number" ? ` • ${totalItems} artikelen` : ""}
                 </div>
               </footer>
             ) : null}
@@ -109,7 +103,7 @@ const BlogOverview = ({
         )}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default BlogOverview
+export default BlogOverview;

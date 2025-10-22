@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
-const staticAssetHeaders = [
-  { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-];
+const staticAssetHeaders = [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }];
 
 const defaultSecurityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
