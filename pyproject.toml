@@ -1,0 +1,20 @@
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = [
+  "node_modules",
+  "build",
+  "dist",
+  "public",
+  "docs",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
