@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState, type PropsWithChildren } from 'react'
 import { type ApiClientError, subscribeToApiErrors } from '../../lib/apiClient'
 import './GeneratedLayout.css'
@@ -14,6 +16,12 @@ const toastListeners = new Set<(toasts: ToastMessage[]) => void>()
 let unsubscribeFromErrors: (() => void) | null = null
 let toasts: ToastMessage[] = []
 const toastTimers = new Map<number, number>()
+let toastCounter = 0
+
+const getNextToastId = () => {
+  toastCounter += 1
+  return toastCounter
+}
 
 const notifyToastListeners = () => {
   const snapshot = [...toasts]
@@ -47,7 +55,7 @@ const createToast = (error: ApiClientError): ToastMessage => {
   }
 
   return {
-    id: Date.now() + Math.random(),
+    id: getNextToastId(),
     title,
     description,
   }
