@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "test": "npm --prefix frontend run test",
     "test:e2e": "cypress run --spec tests/e2e/booking-flow.cy.ts",
     "test:perf": "k6 run tests/performance/baseline.js"
   },

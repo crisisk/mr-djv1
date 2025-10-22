@@ -8,5 +8,11 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
     css: true,
+    include: [
+      'src/__tests__/GeneratedContent.test.tsx',
+      'src/__tests__/QuickBookingForm.test.tsx',
+      'src/__tests__/ExitIntentPopup.test.tsx',
+      'src/utils/__tests__/**/*.{test,spec}.?(c|m)[jt]s?(x)',
+    ],
   },
 })
