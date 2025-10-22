@@ -3,6 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "build": "next build",
+    "test:unit": "vitest run --reporter=junit",
+    "test:e2e:smoke": "playwright test -c qa/playwright.config.ts",
+    "scan:accessibility": "node scripts/run_axe_checks.js",
+    "perf:measure": "node scripts/run_lighthouse.js",
+    "guard:size": "bash scripts/size_guard.sh",
     "test": "npm --prefix frontend run test",
     "test:e2e": "cypress run --spec tests/e2e/booking-flow.cy.ts",
     "test:perf": "k6 run tests/performance/baseline.js"
