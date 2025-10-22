@@ -19,15 +19,9 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
   useEffect(() => {
     if (!consented || !gtmId) return;
 
-    const existing = document.querySelector<HTMLScriptElement>(
-      `script[data-gtm-id="${gtmId}"]`
-    );
-    if (existing) return;
+    if (!hasConsent) return;
 
     const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.async = true;
-    script.dataset.gtmId = gtmId;
     script.innerHTML = `
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
         var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
@@ -37,5 +31,15 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
     document.head.appendChild(script);
   }, [consented, gtmId]);
 
-  return null;
+    return consented ? (
+      <noscript>
+        <iframe
+          title="Google Tag Manager"
+          src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+        />
+      </noscript>
+    ) : null;
 }
