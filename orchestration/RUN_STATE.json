@@ -1,57 +1,42 @@
 {
-  "active_batch": "B4-brand-experience",
-  "updated_at": "2025-10-22T22:00:00Z",
+  "active_batch": "B5-performance-hardening",
+  "updated_at": "2025-10-22T22:45:00Z",
   "workers": [
     {
       "id": "worker-1",
-      "task": "T2-2-BRANDING",
-      "status": "in_progress",
-      "notes": "Refreshing favicon and header assets to align with brand kit"
+      "task": "idle",
+      "status": "waiting",
+      "notes": "Cleared T2-2-BRANDING and T3-1-CAROUSEL; awaiting B5-performance-hardening kickoff"
     },
     {
       "id": "worker-2",
-      "task": "T2-4-SCHEMA",
-      "status": "in_progress",
-      "notes": "Extending Schema.org coverage across city landing pages"
+      "task": "idle",
+      "status": "waiting",
+      "notes": "Wrapped T2-4-SCHEMA and delivered T3-2-CLIENT-LOGOS in the parallel wave"
     },
     {
       "id": "worker-3",
-      "task": "T2-5-TESTIMONIALS",
-      "status": "in_progress",
-      "notes": "Centralizing testimonials via CMS feed with fallback logic"
+      "task": "idle",
+      "status": "waiting",
+      "notes": "Completed T2-5-TESTIMONIALS and authored the T3-3-ABOUT narrative"
     },
     {
       "id": "worker-4",
-      "task": "RG-DOCS",
-      "status": "in_progress",
-      "notes": "Documenting RentGuy integration rollout and playbooks"
+      "task": "idle",
+      "status": "waiting",
+      "notes": "Published RG-DOCS and finalized T3-6-SOCIAL plus the queued T3-4-AB-TESTING suite"
     }
   ],
   "queue": [
     {
-      "task": "T3-4-AB-TESTING",
-      "status": "queued",
-      "notes": "Resume experimentation tracking setup once analytics capacity frees up"
+      "task": "T3-5-PERFORMANCE",
+      "status": "queued_serial",
+      "notes": "Sequential B5-performance-hardening run begins with Lighthouse and k6 validations"
     },
     {
-      "task": "T3-1-CAROUSEL",
-      "status": "queued",
-      "notes": "Design and build testimonials carousel per brand guidelines"
-    },
-    {
-      "task": "T3-2-CLIENT-LOGOS",
-      "status": "queued",
-      "notes": "Prep social proof logo strip with optimized assets"
-    },
-    {
-      "task": "T3-3-ABOUT",
-      "status": "queued",
-      "notes": "Draft and implement \"Over ons\" section content"
-    },
-    {
-      "task": "T3-6-SOCIAL",
-      "status": "queued",
-      "notes": "Finalize social media links and metadata configuration"
+      "task": "T4-1-REPO-CLEANUP",
+      "status": "queued_serial",
+      "notes": "Repository cleanup follows the performance pass in the same batch"
     }
   ],
   "blocked": [
