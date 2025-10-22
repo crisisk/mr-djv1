@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useMemo, useState } from 'react'
 
 export type FunnelStep = {
@@ -57,6 +59,15 @@ const percentFormatter = new Intl.NumberFormat('nl-NL', {
   minimumFractionDigits: 1,
   maximumFractionDigits: 1
 })
+const currencyFormatter = new Intl.NumberFormat('nl-NL', {
+  style: 'currency',
+  currency: 'EUR'
+})
+const dateTimeFormatter = new Intl.DateTimeFormat('nl-NL', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'Europe/Amsterdam'
+})
 
 function formatNumber(value: number | undefined | null): string {
   if (typeof value !== 'number' || !Number.isFinite(value)) {
@@ -86,6 +97,11 @@ export interface ConversionMetricsPanelProps {
 
 export default function ConversionMetricsPanel({ endpoint = DEFAULT_ENDPOINT }: ConversionMetricsPanelProps) {
   const [state, setState] = useState<FetchState>({ loading: true })
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
 
   const metricDefinitions = useMemo(
     () => [
@@ -130,9 +146,68 @@ export default function ConversionMetricsPanel({ endpoint = DEFAULT_ENDPOINT }: 
   }, [endpoint])
 
   const totals = state.data?.totals
-  const updatedAtLabel = state.data?.updatedAt
-    ? new Date(state.data.updatedAt).toLocaleString()
-    : 'Onbekend'
+  const updatedAtLabel = useMemo(() => {
+    if (!state.data?.updatedAt) {
+      return 'Onbekend'
+    }
+
+    if (!hydrated) {
+      return '—'
+    }
+
+    const parsed = new Date(state.data.updatedAt)
+    if (Number.isNaN(parsed.getTime())) {
+      return state.data.updatedAt
+    }
+
+    try {
+      return dateTimeFormatter.format(parsed)
+    } catch (_error) {
+      return parsed.toISOString()
+    }
+  }, [hydrated, state.data?.updatedAt])
+
+  const recentConversions = useMemo(() => {
+    if (!state.data?.recentConversions || !hydrated) {
+      return []
+    }
+
+    return state.data.recentConversions.map((entry) => {
+      const timestamp = new Date(entry.createdAt)
+      let formattedTimestamp: string
+      if (Number.isNaN(timestamp.getTime())) {
+        formattedTimestamp = entry.createdAt
+      } else {
+        try {
+          formattedTimestamp = dateTimeFormatter.format(timestamp)
+        } catch (_error) {
+          formattedTimestamp = timestamp.toISOString()
+        }
+      }
+
+      let revenue: string | null = null
+      if (entry.payload && typeof entry.payload === 'object') {
+        const rawAmount =
+          (entry.payload.amount as number | string | undefined) ??
+          (entry.payload.revenue as number | string | undefined) ??
+          (entry.payload.value as number | string | undefined)
+        const amount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount
+        if (typeof amount === 'number' && Number.isFinite(amount)) {
+          try {
+            revenue = ` · omzet: ${currencyFormatter.format(amount)}`
+          } catch (_error) {
+            revenue = ` · omzet: €${formatNumber(Math.round(amount))}`
+          }
+        }
+      }
+
+      return {
+        id: entry.id,
+        label: `${formattedTimestamp} – ${entry.variantLabel}`,
+        meta: `${entry.keyword ? `keyword: ${entry.keyword}` : 'geen keyword'}${revenue ?? ''}`
+      }
+    })
+  }, [hydrated, state.data?.recentConversions])
 
   return (
     <section className="conversion-panel" data-loading={state.loading ? 'true' : undefined}>
@@ -211,34 +286,16 @@ export default function ConversionMetricsPanel({ endpoint = DEFAULT_ENDPOINT }: 
           <h3>Laatste conversies</h3>
           <ul className="metric-list">
             {state.data?.recentConversions?.length ? (
-              state.data.recentConversions.map((entry) => {
-                const revenue = (() => {
-                  if (!entry.payload || typeof entry.payload !== 'object') {
-                    return null
-                  }
-                  const rawAmount =
-                    (entry.payload.amount as number | string | undefined) ??
-                    (entry.payload.revenue as number | string | undefined) ??
-                    (entry.payload.value as number | string | undefined)
-                  const amount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount
-                  if (typeof amount === 'number' && Number.isFinite(amount)) {
-                    return ` · omzet: €${formatNumber(Math.round(amount))}`
-                  }
-                  return null
-                })()
-
-                return (
+              hydrated && recentConversions.length > 0 ? (
+                recentConversions.map((entry) => (
                   <li key={entry.id}>
-                    <span className="conversion-panel__recent-title">
-                      {new Date(entry.createdAt).toLocaleString()} – {entry.variantLabel}
-                    </span>
-                    <span className="conversion-panel__recent-meta">
-                      {entry.keyword ? `keyword: ${entry.keyword}` : 'geen keyword'}
-                      {revenue ?? ''}
-                    </span>
+                    <span className="conversion-panel__recent-title">{entry.label}</span>
+                    <span className="conversion-panel__recent-meta">{entry.meta}</span>
                   </li>
-                )
-              })
+                ))
+              ) : (
+                <li className="empty">Hydratatie bezig…</li>
+              )
             ) : (
               <li className="empty">Nog geen conversie events geregistreerd.</li>
             )}

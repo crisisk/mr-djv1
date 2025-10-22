@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from './Button';
 import { IconBase, mergeClassNames } from './shared/IconBase';
 import type { IconBaseProps } from './shared/IconBase';
@@ -15,18 +17,23 @@ export interface PricingTablesProps {
   packages?: PricingFeatureSet[];
 }
 
+const euroFormatter = new Intl.NumberFormat('nl-NL', {
+  style: 'currency',
+  currency: 'EUR'
+});
+
 const defaultPackages: PricingFeatureSet[] = [
   {
     name: 'Brons',
     subtitle: 'Entry-level pakket',
-    price: '€495',
+    price: euroFormatter.format(495),
     features: ['4 uur DJ-set', 'Basis licht- en geluidsset', 'Persoonlijk intakegesprek', 'Muziekvoorkeuren formulier'],
     buttonText: 'Meer Info',
   },
   {
     name: 'Zilver',
     subtitle: 'Meest gekozen',
-    price: '€795',
+    price: euroFormatter.format(795),
     features: [
       '6 uur DJ-set',
       'Uitgebreide lichtshow',
@@ -40,7 +47,7 @@ const defaultPackages: PricingFeatureSet[] = [
   {
     name: 'Goud',
     subtitle: 'Premium All-Inclusive',
-    price: '€1.295',
+    price: euroFormatter.format(1295),
     features: [
       '8 uur DJ-set',
       'Luxe licht- en geluidsset',

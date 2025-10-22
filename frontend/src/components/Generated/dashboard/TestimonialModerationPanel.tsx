@@ -1,3 +1,5 @@
+"use client"
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type ModerationAction = 'approve' | 'reject'
@@ -13,11 +15,17 @@ export type PendingTestimonial = {
   moderationState?: 'pending' | 'approved' | 'rejected'
 }
 
+const dateTimeFormatter = new Intl.DateTimeFormat('nl-NL', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'Europe/Amsterdam'
+})
+
 type FetchState = {
   loading: boolean
   error?: string
   testimonials: PendingTestimonial[]
-  lastLoadedAt?: number
+  lastLoadedAt?: string | null
 }
 
 type ActionState = Record<string, ModerationAction | null>
@@ -35,8 +43,8 @@ export interface TestimonialModerationPanelProps {
   moderationEndpointBase?: string
 }
 
-function formatDate(value?: string | null): string {
-  if (!value) {
+function formatDate(value: string | null | undefined, hydrated: boolean): string {
+  if (!value || !hydrated) {
     return 'Onbekende datum'
   }
 
@@ -45,7 +53,11 @@ function formatDate(value?: string | null): string {
     return 'Onbekende datum'
   }
 
-  return date.toLocaleString()
+  try {
+    return dateTimeFormatter.format(date)
+  } catch (_error) {
+    return date.toISOString()
+  }
 }
 
 function formatCity(city?: string | null): string {
@@ -66,6 +78,11 @@ export default function TestimonialModerationPanel({
   const [state, setState] = useState<FetchState>({ loading: true, testimonials: [] })
   const [actions, setActions] = useState<ActionState>({})
   const [feedback, setFeedback] = useState<FeedbackState>(null)
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
 
   const normalizedListEndpoint = useMemo(() => {
     return listEndpoint.replace(/\/$/, '')
@@ -92,7 +109,7 @@ export default function TestimonialModerationPanel({
 
       const payload = (await response.json()) as { testimonials?: PendingTestimonial[] }
       const testimonials = Array.isArray(payload.testimonials) ? payload.testimonials : []
-      setState({ loading: false, testimonials, lastLoadedAt: Date.now() })
+      setState({ loading: false, testimonials, lastLoadedAt: new Date().toISOString() })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Onbekende fout bij laden van testimonials'
       setState((prev) => ({ ...prev, loading: false, error: message }))
@@ -214,7 +231,7 @@ export default function TestimonialModerationPanel({
               <p className="testimonial-card__text">{testimonial.reviewText || 'Geen bericht toegevoegd.'}</p>
 
               <footer className="testimonial-card__footer">
-                <time dateTime={testimonial.createdAt ?? undefined}>{formatDate(testimonial.createdAt)}</time>
+                <time dateTime={testimonial.createdAt ?? undefined}>{formatDate(testimonial.createdAt, hydrated)}</time>
                 <div className="testimonial-card__actions">
                   <button
                     type="button"
@@ -240,7 +257,7 @@ export default function TestimonialModerationPanel({
       </ul>
 
       <footer className="testimonial-panel__footer">
-        Laatste update: {state.lastLoadedAt ? formatDate(new Date(state.lastLoadedAt).toISOString()) : 'Onbekend'}
+        Laatste update: {state.lastLoadedAt ? formatDate(state.lastLoadedAt, hydrated) : 'Onbekend'}
       </footer>
     </section>
   )

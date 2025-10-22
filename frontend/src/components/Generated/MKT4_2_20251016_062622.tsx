@@ -1,6 +1,7 @@
 // components/SocialProofNotification.jsx
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const NotificationWrapper = styled.div`
@@ -49,11 +50,19 @@ const mockBookings = [
 const SocialProofNotification = () => {
   const [visible, setVisible] = useState(false);
   const [currentBooking, setCurrentBooking] = useState(null);
+  const bookingIndexRef = useRef(0);
 
   useEffect(() => {
     const showNotification = () => {
-      const randomBooking = mockBookings[Math.floor(Math.random() * mockBookings.length)];
-      setCurrentBooking(randomBooking);
+      if (mockBookings.length === 0) {
+        setVisible(false);
+        return;
+      }
+
+      const nextIndex = bookingIndexRef.current % mockBookings.length;
+      bookingIndexRef.current = (bookingIndexRef.current + 1) % mockBookings.length;
+      const nextBooking = mockBookings[nextIndex];
+      setCurrentBooking(nextBooking);
       setVisible(true);
 
       // Hide notification after 5 seconds
