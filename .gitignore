@@ -22,6 +22,7 @@ letsencrypt/
 # Logs
 logs/
 artifacts/
+!qa/artifacts/
 *.log
 
 # OS
