@@ -1,0 +1,74 @@
+{
+  "orchestration": {
+    "cycle_frequency_hours": 1,
+    "enable_auto_winner_declaration": true,
+    "enable_auto_deployment": true,
+    "enable_continuous_testing": true
+  },
+  "statistical_thresholds": {
+    "min_sample_size": 100,
+    "confidence_level": 0.95,
+    "min_effect_size_percent": 10,
+    "min_test_duration_days": 7,
+    "max_test_duration_days": 30
+  },
+  "traffic_allocation": {
+    "default_control_percent": 50,
+    "min_challenger_percent": 20,
+    "max_challengers": 3
+  },
+  "performance_analysis": {
+    "dimensions": [
+      "conversion_rate",
+      "engagement_rate",
+      "bounce_rate",
+      "time_on_page",
+      "ctr",
+      "leads_generated",
+      "revenue"
+    ],
+    "goal_weights": {
+      "leads_generated": 0.4,
+      "conversion_rate": 0.3,
+      "engagement_rate": 0.2,
+      "revenue": 0.1
+    }
+  },
+  "variant_generation": {
+    "enable_auto_generation": true,
+    "max_variants_per_test": 4,
+    "hypothesis_categories": [
+      "visual_style",
+      "content_copy",
+      "cta_placement",
+      "social_proof",
+      "urgency"
+    ]
+  },
+  "ml_model": {
+    "enable_predictions": true,
+    "retrain_frequency_days": 7,
+    "min_training_samples": 50,
+    "feature_importance_threshold": 0.1
+  },
+  "notifications": {
+    "enable_email": false,
+    "enable_slack": false,
+    "events": [
+      "test_started",
+      "winner_declared",
+      "production_deployed",
+      "anomaly_detected"
+    ]
+  },
+  "safety": {
+    "enable_rollback": true,
+    "max_negative_impact_percent": 20,
+    "anomaly_detection_threshold": 2.5,
+    "emergency_stop_conditions": [
+      "conversion_rate_drop_50_percent",
+      "error_rate_above_10_percent",
+      "bounce_rate_above_80_percent"
+    ]
+  }
+}

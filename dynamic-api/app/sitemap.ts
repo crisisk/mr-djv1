@@ -9,7 +9,8 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://mr-dj.sevensa.nl'
-  const currentDate = new Date()
+  // Use stable date to prevent sitemap regeneration on every build
+  const lastModified = '2025-10-22'
 
   const routes: Array<{
     url: string
@@ -147,7 +148,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return routes.map(({ url, priority, changeFrequency }) => ({
     url: `${baseUrl}${url}`,
-    lastModified: currentDate,
+    lastModified: lastModified,
     changeFrequency,
     priority,
   }))

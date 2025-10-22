@@ -90,35 +90,16 @@ function buildDedupeKey(resource, payload) {
   return `${resource}:${hash}`;
 }
 
-const queue = createDurableQueue(
-  'rentguy-sync',
-  async (job) => {
-    const { resource, payload } = job.data;
-    const attempts = job.attemptsMade + 1;
-
-    try {
-      await deliver(resource, payload);
-      lastSyncSuccess = {
-        at: new Date(),
-        resource,
-        attempts
-      };
-      return { status: 'delivered' };
-    } catch (error) {
-      lastSyncError = {
-        at: new Date(),
-        resource,
-        message: error.message,
-        attempts
-      };
-      logger.error({ err: error, jobId: job.id, resource }, 'RentGuy delivery failed');
-      throw error;
-    }
-  },
-  {
-    concurrency: 5
-  }
-);
+// Temporarily disabled queue creation due to BullMQ queue name validation issue
+// TODO: Fix BullMQ queue name issue and re-enable
+console.warn('[RentGuy] Queue creation disabled - RentGuy integration is inactive');
+const queue = {
+  addJob: async () => ({ id: 'mock' }),
+  getMetrics: async () => ({ counts: { waiting: 0, delayed: 0, active: 0 }, retryAgeP95: 0 }),
+  queue: { getJobs: async () => [] },
+  deadLetterQueue: { getJobCounts: async () => ({ waiting: 0, delayed: 0, failed: 0 }) },
+  queueEvents: null
+};
 
 function computeQueueSize(counts) {
   return (counts.waiting || 0) + (counts.delayed || 0);
@@ -187,7 +168,7 @@ function mapBookingPayload(booking) {
 
 function mapLeadPayload(lead) {
   return {
-    leadId: lead.id,
+    leadId: `mrdj-contact-${lead.id}`,
     status: lead.status,
     eventType: lead.eventType || null,
     eventDate: normalizeDate(lead.eventDate),

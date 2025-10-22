@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model DesignToken {
+  id        String   @id @default(uuid())
+  key       String   @unique  // e.g., "color.brand.500"
+  value     String              // e.g., "#1E88F7"
+  category  String              // e.g., "color", "spacing", "radius"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@map("design_tokens")
+}
+
+model TokenHistory {
+  id        String   @id @default(uuid())
+  tokenKey  String
+  oldValue  String
+  newValue  String
+  changedBy String   @default("system")
+  changedAt DateTime @default(now())
+
+  @@index([tokenKey])
+  @@map("token_history")
+}

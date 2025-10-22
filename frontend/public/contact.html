@@ -234,8 +234,22 @@
             .contact-info, .contact-form { padding: 20px; }
         }
     </style>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TK95XXK');</script>
+    <!-- End Google Tag Manager -->
+
 </head>
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TK95XXK"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     <header>
         <h1>Neem Contact Op</h1>
         <p class="subtitle">Wij helpen je graag verder met je event</p>
@@ -451,33 +465,21 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Bezig met verzenden...';
 
-            // Collect form data in RentGuy format
-            const leadId = `web-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            // Collect form data for backend API
             const formData = {
-                leadId: leadId,
-                eventType: document.getElementById('eventType').value,
-                eventDate: document.getElementById('eventDate').value ? new Date(document.getElementById('eventDate').value).toISOString() : null,
-                source: 'mister-dj-website-contact',
-                contact: {
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value
-                },
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
                 message: document.getElementById('message').value,
-                metadata: {
-                    location: document.getElementById('location').value || null,
-                    guest_count: document.getElementById('guests').value || null,
-                    utm_source: new URLSearchParams(window.location.search).get('utm_source') || 'direct',
-                    utm_medium: new URLSearchParams(window.location.search).get('utm_medium') || 'organic'
-                }
+                eventType: document.getElementById('eventType').value,
+                eventDate: document.getElementById('eventDate').value || null
             };
 
             try {
-                const response = await fetch('https://mr-dj.rentguy.nl/api/v1/leads', {
+                const response = await fetch('/api/contact', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-RentGuy-Workspace': 'mr-dj'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(formData)
                 });
@@ -491,21 +493,22 @@
                     // Reset form
                     form.reset();
 
-                    // Track conversion
+                    // Track conversion with GTM (contact_form_submit event is auto-tracked)
                     if (window.dataLayer) {
                         window.dataLayer.push({
                             event: 'lead_submitted',
                             event_category: 'contact',
                             event_label: formData.eventType,
-                            lead_id: result.leadId,
-                            external_id: result.externalId
+                            contact_id: result.contactId,
+                            status: result.status
                         });
                     }
 
                     // Scroll to success message
                     successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
-                    throw new Error('Server error');
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || 'Server error');
                 }
             } catch (error) {
                 console.error('Form submission error:', error);
@@ -523,5 +526,10 @@
         const today = new Date().toISOString().split('T')[0];
         eventDateInput.setAttribute('min', today);
     </script>
+
+    <!-- GTM Event Tracking -->
+    <script src="/js/gtm-events.js"></script>
+
+<script src="/assets/js/dynamic-content.js" defer></script>
 </body>
 </html>

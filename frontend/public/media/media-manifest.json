@@ -1,0 +1,859 @@
+{
+  "generated": "2025-10-18T10:13:43+00:00",
+  "hero": [],
+  "gallery": {
+    "parties": [
+      {
+        "id": "feest-001",
+        "original": "/media/photos/gallery/parties/feest-001.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-001.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-001.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5129,
+          "height": 3419
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-002",
+        "original": "/media/photos/gallery/parties/feest-002.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-002.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-002.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5154,
+          "height": 3436
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-003",
+        "original": "/media/photos/gallery/parties/feest-003.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-003.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-003.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5573,
+          "height": 3715
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-004",
+        "original": "/media/photos/gallery/parties/feest-004.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-004.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-004.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5760,
+          "height": 3840
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-005",
+        "original": "/media/photos/gallery/parties/feest-005.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-005.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-005.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4615,
+          "height": 3077
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-006",
+        "original": "/media/photos/gallery/parties/feest-006.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-006.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-006.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5352,
+          "height": 3568
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-007",
+        "original": "/media/photos/gallery/parties/feest-007.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-007.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-007.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5472,
+          "height": 3648
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-008",
+        "original": "/media/photos/gallery/parties/feest-008.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-008.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-008.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5472,
+          "height": 3648
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-009",
+        "original": "/media/photos/gallery/parties/feest-009.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-009.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-009.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5472,
+          "height": 3648
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-010",
+        "original": "/media/photos/gallery/parties/feest-010.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-010.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-010.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5472,
+          "height": 3648
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-011",
+        "original": "/media/photos/gallery/parties/feest-011.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-011.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-011.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4629,
+          "height": 3086
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-012",
+        "original": "/media/photos/gallery/parties/feest-012.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-012.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-012.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5472,
+          "height": 3648
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-013",
+        "original": "/media/photos/gallery/parties/feest-013.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-013.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-013.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4220,
+          "height": 2813
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-014",
+        "original": "/media/photos/gallery/parties/feest-014.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-014.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-014.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4782,
+          "height": 3188
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-015",
+        "original": "/media/photos/gallery/parties/feest-015.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-015.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-015.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4661,
+          "height": 3107
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-016",
+        "original": "/media/photos/gallery/parties/feest-016.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-016.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-016.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4818,
+          "height": 3212
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-017",
+        "original": "/media/photos/gallery/parties/feest-017.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-017.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-017.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5158,
+          "height": 3439
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-018",
+        "original": "/media/photos/gallery/parties/feest-018.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-018.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-018.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5030,
+          "height": 3353
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-019",
+        "original": "/media/photos/gallery/parties/feest-019.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-019.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-019.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4503,
+          "height": 3002
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-020",
+        "original": "/media/photos/gallery/parties/feest-020.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-020.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-020.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5472,
+          "height": 3648
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-021",
+        "original": "/media/photos/gallery/parties/feest-021.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-021.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-021.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4089,
+          "height": 2726
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-022",
+        "original": "/media/photos/gallery/parties/feest-022.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-022.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-022.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4841,
+          "height": 3227
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-023",
+        "original": "/media/photos/gallery/parties/feest-023.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-023.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-023.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5472,
+          "height": 3648
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-024",
+        "original": "/media/photos/gallery/parties/feest-024.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-024.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-024.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4459,
+          "height": 2973
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-025",
+        "original": "/media/photos/gallery/parties/feest-025.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-025.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-025.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4507,
+          "height": 3005
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-026",
+        "original": "/media/photos/gallery/parties/feest-026.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-026.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-026.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4910,
+          "height": 3273
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-027",
+        "original": "/media/photos/gallery/parties/feest-027.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-027.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-027.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4679,
+          "height": 3119
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      },
+      {
+        "id": "feest-028",
+        "original": "/media/photos/gallery/parties/feest-028.jpg",
+        "webp": "/media/optimized/webp/gallery/feest-028.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/feest-028.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 5189,
+          "height": 3459
+        },
+        "category": "gallery",
+        "subcategory": "parties"
+      }
+    ],
+    "weddings": [
+      {
+        "id": "bruiloft-001",
+        "original": "/media/photos/gallery/weddings/bruiloft-001.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-001.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-001.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2666
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-002",
+        "original": "/media/photos/gallery/weddings/bruiloft-002.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-002.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-002.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-003",
+        "original": "/media/photos/gallery/weddings/bruiloft-003.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-003.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-003.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-004",
+        "original": "/media/photos/gallery/weddings/bruiloft-004.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-004.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-004.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-005",
+        "original": "/media/photos/gallery/weddings/bruiloft-005.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-005.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-005.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-006",
+        "original": "/media/photos/gallery/weddings/bruiloft-006.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-006.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-006.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-007",
+        "original": "/media/photos/gallery/weddings/bruiloft-007.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-007.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-007.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-008",
+        "original": "/media/photos/gallery/weddings/bruiloft-008.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-008.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-008.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-009",
+        "original": "/media/photos/gallery/weddings/bruiloft-009.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-009.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-009.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-010",
+        "original": "/media/photos/gallery/weddings/bruiloft-010.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-010.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-010.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-011",
+        "original": "/media/photos/gallery/weddings/bruiloft-011.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-011.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-011.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-012",
+        "original": "/media/photos/gallery/weddings/bruiloft-012.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-012.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-012.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-013",
+        "original": "/media/photos/gallery/weddings/bruiloft-013.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-013.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-013.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-014",
+        "original": "/media/photos/gallery/weddings/bruiloft-014.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-014.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-014.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2670
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-015",
+        "original": "/media/photos/gallery/weddings/bruiloft-015.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-015.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-015.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-016",
+        "original": "/media/photos/gallery/weddings/bruiloft-016.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-016.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-016.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-017",
+        "original": "/media/photos/gallery/weddings/bruiloft-017.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-017.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-017.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-018",
+        "original": "/media/photos/gallery/weddings/bruiloft-018.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-018.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-018.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-019",
+        "original": "/media/photos/gallery/weddings/bruiloft-019.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-019.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-019.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2674
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-020",
+        "original": "/media/photos/gallery/weddings/bruiloft-020.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-020.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-020.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      },
+      {
+        "id": "bruiloft-021",
+        "original": "/media/photos/gallery/weddings/bruiloft-021.jpg",
+        "webp": "/media/optimized/webp/gallery/bruiloft-021.webp",
+        "thumbnail": "/media/optimized/thumbnails/gallery/bruiloft-021.jpg",
+        "alt": "DJ event in Netherlands - Mr. DJ professional services",
+        "dimensions": {
+          "width": 4000,
+          "height": 2667
+        },
+        "category": "gallery",
+        "subcategory": "weddings"
+      }
+    ]
+  },
+  "team": [
+    {
+      "id": "team-001",
+      "original": "/media/photos/team/team-001.jpg",
+      "webp": "/media/optimized/webp/team/team-001.webp",
+      "thumbnail": "/media/optimized/thumbnails/team/team-001.jpg",
+      "alt": "Mr. DJ team member - Professional DJ",
+      "dimensions": {
+        "width": 2432,
+        "height": 3648
+      },
+      "category": "team",
+      "subcategory": ""
+    },
+    {
+      "id": "team-002",
+      "original": "/media/photos/team/team-002.jpg",
+      "webp": "/media/optimized/webp/team/team-002.webp",
+      "thumbnail": "/media/optimized/thumbnails/team/team-002.jpg",
+      "alt": "Mr. DJ team member - Professional DJ",
+      "dimensions": {
+        "width": 2432,
+        "height": 3648
+      },
+      "category": "team",
+      "subcategory": ""
+    },
+    {
+      "id": "team-003",
+      "original": "/media/photos/team/team-003.jpg",
+      "webp": "/media/optimized/webp/team/team-003.webp",
+      "thumbnail": "/media/optimized/thumbnails/team/team-003.jpg",
+      "alt": "Mr. DJ team member - Professional DJ",
+      "dimensions": {
+        "width": 2432,
+        "height": 3648
+      },
+      "category": "team",
+      "subcategory": ""
+    },
+    {
+      "id": "team-004",
+      "original": "/media/photos/team/team-004.jpg",
+      "webp": "/media/optimized/webp/team/team-004.webp",
+      "thumbnail": "/media/optimized/thumbnails/team/team-004.jpg",
+      "alt": "Mr. DJ team member - Professional DJ",
+      "dimensions": {
+        "width": 2309,
+        "height": 3464
+      },
+      "category": "team",
+      "subcategory": ""
+    },
+    {
+      "id": "team-005",
+      "original": "/media/photos/team/team-005.jpg",
+      "webp": "/media/optimized/webp/team/team-005.webp",
+      "thumbnail": "/media/optimized/thumbnails/team/team-005.jpg",
+      "alt": "Mr. DJ team member - Professional DJ",
+      "dimensions": {
+        "width": 2432,
+        "height": 3648
+      },
+      "category": "team",
+      "subcategory": ""
+    },
+    {
+      "id": "team-006",
+      "original": "/media/photos/team/team-006.jpg",
+      "webp": "/media/optimized/webp/team/team-006.webp",
+      "thumbnail": "/media/optimized/thumbnails/team/team-006.jpg",
+      "alt": "Mr. DJ team member - Professional DJ",
+      "dimensions": {
+        "width": 1302,
+        "height": 868
+      },
+      "category": "team",
+      "subcategory": ""
+    }
+  ],
+  "venues": {
+    "general": [
+      {
+        "id": "locatie-001",
+        "original": "/media/photos/venues/general/locatie-001.jpg",
+        "webp": "/media/optimized/webp/venues/locatie-001.webp",
+        "thumbnail": "/media/optimized/thumbnails/venues/locatie-001.jpg",
+        "alt": "Professional DJ services - Mr. DJ",
+        "dimensions": {
+          "width": 4000,
+          "height": 2250
+        },
+        "category": "venues",
+        "subcategory": "general"
+      },
+      {
+        "id": "locatie-002",
+        "original": "/media/photos/venues/general/locatie-002.jpg",
+        "webp": "/media/optimized/webp/venues/locatie-002.webp",
+        "thumbnail": "/media/optimized/thumbnails/venues/locatie-002.jpg",
+        "alt": "Professional DJ services - Mr. DJ",
+        "dimensions": {
+          "width": 4000,
+          "height": 2250
+        },
+        "category": "venues",
+        "subcategory": "general"
+      },
+      {
+        "id": "locatie-003",
+        "original": "/media/photos/venues/general/locatie-003.jpg",
+        "webp": "/media/optimized/webp/venues/locatie-003.webp",
+        "thumbnail": "/media/optimized/thumbnails/venues/locatie-003.jpg",
+        "alt": "Professional DJ services - Mr. DJ",
+        "dimensions": {
+          "width": 4000,
+          "height": 2250
+        },
+        "category": "venues",
+        "subcategory": "general"
+      },
+      {
+        "id": "locatie-004",
+        "original": "/media/photos/venues/general/locatie-004.jpg",
+        "webp": "/media/optimized/webp/venues/locatie-004.webp",
+        "thumbnail": "/media/optimized/thumbnails/venues/locatie-004.jpg",
+        "alt": "Professional DJ services - Mr. DJ",
+        "dimensions": {
+          "width": 4000,
+          "height": 2250
+        },
+        "category": "venues",
+        "subcategory": "general"
+      }
+    ]
+  },
+  "videos": {
+    "hero": [
+      {
+        "id": "showreel-001",
+        "file": "/media/videos/hero/showreel-001.mov",
+        "poster": "/media/optimized/thumbnails/videos/showreel-001.jpg",
+        "duration": 25,
+        "size": "181M"
+      },
+      {
+        "id": "showreel-002",
+        "file": "/media/videos/hero/showreel-002.mov",
+        "poster": "/media/optimized/thumbnails/videos/showreel-002.jpg",
+        "duration": 30,
+        "size": "216M"
+      },
+      {
+        "id": "showreel-003",
+        "file": "/media/videos/hero/showreel-003.mov",
+        "poster": "/media/optimized/thumbnails/videos/showreel-003.jpg",
+        "duration": 21,
+        "size": "156M"
+      },
+      {
+        "id": "showreel-004",
+        "file": "/media/videos/hero/showreel-004.mov",
+        "poster": "/media/optimized/thumbnails/videos/showreel-004.jpg",
+        "duration": 15,
+        "size": "111M"
+      },
+      {
+        "id": "showreel-005",
+        "file": "/media/videos/hero/showreel-005.mov",
+        "poster": "/media/optimized/thumbnails/videos/showreel-005.jpg",
+        "duration": 22,
+        "size": "159M"
+      },
+      {
+        "id": "showreel-006",
+        "file": "/media/videos/hero/showreel-006.mov",
+        "poster": "/media/optimized/thumbnails/videos/showreel-006.jpg",
+        "duration": 87,
+        "size": "630M"
+      }
+    ],
+    "testimonials": [
+      {
+        "id": "testimonial-001",
+        "file": "/media/videos/testimonials/testimonial-001.mp4",
+        "poster": "/media/optimized/thumbnails/videos/testimonial-001.jpg",
+        "duration": 50,
+        "size": "63M"
+      },
+      {
+        "id": "testimonial-002",
+        "file": "/media/videos/testimonials/testimonial-002.mov",
+        "poster": "/media/optimized/thumbnails/videos/testimonial-002.jpg",
+        "duration": 8,
+        "size": "62M"
+      },
+      {
+        "id": "testimonial-003",
+        "file": "/media/videos/testimonials/testimonial-003.mov",
+        "poster": "/media/optimized/thumbnails/videos/testimonial-003.jpg",
+        "duration": 9,
+        "size": "67M"
+      },
+      {
+        "id": "testimonial-004",
+        "file": "/media/videos/testimonials/testimonial-004.mov",
+        "poster": "/media/optimized/thumbnails/videos/testimonial-004.jpg",
+        "duration": 10,
+        "size": "75M"
+      }
+    ]
+  }
+}

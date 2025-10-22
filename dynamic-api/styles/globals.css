@@ -1,0 +1,9 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,body{height:100%;}
+body{background:var(--surface-bg);color:var(--color-text);font-family:var(--font-body);}
+.container-pro{max-width:var(--container-max);padding-inline:var(--container-gutter);margin-inline:auto;}
+a{color:rgb(30,136,247);}

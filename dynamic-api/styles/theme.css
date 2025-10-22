@@ -1,0 +1,186 @@
+/* MR-DJ Enterprise Design System - Theme Variables */
+
+:root {
+  /* Brand Colors - EDS Design Tokens */
+  --color-primary-blue: #00AEEF;
+  --color-brand-50: #e5f6fe;
+  --color-brand-100: #b3e5fc;
+  --color-brand-200: #81d4fa;
+  --color-brand-300: #4fc3f7;
+  --color-brand-400: #29b6f6;
+  --color-brand-500: #00AEEF;
+  --color-brand-600: #0098d4;
+  --color-brand-700: #0081b8;
+  --color-brand-800: #006b9d;
+  --color-brand-900: #004c6f;
+
+  /* Accent Colors - EDS Design Tokens */
+  --color-accent-gold: #D4AF37;
+  --color-secondary-gold: #D4AF37;
+  --color-accent-rose: #FF8FA3;
+
+  /* Gray Scale */
+  --color-gray-50: #f7f8fa;
+  --color-gray-100: #eef1f5;
+  --color-gray-200: #dfe6ee;
+  --color-gray-300: #c9d3e1;
+  --color-gray-400: #a5b3c8;
+  --color-gray-500: #7a8aa6;
+  --color-gray-600: #5c6a85;
+  --color-gray-700: #46526a;
+  --color-gray-800: #313a4c;
+  --color-gray-900: #1f2633;
+
+  /* EDS Neutral Colors */
+  --color-neutral-dark: #1A2C4B;
+  --color-neutral-light: #FFFFFF;
+  --color-neutral-gray-100: #F3F4F6;
+  --color-neutral-gray-500: #6B7280;
+
+  /* Surface Colors */
+  --surface-bg: var(--color-gray-50);
+  --surface-card: #ffffff;
+  --surface-muted: var(--color-gray-100);
+  --surface-brandGradientStart: var(--color-brand-700);
+  --surface-brandGradientEnd: var(--color-brand-500);
+
+  /* Text Colors */
+  --color-text: var(--color-gray-900);
+  --color-text-muted: var(--color-gray-600);
+  --color-text-onBrand: #ffffff;
+  --color-text-onCard: var(--color-gray-800);
+
+  /* State Colors */
+  --color-state-success: #22C55E;
+  --color-state-warning: #F59E0B;
+  --color-state-error: #EF4444;
+  --color-state-info: #3B82F6;
+  --color-state-focus: var(--color-brand-500);
+
+  /* Border Radius - EDS Rounded Corners */
+  --radius-sm: 0.5rem;      /* 8px */
+  --radius-md: 0.875rem;    /* 14px */
+  --radius-lg: 1.25rem;     /* 20px */
+  --radius-xl: 1.5rem;      /* 24px */
+  --radius-2xl: 2rem;       /* 32px */
+  --radius-3xl: 3rem;       /* 48px - for hero cards */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 8px 20px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 14px 30px rgba(16, 24, 40, 0.12);
+
+  /* Spacing - EDS 8px Unit System */
+  --spacing-unit: 0.5rem; /* 8px base unit */
+  --spacing-xs: 0.25rem;  /* 4px */
+  --spacing-sm: 0.5rem;   /* 8px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  --spacing-2xl: 3rem;    /* 48px */
+  --spacing-3xl: 4rem;    /* 64px */
+
+  /* Typography - EDS Design Tokens */
+  --font-display: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* EDS Typography Scale */
+  --font-size-h1: 3rem;      /* 48px */
+  --font-size-h2: 2.25rem;   /* 36px */
+  --font-size-h3: 1.5rem;    /* 24px */
+  --font-size-body: 1rem;    /* 16px */
+  --font-size-small: 0.875rem; /* 14px */
+
+  /* Legacy aliases for compatibility */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --font-size-display: 3rem;  /* Alias for H1 */
+
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.25;
+  --line-height-normal: 1.5;
+
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-wide: 0.01em;
+
+  /* Container */
+  --container-max: 1200px;
+  --container-gutter: 1rem;
+
+  /* Transitions */
+  --transition-base: 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  /* Brand Colors - same in dark mode */
+  /* Gray Scale - inverted */
+  --color-gray-50: #1f2633;
+  --color-gray-100: #313a4c;
+  --color-gray-200: #46526a;
+  --color-gray-300: #5c6a85;
+  --color-gray-400: #7a8aa6;
+  --color-gray-500: #a5b3c8;
+  --color-gray-600: #c9d3e1;
+  --color-gray-700: #dfe6ee;
+  --color-gray-800: #eef1f5;
+  --color-gray-900: #f7f8fa;
+
+  /* Surface Colors - dark */
+  --surface-bg: #0f1419;
+  --surface-card: #1a1f29;
+  --surface-muted: #242a35;
+
+  /* Text Colors - inverted */
+  --color-text: #f7f8fa;
+  --color-text-muted: #c9d3e1;
+  --color-text-onCard: #eef1f5;
+
+  /* Shadows - darker */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 14px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Utility Classes */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, var(--surface-brandGradientStart), var(--surface-brandGradientEnd));
+}
+
+.text-on-brand {
+  color: var(--color-text-onBrand);
+}
+
+.container-pro {
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-gutter);
+  padding-right: var(--container-gutter);
+}
+
+/* Focus States for Accessibility */
+.focus-ring {
+  outline: 2px solid var(--color-state-focus);
+  outline-offset: 2px;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-state-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Smooth Scroll */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

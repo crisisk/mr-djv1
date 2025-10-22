@@ -1,0 +1,70 @@
+name: CI - Build & Verify
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+
+jobs:
+  verify-all:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: dynamic-api/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./dynamic-api
+        run: npm ci || npm install
+
+      - name: Install Playwright browsers
+        working-directory: ./dynamic-api
+        run: |
+          npx playwright install --with-deps chromium
+
+      - name: Run typecheck
+        working-directory: ./dynamic-api
+        run: npm run typecheck
+
+      - name: Run lint
+        working-directory: ./dynamic-api
+        run: npm run lint
+
+      - name: Run build
+        working-directory: ./dynamic-api
+        run: npm run build
+
+      - name: Run verify
+        working-directory: ./dynamic-api
+        run: npm run verify
+
+      - name: Archive build output
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.node-version }}
+          path: dynamic-api/.next
+          retention-days: 7
+
+      - name: Archive logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.node-version }}
+          path: |
+            dynamic-api/npm-debug.log
+            dynamic-api/.next/trace
+          retention-days: 14
+          if-no-files-found: ignore

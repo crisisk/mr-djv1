@@ -1,0 +1,54 @@
+════════════════════════════════════════════════════════════════════════════════
+CONSOLE ERROR DIAGNOSIS REPORT
+Generated: 2025-10-22T16:32:38.456Z
+URL: https://mr-dj.sevensa.nl
+════════════════════════════════════════════════════════════════════════════════
+
+1. DOM ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Next.js #__next root: ❌ MISSING
+Next.js scripts (_next/): 11 scripts
+React root element: ❌ MISSING
+Total scripts: 24
+Page title: Feest DJ Zuid Nederland | DJ Bruiloft Brabant | DJ Bedrijfsfeest
+Body classes: font-body bg-surface-bg text-text antialiased
+
+2. CONSOLE ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ No console errors detected
+3. CONSOLE WARNINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ No console warnings detected
+
+4. JAVASCRIPT EXCEPTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ No JavaScript exceptions detected
+5. NETWORK FAILURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ No network failures detected
+6. HTTP ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ No HTTP errors detected
+7. ALL CONSOLE LOGS (FULL TRANSCRIPT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+No console logs captured
+
+8. HTML SAMPLE (First 2000 chars)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<html lang="nl" class="__variable_ca911e __variable_0fc2d1"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes"><link rel="preload" href="/_next/static/media/904be59b21bd51cb-s.p.woff2" as="font" crossorigin="" type="font/woff2"><link rel="preload" href="/_next/static/media/e4af272ccee01ff0-s.p.woff2" as="font" crossorigin="" type="font/woff2"><link rel="preload" as="image" imagesrcset="/_next/image?url=%2Fassets%2Fimages%2Flogo.png&amp;w=640&amp;q=75 640w, /_next/image?url=%2Fassets%2Fimages%2Flogo.png&amp;w=750&amp;q=75 750w, /_next/image?url=%2Fassets%2Fimages%2Flogo.png&amp;w=828&amp;q=75 828w, /_next/image?url=%2Fassets%2Fimages%2Flogo.png&amp;w=1080&amp;q=75 1080w, /_next/image?url=%2Fassets%2Fimages%2Flogo.png&amp;w=1200&amp;q=75 1200w, /_next/image?url=%2Fassets%2Fimages%2Flogo.png&amp;w=1920&amp;q=75 1920w, /_next/image?url=%2Fassets%2Fimages%2Flogo.png&amp;w=2560&amp;q=75 2560w, /_next/image?url=%2Fassets%2Fimages%2Flogo.png&amp;w=3840&amp;q=75 3840w" imagesizes="100vw" fetchpriority="high"><link rel="preload" as="image" imagesrcset="/_next/image?url=%2Fmedia%2Foptimized%2Fwebp%2Fgallery%2Fbruiloft-001.webp&amp;w=640&amp;q=80 640w, /_next/image?url=%2Fmedia%2Foptimized%2Fwebp%2Fgallery%2Fbruiloft-001.webp&amp;w=750&amp;q=80 750w, /_next/image?url=%2Fmedia%2Foptimized%2Fwebp%2Fgallery%2Fbruiloft-001.webp&amp;w=828&amp;q=80 828w, /_next/image?url=%2Fmedia%2Foptimized%2Fwebp%2Fgallery%2Fbruiloft-001.webp&amp;w=1080&amp;q=80 1080w, /_next/image?url=%2Fmedia%2Foptimized%2Fwebp%2Fgallery%2Fbruiloft-001.webp&amp;w=1200&amp;q=80 1200w, /_next/image?url=%2Fmedia%2Foptimized%2Fwebp%2Fgallery%2Fbruiloft-001.webp&amp;w=1920&amp;q=80 1920w, /_next/image?url=%2Fmedia%2Foptimized%2Fwebp%2Fgallery%2Fbruiloft-001.webp&amp;w=2560&amp;q=80 2560w, /_next/image?url=%2Fmedia%2Foptimized%2Fwebp%2Fgallery%2Fbruiloft-001.webp&amp;w=3840&amp;q=80 3840w" imagesizes="100vw" fetchpriority="high"><link rel=
+...
+
+9. DIAGNOSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ No obvious issues detected in console or network
+Next.js scripts are present and no errors reported.
+
+POSSIBLE CAUSES:
+- Browser caching (hard refresh needed: Ctrl+Shift+R)
+- Service worker caching previous version
+- CDN/proxy caching old version
+- User might be viewing a different domain/port
+
+════════════════════════════════════════════════════════════════════════════════
+END OF REPORT
+════════════════════════════════════════════════════════════════════════════════

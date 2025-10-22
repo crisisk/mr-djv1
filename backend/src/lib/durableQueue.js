@@ -9,7 +9,9 @@ const registries = new Set();
 
 function buildQueueName(name) {
   const prefix = config.redis.namespace || 'mr-dj';
-  return `${prefix}_${name}`.replace(/:/g, '_');
+  const result = `${prefix}_${name}`.replace(/:/g, '_');
+  console.error('[DEBUG buildQueueName] input:', name, 'prefix:', prefix, 'result:', result);
+  return result;
 }
 
 function createInMemoryQueue(name, processor, { defaultJobOptions = {} } = {}) {
@@ -219,8 +221,12 @@ function createDurableQueue(name, processor, { concurrency = 5, defaultJobOption
   const deadQueueName = buildQueueName(`${name}_dead`);
   const connectionFactory = () => createRedisConnection();
 
+  console.log('[DEBUG] Creating queue with name:', queueName);
+  console.log('[DEBUG] Config redis namespace:', config.redis?.namespace);
+
   const queue = new Queue(queueName, {
     connection: connectionFactory(),
+    prefix: 'bull',
     defaultJobOptions: {
       attempts: 5,
       backoff: { type: 'exponential', delay: 2000 },
@@ -232,6 +238,7 @@ function createDurableQueue(name, processor, { concurrency = 5, defaultJobOption
 
   const deadLetterQueue = new Queue(deadQueueName, {
     connection: connectionFactory(),
+    prefix: 'bull',
     defaultJobOptions: {
       removeOnComplete: false,
       removeOnFail: false
@@ -239,7 +246,8 @@ function createDurableQueue(name, processor, { concurrency = 5, defaultJobOption
   });
 
   const queueEvents = new QueueEvents(queueName, {
-    connection: connectionFactory()
+    connection: connectionFactory(),
+    prefix: 'bull'
   });
   queueEvents.waitUntilReady().catch((error) => {
     logger.error({ err: error, queue: queueName }, 'Queue events failed to initialize');
@@ -253,6 +261,7 @@ function createDurableQueue(name, processor, { concurrency = 5, defaultJobOption
     },
     {
       connection: connectionFactory(),
+      prefix: 'bull',
       concurrency
     }
   );

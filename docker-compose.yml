@@ -1,34 +1,19 @@
 version: '3.8'
 
 services:
-  # Frontend (Nginx serving static files) - Renamed to eds-frontend as per user context
-  eds-frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: mr-dj-eds-frontend
-    restart: unless-stopped
-    depends_on:
-      - mr-dj-backend
-    networks:
-      - sevensa-edge # Use the sevensa-edge network for Traefik routing
-    labels:
-      - "traefik.enable=true"
-      # Host rule for mr-dj.sevensa.nl
-      - "traefik.http.routers.mrdj-eds-frontend.rule=Host(`mr-dj.sevensa.nl`)"
-      - "traefik.http.routers.mrdj-eds-frontend.entrypoints=websecure"
-      - "traefik.http.routers.mrdj-eds-frontend.tls=true"
-      - "traefik.http.routers.mrdj-eds-frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.mrdj-eds-frontend.service=mrdj-eds-frontend"
-      - "traefik.http.services.mrdj-eds-frontend.loadbalancer.server.port=80"
-      # Add a path prefix for the /eds route as per user requirement (Verify deployment at mr-dj.sevensa.nl/eds)
-      - "traefik.http.routers.mrdj-eds-frontend-eds.rule=Host(`mr-dj.sevensa.nl`) && PathPrefix(`/eds`)"
-      - "traefik.http.routers.mrdj-eds-frontend-eds.entrypoints=websecure"
-      - "traefik.http.routers.mrdj-eds-frontend-eds.tls=true"
-      - "traefik.http.routers.mrdj-eds-frontend-eds.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.mrdj-eds-frontend-eds.service=mrdj-eds-frontend-eds"
-      - "traefik.http.services.mrdj-eds-frontend-eds.loadbalancer.server.port=80"
-      # No stripprefix middleware - let the React app handle /eds/ base path
+  # Frontend (Nginx serving static files) - DISABLED - Using dynamic-api instead
+  # eds-frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: mr-dj-eds-frontend
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - mr-dj-backend
+  #   networks:
+  #     - sevensa-edge
+  #   labels:
+  #     - "traefik.enable=false"
 
   # Backend API (Node.js/Express) - Renamed to mr-dj-backend
   mr-dj-backend:
@@ -45,6 +30,11 @@ services:
       CORS_ORIGIN: https://mr-dj.sevensa.nl
       REDIS_URL: redis://:mrdj_redis_password_2025@mr-dj-redis:6379/0
       REDIS_NAMESPACE: mr-dj
+      # RentGuy Integration (use internal URL for container-to-container communication)
+      RENTGUY_API_BASE_URL: http://rentguy-backend-prod:8000/v1
+      RENTGUY_API_KEY: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpbmZvQG1yLWRqLm5sIiwiZXhwIjoxNzkyMzAzODYxLCJpYXQiOjE3NjA3Njc4NjEsIm5iZiI6MTc2MDc2Nzg2MSwid29ya3NwYWNlIjoibXItZGoifQ.c9J9bLZ5llPmyaVwhQRUV8DdEsoCuEcCuoRhZ34m8aoy31TaPgAJJ_DpI1_PiMF-eSXVvE6am1QNGnaa7U0nlg
+      RENTGUY_WORKSPACE_ID: mr-dj
+      RENTGUY_TIMEOUT_MS: 10000
     depends_on:
       mr-dj-postgres:
         condition: service_healthy
@@ -54,13 +44,65 @@ services:
       - sevensa-edge
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mrdj-backend.rule=Host(`mr-dj.sevensa.nl`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.mrdj-backend.rule=Host(`mr-dj.sevensa.nl`) && PathPrefix(`/api`) && !PathPrefix(`/api/personalize`)"
       - "traefik.http.routers.mrdj-backend.entrypoints=websecure"
       - "traefik.http.routers.mrdj-backend.tls=true"
       - "traefik.http.routers.mrdj-backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.mrdj-backend.loadbalancer.server.port=3000"
       - "traefik.http.middlewares.mrdj-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.mrdj-backend.middlewares=mrdj-backend-stripprefix"
+
+  # Dynamic Content API (Next.js) - MAIN SITE with all features
+  dynamic-api:
+    build:
+      context: ./dynamic-api
+      dockerfile: Dockerfile
+    container_name: mr-dj-dynamic-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://mrdj_user:mrdj_secure_password_2025@mr-dj-postgres:5432/mrdj_db
+      PORT: 3000
+    depends_on:
+      mr-dj-postgres:
+        condition: service_healthy
+    networks:
+      - sevensa-edge
+    labels:
+      - "traefik.enable=true"
+      # Main site - ALL routes go to Next.js app (priority 1)
+      - "traefik.http.routers.mrdj-dynamic-main.rule=Host(`mr-dj.sevensa.nl`)"
+      - "traefik.http.routers.mrdj-dynamic-main.entrypoints=websecure"
+      - "traefik.http.routers.mrdj-dynamic-main.tls=true"
+      - "traefik.http.routers.mrdj-dynamic-main.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.mrdj-dynamic-main.service=mrdj-dynamic-main"
+      - "traefik.http.routers.mrdj-dynamic-main.priority=100"
+      - "traefik.http.services.mrdj-dynamic-main.loadbalancer.server.port=3000"
+
+  # Metabase Analytics Dashboard
+  metabase:
+    image: metabase/metabase:latest
+    container_name: mr-dj-metabase
+    restart: unless-stopped
+    environment:
+      MB_DB_TYPE: h2
+      MB_DB_FILE: /metabase-data/metabase.db
+    volumes:
+      - metabase_data:/metabase-data
+    depends_on:
+      mr-dj-postgres:
+        condition: service_healthy
+    networks:
+      - sevensa-edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mrdj-metabase.rule=Host(`mr-dj.sevensa.nl`) && PathPrefix(`/analytics`)"
+      - "traefik.http.routers.mrdj-metabase.entrypoints=websecure"
+      - "traefik.http.routers.mrdj-metabase.tls=true"
+      - "traefik.http.routers.mrdj-metabase.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mrdj-metabase.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.mrdj-metabase-stripprefix.stripprefix.prefixes=/analytics"
+      - "traefik.http.routers.mrdj-metabase.middlewares=mrdj-metabase-stripprefix"
 
   # PostgreSQL Database - Renamed to mr-dj-postgres
   mr-dj-postgres:
@@ -103,5 +145,7 @@ networks:
 
 volumes:
   postgres_data:
+    driver: local
+  metabase_data:
     driver: local
 

@@ -1,0 +1,86 @@
+{
+  "automation": {
+    "enabled": true,
+    "min_sample_size": 100,
+    "confidence_level": 0.95,
+    "max_concurrent_tests": 5,
+    "test_duration_max_days": 14,
+    "min_conversion_difference": 0.10,
+    "auto_declare_winners": true,
+    "auto_start_new_tests": true
+  },
+  "optimization_goals": [
+    {
+      "name": "contact_form_submit",
+      "weight": 100,
+      "description": "Primary conversion: Contact form submission"
+    },
+    {
+      "name": "phone_click",
+      "weight": 80,
+      "description": "High-intent action: Phone number click"
+    },
+    {
+      "name": "whatsapp_click",
+      "weight": 75,
+      "description": "High-intent action: WhatsApp click"
+    },
+    {
+      "name": "scroll_depth_75",
+      "weight": 10,
+      "description": "Engagement: Scroll 75% of page"
+    },
+    {
+      "name": "video_play",
+      "weight": 20,
+      "description": "Engagement: Video play"
+    },
+    {
+      "name": "video_complete",
+      "weight": 30,
+      "description": "Strong engagement: Video watched to completion"
+    },
+    {
+      "name": "gallery_interaction",
+      "weight": 15,
+      "description": "Engagement: Gallery photo clicked"
+    },
+    {
+      "name": "time_on_page_60s",
+      "weight": 12,
+      "description": "Engagement: Stayed 60+ seconds"
+    }
+  ],
+  "smart_allocation": {
+    "enabled": true,
+    "min_traffic_to_loser": 10,
+    "description": "Gradually reduce traffic to underperforming variants"
+  },
+  "test_types": [
+    "hero_image",
+    "hero_video",
+    "cta_button",
+    "headline",
+    "gallery_order",
+    "testimonial_placement",
+    "page_layout"
+  ],
+  "statistical_settings": {
+    "significance_level": 0.05,
+    "minimum_effect_size": 0.10,
+    "power": 0.8
+  },
+  "reporting": {
+    "weekly_report": true,
+    "report_day": "monday",
+    "report_time": "09:00",
+    "notification_channels": ["email", "slack"],
+    "email_recipients": ["marketing@mr-dj.nl"],
+    "slack_webhook_url": ""
+  },
+  "asset_scoring": {
+    "recency_weight": 0.2,
+    "performance_weight": 0.5,
+    "engagement_weight": 0.3
+  }
+}

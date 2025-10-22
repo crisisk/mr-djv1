@@ -1,0 +1,53 @@
+{
+  "testId": "hero-image-001",
+  "name": "Hero Image - Wedding vs Party",
+  "description": "Testing which hero image drives more contact form submissions on homepage. Hypothesis: Party imagery may resonate better with younger demographics.",
+  "type": "image",
+  "goal": "contact_form_submit",
+  "minSampleSize": 100,
+  "confidenceLevel": 0.95,
+  "trafficAllocation": 1.0,
+  "variants": [
+    {
+      "variantId": "A",
+      "name": "Wedding Scene (Control)",
+      "description": "Traditional wedding DJ setup with elegant lighting and professional atmosphere",
+      "assetUrl": "/media/photos/gallery/weddings/bruiloft-001.jpg",
+      "assetType": "image",
+      "weight": 50,
+      "isControl": true,
+      "config": {
+        "alt_text": "Professional DJ setup at elegant wedding ceremony with romantic lighting",
+        "loading": "eager",
+        "sizes": "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1920px",
+        "quality": 90,
+        "format": "webp"
+      }
+    },
+    {
+      "variantId": "B",
+      "name": "Party Scene",
+      "description": "Energetic party atmosphere with dynamic lighting and dance floor energy",
+      "assetUrl": "/media/photos/gallery/parties/feest-001.jpg",
+      "assetType": "image",
+      "weight": 50,
+      "isControl": false,
+      "config": {
+        "alt_text": "Dynamic party DJ setup with exciting lighting effects and energetic crowd",
+        "loading": "eager",
+        "sizes": "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1920px",
+        "quality": 90,
+        "format": "webp"
+      }
+    }
+  ],
+  "metadata": {
+    "created_by": "marketing_team",
+    "hypothesis": "Party imagery may attract younger demographics (25-35) and increase conversion rates by emphasizing the fun, energetic aspect of DJ services",
+    "target_audience": "all_homepage_visitors",
+    "pages": ["homepage"],
+    "expected_duration_days": 14,
+    "success_criteria": "10% or greater improvement in conversion rate with 95% confidence",
+    "tags": ["homepage", "hero-section", "conversion-optimization"]
+  }
+}

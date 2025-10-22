@@ -1,0 +1,28 @@
+# Build output
+.next/
+out/
+tsconfig.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Generated components and build artifacts
+public/assets/**/*.js
+public/assets/**/*.css
+public/assets/DjSaxLanding-*
+public/assets/LocalSeoPage-*
+public/assets/PricingTables-*
+public/assets/SlideLayout-*
+public/assets/Testimonials-*
+public/assets/analytics-*
+public/assets/button-*
+public/assets/createLucideIcon-*
+public/assets/index-*
+
+# Media files (too large for git)
+public/media/
