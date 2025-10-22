@@ -25,7 +25,8 @@
     "react-day-picker": "^9.11.1",
     "react-dom": "^19.1.1",
     "react-i18next": "^16.1.2",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "pino": "^9.0.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.1",
