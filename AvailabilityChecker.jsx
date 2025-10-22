@@ -191,7 +191,7 @@ const AvailabilityChecker = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-spacing-md border border-neutral-gray-500 rounded-md focus:ring-primary focus:border-primary"
+              className="w-full p-spacing-md border border-neutral-gray-500 rounded-md focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               placeholder="uw.naam@voorbeeld.nl"
               required
             />
