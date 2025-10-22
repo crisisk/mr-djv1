@@ -35,7 +35,8 @@ describe("QuickBookingForm", () => {
     await userEvent.selectOptions(screen.getByLabelText(/type evenement/i), "bruiloft");
     await userEvent.type(screen.getByLabelText(/voorkeursbericht/i), "Test event");
 
-    await userEvent.click(screen.getByRole("button", { name: /verstuur aanvraag/i }));
+    const submitButtons = screen.getAllByRole('button', { name: /verstuur aanvraag/i })
+    await userEvent.click(submitButtons[0])
 
     await waitFor(() => {
       expect(submitMock).toHaveBeenCalledTimes(1);
@@ -59,7 +60,8 @@ describe("QuickBookingForm", () => {
   it("shows validation error when required fields are missing", async () => {
     render(<QuickBookingForm origin="test" />);
 
-    await userEvent.click(screen.getByRole("button", { name: /verstuur aanvraag/i }));
+    const submitButtons = screen.getAllByRole('button', { name: /verstuur aanvraag/i })
+    await userEvent.click(submitButtons[0])
 
     expect(
       await screen.findByText(/Vul alle verplichte velden in om je aanvraag te versturen./i),

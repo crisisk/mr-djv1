@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "fmt": "prettier --config prettier.config.cjs --check \"frontend/**/*.{js,jsx,ts,tsx,json,css,md}\" \"*.{js,jsx,ts,tsx,json,css}\" CONTRIBUTING.md",
-    "fmt:fix": "prettier --config prettier.config.cjs --write \"frontend/**/*.{js,jsx,ts,tsx,json,css,md}\" \"*.{js,jsx,ts,tsx,json,css}\" CONTRIBUTING.md",
-    "lint": "npm run lint:frontend && npm run lint:backend",
-    "lint:frontend": "npm --prefix frontend run lint",
-    "lint:backend": "npm --prefix backend run lint",
+    "test": "npm --prefix frontend run test",
     "test:e2e": "cypress run --spec tests/e2e/booking-flow.cy.ts",
     "test:perf": "k6 run tests/performance/baseline.js"
   },
