@@ -5,9 +5,11 @@ on:
 jobs:
   build-and-verify:
     runs-on: ubuntu-latest
+    env:
+      APP_DIR: frontend
     defaults:
       run:
-        working-directory: ${{ github.workspace }}/'"$APP_DIR"'
+        working-directory: ${{ github.workspace }}/${{ env.APP_DIR }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
