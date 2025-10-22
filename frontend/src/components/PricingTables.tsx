@@ -2,8 +2,6 @@
 
 import { fmtCurrency } from '../../lib/format';
 import { Button } from './Button';
-import { IconBase, mergeClassNames } from './shared/IconBase';
-import type { IconBaseProps } from './shared/IconBase';
 
 export interface PricingFeatureSet {
   name: string;
@@ -54,21 +52,6 @@ const defaultPackages: PricingFeatureSet[] = [
     buttonText: 'Vraag Offerte Aan',
   },
 ];
-
-function CheckIcon({ className, ...props }: IconBaseProps) {
-  return (
-    <IconBase
-      className={mergeClassNames('mr-spacing-sm h-5 w-5 flex-shrink-0', className)}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-    </IconBase>
-  );
-}
 
 function PricingCard({ pkg }: { pkg: PricingFeatureSet }) {
   const { name, subtitle, price, features, isFeatured, buttonText } = pkg;

@@ -1,5 +1,5 @@
 import type { ChangeEvent, FormEvent } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import type { BookingResponse } from '../../services/booking'
@@ -153,6 +153,7 @@ const QuickBookingForm = ({ origin, onSuccess, onCancel, className, autoFocus }:
   const [formState, setFormState] = useState<FormState>(INITIAL_STATE)
   const { submit, status, error, reset } = useBooking()
   const [showValidationError, setShowValidationError] = useState(false)
+  const firstFieldRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     if (status === 'success') {
@@ -160,6 +161,14 @@ const QuickBookingForm = ({ origin, onSuccess, onCancel, className, autoFocus }:
       setShowValidationError(false)
     }
   }, [reset, status])
+
+  useEffect(() => {
+    if (!autoFocus) {
+      return
+    }
+
+    firstFieldRef.current?.focus({ preventScroll: true })
+  }, [autoFocus])
 
   const isSubmitting = status === 'loading'
 
@@ -225,7 +234,7 @@ const QuickBookingForm = ({ origin, onSuccess, onCancel, className, autoFocus }:
           onChange={handleChange}
           placeholder="Uw naam"
           required
-          autoFocus={autoFocus}
+          ref={firstFieldRef}
         />
       </Field>
 
