@@ -23,7 +23,7 @@ This plan translates the outstanding launch-blocking tasks into three concrete e
 
 - **Consent & Analytics IDs**
   - Replace placeholder Complianz site ID by sourcing the production value and injecting it through build-time env (`VITE_COMPLIANZ_SITE_ID`).
-  - Confirm GTM container `GTM-NST23HJX` and GA4 measurement `G-TXJLD3H2C8` are wired in `index.html` and surfaced through the consent manager.
+  - Confirm GTM container `GTM-NST23HJX` and GA4 measurement ID `G-TXJLD3H2C8` are wired in `index.html` and surfaced through the consent manager.
   - Provide the verified Facebook Pixel ID via `VITE_FACEBOOK_PIXEL_ID` so the React consent flow can gate injection.
 
 - **Deliverables**
