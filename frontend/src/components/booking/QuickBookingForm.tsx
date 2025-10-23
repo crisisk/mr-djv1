@@ -1,9 +1,10 @@
 import type { ChangeEvent, FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
 import type { BookingResponse } from "../../services/booking";
 import useBooking from "../../hooks/useBooking";
+import { useEventType } from "../../context/EventTypeContext";
 
 const Form = styled.form`
   display: flex;
@@ -158,9 +159,14 @@ const QuickBookingForm = ({
   className,
   autoFocus,
 }: QuickBookingFormProps) => {
-  const [formState, setFormState] = useState<FormState>(INITIAL_STATE);
+  const { eventType: selectedEventType, setEventType: persistEventType } = useEventType();
+  const [formState, setFormState] = useState<FormState>(() => ({
+    ...INITIAL_STATE,
+    eventType: selectedEventType ?? "",
+  }));
   const { submit, status, error, reset } = useBooking();
   const [showValidationError, setShowValidationError] = useState(false);
+  const firstFieldRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (status === "success") {
@@ -168,6 +174,26 @@ const QuickBookingForm = ({
       setShowValidationError(false);
     }
   }, [reset, status]);
+
+  useEffect(() => {
+    if (autoFocus && firstFieldRef.current) {
+      firstFieldRef.current.focus();
+    }
+  }, [autoFocus]);
+
+  useEffect(() => {
+    setFormState((previous) => {
+      const nextEventType = selectedEventType ?? "";
+      if (previous.eventType === nextEventType) {
+        return previous;
+      }
+
+      return {
+        ...previous,
+        eventType: nextEventType,
+      };
+    });
+  }, [selectedEventType]);
 
   const isSubmitting = status === "loading";
 
@@ -188,6 +214,9 @@ const QuickBookingForm = ({
       ...prev,
       [name]: value,
     }));
+    if (name === "eventType") {
+      void persistEventType(value);
+    }
     if (showValidationError) {
       setShowValidationError(false);
     }
@@ -212,7 +241,10 @@ const QuickBookingForm = ({
         message: formState.message.trim() ? formState.message.trim() : undefined,
       });
 
-      setFormState(INITIAL_STATE);
+      setFormState((prev) => ({
+        ...INITIAL_STATE,
+        eventType: selectedEventType ?? prev.eventType ?? "",
+      }));
       onSuccess?.(response);
     } catch (submissionError) {
       console.error("Quick booking form submission failed", submissionError);

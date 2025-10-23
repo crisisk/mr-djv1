@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import QuickBookingForm from "../components/booking/QuickBookingForm";
 
+const setEventTypeMock = vi.fn();
+
 const submitMock = vi.fn();
 const resetMock = vi.fn();
 
@@ -17,10 +19,19 @@ vi.mock("../hooks/useBooking", () => ({
   }),
 }));
 
+vi.mock("../context/EventTypeContext", () => ({
+  __esModule: true,
+  useEventType: () => ({
+    eventType: "",
+    setEventType: setEventTypeMock,
+  }),
+}));
+
 describe("QuickBookingForm", () => {
   beforeEach(() => {
     submitMock.mockReset();
     resetMock.mockReset();
+    setEventTypeMock.mockReset();
   });
 
   it("submits booking data and calls onSuccess callback", async () => {
@@ -35,8 +46,8 @@ describe("QuickBookingForm", () => {
     await userEvent.selectOptions(screen.getByLabelText(/type evenement/i), "bruiloft");
     await userEvent.type(screen.getByLabelText(/voorkeursbericht/i), "Test event");
 
-    const submitButtons = screen.getAllByRole('button', { name: /verstuur aanvraag/i })
-    await userEvent.click(submitButtons[0])
+    const [submitButton] = screen.getAllByRole("button", { name: /verstuur aanvraag/i });
+    await userEvent.click(submitButton);
 
     await waitFor(() => {
       expect(submitMock).toHaveBeenCalledTimes(1);
@@ -60,11 +71,22 @@ describe("QuickBookingForm", () => {
   it("shows validation error when required fields are missing", async () => {
     render(<QuickBookingForm origin="test" />);
 
-    const submitButtons = screen.getAllByRole('button', { name: /verstuur aanvraag/i })
-    await userEvent.click(submitButtons[0])
+    const [submitButton] = screen.getAllByRole("button", { name: /verstuur aanvraag/i });
+    await userEvent.click(submitButton);
 
     expect(
       await screen.findByText(/Vul alle verplichte velden in om je aanvraag te versturen./i),
     ).toBeInTheDocument();
+  });
+
+  it("synchronises event type changes with the personalization context", async () => {
+    render(<QuickBookingForm origin="test" />);
+
+    const [eventTypeSelect] = screen.getAllByLabelText(/type evenement/i);
+    await userEvent.selectOptions(eventTypeSelect, "bedrijfsfeest");
+
+    await waitFor(() => {
+      expect(setEventTypeMock).toHaveBeenCalledWith("bedrijfsfeest");
+    });
   });
 });
