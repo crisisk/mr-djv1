@@ -56,7 +56,7 @@ This plan translates the outstanding launch-blocking tasks into three concrete e
 - **Exit Criteria**
   - Playwright/Cypress regression suite green in CI.
   - RentGuy proxy logs confirm authenticated calls with no 4xx/5xx responses during tests.
-  - Accessibility scan reports ≤5 minor issues on key templates.
+  - Accessibility scan reports ≤5 issues of WCAG Level A severity (or equivalent "minor" severity as defined by the chosen accessibility tool) on key templates.
 
 ## Batch C – Launch & Monitoring
 **Objective:** Final validation, deployment, and observability for the public launch.
