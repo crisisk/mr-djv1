@@ -18,4 +18,13 @@ The CI workflow injects a small set of environment variables so that configurati
 | `RENTGUY_API_KEY` | Backend | Dummy credential for RentGuy integration tests. | `test-api-key` |
 | `RENTGUY_WORKSPACE_ID` | Backend | Dummy workspace identifier required by the RentGuy client. | `workspace-1` |
 
+When integration tests depend on a live endpoint, start the [RentGuy mock server](RENTGUY-MOCK-SERVER.md) as a background process before invoking the backend suites:
+
+```bash
+RENTGUY_MOCK_API_KEY=test-api-key npm run rentguy:mock &
+MOCK_PID=$!
+npm test
+kill $MOCK_PID
+```
+
 > **Note:** The frontend job only needs `CI=true`. Additional environment variables can be added directly inside the `frontend` job if future scripts require them.
