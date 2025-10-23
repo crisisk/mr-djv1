@@ -356,6 +356,39 @@ function parseBoolean(value, fallback) {
   return Boolean(value);
 }
 
+function parseOptionalNumber(value, fallback, key, tracker, options = {}) {
+  const hasTracker = tracker && typeof tracker.record === 'function';
+  const resolvedKey = typeof key === 'string' ? key : 'UNKNOWN';
+  const record = (reason) => {
+    if (hasTracker) {
+      tracker.record(resolvedKey, fallback, reason);
+    }
+  };
+
+  if (!hasValue(value)) {
+    record('missing');
+    return fallback;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    record('invalid');
+    return fallback;
+  }
+
+  if (options.min !== undefined && parsed < options.min) {
+    record('out-of-range');
+    return fallback;
+  }
+
+  if (options.max !== undefined && parsed > options.max) {
+    record('out-of-range');
+    return fallback;
+  }
+
+  return parsed;
+}
+
 function parseList(value) {
   if (!value) {
     return [];

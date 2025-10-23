@@ -3,9 +3,57 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import Button from "./Buttons.jsx";
 import { getJSON, removeItem, setJSON } from "./frontend/src/lib/storage.ts";
+import { useConsent } from "./ConsentManager.jsx";
 
 const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
 const STORAGE_KEY = "availabilityCheckerForm";
+
+const DEFAULT_API_PATH = "/availability/check";
+const RELATIVE_FALLBACK_PATH = `/api${DEFAULT_API_PATH}`;
+
+function resolveApiBaseUrl() {
+  if (typeof window !== "undefined") {
+    const fromWindow =
+      window.__MR_DJ_API_BASE_URL || window.MR_DJ_API_BASE_URL || window.API_BASE_URL || null;
+    if (typeof fromWindow === "string" && fromWindow.trim()) {
+      return fromWindow.trim();
+    }
+  }
+
+  if (typeof import.meta !== "undefined" && import.meta?.env?.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  return "";
+}
+
+function buildAvailabilityEndpoint() {
+  const baseUrl = resolveApiBaseUrl();
+  const path = DEFAULT_API_PATH;
+
+  if (!baseUrl) {
+    return RELATIVE_FALLBACK_PATH;
+  }
+
+  const trimmedBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  return `${trimmedBase}${path}`;
+}
+
+function pushDataLayerEvent(event, payload = {}) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (!Array.isArray(window.dataLayer)) {
+    window.dataLayer = [];
+  }
+
+  try {
+    window.dataLayer.push({ event, ...payload });
+  } catch (error) {
+    console.warn("Unable to push availability event to the dataLayer", error);
+  }
+}
 
 function resolvePageContext() {
   if (!isBrowser) {
@@ -18,65 +66,60 @@ function resolvePageContext() {
   };
 }
 
-// Deduplication cache to prevent overlapping Sevensa requests
-const pendingSevensaRequests = new Map();
+// Deduplication cache to prevent overlapping availability requests
+const pendingAvailabilityRequests = new Map();
 
-// Sevensa Form Submission Logic (Placeholder)
-const submitToSevensa = async (formData) => {
-  const accountId = "YOUR_SEVENSA_ACCOUNT_ID"; // VERVANGEN
-  const formId = "YOUR_SEVENSA_FORM_ID"; // VERVANGEN
-  const url = `https://api.sevensa.com/forms/${accountId}/${formId}/submit`;
+const submitAvailabilityRequest = async (payload) => {
+  const endpoint = buildAvailabilityEndpoint();
+  const cacheKey = JSON.stringify({ email: payload.email, eventDate: payload.eventDate });
 
-  const fields = Object.keys(formData).map((key) => ({
-    name: key,
-    value: formData[key],
-  }));
-
-  const data = {
-    fields: fields,
-    context: resolvePageContext(),
-  };
-
-  const dedupeKey = JSON.stringify({
-    eventDate: formData.event_date,
-    email: formData.email,
-  });
-
-  if (pendingSevensaRequests.has(dedupeKey)) {
-    return pendingSevensaRequests.get(dedupeKey);
+  if (pendingAvailabilityRequests.has(cacheKey)) {
+    return pendingAvailabilityRequests.get(cacheKey);
   }
 
   const requestPromise = (async () => {
     try {
-      const response = await fetch(url, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
-        return { success: true, message: "Aanvraag succesvol verzonden!" };
+      const bodyText = await response.text();
+      let body = {};
+      if (bodyText) {
+        try {
+          body = JSON.parse(bodyText);
+        } catch (parseError) {
+          console.warn("Kon antwoord van beschikbaarheidscheck niet parsen", parseError);
+        }
       }
 
-      let errorMessage = "Onbekende fout";
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch (parseError) {
-        errorMessage = parseError.message || errorMessage;
+      if (!response.ok && response.status !== 202) {
+        const errorMessage = body?.message || body?.error || "Er ging iets mis";
+        throw new Error(errorMessage);
       }
 
-      return { success: false, message: `Fout bij verzenden: ${errorMessage}` };
+      return {
+        success: Boolean(body?.success || response.ok),
+        queued: Boolean(body?.queued),
+        message:
+          body?.message ||
+          (response.status === 202
+            ? "We hebben je aanvraag ontvangen. Een specialist neemt binnen 24 uur contact op."
+            : "Beschikbaarheid gecontroleerd! We nemen contact op via e-mail."),
+        sevensa: body?.sevensa || null,
+      };
     } catch (error) {
-      return { success: false, message: `Netwerkfout: ${error.message}` };
+      throw new Error(error.message || "Er ging iets mis bij het versturen van je aanvraag");
     } finally {
-      pendingSevensaRequests.delete(dedupeKey);
+      pendingAvailabilityRequests.delete(cacheKey);
     }
   })();
 
-  pendingSevensaRequests.set(dedupeKey, requestPromise);
+  pendingAvailabilityRequests.set(cacheKey, requestPromise);
   return requestPromise;
 };
 
@@ -84,6 +127,20 @@ const AvailabilityChecker = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState(null); // 'success', 'error', 'loading'
+
+  let consent = null;
+  try {
+    consent = useConsent();
+  } catch (error) {
+    consent = null;
+  }
+
+  const marketingAllowed = consent?.isAllowed
+    ? Boolean(consent.isAllowed("marketing"))
+    : Boolean(consent?.marketing);
+  const statisticsAllowed = consent?.isAllowed
+    ? Boolean(consent.isAllowed("statistics"))
+    : Boolean(consent?.statistics);
 
   useEffect(() => {
     if (!isBrowser) {
@@ -132,25 +189,59 @@ const AvailabilityChecker = () => {
 
     setStatus({ type: "loading", message: "Bezig met controleren..." });
 
-    const formData = {
-      event_date: selectedDate.toLocaleDateString("nl-NL"),
+    const isoDate = selectedDate.toISOString();
+    const pageContext = resolvePageContext();
+    const payload = {
       email: email,
-      // Voeg hier meer velden toe indien nodig
+      eventDate: isoDate,
+      marketingConsent: marketingAllowed,
+      statisticsConsent: statisticsAllowed,
+      pageUri: pageContext.pageUri,
+      pageName: pageContext.pageName,
     };
 
-    // Simuleer beschikbaarheidscheck en Sevensa-verzending
-    const result = await submitToSevensa(formData);
+    pushDataLayerEvent("availability_check_started", {
+      eventDate: isoDate,
+      marketingConsent: marketingAllowed,
+      statisticsConsent: statisticsAllowed,
+    });
 
-    if (result.success) {
-      setStatus({
-        type: "success",
-        message: "Beschikbaarheid gecontroleerd! We nemen contact op via e-mail.",
+    try {
+      const result = await submitAvailabilityRequest(payload);
+
+      if (result.success || result.queued) {
+        pushDataLayerEvent(result.queued ? "availability_check_queued" : "availability_check_success", {
+          eventDate: isoDate,
+          queued: Boolean(result.queued),
+        });
+
+        setStatus({
+          type: "success",
+          message: result.message,
+        });
+        setSelectedDate(null);
+        setEmail("");
+        removeItem(STORAGE_KEY);
+        return;
+      }
+
+      pushDataLayerEvent("availability_check_failed", {
+        eventDate: isoDate,
+        reason: result.message || "unknown",
       });
-      setSelectedDate(null);
-      setEmail("");
-      removeItem(STORAGE_KEY);
-    } else {
-      setStatus({ type: "error", message: result.message });
+      setStatus({
+        type: "error",
+        message: result.message || "Er ging iets mis. Probeer het later opnieuw.",
+      });
+    } catch (error) {
+      pushDataLayerEvent("availability_check_failed", {
+        eventDate: isoDate,
+        reason: error.message,
+      });
+      setStatus({
+        type: "error",
+        message: error.message || "Er ging iets mis. Probeer het later opnieuw.",
+      });
     }
   };
 

@@ -68,9 +68,16 @@ describe("AvailabilityChecker autosave behaviour", () => {
   });
 
   it("clears saved data after a successful submission", async () => {
-    const fetchMock = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValue({ ok: true, json: vi.fn() } as unknown as Response);
+    window.dataLayer = [];
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: vi
+        .fn()
+        .mockResolvedValue(
+          JSON.stringify({ success: true, message: "Beschikbaarheid gecontroleerd! We nemen contact op via e-mail." }),
+        ),
+    } as unknown as Response);
 
     render(<AvailabilityChecker />);
 
@@ -84,6 +91,21 @@ describe("AvailabilityChecker autosave behaviour", () => {
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalled();
+    });
+
+    const [calledUrl, options] = fetchMock.mock.calls[0];
+    expect(calledUrl).toBe("/api/availability/check");
+    const parsedBody = JSON.parse((options as RequestInit).body as string);
+    expect(parsedBody).toMatchObject({
+      email: "submit@example.com",
+      eventDate: "2025-06-15T00:00:00.000Z",
+      marketingConsent: false,
+      statisticsConsent: false,
+    });
+    expect(parsedBody.pageUri).toBe(window.location.href);
+
+    await waitFor(() => {
+      expect(window.dataLayer?.find((entry) => entry.event === "availability_check_success")).toBeTruthy();
     });
 
     await waitFor(() => {

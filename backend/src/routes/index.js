@@ -14,6 +14,7 @@ const personalizationRouter = require('./personalization');
 const dashboardRouter = require('./dashboard');
 const metricsRouter = require('./metrics');
 const sessionRouter = require('./session');
+const availabilityRouter = require('./availability');
 const featureFlags = require('../lib/featureFlags');
 
 const router = express.Router();
@@ -23,6 +24,7 @@ router.get('/', async (_req, res, next) => {
     const endpoints = {
       health: '/health',
       contact: '/contact',
+      availability: '/availability/check',
       callbackRequest: '/callback-request',
       bookings: '/bookings',
       packages: '/packages',
@@ -67,6 +69,7 @@ router.get('/', async (_req, res, next) => {
 router.use('/health', healthRouter);
 router.use('/packages', packagesRouter);
 router.use('/contact', rateLimiter, contactRouter);
+router.use('/availability', rateLimiter, availabilityRouter);
 router.use('/callback-request', rateLimiter, callbackRequestsRouter);
 router.use('/bookings', rateLimiter, bookingsRouter);
 router.use('/booking-steps', rateLimiter, bookingStepsRouter);
