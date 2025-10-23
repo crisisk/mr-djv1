@@ -4,7 +4,8 @@ import styled from "styled-components";
 
 import type { BookingResponse } from "../../services/booking";
 import useBooking from "../../hooks/useBooking";
-import { useEventType } from "../../context/EventTypeContext";
+import type { EventTypeValue } from "../../context/EventTypeContext";
+import { useOptionalEventType } from "../../context/EventTypeContext";
 
 const Form = styled.form`
   display: flex;
@@ -152,6 +153,8 @@ type QuickBookingFormProps = {
   autoFocus?: boolean;
 };
 
+const noopPersistEventType: EventTypeValue["setEventType"] = async () => {};
+
 const QuickBookingForm = ({
   origin,
   onSuccess,
@@ -159,7 +162,9 @@ const QuickBookingForm = ({
   className,
   autoFocus,
 }: QuickBookingFormProps) => {
-  const { eventType: selectedEventType, setEventType: persistEventType } = useEventType();
+  const eventTypeContext = useOptionalEventType();
+  const selectedEventType = eventTypeContext?.eventType ?? null;
+  const persistEventType = eventTypeContext?.setEventType ?? noopPersistEventType;
   const [formState, setFormState] = useState<FormState>(() => ({
     ...INITIAL_STATE,
     eventType: selectedEventType ?? "",
@@ -214,7 +219,7 @@ const QuickBookingForm = ({
       ...prev,
       [name]: value,
     }));
-    if (name === "eventType") {
+    if (name === "eventType" && eventTypeContext) {
       void persistEventType(value);
     }
     if (showValidationError) {
