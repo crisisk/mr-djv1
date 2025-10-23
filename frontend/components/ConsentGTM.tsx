@@ -80,7 +80,7 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
   useEffect(() => {
     if (!gtmId) {
       hasBooted.current = false;
-      removeGtmArtifacts(gtmId);
+      removeGtmArtifacts();
       return;
     }
 
