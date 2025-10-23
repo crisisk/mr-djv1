@@ -11,49 +11,13 @@ This service exposes the API and partner integrations that power the Mr. DJ mark
 
 ## Environment configuration
 
-1. Copy the provided samples and tailor them for the environment:
+Copy `.env.example` and `managed.env.example` to their real counterparts before starting the service. The backend loads `managed.env` first, followed by `.env`, so values that must remain under secret management (database credentials, API keys, webhook secrets) should live in `managed.env` while developer friendly defaults can stay inside `.env`.
 
-   ```bash
-   cd backend
-   cp .env.sample .env
-   cp managed.env.sample managed.env
-   ```
-
-2. Update both files with the credentials that apply to your environment. The samples list every variable that is validated by `src/config.js` so the application can boot without tripping the Joi schema.
-3. When running in production, populate the real secrets through the platform secret store and ensure the CI pipeline writes the decrypted values to `managed.env` before starting the server.
-
-## Installing dependencies
+After populating the files, run the built-in validator to confirm every required variable passes the Joi schema in `src/config.js`:
 
 ```bash
 npm install
-```
-
-## Running the API locally
-
-```bash
-npm run dev
-```
-
-The service boots on `http://localhost:3000` by default. Configure `VITE_API_BASE_URL` in the frontend to point to the same origin when testing locally.
-
-## Testing
-
-The backend uses Jest for its unit and integration coverage.
-
-```bash
 npm test
 ```
 
-To execute a single suite:
-
-```bash
-npm test -- availability
-```
-
-## Key integrations
-
-- **RentGuy** – proxy and queue used for bookings, leads, and personalization sync.
-- **Sevensa** – webhook submissions for availability checks, contact requests, and feedback flows.
-- **Consent telemetry** – endpoints surface analytics-friendly events so GTM/GA4 can reflect customer intent without leaking personal data.
-
-Ensure the associated environment variables are configured before enabling each integration flag; otherwise, the durable queues will fall back to safe queuing behaviour until the credentials are available.
+When running integration tests or the FastAPI app locally you will also need Postgres and Redis available. The unit tests rely on mocks and do not hit live services when the configuration validator succeeds.

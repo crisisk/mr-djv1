@@ -1,9 +1,9 @@
 # Production Readiness Report
 
 ## Summary
-- Status: 🟡 In Progress
-- Focus: Batch A groundwork completed for environment provisioning and consent-controlled analytics; proceed with credential handoff and integration hardening before Batch C sign-off.
-- Notes: Secrets still outstanding for Batch A, but validated scaffolding (`backend/.env.sample`, `backend/managed.env.sample`) and consent manager wiring unblock credential import.
+- Status: 🟠 In Progress
+- Focus: Execute Batch A → Batch B → Batch C as outlined in `BATCH_EXECUTION_READINESS.md` to close all launch blockers.
+- Notes: Secrets placeholders and validation workflows are now documented. Backend env schemas can be validated locally, unblocking credential provisioning. Consent-driven GTM loading reacts to runtime consent changes.
 
 ## Checklist Snapshot
 - [ ] CI build clean (`npm run build`)
@@ -18,28 +18,19 @@
 
 | Batch | Scope | Status | Exit Evidence |
 | --- | --- | --- | --- |
-| Batch A – Platform Foundation | Secrets, Complianz/GTM/GA4, consent QA | 🟡 In Progress (env scaffolding merged; awaiting secret injection) | `backend/.env.sample` & `backend/managed.env.sample`; consent banner controls GTM/GA4 & Facebook Pixel via `ConsentManager.jsx` |
+| Batch A – Platform Foundation | Secrets, Complianz/GTM/GA4, consent QA | 🟡 In Progress | `backend/.env` + `backend/managed.env` validated via `npm --prefix backend test`; consent banner smoke test recording |
 | Batch B – Experience Integration | RentGuy proxy, Sevensa flow, regression automation | ⏳ Pending (requires Batch A completion) | Cypress/Playwright suites green, availability checker posts through backend, GA4 events logged in DebugView |
 | Batch C – Launch & Monitoring | Performance, monitoring, production deploy | ⏳ Pending | Lighthouse ≥90 report, monitoring dashboards, signed `DEPLOYMENT_SUCCESS.md` |
 
-## Batch Breakdown & Outstanding Tasks
+### Batch Updates
 
-### Batch A – Platform Foundation
-- [ ] **Secrets provisioning:** Populate `backend/.env` and `backend/managed.env` with validated credentials for database, Redis, RentGuy, Sevensa, and automation webhooks; confirm `npm --prefix backend test` passes without Joi validation errors.
-- [ ] **Consent & analytics IDs:** Replace placeholder Complianz site ID (`VITE_COMPLIANZ_SITE_ID`) and wire verified GTM container `GTM-NST23HJX`, GA4 measurement ID `G-TXJLD3H2C8`, and Facebook Pixel ID through the consent manager.
-- [ ] **Documentation refresh:** Extend provisioning steps and credential ownership details in the deployment docs to reflect the new secret sources and validation evidence.
-
-### Batch B – Experience Integration
-- [ ] **Frontend data fetching:** Update React data loaders/hooks to call the backend proxy for RentGuy endpoints with robust loading/error states and retries for bookings, contact, and pricing flows.
-- [ ] **Sevensa availability flow:** Replace placeholder Sevensa IDs in `AvailabilityChecker.jsx`, route submissions via backend queueing, and emit `availability_conversion` GA4 events on success.
-- [ ] **Regression coverage:** Expand Cypress/Playwright suites to cover booking, contact, and availability journeys using mocked or staged RentGuy services; ensure runs are green in CI.
-- [ ] **Branding & content alignment:** Ensure favicon, hero logo, and testimonials are sourced from the centralized asset pipeline with API/CMS fallback support.
-
-### Batch C – Launch & Monitoring
-- [ ] **Performance & accessibility:** Achieve Lighthouse ≥90 across performance, accessibility, best practices, and SEO; run automated accessibility audits (pa11y/axe) and document residual issues.
-- [ ] **Monitoring & alerting:** Configure uptime monitoring, Sentry/LogRocket logging sinks, and incident runbooks with secrets managed alongside other production credentials.
-- [ ] **Deployment sign-off:** Execute `./deploy.sh` to the production domain, complete staging validation (console, GA4 DebugView, GTM Preview), and obtain product/QA approval recorded in `DEPLOYMENT_SUCCESS.md`.
-- [ ] **Post-launch verification:** Maintain dashboards for 24h stability, confirm GA4 events flowing into property `G-TXJLD3H2C8`, and mark the readiness report as ✅ Ready with evidence links.
+- **Batch A – Platform Foundation**
+  - Added `backend/.env.example` and `backend/managed.env.example` to capture every validated secret, clarifying which credentials must be stored in secret management versus developer overrides.
+  - Updated `backend/README.md` with step-by-step instructions for copying the templates and running the Joi-powered validator so credential handoff can be completed without guesswork.
+- **Batch B – Experience Integration**
+  - Hardened the consent-aware GTM loader so it listens for runtime consent changes and avoids referencing undefined globals, ensuring analytics only boot once marketing consent is granted.
+- **Batch C – Launch & Monitoring**
+  - No new work this iteration. Pending once Batch A/B deliverables are signed off.
 
 ## Next Steps
 1. Provision backend and marketing secrets (Batch A) using the new managed env templates and rerun `npm --prefix backend test` for validation evidence.
