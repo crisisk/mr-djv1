@@ -63,7 +63,7 @@ export function EventTypeSelector() {
       });
     } catch (error) {
       if (import.meta.env.MODE !== "production") {
-        console.warn("Kon evenementtype niet opslaan", error);
+        console.warn("Could not save event type", error);
       }
     } finally {
       setPendingSelection(null);
