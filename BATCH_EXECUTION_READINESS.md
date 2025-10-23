@@ -30,6 +30,7 @@ This plan translates the outstanding launch-blocking tasks into three concrete e
   - Updated env files stored in the secure secret manager and mirrored locally as encrypted artifacts.
   - Screenshot or CLI evidence showing the backend booting with validation enabled.
   - PR updates to `PRODUCTION_READY_REPORT.md` reflecting Batch A completion criteria.
+  - ✅ `.env.example` and `managed.env.example` committed with full variable inventory to speed up secret provisioning.
 
 - **Exit Criteria**
   - `npm run lint` and `npm run test` succeed for both frontend and backend.

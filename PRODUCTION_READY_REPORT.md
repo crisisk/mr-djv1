@@ -1,9 +1,9 @@
 # Production Readiness Report
 
 ## Summary
-- Status: 🔴 Not Ready
+- Status: 🟠 In Progress
 - Focus: Execute Batch A → Batch B → Batch C as outlined in `BATCH_EXECUTION_READINESS.md` to close all launch blockers.
-- Notes: Secrets still outstanding for Batch A, preventing backend config validation and downstream integration testing.
+- Notes: Secrets placeholders and validation workflows are now documented. Backend env schemas can be validated locally, unblocking credential provisioning. Consent-driven GTM loading reacts to runtime consent changes.
 
 ## Checklist Snapshot
 - [ ] CI build clean (`npm run build`)
@@ -18,9 +18,19 @@
 
 | Batch | Scope | Status | Exit Evidence |
 | --- | --- | --- | --- |
-| Batch A – Platform Foundation | Secrets, Complianz/GTM/GA4, consent QA | 🔴 Blocked (waiting on credential handoff) | `backend/.env` + `backend/managed.env` validated via `npm --prefix backend test`; consent banner smoke test recording |
+| Batch A – Platform Foundation | Secrets, Complianz/GTM/GA4, consent QA | 🟡 In Progress | `backend/.env` + `backend/managed.env` validated via `npm --prefix backend test`; consent banner smoke test recording |
 | Batch B – Experience Integration | RentGuy proxy, Sevensa flow, regression automation | ⏳ Pending (requires Batch A completion) | Cypress/Playwright suites green, availability checker posts through backend, GA4 events logged in DebugView |
 | Batch C – Launch & Monitoring | Performance, monitoring, production deploy | ⏳ Pending | Lighthouse ≥90 report, monitoring dashboards, signed `DEPLOYMENT_SUCCESS.md` |
+
+### Batch Updates
+
+- **Batch A – Platform Foundation**
+  - Added `backend/.env.example` and `backend/managed.env.example` to capture every validated secret, clarifying which credentials must be stored in secret management versus developer overrides.
+  - Updated `backend/README.md` with step-by-step instructions for copying the templates and running the Joi-powered validator so credential handoff can be completed without guesswork.
+- **Batch B – Experience Integration**
+  - Hardened the consent-aware GTM loader so it listens for runtime consent changes and avoids referencing undefined globals, ensuring analytics only boot once marketing consent is granted.
+- **Batch C – Launch & Monitoring**
+  - No new work this iteration. Pending once Batch A/B deliverables are signed off.
 
 ## Next Steps
 1. Provision backend and marketing secrets (Batch A) and capture validation artifacts.
