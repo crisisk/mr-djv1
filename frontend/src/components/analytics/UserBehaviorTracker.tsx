@@ -22,7 +22,7 @@ function track(event: TrackingEvent) {
     posthog.capture(event.type, event.payload);
   } catch (error) {
     if (import.meta.env.MODE !== "production") {
-      console.error("Kon PostHog event niet versturen", error);
+      console.error("Could not send PostHog event", error);
     }
   }
 }
