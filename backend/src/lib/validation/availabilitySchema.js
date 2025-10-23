@@ -28,17 +28,7 @@ const availabilitySchema = Joi.object({
 function normaliseValue(value) {
   const normalised = { ...value };
 
-  if (normalised.eventDate instanceof Date) {
-    normalised.eventDate = normalised.eventDate.toISOString();
-  }
-
-  if (typeof normalised.eventDate === 'string') {
-    const parsed = new Date(normalised.eventDate);
-    if (!Number.isNaN(parsed.getTime())) {
-      normalised.eventDate = parsed.toISOString();
-    }
-  }
-
+  // eventDate is already validated and normalized by Joi
   if (normalised.pageUri === '' || normalised.pageUri === null) {
     normalised.pageUri = undefined;
   }
