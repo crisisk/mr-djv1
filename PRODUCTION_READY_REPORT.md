@@ -1,9 +1,9 @@
 # Production Readiness Report
 
 ## Summary
-- Status: 🔴 Not Ready
-- Focus: Execute Batch A → Batch B → Batch C as outlined in `BATCH_EXECUTION_READINESS.md` to close all launch blockers.
-- Notes: Secrets still outstanding for Batch A, preventing backend config validation and downstream integration testing.
+- Status: 🟡 In Progress
+- Focus: Batch A groundwork completed for environment provisioning and consent-controlled analytics; proceed with credential handoff and integration hardening before Batch C sign-off.
+- Notes: Secrets still outstanding for Batch A, but validated scaffolding (`backend/.env.sample`, `backend/managed.env.sample`) and consent manager wiring unblock credential import.
 
 ## Checklist Snapshot
 - [ ] CI build clean (`npm run build`)
@@ -18,11 +18,11 @@
 
 | Batch | Scope | Status | Exit Evidence |
 | --- | --- | --- | --- |
-| Batch A – Platform Foundation | Secrets, Complianz/GTM/GA4, consent QA | 🔴 Blocked (waiting on credential handoff) | `backend/.env` + `backend/managed.env` validated via `npm --prefix backend test`; consent banner smoke test recording |
+| Batch A – Platform Foundation | Secrets, Complianz/GTM/GA4, consent QA | 🟡 In Progress (env scaffolding merged; awaiting secret injection) | `backend/.env.sample` & `backend/managed.env.sample`; consent banner controls GTM/GA4 & Facebook Pixel via `ConsentManager.jsx` |
 | Batch B – Experience Integration | RentGuy proxy, Sevensa flow, regression automation | ⏳ Pending (requires Batch A completion) | Cypress/Playwright suites green, availability checker posts through backend, GA4 events logged in DebugView |
 | Batch C – Launch & Monitoring | Performance, monitoring, production deploy | ⏳ Pending | Lighthouse ≥90 report, monitoring dashboards, signed `DEPLOYMENT_SUCCESS.md` |
 
 ## Next Steps
-1. Provision backend and marketing secrets (Batch A) and capture validation artifacts.
-2. Enable frontend/backend integration work once Batch A is complete; keep test coverage growing with each feature (Batch B).
+1. Provision backend and marketing secrets (Batch A) using the new managed env templates and rerun `npm --prefix backend test` for validation evidence.
+2. Extend integration coverage (Batch B) now that `/availability/check` proxies to Sevensa through the backend; capture Cypress scenarios for booking/contact parity.
 3. Prepare launch checklists, monitoring, and deployment dry run scripts ahead of Batch C to shorten the go-live runway.

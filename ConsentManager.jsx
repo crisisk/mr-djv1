@@ -11,8 +11,129 @@ const defaultConsent = {
 const FACEBOOK_PIXEL_SCRIPT_ID = "mr-dj-facebook-pixel-script";
 const FACEBOOK_PIXEL_NOSCRIPT_ID = "mr-dj-facebook-pixel-noscript";
 const MARKETING_CONSENT_EVENT = "mr-dj:marketing-consent-change";
+const GTM_SCRIPT_ID = "mr-dj-gtm-script";
+const GTM_IFRAME_ID = "mr-dj-gtm-noscript";
+const DATA_LAYER_NAME = "dataLayer";
 
 const marketingConsentSubscribers = new Set();
+
+const getMetaContent = (name) => {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const meta = document.querySelector(`meta[name="${name}"]`);
+  if (meta?.content?.trim()) {
+    return meta.content.trim();
+  }
+
+  return null;
+};
+
+const getGtmId = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const fromWindow =
+    window.__MR_DJ_GTM_ID || window.GTM_ID || window.dataLayerGtmId || null;
+
+  if (typeof fromWindow === "string" && fromWindow.trim()) {
+    return fromWindow.trim();
+  }
+
+  const fromMeta = getMetaContent("gtm-container-id");
+  if (fromMeta) {
+    return fromMeta;
+  }
+
+  if (typeof document !== "undefined") {
+    const attribute = document.documentElement?.getAttribute("data-gtm-id");
+    if (attribute?.trim()) {
+      return attribute.trim();
+    }
+  }
+
+  return null;
+};
+
+const ensureDataLayer = () => {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  if (!Array.isArray(window[DATA_LAYER_NAME])) {
+    window[DATA_LAYER_NAME] = [];
+  }
+
+  return window[DATA_LAYER_NAME];
+};
+
+const removeGtmNodes = () => {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const script = document.getElementById(GTM_SCRIPT_ID);
+  if (script?.parentNode) {
+    script.parentNode.removeChild(script);
+  }
+
+  const iframe = document.getElementById(GTM_IFRAME_ID);
+  if (iframe?.parentNode) {
+    iframe.parentNode.removeChild(iframe);
+  }
+};
+
+const injectGtm = () => {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const gtmId = getGtmId();
+  if (!gtmId) {
+    console.warn("GTM container ID is niet geconfigureerd. Sla GTM-injectie over.");
+    return;
+  }
+
+  const dataLayer = ensureDataLayer();
+
+  if (!document.getElementById(GTM_SCRIPT_ID)) {
+    dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+    const script = document.createElement("script");
+    script.id = GTM_SCRIPT_ID;
+    const dataLayerParam = DATA_LAYER_NAME === "dataLayer" ? "" : `&l=${DATA_LAYER_NAME}`;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(gtmId)}${dataLayerParam}`;
+    script.async = true;
+    if (document.head) {
+      document.head.appendChild(script);
+    } else {
+      document.documentElement?.appendChild(script);
+    }
+  }
+
+  if (!document.getElementById(GTM_IFRAME_ID)) {
+    const iframe = document.createElement("noscript");
+    iframe.id = GTM_IFRAME_ID;
+    iframe.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${encodeURIComponent(
+      gtmId,
+    )}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
+    if (document.body) {
+      document.body.appendChild(iframe);
+    } else {
+      document.documentElement?.appendChild(iframe);
+    }
+  }
+};
+
+const updateGtmContainer = (shouldLoad) => {
+  if (shouldLoad) {
+    injectGtm();
+    return;
+  }
+
+  removeGtmNodes();
+};
 
 const getFacebookPixelId = () => {
   if (typeof window === "undefined") {
@@ -242,6 +363,14 @@ export const ConsentManager = ({ children }) => {
 
   useEffect(() => {
     if (typeof window === "undefined") {
+      return;
+    }
+
+    updateGtmContainer(Boolean(consent.statistics || consent.marketing));
+  }, [consent.statistics, consent.marketing]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
       return undefined;
     }
 
@@ -324,15 +453,14 @@ export const ConsentManager = ({ children }) => {
       return;
     }
 
-    if (Array.isArray(window.dataLayer)) {
-      window.dataLayer.push({
-        event: "consent_update",
-        ad_storage: marketing ? "granted" : "denied",
-        analytics_storage: statistics ? "granted" : "denied",
-        ad_user_data: marketing ? "granted" : "denied",
-        ad_personalization: marketing ? "granted" : "denied",
-      });
-    }
+    const dataLayer = ensureDataLayer();
+    dataLayer.push({
+      event: "consent_update",
+      ad_storage: marketing ? "granted" : "denied",
+      analytics_storage: statistics ? "granted" : "denied",
+      ad_user_data: marketing ? "granted" : "denied",
+      ad_personalization: marketing ? "granted" : "denied",
+    });
   }, [consent]);
 
   const closeBanner = () => {
