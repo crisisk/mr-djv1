@@ -100,7 +100,7 @@ Zie de uitgebreide README voor:
 
 ### Sterktes
 - **Backend met duidelijke lagen en herlaadbare configuratie** – `app.js` combineert security-, logging- en rate-limit-middleware terwijl `config.js` runtime waarden valideert en dynamisch kan herladen, waardoor deploys voorspelbaar blijven.
-- **Robuuste integratie-laag** – de RentGuy-service bouwt herbruikbare payload-mappers en queueing met automatische retries zodat bookings, leads en personalisatie-events consistent verwerkt worden.
+- **Robuuste integratie-laag** – de RentGuy-service bouwt herbruikbare payload-mappers en queueing met automatische retries zodat bookings, leads en personalisatie-events consistent verwerkt worden. Gebruik de [RentGuy mock server](docs/RENTGUY-MOCK-SERVER.md) om deze stromen lokaal of in CI te testen zonder afhankelijk te zijn van productie-API's.
 - **Personalisatie-gedreven frontend** – de Dj + Sax landing past hero, CRO-blokken, testimonials en pricing dynamisch aan; dankzij `useKeywordPersonalization` is er een rijk fallback-profiel en event-tracking richting de backend.
 - **SEO-routes & componentbibliotheek** – de component-app ondersteunt lazy loading van sjablonen en dynamische city-pagina’s, waardoor lokale SEO-scope schaalbaar blijft.
 
