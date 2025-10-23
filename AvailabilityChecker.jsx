@@ -128,12 +128,7 @@ const AvailabilityChecker = () => {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState(null); // 'success', 'error', 'loading'
 
-  let consent = null;
-  try {
-    consent = useConsent();
-  } catch (error) {
-    consent = null;
-  }
+  const consent = useConsent();
 
   const marketingAllowed = consent?.isAllowed
     ? Boolean(consent.isAllowed("marketing"))
