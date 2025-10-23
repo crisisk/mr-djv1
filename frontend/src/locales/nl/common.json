@@ -1,11 +1,31 @@
 {
   "app": {
-    "title": "Vite + React",
-    "counterLabel": "teller staat op {{count}}",
-    "editPrompt": "Bewerk <code>src/App.tsx</code> en sla op om HMR te testen",
-    "docsPrompt": "Klik op de Vite- en React-logo's om meer te leren",
-    "viteLogoAlt": "Vite-logo",
-    "reactLogoAlt": "React-logo"
+    "title": "Mr. DJ boekingshub",
+    "subtitle": "Plan je intake, personaliseer je eventtype en volg real-time de voortgang van je aanvraag.",
+    "bookingSectionLabel": "Boekingsflow en status"
+  },
+  "eventTypes": {
+    "title": "Kies je evenementtype",
+    "subtitle": "Personaliseer je aanvraag. We stemmen muziek, opvolging en CRM-workflows af op jouw keuze.",
+    "selectedBadge": "Geselecteerd",
+    "options": {
+      "bruiloft": {
+        "label": "Bruiloft",
+        "description": "Een romantische avond met live sax en naadloze DJ-overgangen."
+      },
+      "bedrijfsfeest": {
+        "label": "Bedrijfsfeest",
+        "description": "Strakke mixen die passen bij productlaunches en team events."
+      },
+      "verjaardag": {
+        "label": "Verjaardag",
+        "description": "Feel-good classics en verrassende mash-ups voor elke leeftijd."
+      },
+      "festival": {
+        "label": "Festival",
+        "description": "Energieke sets met MC en lichtshow voor grote podia."
+      }
+    }
   },
   "hero": {
     "badge": "✨ 4.9/5 op 180+ reviews",

@@ -1,11 +1,31 @@
 {
   "app": {
-    "title": "Vite + React",
-    "counterLabel": "count is {{count}}",
-    "editPrompt": "Edit <code>src/App.tsx</code> and save to test HMR",
-    "docsPrompt": "Click on the Vite and React logos to learn more",
-    "viteLogoAlt": "Vite logo",
-    "reactLogoAlt": "React logo"
+    "title": "Mr. DJ booking hub",
+    "subtitle": "Schedule your intake, personalise the experience, and monitor your request in real time.",
+    "bookingSectionLabel": "Booking flow and status"
+  },
+  "eventTypes": {
+    "title": "Choose your event type",
+    "subtitle": "Personalise your quote. We tune the music, follow-up, and CRM workflows to match your event.",
+    "selectedBadge": "Selected",
+    "options": {
+      "bruiloft": {
+        "label": "Wedding",
+        "description": "A romantic evening with live sax and seamless DJ transitions."
+      },
+      "bedrijfsfeest": {
+        "label": "Corporate event",
+        "description": "Polished sets tailored to product launches and team celebrations."
+      },
+      "verjaardag": {
+        "label": "Birthday",
+        "description": "Feel-good classics and surprising mash-ups for every age."
+      },
+      "festival": {
+        "label": "Festival",
+        "description": "High-energy sets with MC and light show for big stages."
+      }
+    }
   },
   "hero": {
     "badge": "✨ 4.9/5 from 180+ reviews",

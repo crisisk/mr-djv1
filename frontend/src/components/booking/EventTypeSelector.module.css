@@ -1,0 +1,108 @@
+.container {
+  margin: 3rem auto;
+  padding: 0 1rem;
+  max-width: 72rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  color: #0b0d17;
+}
+
+.subtitle {
+  color: #4b5563;
+  font-size: 1rem;
+  margin: 0 auto;
+  max-width: 32rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card[data-selected="true"] {
+  border-color: #0b0d17;
+  box-shadow: 0 15px 35px rgba(17, 24, 39, 0.12);
+}
+
+.card:focus-visible {
+  outline: 3px solid #6366f1;
+  outline-offset: 3px;
+}
+
+.card:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(17, 24, 39, 0.1);
+}
+
+.card:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.emoji {
+  font-size: 2rem;
+}
+
+.cardLabel {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0b0d17;
+}
+
+.cardDescription {
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.selectedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background: #0b0d17;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .container {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
