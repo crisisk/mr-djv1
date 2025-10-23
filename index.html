@@ -167,28 +167,53 @@
     <script>
       (function () {
         var gtmId = "%VITE_GTM_ID%";
-        if (gtmId && gtmId !== "undefined" && gtmId !== "null") {
+        if (
+          gtmId &&
+          gtmId !== "undefined" &&
+          gtmId !== "null" &&
+          gtmId !== "%VITE_GTM_ID%"
+        ) {
           window.__MR_DJ_GTM_ID = gtmId;
           document.documentElement.setAttribute("data-gtm-id", gtmId);
         }
 
         var ga4Id = "%VITE_GA4_MEASUREMENT_ID%";
-        if (ga4Id && ga4Id !== "undefined" && ga4Id !== "null") {
+        if (
+          ga4Id &&
+          ga4Id !== "undefined" &&
+          ga4Id !== "null" &&
+          ga4Id !== "%VITE_GA4_MEASUREMENT_ID%"
+        ) {
           window.__MR_DJ_GA4_MEASUREMENT_ID = ga4Id;
         }
 
         var apiBaseUrl = "%VITE_API_BASE_URL%";
-        if (apiBaseUrl && apiBaseUrl !== "undefined" && apiBaseUrl !== "null") {
+        if (
+          apiBaseUrl &&
+          apiBaseUrl !== "undefined" &&
+          apiBaseUrl !== "null" &&
+          apiBaseUrl !== "%VITE_API_BASE_URL%"
+        ) {
           window.__MR_DJ_API_BASE_URL = apiBaseUrl;
         }
 
         var complianzSiteId = "%VITE_COMPLIANZ_SITE_ID%";
-        if (complianzSiteId && complianzSiteId !== "undefined" && complianzSiteId !== "null") {
+        if (
+          complianzSiteId &&
+          complianzSiteId !== "undefined" &&
+          complianzSiteId !== "null" &&
+          complianzSiteId !== "%VITE_COMPLIANZ_SITE_ID%"
+        ) {
           window.__MR_DJ_COMPLIANZ_SITE_ID = complianzSiteId;
         }
 
         var pixelId = "%VITE_FACEBOOK_PIXEL_ID%";
-        if (pixelId && pixelId !== "undefined" && pixelId !== "null") {
+        if (
+          pixelId &&
+          pixelId !== "undefined" &&
+          pixelId !== "null" &&
+          pixelId !== "%VITE_FACEBOOK_PIXEL_ID%"
+        ) {
           window.__MR_DJ_FACEBOOK_PIXEL_ID = pixelId;
         }
       })();
