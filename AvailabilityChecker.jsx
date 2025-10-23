@@ -9,7 +9,7 @@ const isBrowser = typeof window !== "undefined" && typeof document !== "undefine
 const STORAGE_KEY = "availabilityCheckerForm";
 
 const DEFAULT_API_PATH = "/availability/check";
-const RELATIVE_FALLBACK_PATH = DEFAULT_API_PATH;
+const RELATIVE_FALLBACK_PATH = `/api${DEFAULT_API_PATH}`;
 
 function resolveApiBaseUrl() {
   if (typeof window !== "undefined") {
