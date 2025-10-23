@@ -10,6 +10,11 @@ const STORAGE_KEY = "consent:analytics";
 const CONSENT_EVENT = "mr-dj:marketing-consent-change";
 const SCRIPT_ID = "mr-dj-gtm-loader";
 
+type WindowWithGtm = Window & {
+  dataLayer?: unknown[];
+  google_tag_manager?: unknown;
+};
+
 function readStoredConsent() {
   if (typeof window === "undefined") return false;
 
@@ -31,17 +36,40 @@ function writeStoredConsent(value: boolean) {
   }
 }
 
-function removeGtmArtifacts() {
+function removeGtmArtifacts(gtmId?: string) {
   if (typeof document === "undefined") return;
 
-  const script = document.getElementById(SCRIPT_ID);
-  if (script?.parentNode) {
-    script.parentNode.removeChild(script);
+  const loaderScript = document.getElementById(SCRIPT_ID);
+  if (loaderScript?.parentNode) {
+    loaderScript.parentNode.removeChild(loaderScript);
   }
 
   const iframe = document.getElementById("mr-dj-gtm-noscript");
   if (iframe?.parentNode) {
     iframe.parentNode.removeChild(iframe);
+  }
+
+  const externalScripts = document.querySelectorAll<HTMLScriptElement>(
+    'script[src^="https://www.googletagmanager.com/gtm.js"]',
+  );
+
+  externalScripts.forEach((script) => {
+    const src = script.getAttribute("src") ?? "";
+    if (!gtmId || src.includes(gtmId)) {
+      script.parentNode?.removeChild(script);
+    }
+  });
+
+  if (typeof window !== "undefined") {
+    const windowWithGtm = window as WindowWithGtm;
+
+    if (Array.isArray(windowWithGtm.dataLayer)) {
+      windowWithGtm.dataLayer = [];
+    }
+
+    if ("google_tag_manager" in windowWithGtm) {
+      windowWithGtm.google_tag_manager = undefined;
+    }
   }
 }
 
@@ -52,7 +80,7 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
   useEffect(() => {
     if (!gtmId) {
       hasBooted.current = false;
-      removeGtmArtifacts();
+      removeGtmArtifacts(gtmId);
       return;
     }
 
@@ -71,7 +99,7 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
 
       if (!granted) {
         hasBooted.current = false;
-        removeGtmArtifacts();
+        removeGtmArtifacts(gtmId);
       }
     };
 
@@ -89,7 +117,7 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
     }
 
     if (!consented) {
-      removeGtmArtifacts();
+      removeGtmArtifacts(gtmId);
       return;
     }
 
