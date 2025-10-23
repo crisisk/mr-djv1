@@ -9,7 +9,8 @@
     "test": "jest",
     "migrate": "node -e \"require('./src/lib/migrations').migrateToLatest()\"",
     "moderate:surveys": "node ../scripts/automation/moderate-survey-feedback.js",
-    "lint": "eslint src/server.js src/app.js"
+    "lint": "eslint src/server.js src/app.js",
+    "rentguy:mock": "node scripts/rentguy-mock-server.js"
   },
   "keywords": [
     "dj",

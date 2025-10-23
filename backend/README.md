@@ -1,10 +1,13 @@
-# Backend Overview
+# Mister DJ Backend API
 
-## CBAM Classifier Endpoint
+This service exposes the API and partner integrations that power the Mr. DJ marketing site. It is a Node.js/Express application with background queues for RentGuy and Sevensa automations.
 
-The FastAPI application exposes a private endpoint at `POST /internal/classify` which triggers shipment classification and links emission defaults. The handler pulls the shipment from Postgres, calls `packages.emissions_linker.classify_and_link`, and returns the resulting metadata.
+## Prerequisites
 
-The classifier relies on database views and tables defined in `ops/migrations/`.
+- Node.js 18+
+- npm 10+
+- Access to Postgres and Redis instances
+- Production secrets stored in the central secret manager (mirrored to `managed.env` during deployment)
 
 ## Environment configuration
 

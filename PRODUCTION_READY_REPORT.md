@@ -33,6 +33,6 @@
   - No new work this iteration. Pending once Batch A/B deliverables are signed off.
 
 ## Next Steps
-1. Provision backend and marketing secrets (Batch A) and capture validation artifacts.
-2. Enable frontend/backend integration work once Batch A is complete; keep test coverage growing with each feature (Batch B).
+1. Provision backend and marketing secrets (Batch A) using the new managed env templates and rerun `npm --prefix backend test` for validation evidence.
+2. Extend integration coverage (Batch B) now that `/availability/check` proxies to Sevensa through the backend; capture Cypress scenarios for booking/contact parity.
 3. Prepare launch checklists, monitoring, and deployment dry run scripts ahead of Batch C to shorten the go-live runway.

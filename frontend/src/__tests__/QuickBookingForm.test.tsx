@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import QuickBookingForm from "../components/booking/QuickBookingForm";
 
-const setEventTypeMock = vi.fn();
+const setEventTypeMock = vi.hoisted(() => vi.fn());
+const useOptionalEventTypeMock = vi.hoisted(() => vi.fn());
 
 const submitMock = vi.fn();
 const resetMock = vi.fn();
@@ -21,10 +22,7 @@ vi.mock("../hooks/useBooking", () => ({
 
 vi.mock("../context/EventTypeContext", () => ({
   __esModule: true,
-  useEventType: () => ({
-    eventType: "",
-    setEventType: setEventTypeMock,
-  }),
+  useOptionalEventType: (...args: unknown[]) => useOptionalEventTypeMock(...args),
 }));
 
 describe("QuickBookingForm", () => {
@@ -32,6 +30,11 @@ describe("QuickBookingForm", () => {
     submitMock.mockReset();
     resetMock.mockReset();
     setEventTypeMock.mockReset();
+    useOptionalEventTypeMock.mockReset();
+    useOptionalEventTypeMock.mockImplementation(() => ({
+      eventType: "",
+      setEventType: setEventTypeMock,
+    }));
   });
 
   it("submits booking data and calls onSuccess callback", async () => {
@@ -87,6 +90,24 @@ describe("QuickBookingForm", () => {
 
     await waitFor(() => {
       expect(setEventTypeMock).toHaveBeenCalledWith("bedrijfsfeest");
+    });
+  });
+
+  it("falls back to local state when the personalization context is unavailable", async () => {
+    useOptionalEventTypeMock.mockImplementation(() => undefined);
+
+    render(<QuickBookingForm origin="test" />);
+
+    expect(useOptionalEventTypeMock).toHaveBeenCalled();
+    expect(useOptionalEventTypeMock.mock.results.every((result) => result.value === undefined)).toBe(
+      true,
+    );
+
+    const selects = screen.getAllByLabelText(/type evenement/i);
+    const eventTypeSelect = selects.at(-1)!;
+    await userEvent.selectOptions(eventTypeSelect, "anders");
+    await waitFor(() => {
+      expect(eventTypeSelect).toHaveValue("anders");
     });
   });
 });

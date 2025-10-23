@@ -55,3 +55,7 @@ export function useEventType() {
 
   return context;
 }
+
+export function useOptionalEventType() {
+  return useContext(EventTypeContext);
+}
