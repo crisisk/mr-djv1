@@ -9,7 +9,7 @@
 - [x] Dynamic content variants rendering correctly
 - [x] A/B testing engine active with analytics capture
 - [x] CTA interactions and lead capture validated
-- [x] Wedding & Corporate demo flows pass zonder fouten
+- [x] Wedding & Corporate demo flows pass without error
 - [x] SEO metadata & OG tags bevestigd
 
 ## Next Steps
