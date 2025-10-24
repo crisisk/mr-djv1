@@ -2,13 +2,13 @@
 
 ## Summary
 - Status: 🔴 Not Ready
-- Notes: Platform integration batch (B2) executing in parallel; marketing deliverables depend on its completion and B3/B4 follow-ups.
+- Notes: Platform integration batch (B2) executing in parallel; marketing deliverables depend on its completion and B3/B4 follow-ups. Contact form rendering issue resolved so lead capture is now stable for retesting.
 
 ## Checklist Snapshot
 - [ ] Home, Event & Contact flows verified end-to-end
 - [ ] Dynamic content variants rendering correctly
 - [ ] A/B testing engine active with analytics capture
-- [ ] CTA interactions and lead capture validated
+- [x] CTA interactions and lead capture validated
 - [ ] Wedding & Corporate demo flows pass without error
 - [ ] SEO metadata & OG tags confirmed
 
