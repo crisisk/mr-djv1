@@ -3,15 +3,7 @@ import Button from '../Atoms/Buttons.jsx';
 import { BILLING_MODES, pricingPackages } from '../../data/pricingPackages.js';
 import { trackPricingCTA, getUserVariant } from '../../utils/trackConversion';
 import { colors, spacing, typography } from '../../theme/tokens.js';
-
-const withAlpha = (hex, alpha) => {
-  const normalized = hex.replace('#', '');
-  const bigint = parseInt(normalized, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
+import { withAlpha } from '../../utils/color.js';
 
 const PricingCard = ({ pkg, billingMode, isHighlighted }) => {
   const { name, subtitle, features, buttonText } = pkg;
