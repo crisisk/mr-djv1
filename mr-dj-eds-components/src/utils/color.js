@@ -25,6 +25,14 @@ export function withAlpha(hex, alpha) {
     throw new Error(`Invalid hex color provided: ${hex}`);
   }
 
+  if (typeof alpha !== 'number' || Number.isNaN(alpha)) {
+    throw new TypeError('Alpha channel must be a valid number');
+  }
+
+  if (alpha < 0 || alpha > 1) {
+    throw new RangeError('Alpha channel must be between 0 and 1');
+  }
+
   const bigint = parseInt(normalized, 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
