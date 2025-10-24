@@ -10,7 +10,7 @@
 - [x] A/B testing engine active with analytics capture
 - [x] CTA interactions and lead capture validated
 - [x] Wedding & Corporate demo flows pass without error
-- [x] SEO metadata & OG tags bevestigd
+- [x] SEO metadata & OG tags confirmed
 
 ## Next Steps
 1. Monitor verkoopgesprekken met dashboards voor GA4 & CRM hand-offs en log afwijkingen in `TEST-RESULTS.md`.
