@@ -2,7 +2,7 @@
 
 ## Summary
 - Status: 🟢 Ready
-- Notes: Frontend, backend en marketing flows zijn end-to-end getest. Lead capture, analytics en demo journeys zijn klaar voor sales enablement en documentatie is gedeeld met het commerciële team.
+- Notes: Frontend, backend and marketing flows have been tested end-to-end. Lead capture, analytics and demo journeys are ready for sales enablement, and documentation has been shared with the commercial team.
 
 ## Checklist Snapshot
 - [x] Home, Event & Contact flows verified end-to-end
