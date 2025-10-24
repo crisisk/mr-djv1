@@ -13,6 +13,6 @@
 - [x] SEO metadata & OG tags confirmed
 
 ## Next Steps
-1. Monitor verkoopgesprekken met dashboards voor GA4 & CRM hand-offs en log afwijkingen in `TEST-RESULTS.md`.
-2. Plan maandelijkse review van marketing assets zodat content varianten actueel blijven.
-3. Houd de integratie documentatie synchroon met toekomstige productupdates en release notes.
+1. Monitor sales conversations using dashboards for GA4 & CRM hand-offs, and log any discrepancies in `TEST-RESULTS.md`.
+2. Schedule monthly reviews of marketing assets to ensure content variants remain up to date.
+3. Keep integration documentation synchronized with future product updates and release notes.
