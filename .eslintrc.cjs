@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  ignorePatterns: ['frontend/src/components/Generated/**'],
   env: {
     browser: true,
     es2021: true,
@@ -64,15 +65,30 @@ module.exports = {
       extends: ['plugin:@typescript-eslint/recommended'],
     },
     {
+      files: ['**/*.js', '**/*.cjs'],
+      rules: {
+        '@typescript-eslint/no-require-imports': 'off',
+        '@typescript-eslint/no-var-requires': 'off',
+      },
+    },
+    {
       files: ['*.cjs'],
       parserOptions: {
         sourceType: 'script',
       },
     },
     {
-      files: ['**/tests/**/*.{js,jsx,ts,tsx}'],
+      files: [
+        '**/__tests__/**/*.{js,jsx,ts,tsx}',
+        '**/*.{spec,test}.{js,jsx,ts,tsx}',
+      ],
       env: {
         jest: true,
+        node: true,
+      },
+      rules: {
+        '@typescript-eslint/no-require-imports': 'off',
+        '@typescript-eslint/no-var-requires': 'off',
       },
     },
   ],

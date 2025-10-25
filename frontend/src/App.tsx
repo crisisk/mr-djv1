@@ -7,8 +7,8 @@ import QuickBookingForm from "./components/booking/QuickBookingForm";
 import EventTypeSelector from "./components/booking/EventTypeSelector";
 import { EventTypeProvider } from "./context/EventTypeContext";
 import UserBehaviorTracker from "./components/analytics/UserBehaviorTracker";
-import HeroSection from "../../HeroSection.jsx";
-import Testimonials from "../../Testimonials.jsx";
+import HeroSection from "./components/HeroSection";
+import Testimonials from "./components/Testimonials";
 
 type HeroContent = {
   title: string;
