@@ -101,6 +101,7 @@ describe('dashboard management route validations', () => {
     jest.doMock('../lib/featureFlags', () => ({
       refreshIfNeeded: jest.fn().mockResolvedValue(),
       getAll: jest.fn().mockResolvedValue({}),
+      isEnabled: jest.fn().mockReturnValue(true),
       guard: () => (_req, _res, next) => next()
     }));
 

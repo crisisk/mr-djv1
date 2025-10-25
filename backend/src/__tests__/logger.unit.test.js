@@ -29,7 +29,7 @@ describe('logger factory', () => {
       transports: {
         Console: consoleMock
       }
-    }), { virtual: true });
+    }));
 
     jest.doMock('../config', () => ({
       env: 'production',

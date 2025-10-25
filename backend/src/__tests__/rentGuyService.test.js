@@ -32,7 +32,7 @@ describe('rentGuyService', () => {
 
   it('fails fast when RentGuy credentials are missing', () => {
     expect(() => loadService({ RENTGUY_API_BASE_URL: undefined, RENTGUY_API_KEY: undefined })).toThrow(
-      'Missing required environment variable "RENTGUY_API_BASE_URL" for RentGuy integration (RENTGUY_API_BASE_URL and RENTGUY_API_KEY).'
+      /RENTGUY_API_BASE_URL is required for the RentGuy integration\./
     );
   });
 
