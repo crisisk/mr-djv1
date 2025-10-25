@@ -1,6 +1,7 @@
 const http = require('http');
+const { buildRequiredEnv } = require('../testUtils/env');
 
-const REQUIRED_ENV = {
+const REQUIRED_ENV = buildRequiredEnv({
   RENTGUY_API_BASE_URL: 'https://example.com/rentguy',
   RENTGUY_API_KEY: 'test-rentguy-key',
   SEVENSA_SUBMIT_URL: 'https://example.com/sevensa',
@@ -11,7 +12,7 @@ const REQUIRED_ENV = {
   CITY_AUTOMATION_LLM_PROVIDER: 'openai',
   CITY_AUTOMATION_LLM_MODEL: 'gpt-4',
   CITY_AUTOMATION_LLM_API_KEY: 'test-llm-key'
-};
+});
 
 for (const [key, value] of Object.entries(REQUIRED_ENV)) {
   if (!process.env[key]) {

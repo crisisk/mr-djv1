@@ -11,57 +11,61 @@ function createAuthHeader(username, password) {
   return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
 }
 
-describe('configuration dashboard', () => {
-  let server;
-  let baseUrl;
-  let tempDir;
-  let storePath;
-  let authHeader;
-  let rentGuyService;
-  let sevensaService;
-  let observabilityService;
-  let personalizationService;
+function writeManagedValues(filePath, values) {
+  const entries = Object.entries(values)
+    .filter(([key, value]) => value !== undefined && value !== null)
+    .map(([key, value]) => `${key}=${value}`);
 
-  beforeEach(async () => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
-    storePath = path.join(tempDir, 'managed.env');
-    process.env = {
-      ...BASE_ENV,
-      CONFIG_DASHBOARD_ENABLED: 'true',
-      CONFIG_DASHBOARD_USER: 'admin',
-      CONFIG_DASHBOARD_PASS: 'secret',
-      CONFIG_DASHBOARD_ALLOWED_IPS: '',
-      CONFIG_DASHBOARD_KEYS: 'PORT,DATABASE_URL',
-      CONFIG_DASHBOARD_STORE_PATH: storePath
-    };
+  if (!entries.length) {
+    fs.writeFileSync(filePath, '');
+    return;
+  }
 
-    jest.resetModules();
-    const app = require('../app');
-    server = http.createServer(app);
-    rentGuyService = require('../services/rentGuyService');
-    rentGuyService.reset();
-    sevensaService = require('../services/sevensaService');
-    sevensaService.reset();
-    observabilityService = require('../services/observabilityService');
-    observabilityService.reset();
-    personalizationService = require('../services/personalizationService');
-    personalizationService.resetLogs();
-    await personalizationService.resetCache();
+  fs.writeFileSync(filePath, `${entries.join('\n')}\n`);
+}
 
-    await new Promise((resolve) => {
-      server.listen(0, '127.0.0.1', resolve);
-    });
+async function setupDashboardTest({ env = {}, managedValues = {} } = {}) {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashboard-test-'));
+  const storePath = path.join(tempDir, 'managed.env');
+  const baseEnv = { ...BASE_ENV, ...env };
 
-    const address = server.address();
-    baseUrl = `http://127.0.0.1:${address.port}`;
-    authHeader = createAuthHeader('admin', 'secret');
+  process.env = {
+    ...baseEnv,
+    CONFIG_DASHBOARD_ENABLED: baseEnv.CONFIG_DASHBOARD_ENABLED ?? 'true',
+    CONFIG_DASHBOARD_USER: baseEnv.CONFIG_DASHBOARD_USER ?? 'admin',
+    CONFIG_DASHBOARD_PASS: baseEnv.CONFIG_DASHBOARD_PASS ?? 'secret',
+    CONFIG_DASHBOARD_ALLOWED_IPS: baseEnv.CONFIG_DASHBOARD_ALLOWED_IPS ?? '',
+    CONFIG_DASHBOARD_KEYS: baseEnv.CONFIG_DASHBOARD_KEYS ?? 'PORT,DATABASE_URL',
+    CONFIG_DASHBOARD_STORE_PATH: storePath
+  };
+
+  writeManagedValues(storePath, managedValues);
+
+  jest.resetModules();
+
+  const app = require('../app');
+  const server = http.createServer(app);
+
+  const rentGuyService = require('../services/rentGuyService');
+  rentGuyService.reset?.();
+  const sevensaService = require('../services/sevensaService');
+  sevensaService.reset?.();
+  const observabilityService = require('../services/observabilityService');
+  observabilityService.reset?.();
+  const personalizationService = require('../services/personalizationService');
+  personalizationService.resetLogs?.();
+  await personalizationService.resetCache?.();
+
+  await new Promise((resolve) => {
+    server.listen(0, '127.0.0.1', resolve);
   });
 
   const address = server.address();
   const baseUrl = `http://127.0.0.1:${address.port}`;
+
   const credentials = {
-    username: baseEnv.CONFIG_DASHBOARD_USER ?? managedValues.CONFIG_DASHBOARD_USER ?? null,
-    password: baseEnv.CONFIG_DASHBOARD_PASS ?? managedValues.CONFIG_DASHBOARD_PASS ?? null
+    username: process.env.CONFIG_DASHBOARD_USER ?? null,
+    password: process.env.CONFIG_DASHBOARD_PASS ?? null
   };
 
   const context = {

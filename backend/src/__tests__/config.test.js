@@ -85,7 +85,7 @@ describe('config', () => {
           retryDelayMs: 15000,
           maxAttempts: 5,
           circuitBreaker: { failureThreshold: 3, cooldownMs: 120000 }
-        }),
+        },
         hcaptcha: {
           enabled: false,
           siteKey: null,
