@@ -132,6 +132,7 @@ const BookingSummary = () => {
   const showLoadingMessage = status === "loading";
   const showOptimisticMessage = optimistic && status !== "loading";
   const showErrorMessage = status === "error" && Boolean(error);
+  const isRetryDisabled = status === "loading";
 
   const summaryItems = [
     { label: "Datum", value: formattedDate ?? FALLBACK_TEXT.date },
@@ -161,7 +162,7 @@ const BookingSummary = () => {
       {showErrorMessage && (
         <div className="booking-summary__alert" role="alert">
           <p>We konden je keuzes niet opslaan. {error}</p>
-          <button type="button" onClick={handleRetry} disabled={status === "loading"}>
+          <button type="button" onClick={handleRetry} disabled={isRetryDisabled}>
             Probeer opnieuw
           </button>
         </div>
