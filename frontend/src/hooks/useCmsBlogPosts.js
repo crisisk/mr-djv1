@@ -335,14 +335,20 @@ export const useCmsBlogPosts = ({
 
   useEffect(() => {
     if (!enabled) {
-      setIsLoading(false);
-      setError(null);
-      return undefined;
+      const resetHandle = setTimeout(() => {
+        setIsLoading(false);
+        setError(null);
+      }, 0);
+      return () => {
+        clearTimeout(resetHandle);
+      };
     }
 
     const controller = new AbortController();
-    setIsLoading(true);
-    setError(null);
+    const startHandle = setTimeout(() => {
+      setIsLoading(true);
+      setError(null);
+    }, 0);
 
     fetchPosts(page, controller.signal)
       .then(({ posts: newPosts, pagination: newPagination }) => {
@@ -362,13 +368,21 @@ export const useCmsBlogPosts = ({
       });
 
     return () => {
+      clearTimeout(startHandle);
       controller.abort();
     };
   }, [enabled, fetchPosts, page, refreshIndex]);
 
   useEffect(() => {
-    if (!enabled) return;
-    setPage(initialPage);
+    if (!enabled) {
+      return undefined;
+    }
+    const syncHandle = setTimeout(() => {
+      setPage(initialPage);
+    }, 0);
+    return () => {
+      clearTimeout(syncHandle);
+    };
   }, [enabled, initialPage]);
 
   const goToPage = useCallback((nextPage) => {

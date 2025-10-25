@@ -51,7 +51,7 @@ function App() {
           <EventTypeSelector />
 
           <section className="booking-grid" aria-label={t("app.bookingSectionLabel") ?? "Boekingsflow"}>
-            <QuickBookingForm origin="landing-page" autoFocus />
+            <QuickBookingForm origin="landing-page" />
             <BookingSummary />
           </section>
 

@@ -84,7 +84,9 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
       return;
     }
 
-    setConsented(readStoredConsent());
+    const initialSync = setTimeout(() => {
+      setConsented(readStoredConsent());
+    }, 0);
 
     if (typeof window === "undefined") return;
 
@@ -106,6 +108,7 @@ export default function ConsentGTM({ gtmId }: ConsentGTMProps) {
     window.addEventListener(CONSENT_EVENT, handler as EventListener);
 
     return () => {
+      clearTimeout(initialSync);
       window.removeEventListener(CONSENT_EVENT, handler as EventListener);
     };
   }, [gtmId]);

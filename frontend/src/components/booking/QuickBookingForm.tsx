@@ -174,10 +174,18 @@ const QuickBookingForm = ({
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (status === "success") {
-      reset();
-      setShowValidationError(false);
+    if (status !== "success") {
+      return undefined;
     }
+
+    reset();
+    const clearHandle = setTimeout(() => {
+      setShowValidationError(false);
+    }, 0);
+
+    return () => {
+      clearTimeout(clearHandle);
+    };
   }, [reset, status]);
 
   useEffect(() => {
@@ -187,17 +195,23 @@ const QuickBookingForm = ({
   }, [autoFocus]);
 
   useEffect(() => {
-    setFormState((previous) => {
-      const nextEventType = selectedEventType ?? "";
-      if (previous.eventType === nextEventType) {
-        return previous;
-      }
+    const syncHandle = setTimeout(() => {
+      setFormState((previous) => {
+        const nextEventType = selectedEventType ?? "";
+        if (previous.eventType === nextEventType) {
+          return previous;
+        }
 
-      return {
-        ...previous,
-        eventType: nextEventType,
-      };
-    });
+        return {
+          ...previous,
+          eventType: nextEventType,
+        };
+      });
+    }, 0);
+
+    return () => {
+      clearTimeout(syncHandle);
+    };
   }, [selectedEventType]);
 
   const isSubmitting = status === "loading";

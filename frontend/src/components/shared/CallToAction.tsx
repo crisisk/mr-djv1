@@ -81,6 +81,7 @@ const isAnchorConfig = (config: CTAButtonProps): config is CTAButtonAsAnchor => 
 const renderCTAButton = (config: CTAButtonProps, key?: string) => {
   if (isAnchorConfig(config)) {
     const { as: _as, label, variant, className, ...anchorProps } = config;
+    void _as;
     const variantClass = buttonVariantClasses[resolveVariant(variant)];
     return (
       <a key={key} className={classNames(styles.button, variantClass, className)} {...anchorProps}>
@@ -90,6 +91,7 @@ const renderCTAButton = (config: CTAButtonProps, key?: string) => {
   }
 
   const { as: _as, label, variant, className, type = "button", ...buttonProps } = config;
+  void _as;
   const variantClass = buttonVariantClasses[resolveVariant(variant)];
   return (
     <button

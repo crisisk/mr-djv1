@@ -6,3 +6,5 @@ public
 docs
 packages
 **/*.html
+frontend/src/components/Generated
+frontend/src/components/Generated/**
