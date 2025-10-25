@@ -20,7 +20,7 @@ function formatDate(value: string | null): string | null {
 
   try {
     return DATE_FORMATTER ? DATE_FORMATTER.format(parsed) : parsed.toISOString().split("T")[0];
-  } catch (_error) {
+  } catch {
     return parsed.toISOString().split("T")[0];
   }
 }
@@ -34,7 +34,7 @@ function formatCurrencyValue(amount: number, currency?: string | null): string {
       style: "currency",
       currency: resolvedCurrency,
     }).format(amount);
-  } catch (_error) {
+  } catch {
     return `${amount.toFixed(2)} ${resolvedCurrency}`.trim();
   }
 }

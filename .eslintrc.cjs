@@ -5,6 +5,13 @@ module.exports = {
     es2021: true,
     node: true,
   },
+  ignorePatterns: [
+    'frontend/src/components/Generated/**/*',
+    'backend/**/*',
+    'scripts/**/*',
+    'tests/**/*',
+    'mr-dj-eds-components/**/*',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -18,8 +25,11 @@ module.exports = {
       version: 'detect',
     },
     'import/resolver': {
-      typescript: {},
+      typescript: {
+        project: ['./frontend/tsconfig.json'],
+      },
     },
+    'import/core-modules': ['virtual:pwa-register', 'structured-data-testing-tool'],
   },
   plugins: [
     'react',
@@ -27,6 +37,7 @@ module.exports = {
     'jsx-a11y',
     'import',
     '@typescript-eslint',
+    'react-refresh',
   ],
   extends: [
     'eslint:recommended',
@@ -41,6 +52,11 @@ module.exports = {
   rules: {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
+    'import/default': 'off',
+    'import/no-named-as-default': 'off',
+    'import/no-named-as-default-member': 'off',
+    'import/namespace': 'off',
+    'react-refresh/only-export-components': 'off',
     'import/order': [
       'warn',
       {
