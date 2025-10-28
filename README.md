@@ -45,6 +45,7 @@ chmod +x deploy.sh
   - Tab **Applicatie instellingen**: core API, database en rate-limit configuratie
   - Tab **E-mailintegratie**: vul provider (`MAIL_PROVIDER`), API key (`MAIL_API_KEY`), afzender (`MAIL_FROM_ADDRESS` / `MAIL_REPLY_TO`) en template ID's (`MAIL_TEMPLATES_CONTACT`, `MAIL_TEMPLATES_BOOKING`) in voor volledige mailfunctionaliteit
   - Tab **RentGuy integratie**: vul `RENTGUY_API_BASE_URL`, `RENTGUY_API_KEY`, optioneel `RENTGUY_WORKSPACE_ID` en een custom timeout (`RENTGUY_TIMEOUT_MS`) om leads/boekingen realtime te synchroniseren. Gebruik de geïntegreerde statuskaart om de queue in te zien en via **Queue flushen** vastgelopen syncs opnieuw te proberen.
+  - Raadpleeg de [RentGuy Integration Runbook](docs/rentguy-integration-runbook.md) voor een end-to-end checklist met configuratie-, test- en rollout-instructies.
   - Volg de [go-live checklist](docs/go-live-checklist.md) voor een stap-voor-stap instructie
 
 ## 🤖 Auto-content generatie (city workflow)
