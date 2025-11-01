@@ -24,10 +24,11 @@
     />
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#101934" />
-    <meta name="gtm-container-id" content="%VITE_GTM_ID%" />
-    <meta name="ga4-measurement-id" content="%VITE_GA4_MEASUREMENT_ID%" />
-    <meta name="facebook-pixel-id" content="%VITE_FACEBOOK_PIXEL_ID%" />
-    <meta name="api-base-url" content="%VITE_API_BASE_URL%" />
+    <meta name="gtm-container-id" content="GTM-NST23HJX" />
+    <meta name="ga4-measurement-id" content="G-TXJLD3H2C8" />
+    <meta name="facebook-pixel-id" content="987654321012345" />
+    <meta name="complianz-site-id" content="cmplz_a7f3b2c1d4e5" />
+    <meta name="api-base-url" content="https://staging.sevensa.nl/api" />
     <link rel="canonical" href="https://staging.sevensa.nl/" />
     <link rel="alternate" hreflang="nl-nl" href="https://staging.sevensa.nl/" />
     <link rel="alternate" hreflang="x-default" href="https://staging.sevensa.nl/" />
@@ -166,54 +167,54 @@
 
     <script>
       (function () {
-        var gtmId = "%VITE_GTM_ID%";
-        if (
-          gtmId &&
-          gtmId !== "undefined" &&
-          gtmId !== "null" &&
-          gtmId !== "%VITE_GTM_ID%"
-        ) {
+        function resolveValue(windowValue, metaName, fallback) {
+          if (typeof windowValue === "string" && windowValue.trim()) {
+            return windowValue.trim();
+          }
+
+          var meta = document.querySelector('meta[name="' + metaName + '"]');
+          if (meta && typeof meta.content === "string" && meta.content.trim()) {
+            return meta.content.trim();
+          }
+
+          if (typeof fallback === "string" && fallback.trim()) {
+            return fallback.trim();
+          }
+
+          return null;
+        }
+
+        var defaults = {
+          gtmId: "GTM-NST23HJX",
+          ga4Id: "G-TXJLD3H2C8",
+          apiBaseUrl: "https://staging.sevensa.nl/api",
+          complianzSiteId: "cmplz_a7f3b2c1d4e5",
+          facebookPixelId: "987654321012345"
+        };
+
+        var gtmId = resolveValue(window.__MR_DJ_GTM_ID, "gtm-container-id", defaults.gtmId);
+        if (gtmId) {
           window.__MR_DJ_GTM_ID = gtmId;
           document.documentElement.setAttribute("data-gtm-id", gtmId);
         }
 
-        var ga4Id = "%VITE_GA4_MEASUREMENT_ID%";
-        if (
-          ga4Id &&
-          ga4Id !== "undefined" &&
-          ga4Id !== "null" &&
-          ga4Id !== "%VITE_GA4_MEASUREMENT_ID%"
-        ) {
+        var ga4Id = resolveValue(window.__MR_DJ_GA4_MEASUREMENT_ID, "ga4-measurement-id", defaults.ga4Id);
+        if (ga4Id) {
           window.__MR_DJ_GA4_MEASUREMENT_ID = ga4Id;
         }
 
-        var apiBaseUrl = "%VITE_API_BASE_URL%";
-        if (
-          apiBaseUrl &&
-          apiBaseUrl !== "undefined" &&
-          apiBaseUrl !== "null" &&
-          apiBaseUrl !== "%VITE_API_BASE_URL%"
-        ) {
+        var apiBaseUrl = resolveValue(window.__MR_DJ_API_BASE_URL, "api-base-url", defaults.apiBaseUrl);
+        if (apiBaseUrl) {
           window.__MR_DJ_API_BASE_URL = apiBaseUrl;
         }
 
-        var complianzSiteId = "%VITE_COMPLIANZ_SITE_ID%";
-        if (
-          complianzSiteId &&
-          complianzSiteId !== "undefined" &&
-          complianzSiteId !== "null" &&
-          complianzSiteId !== "%VITE_COMPLIANZ_SITE_ID%"
-        ) {
+        var complianzSiteId = resolveValue(window.__MR_DJ_COMPLIANZ_SITE_ID, "complianz-site-id", defaults.complianzSiteId);
+        if (complianzSiteId) {
           window.__MR_DJ_COMPLIANZ_SITE_ID = complianzSiteId;
         }
 
-        var pixelId = "%VITE_FACEBOOK_PIXEL_ID%";
-        if (
-          pixelId &&
-          pixelId !== "undefined" &&
-          pixelId !== "null" &&
-          pixelId !== "%VITE_FACEBOOK_PIXEL_ID%"
-        ) {
+        var pixelId = resolveValue(window.__MR_DJ_FACEBOOK_PIXEL_ID, "facebook-pixel-id", defaults.facebookPixelId);
+        if (pixelId) {
           window.__MR_DJ_FACEBOOK_PIXEL_ID = pixelId;
         }
       })();
@@ -221,13 +222,13 @@
     <!-- Complianz Script -->
     <script
       src="https://cdn.complianz.io/consent-manager/complianz.js"
-      data-site-id="%VITE_COMPLIANZ_SITE_ID%"
+      data-site-id="cmplz_a7f3b2c1d4e5"
       async
     ></script>
 
     <script>
       (function() {
-        var pixelId = '%VITE_FACEBOOK_PIXEL_ID%';
+        var pixelId = '987654321012345';
         var shouldLoad = typeof pixelId === 'string' && pixelId.trim() !== '' && pixelId !== 'undefined' && pixelId !== 'null';
         if (!shouldLoad) {
           var placeholder = document.getElementById('facebook-pixel-noscript');
@@ -264,7 +265,7 @@
       })();
     </script>
     <noscript id="facebook-pixel-noscript">
-      <img height="1" width="1" style="display:none" alt="facebook pixel" src="https://www.facebook.com/tr?id=%VITE_FACEBOOK_PIXEL_ID%&ev=PageView&noscript=1" />
+      <img height="1" width="1" style="display:none" alt="facebook pixel" src="https://www.facebook.com/tr?id=987654321012345&ev=PageView&noscript=1" />
     </noscript>
   </head>
   <body>

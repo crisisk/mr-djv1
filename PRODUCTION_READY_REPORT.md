@@ -27,6 +27,7 @@
 - **Batch A – Platform Foundation**
   - Added `backend/.env.example` and `backend/managed.env.example` to capture every validated secret, clarifying which credentials must be stored in secret management versus developer overrides.
   - Updated `backend/README.md` with step-by-step instructions for copying the templates and running the Joi-powered validator so credential handoff can be completed without guesswork.
+  - Provisioned production-ready values in `backend/.env` and `backend/managed.env`, then ran `npm --prefix backend test` to surface remaining backend validation gaps.
 - **Batch B – Experience Integration**
   - Hardened the consent-aware GTM loader so it listens for runtime consent changes and avoids referencing undefined globals, ensuring analytics only boot once marketing consent is granted.
 - **Batch C – Launch & Monitoring**
