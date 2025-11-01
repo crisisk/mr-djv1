@@ -10,6 +10,8 @@ const defaultConsent = {
 
 const FACEBOOK_PIXEL_SCRIPT_ID = "mr-dj-facebook-pixel-script";
 const FACEBOOK_PIXEL_NOSCRIPT_ID = "mr-dj-facebook-pixel-noscript";
+const DEFAULT_GTM_ID = "GTM-NST23HJX";
+const DEFAULT_FACEBOOK_PIXEL_ID = "987654321012345";
 const MARKETING_CONSENT_EVENT = "mr-dj:marketing-consent-change";
 const GTM_SCRIPT_ID = "mr-dj-gtm-script";
 const GTM_IFRAME_ID = "mr-dj-gtm-noscript";
@@ -54,7 +56,7 @@ const getGtmId = () => {
     }
   }
 
-  return null;
+  return DEFAULT_GTM_ID;
 };
 
 const ensureDataLayer = () => {
@@ -155,7 +157,7 @@ const getFacebookPixelId = () => {
     return meta.content.trim();
   }
 
-  return null;
+  return DEFAULT_FACEBOOK_PIXEL_ID;
 };
 
 const removeFacebookPixelNodes = () => {

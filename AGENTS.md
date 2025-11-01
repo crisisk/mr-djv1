@@ -13,6 +13,28 @@
 - [ ] Vervang de placeholder Sevensa account- en formulier-ID's in `AvailabilityChecker.jsx` of koppel dit component definitief aan de backend lead flow.
 - [ ] Doorloop de pending staging-validaties (console errors, GA4 DebugView, GTM/GA4 ID-verificatie) zoals beschreven in `STAGING-VALIDATION-STATUS.md` en documenteer de resultaten.
 
+## Batch 1–3 backlog (synced met `BATCH_EXECUTION_READINESS.md` & `PRODUCTION_READY_REPORT.md`)
+### Batch A – Platform Foundation
+- [ ] Secrets provisioning afronden
+  - [ ] Vul `backend/.env` en `backend/managed.env` met productieklare waarden voor Postgres, Redis, RentGuy, Sevensa en automatiseringshooks.
+  - [ ] Verifieer dat `npm --prefix backend test` slaagt met Joi-validatie actief.
+- [ ] Consent & analytics IDs
+  - [ ] Zet Complianz site ID (`VITE_COMPLIANZ_SITE_ID`) en injecteer GTM `GTM-NST23HJX`, GA4 `G-TXJLD3H2C8`, Facebook Pixel en PostHog ID's via consentmanager/runtime-config.
+  - [ ] Bevestig dat marketing scripts alleen laden na verleende marketing consent.
+- [ ] Documentatie
+  - [ ] Update `PRODUCTION_READY_REPORT.md` met bewijslinks voor Batch A exit criteria.
+
+### Batch B – Experience Integration
+- [ ] Frontend data-fetching herwerken naar backend proxy endpoints met foutafhandeling en retries voor bookings/contact/pricing.
+- [ ] Sevensa availability flow naar backend migreren en GA4 event `availability_conversion` bevestigen.
+- [ ] Cypress/Playwright smoke-tests uitbreiden met boeking-, contact- en availability-scenario's.
+- [ ] Branding & testimonials centraliseren op gedeelde asset/data pipeline.
+
+### Batch C – Launch & Monitoring
+- [ ] Lighthouse ≥90 + geautomatiseerde pa11y/axe audits documenteren.
+- [ ] Monitoring/alerting activeren (UptimeRobot/Pingdom, Sentry/LogRocket) met secrets in managed env.
+- [ ] Deploy naar `https://www.mr-dj.nl`, staging-validatie afronden en `DEPLOYMENT_SUCCESS.md` ondertekenen.
+
 ## Backlog uit TODO.md (synchroniseren)
 ### Prioriteit 1 - Kritieke configuratie
 - [ ] T1.1: Google Tag Manager ID configureren (vervang alle `GTM-PLACEHOLDER` vermeldingen en redeploy).
